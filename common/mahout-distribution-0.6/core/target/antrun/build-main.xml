@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <copy file="../src/conf/driver.classes.props" tofile="/home/lyan/HiBench2.1_Mahout/mahout-distribution-0.6/core/target/classes/driver.classes.default.props"/>
+</target>
+</project>
