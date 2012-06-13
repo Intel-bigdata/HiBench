@@ -12,7 +12,7 @@ Contents:
 3 Running
 
 * 1 OVERVIEW
-This benchmark suite contains 9 typical Hadoop workloads (including micro benchmarks, HDFS benchmarks, web search benchmarks, machine learning benchmarks, and data analytics benchmarks). This benchmark suite also has options for users to enable input/output compression for most workloads with default compression codec (zlib). 
+This benchmark suite contains 9 typical Hadoop workloads (including micro benchmarks, HDFS benchmarks, web search benchmarks, machine learning benchmarks, and data analytics benchmarks). This benchmark suite also has options for users to enable input/output compression for most workloads with default compression codec (zlib). Some initial work based on this benchmark suite please refer to the included ICDE workshop paper (i.e., WISS10_conf_full_011.pdf).
 
 Note: Currently only the bayes bench and nutchindex bench in this suite have to work together with HiBench-Data.
 
@@ -52,10 +52,21 @@ This workload is developed based on SIGMOD 09 paper "A Comparison of Approaches 
 
 2.0 Prerequisites 
 
-2.0.1 Setup Hadoop
+2.0.1 Setup HiBench-2.1
+To set up the HiBench-2.1 working environment, you should
+  1. Download/checkout HiBench-2.1 benchmark suite from https://github.com/hibench/HiBench-2.1
+  2. Download HiBench-Data packages from https://www.dropbox.com/home/HiBench-Data
+  3. Create/setup directories as below and unzip the downloaded packages to correct folders accordingly
+     --HiBench-Alli (or any name you would like to use)
+         |--HiBench-2.1
+         |--HiBench-Data
+             |-- wikibayes
+             |-- wikinutch
+
+2.0.2 Setup Hadoop
 Before you run any workload in the package, please verify the Hadoop framework is running correctly. All the workloads have been tested with Cloudera Distribution of Hadoop 3 update 4 (CDH3u4) and Hadoop version 1.0.3
 
-2.0.2 Setup Hive (for hivebench)
+2.0.3 Setup Hive (for hivebench)
 Please make sure you have properly set up Hive in your cluster if you want to test hivebench. Or the benchmark willuse the default Hive-0.9 release which is included in package.
 
 2.1 Configure for the all workloads
