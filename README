@@ -57,7 +57,7 @@ To set up the HiBench-2.1 working environment, you should
   1. Download/checkout HiBench-2.1 benchmark suite from https://github.com/hibench/HiBench-2.1
   2. Download HiBench-Data packages from https://www.dropbox.com/home/HiBench-Data
   3. Create/setup directories as below and unzip the downloaded packages to correct folders accordingly
-     --HiBench-Alli (or any name you would like to use)
+     --HiBench-All (or any name you would like to use)
          |--HiBench-2.1
          |--HiBench-Data
              |-- wikibayes
