@@ -55,7 +55,7 @@ This workload is developed based on SIGMOD 09 paper "A Comparison of Approaches 
 2.0.1 Setup HiBench-2.1
 To set up the HiBench-2.1 working environment, you should
   1. Download/checkout HiBench-2.1 benchmark suite from https://github.com/hibench/HiBench-2.1
-  2. Download HiBench-Data packages from https://www.dropbox.com/home/HiBench-Data
+  2. Download HiBench-Data packages from https://www.dropbox.com/sh/f4k8dioyy7ee1l4/s3F1crAXP-
   3. Create/setup directories as below and unzip the downloaded packages to correct folders accordingly
      --HiBench-All (or any name you would like to use)
          |--HiBench-2.1
