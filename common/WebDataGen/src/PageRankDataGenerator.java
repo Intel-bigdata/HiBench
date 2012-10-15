@@ -156,7 +156,7 @@ public class PageRankDataGenerator extends DataGenerator {
 
 		job.setJobName(jobname);
 
-		job.setOutputKeyClass(NullWritable.class);
+		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
 		job.setMapOutputKeyClass(Text.class);
 

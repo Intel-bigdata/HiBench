@@ -675,24 +675,25 @@ public class MapReduceSet {
 	}
 
 	public static class OutputLinkEdgesMapper extends MapReduceBase implements
-	Mapper<LongWritable, Text, NullWritable, Text> {
+	Mapper<LongWritable, Text, Text, Text> {
 	
 		@Override
 		public void map(LongWritable key, Text value,
-				OutputCollector<NullWritable, Text> output, Reporter reporter) throws IOException {
+				OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
 	
 			String delimiter = "[ \t]";
 			String[] args = value.toString().split(delimiter);
 	
-			String from, to=key.toString();
+			//String from, to=key.toString();
+			String to = args[0];
+			String from;
 			for (int i=1; i<args.length; i++) {
 				if (DataOptions.KEEP_ORDER) {
 					from = args[i].split(":")[0];
 				} else {
 					from = args[i];
 				}
-				output.collect(NullWritable.get(),
-						new Text(from + DataOptions.DELIMITER + to));
+				output.collect(new Text(from),new Text(to));
 			}
 		}
 	}
