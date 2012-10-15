@@ -1,8 +1,0 @@
-### Web Data Generator 0.0.1 ###
-Overview
-This is the project to automatically generate Web data with given number of Html Web pages and/or faked user visist history records. All the data are not meaningful in real world and are used in HiBench-2.1 to indicating the hadoop capability for processing some Web based workloads. At the moment this project only supports to generate data for hive and pagerank benchmarks.
-
-How to build webdatagen.jar
-1. >cd xxx/WebDataGen
-2. >$JAVA_HOME/bin/javac -classpath $HADOOP_HOME/hadoop-core-1.0.2.jar:$HADOOP_HOME/lib/commons-logging-x.x.x.jar -Xlint:deprecation -d webdatagen *.java
-3. >$JAVA_HOME/bin/jar -cvf webdatagen.jar -C webdatagen/ .
