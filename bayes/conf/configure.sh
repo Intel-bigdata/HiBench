@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,35 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+# compression
+COMPRESS=$COMPRESS_GLOBAL
+COMPRESS_CODEC=$COMPRESS_CODEC_GLOBAL
 
-DIR=`dirname "$0"`
-if [ -f $HIBENCH_REPORT ]; then
-    rm $HIBENCH_REPORT
+# paths
+INPUT_LOCAL=${DATA_LOCAL}/wikibayes
+INPUT_HDFS=${DATA_HDFS}/Bayes/Input
+OUTPUT_HDFS=${DATA_HDFS}/Bayes/Ouput
+
+if [ $COMPRESS -eq 1 ]; then
+    INPUT_HDFS=${INPUT_HDFS}-comp
+    OUTPUT_HDFS=${OUTPUT_HDFS}-comp
 fi
 
-for benchmark in `cat $DIR/benchmarks.lst`; do
-    if [[ $benchmark == \#* ]]; then
-        continue
-    fi
-
-    if [ "$benchmark" = "dfsioe" ] ; then
-        # dfsioe specific
-        bash $DIR/dfsioe/prepare-read.sh
-        bash $DIR/dfsioe/run-read.sh
-        bash $DIR/dfsioe/run-write.sh
-
-    elif [ "$benchmark" = "hivebench" ]; then
-        # hivebench specific
-	bash $DIR/hivebench/prepare.sh
-	bash $DIR/hivebench/run-aggregation.sh
-	bash $DIR/hivebench/run-join.sh
-
-    else
-        if [ -e $DIR/${benchmark}/prepare.sh ]; then
-            bash $DIR/${benchmark}/prepare.sh
-        fi
-        bash $DIR/${benchmark}/run.sh
-    fi
-done
-  
+# bench parameters
+NGRAMS=3

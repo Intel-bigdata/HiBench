@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<!-- 
+     created by yue zhou
+     contact yue.y.zhou@intel.com
+-->
+<project name="webdatagen" default="package">
+
+    <property environment="env" />
+    <property name="hadoop.home" value="${env.HADOOP_HOME}" />
+
+    <path id="compile.classpath">
+        <fileset dir="${hadoop.home}">
+            <include name="hadoop-core*.jar" />
+        </fileset>
+        <fileset dir="${hadoop.home}/lib/">
+            <include name="commons-logging-*.jar" />
+        </fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="build/classes" />
+        <mkdir dir="dist" />
+    </target>
+
+    <target name="compile" depends="init" description="Compile Source Code" >
+        <javac srcdir="src" destdir="build/classes" classpathref="compile.classpath" includeantruntime="false">
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+    </target>
+
+    <target name="package" depends="clean,compile" description="Generate JAR file" >
+        <jar destfile="dist/webdatagen.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Built-By" value="yue.y.zhou@intel.com" />
+                <attribute name="Implimentation-Version" value="0.0.1" />
+            </manifest>
+        </jar>
+
+    </target>
+
+    <target name="clean" description="Deletes Build directories" >
+        <delete dir="build" />
+        <delete dir="dist" />
+    </target>
+
+</project>

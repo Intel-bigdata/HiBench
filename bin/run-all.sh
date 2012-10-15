@@ -1,5 +1,4 @@
 #!/bin/bash
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -14,15 +13,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-echo "Please call asf-email-examples.sh directly next time, as this file is deprecated"
-SCRIPT_PATH=${0%/*}
-if [ "$0" != "$SCRIPT_PATH" ] && [ "$SCRIPT_PATH" != "" ]; then
-  cd $SCRIPT_PATH
+DIR=`dirname "$0"`
+DIR=`cd "${DIR}/.."; pwd`
+
+. $DIR/bin/hibench-config.sh
+
+if [ -f $HIBENCH_REPORT ]; then
+    rm $HIBENCH_REPORT
 fi
-START_PATH=`pwd`
 
-./asf-email-examples.sh $@
+for benchmark in `cat $DIR/conf/benchmarks.lst`; do
+    if [[ $benchmark == \#* ]]; then
+        continue
+    fi
 
+    if [ "$benchmark" = "dfsioe" ] ; then
+        # dfsioe specific
+        $DIR/dfsioe/bin/prepare-read.sh
+        $DIR/dfsioe/bin/run-read.sh
+        $DIR/dfsioe/bin/run-write.sh
 
+    elif [ "$benchmark" = "hivebench" ]; then
+        # hivebench specific
+        $DIR/hivebench/bin/prepare.sh
+        $DIR/hivebench/bin/run-aggregation.sh
+        $DIR/hivebench/bin/run-join.sh
+
+    else
+        if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
+            $DIR/${benchmark}/bin/prepare.sh
+        fi
+        $DIR/${benchmark}/bin/run.sh
+    fi
+done
+  
