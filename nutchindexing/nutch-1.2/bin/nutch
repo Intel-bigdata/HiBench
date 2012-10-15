@@ -14,7 +14,7 @@
 DIR=`dirname "$0"`
 
 # run the package configure
-. $DIR/../../../configure.sh
+. $DIR/../../../bin/hibench-config.sh
 
 cygwin=false
 case "`uname`" in

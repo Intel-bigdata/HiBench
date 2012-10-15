@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,12 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-# compress
-COMPRESS=$COMPRESS_GLOBAL
-COMPRESS_CODEC=$COMPRESS_CODEC_GLOBAL
+echo "========== preparing nutchindex data =========="
+# configure
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# paths
-INPUT_LOCAL=${DATA_LOCAL}/wikinutch
-INPUT_HDFS=${DATA_HDFS}/NutchIndexing
+# path check
+$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
+
+# generate data
+echo "copy local data ${INPUT_LOCAL} to hdfs ..."
+$HADOOP_HOME/bin/hadoop dfs -put $INPUT_LOCAL $INPUT_HDFS
+
