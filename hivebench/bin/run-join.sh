@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,24 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== running hive-join bench =========="
 # configure
-DIR=`dirname "$0"`
-source ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # path check
-rm -rf metastore_db
-rm -rf TempStatsStore
-$HADOOP_HOME/bin/hadoop dfs -rmr /user/hive/warehouse/rankings_uservisits_join/*
-$HADOOP_HOME/bin/hadoop dfs -rmr /tmp/*
+rm -rf ${DIR}/metastore_db
+rm -rf ${DIR}/TempStatsStore
+$HADOOP_HOME/bin/hadoop fs -rmr /user/hive/warehouse/rankings_uservisits_join
+$HADOOP_HOME/bin/hadoop fs -rmr /tmp
 
 # pre-running
 echo "USE DEFAULT;">$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set mapred.map.tasks=$NUM_OF_MAP;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set mapred.reduce.tasks=$NUM_OF_RED;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set mapred.map.tasks=$NUM_MAPS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set mapred.reduce.tasks=$NUM_REDS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
 echo "set hive.stats.autogather=false;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
 
 if [ $COMPRESS -eq 1 ]; then

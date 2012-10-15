@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== preparing hive data =========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # compress check
 if [ $COMPRESS -eq 1 ]; then
@@ -36,8 +38,15 @@ OPTION="-u hive \
 	-v ${USERVISITS} \
 	-o sequence"
 
+START_TIME=`timestamp`
+
 $HADOOP_HOME/bin/hadoop jar ${DIR}/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
 
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/working
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/rankings/_*
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/uservisits/_*
+
+END_TIME=`timestamp`
+CODEC=`echo ${COMPRESS_CODEC} | sed 's/.*\.//'`
+
+#gen_report "HIVE_PREPARE ($CODEC)" ${START_TIME} ${END_TIME} "10000" >> prepare.log

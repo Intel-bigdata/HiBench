@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,19 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== running hive-aggregate bench =========="
 # configure
-DIR=`dirname "$0"`
-source ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # path check
-rm -rf metastore_db
-rm -rf TempStatsStore
-$HADOOP_HOME/bin/hadoop dfs -rmr /user/hive/warehouse/uservisits_aggre/*
-$HADOOP_HOME/bin/hadoop dfs -rmr /tmp/*
+rm -rf ${DIR}/metastore_db
+rm -rf ${DIR}/TempStatsStore
+$HADOOP_HOME/bin/hadoop fs -rmr /user/hive/warehouse/uservisits_aggre
+$HADOOP_HOME/bin/hadoop fs -rmr /tmp
 
 # pre-running
 echo "USE DEFAULT;" > $DIR/hive-benchmark/uservisits_aggre.hive
