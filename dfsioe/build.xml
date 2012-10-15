@@ -18,13 +18,13 @@
     </target>
 
     <target name="compile" depends="init" description="Compile Source Code" >
-        <javac srcdir="src" destdir="build/classes" classpathref="compile.classpath" />
+        <javac srcdir="src" destdir="build/classes" classpathref="compile.classpath" includeantruntime="false"/>
     </target>
 
     <target name="package" depends="clean,compile" description="Generate JAR file" >
         <jar destfile="dist/dfsioe.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Built-By" value="shengsheng.huang@intel.com" />
+                <attribute name="Built-By" value="yue.y.zhou@intel.com" />
                 <attribute name="Implimentation-Version" value="0.04" />
             </manifest>
         </jar>

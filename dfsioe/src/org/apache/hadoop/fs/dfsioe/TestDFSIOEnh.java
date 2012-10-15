@@ -29,6 +29,7 @@ import java.util.Comparator;
 import org.apache.commons.logging.*;
 
 import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.StringUtils;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
@@ -36,7 +37,8 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
-import org.apache.hadoop.hdfs.*;
+import org.apache.hadoop.fs.dfsioe.Analyzer._Mapper;
+import org.apache.hadoop.fs.dfsioe.Analyzer._Reducer;
 
 /**
  * Enhanced Distributed i/o benchmark.
@@ -80,6 +82,7 @@ import org.apache.hadoop.hdfs.*;
  * </ul>
  * 
  */
+
 public class TestDFSIOEnh extends Configured implements Tool {
 
   private static final Log LOG = LogFactory.getLog(TestDFSIOEnh.class);
@@ -93,10 +96,12 @@ public class TestDFSIOEnh extends Configured implements Tool {
   private static String TEST_ROOT_DIR = System.getProperty("test.build.data","/benchmarks/TestDFSIO-Enh");
   private static Configuration fsConfig = new Configuration();
   private static Path CONTROL_DIR = new Path(TEST_ROOT_DIR, "io_control");
-  private static Path WRITE_DIR = new Path(TEST_ROOT_DIR, "io_write");
-  private static Path READ_DIR = new Path(TEST_ROOT_DIR, "io_read");
+  protected static Path WRITE_DIR = new Path(TEST_ROOT_DIR, "io_write");
+  protected static Path READ_DIR = new Path(TEST_ROOT_DIR, "io_read");
   private static Path DATA_DIR = new Path(TEST_ROOT_DIR, "io_data");
-  
+  private static Path REPORT_DIR = new Path(TEST_ROOT_DIR, "reports");
+  private static Path REPORT_TMP = new Path(TEST_ROOT_DIR, "_merged_reports.txt");
+
 
   static{
     Configuration.addDefaultResource("hdfs-default.xml");
@@ -129,14 +134,14 @@ public class TestDFSIOEnh extends Configured implements Tool {
     }
 
     protected IOStatistics stats = new IOStatistics();    
-    protected int samplingInterval; 
+    protected int samplingInterval;
 
     protected  void init(Configuration conf){
         samplingInterval = conf.getInt("test.io.sampling.interval",DEFAULT_TPUT_SAMPLING_INTERVAL);
         
     }
 
-    void collectStats(OutputCollector<UTF8, UTF8> output,
+    void collectStats(OutputCollector<Text, Text> output,
                       String name,
                       long execTime,
                       Object statistics) throws IOException {
@@ -151,11 +156,11 @@ public class TestDFSIOEnh extends Configured implements Tool {
         LOG.info("Exec time = " + execTime);
         LOG.info("IO rate = " + ioRateMbSec);
 
-        output.collect(new UTF8("l:tasks"), new UTF8(String.valueOf(1)));
-        output.collect(new UTF8("l:size"), new UTF8(String.valueOf(totalSize)));
-        output.collect(new UTF8("l:time"), new UTF8(String.valueOf(execTime)));
-        output.collect(new UTF8("f:rate"), new UTF8(String.valueOf(ioRateMbSec*1000)));
-        output.collect(new UTF8("f:sqrate"), new UTF8(String.valueOf(ioRateMbSec*ioRateMbSec*1000)));       
+        output.collect(new Text("l:tasks"), new Text(String.valueOf(1)));
+        output.collect(new Text("l:size"), new Text(String.valueOf(totalSize)));
+        output.collect(new Text("l:time"), new Text(String.valueOf(execTime)));
+        output.collect(new Text("f:rate"), new Text(String.valueOf(ioRateMbSec*1000)));
+        output.collect(new Text("f:sqrate"), new Text(String.valueOf(ioRateMbSec*ioRateMbSec*1000)));
  
         //enhanced report for real-time throughput
         int size = stats.statHdfs.size();
@@ -171,16 +176,16 @@ public class TestDFSIOEnh extends Configured implements Tool {
             statsSum.append(";");
             if (i%100 == 0){
                 int len = statsSum.length();
-                output.collect(new UTF8("s:"+name+":"+serialNo+":tput_samples"),new UTF8(statsSum.substring(lastLen,len)+"EoR"));
+                output.collect(new Text("s:"+name+":"+serialNo+":tput_samples"),new Text(statsSum.substring(lastLen,len)+"EoR"));
                 serialNo ++;
                 lastLen = len;
             }
         }
         statsSum.append("EoR");
-        output.collect(new UTF8("s:"+name+":"+serialNo+":tput_samples"), new UTF8(statsSum.substring(lastLen,statsSum.length())));
+        output.collect(new Text("s:"+name+":"+serialNo+":tput_samples"), new Text(statsSum.substring(lastLen,statsSum.length())));
         //add start and end time stamp
-        output.collect(new UTF8("s:"+name+":io_start_end"), new UTF8(String.valueOf(stats.statHdfs.get(0))+";"+String.valueOf(stats.statHdfs.get(size-2))));
-        output.collect(new UTF8("f:logging_time"), new UTF8(String.valueOf(stats.loggingTime)));        
+        output.collect(new Text("g:"+name+":io_start_end"), new Text(String.valueOf(stats.statHdfs.get(0))+";"+String.valueOf(stats.statHdfs.get(size-2))));
+        output.collect(new Text("f:logging_time"), new Text(String.valueOf(stats.loggingTime)));
     }
   }
 
@@ -353,7 +358,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
                 MEGA*fileSize);
   }
 
-  protected static void runIOTest( Class<? extends Mapper> mapperClass,
+  protected static void runIOTest( @SuppressWarnings("rawtypes") Class<? extends Mapper> mapperClass,
                                  Path outputDir,
                                  JobConf job
                                  ) throws IOException {
@@ -364,12 +369,11 @@ public class TestDFSIOEnh extends Configured implements Tool {
     job.setReducerClass(AccumulatingReducer.class);
 
     FileOutputFormat.setOutputPath(job, outputDir);
-    job.setOutputKeyClass(UTF8.class);
-    job.setOutputValueClass(UTF8.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
     job.setNumReduceTasks(1);
     JobClient.runJob(job);
   }
-
 
  /**
   * A linear interpolator.
@@ -599,11 +603,14 @@ public class TestDFSIOEnh extends Configured implements Tool {
             readTest(fs,fsConfig);
         long execTime = System.currentTimeMillis() - tStart;
     
-	if (skipAnalyze == false){
-            analyzeResult(fs, testType, execTime, resFileName, nrFiles, fileSize*MEGA, 
+        if (skipAnalyze == false){
+            /*analyzeResult(fs, testType, execTime, resFileName, nrFiles, fileSize*MEGA, 
+                    tStart, tputPlotInterval, tputSampleUnit,(int)(mapSlots*threshold),
+                    tputFileName, tputReportEach, tputReportTotal);*/
+            runAnalyse(fs, fsConfig, testType, execTime, resFileName, nrFiles, fileSize*MEGA, 
                     tStart, tputPlotInterval, tputSampleUnit,(int)(mapSlots*threshold),
                     tputFileName, tputReportEach, tputReportTotal);
-       }
+        }
     } catch(Exception e) {
         System.err.print(StringUtils.stringifyException(e));
         return -1;
@@ -634,9 +641,9 @@ public class TestDFSIOEnh extends Configured implements Tool {
       SequenceFile.Writer writer = null;
       try {
         writer = SequenceFile.createWriter(fs, fsConfig, controlFile,
-                                           UTF8.class, LongWritable.class,
+                                           Text.class, LongWritable.class,
                                            CompressionType.NONE);
-        writer.append(new UTF8(name), new LongWritable(fileSize));
+        writer.append(new Text(name), new LongWritable(fileSize));
       } catch(Exception e) {
         throw new IOException(e.getLocalizedMessage());
       } finally {
@@ -651,6 +658,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
  /**
   * Analyze Aggregated throughput samples.
   */
+  @Deprecated
   protected static String[] analyzeTputSamples(ArrayList<String> wrSamples, 
                                            int nrFiles, 
                                            long fileSize,  
@@ -664,8 +672,6 @@ public class TestDFSIOEnh extends Configured implements Tool {
                                            boolean writeReportTotal, 
                                            boolean writeReportEach
                                         ) throws IOException {
-
-    
 
     int maxslot = (int)(execTime/plotInterval)+1;
 
@@ -725,7 +731,8 @@ public class TestDFSIOEnh extends Configured implements Tool {
                  bytesChanged[i] = resultValue[i+1]-resultValue[i];
             bytesChanged[maxslot] = 0;
             for (int ri = 0; ri<=maxslot; ri++)
-                res.println(ri+","+resultValue[ri]/(double)sampleUnit+","+bytesChanged[ri]/(double)sampleUnit);   
+                res.println(ri+","+resultValue[ri]/(double)sampleUnit+","+bytesChanged[ri]/(double)sampleUnit);
+            res.close();
         }
         //add into total bytes
         for (int k=0; k<=maxslot; k++)
@@ -746,7 +753,8 @@ public class TestDFSIOEnh extends Configured implements Tool {
                                 new FileOutputStream (
                                         new File(tputResFile),true));
         for (int ri = 0; ri<=maxslot; ri++)
-            res.println(ri+","+bytesTotal[ri]+","+bytesChanged[ri]);   
+            res.println(ri+","+bytesTotal[ri]+","+bytesChanged[ri]);
+        res.close();
     }
 
    String unit = "";
@@ -771,6 +779,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
  * The time slots are excluded if at that time the number of concurrent mappers is less than threshold.
  * At present, the threshold is set to half of maximum map slots (mapred.tasktracker.map.maximum * number of slaves).  
  */
+  
  protected static String[] calcSummary(final double[] bytesChanged,
                                        int[] concurrency, 
                                        int threshold, 
@@ -816,9 +825,182 @@ public class TestDFSIOEnh extends Configured implements Tool {
         return output;
     }
 
-  } 
+  }
 
-  protected static void analyzeResult( FileSystem fs, 
+ 
+	 protected static void runAnalyse(FileSystem fs, Configuration fsConfig,
+								         int testType, long execTime,
+								         String resFileName, int nrFiles,
+								         long fileSize, long tStart,
+								         int plotInterval, long sampleUnit,
+								         int threshold, String tputResFileName,
+								         boolean tputReportEach, boolean tputReportTotal) throws IOException {
+		 long t1 = System.currentTimeMillis();
+		 Path reduceFile;
+		 if (testType == TEST_TYPE_WRITE)
+			 reduceFile = new Path(WRITE_DIR, "part-00000");
+		 else
+			 reduceFile = new Path(READ_DIR, "part-00000");		
+		
+		 int maxslot = (int)(execTime/plotInterval)+1;
+		 int[] concurrency = new int[maxslot+1];
+		 double[]  bytesTotal = new double[maxslot+1];
+		 for (int i=0; i<maxslot+1; i++) {
+			 bytesTotal[i] = 0;
+			 concurrency[i] = 0; 
+		 }
+		 
+		 BufferedReader rd = null;
+		 long tasks = 0;
+		 long size = 0;
+		 long time = 0;
+		 float rate = 0;
+		 float sqrate = 0;
+		 float loggingTime = 0;
+		 try {
+			 rd = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(reduceFile))));
+			 String s = null;
+			 while ((s = rd.readLine()) != null) {
+				 StringTokenizer tokens = new StringTokenizer(s, " \t\n\r\f%");
+				 String lable = tokens.nextToken(); 
+				 if (lable.endsWith(":tasks")) {
+					 tasks = Long.parseLong(tokens.nextToken());
+				 } else if (lable.endsWith(":size")) {
+					 size = Long.parseLong(tokens.nextToken());
+				 } else if (lable.endsWith(":time")) {
+					 time = Long.parseLong(tokens.nextToken());
+				 } else if (lable.endsWith(":rate")) {
+					 rate = Float.parseFloat(tokens.nextToken());
+				 } else if (lable.endsWith(":sqrate")) {
+					 sqrate = Float.parseFloat(tokens.nextToken());
+				 } else if (lable.endsWith(":io_start_end")) {
+					 String[] t = tokens.nextToken().split(";");
+					 int start = (int)((Long.parseLong(t[0])-tStart)/plotInterval) + 1;
+					 int end = (int)((Long.parseLong(t[1])-tStart)/plotInterval) - 1;
+					 if(start < 0)
+						 start = 0;
+					 for (int i=start; i<=end; i++){
+						 if(i > concurrency.length-1)
+							 break;
+						 concurrency[i]++;
+					 }
+				 } else if (lable.endsWith(":logging_time")) {
+					 loggingTime = Float.parseFloat(tokens.nextToken());
+				 } else if (lable.endsWith(":tput_samples")) {
+					 break;
+				 }
+			 }
+		 } finally {
+			 rd.close();
+		 }
+		 double med = rate / 1000 / tasks;
+		 double stdDev = Math.sqrt(Math.abs(sqrate / 1000 / tasks - med*med));
+		 String resultLines[] = {
+				 "----- TestDFSIO ----- : " + ((testType == TEST_TYPE_WRITE) ? "write" : (testType == TEST_TYPE_READ) ? "read" : "unknown"),
+				 "           Date & time: " + new Date(System.currentTimeMillis()),
+				 "       Number of files: " + tasks,
+				 "Total MBytes processed: " + size/MEGA,
+				 "     Throughput mb/sec: " + size * 1000.0 / (time * MEGA),
+				 "Average IO rate mb/sec: " + med,
+				 " IO rate std deviation: " + stdDev,
+				 "    Test exec time sec: " + (float)execTime / 1000, "" };
+		 String enhResultLines[] = {
+			        "-- Extended Metrics --   : " + ((testType == TEST_TYPE_WRITE) ? "write" :
+			                                        (testType == TEST_TYPE_READ) ? "read" : 
+			                                    "unknown"),
+			        "Result file name         : " + tputResFileName,
+			        "Sampling overhead        : " + (loggingTime/time)*100 + "%",
+			        "Reference Start Time     : " + String.valueOf(tStart) };
+		 
+		 PrintStream res = new PrintStream(new FileOutputStream(new File(resFileName), true));
+		 for(int i = 0; i < resultLines.length; i++) {
+			 LOG.info(resultLines[i]);
+			 res.println(resultLines[i]);
+		 }
+		 for(int i = 0; i < enhResultLines.length; i++) {
+			 LOG.info(enhResultLines[i]);
+			 res.println(enhResultLines[i]);
+		 }
+		 
+		 try {
+			 fs.delete(REPORT_DIR, true);
+			 //set up env
+			 Configuration conf2 = new Configuration(fsConfig);
+			 conf2.setLong("ana_tStart", tStart);
+			 conf2.setInt("ana_plotInterval", plotInterval);
+			 conf2.setLong("ana_sampleUnit", sampleUnit);
+			 conf2.setLong("ana_execTime", execTime);
+			 conf2.setLong("ana_fileSize", fileSize);
+			 
+			 Job job = new Job(conf2, "Result Analyzer");
+			 job.setJarByClass(Analyzer.class);
+			 job.setMapperClass(_Mapper.class);
+			 job.setReducerClass(_Reducer.class);
+			 job.setOutputKeyClass(Text.class);
+			 job.setOutputValueClass(Text.class);
+//			 job.setNumReduceTasks(1);
+			 org.apache.hadoop.mapreduce.lib.input.FileInputFormat.addInputPath(job, reduceFile);
+			 org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, REPORT_DIR);
+			 job.waitForCompletion(true);
+		 } catch (InterruptedException e) {
+			 e.printStackTrace();
+		 } catch (ClassNotFoundException e) {
+			 e.printStackTrace();
+		 } finally {
+			 fs.delete(REPORT_TMP, true);
+			 FileUtil.copyMerge(fs, REPORT_DIR, fs, REPORT_TMP, false, fsConfig, null);
+			 LOG.info("remote report file " + REPORT_TMP + " merged.");
+			 BufferedReader lines = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(REPORT_TMP))));
+			 String line = null;
+			 while((line = lines.readLine()) != null) {
+				 StringTokenizer tokens = new StringTokenizer(line, " \t\n\r\f%");
+				 tokens.nextToken();
+				 String ss = tokens.nextToken();
+				 String[] str = ss.split(",");
+				 int idx = Integer.parseInt(str[0]);
+				 double val = Double.parseDouble(str[1]);
+				 assert idx <= maxslot;
+				 bytesTotal[idx] += val;
+			 }
+			 lines.close();
+			 if (tputReportEach) {
+				 FileUtil.copy(fs, REPORT_TMP, new File(tputResFileName.split(".")[0]+"test_io_.csv"), false, fsConfig);
+				 LOG.info("*test_io_.csv fetched to local fs.");
+			 }
+			 //calculate the aggregated throughput
+			 double[]  bytesChanged = new double[maxslot+1]; 
+			 for (int i = 0; i<=maxslot-1; i++)
+				 bytesChanged[i] = bytesTotal[i+1]-bytesTotal[i];
+			 bytesChanged[maxslot] = 0;
+
+			 if(tputReportTotal) {
+				 PrintStream res2 = new PrintStream(new FileOutputStream (new File(tputResFileName),true));
+				 for (int ri = 0; ri<=maxslot; ri++)
+					 res2.println(ri+","+bytesTotal[ri]+","+bytesChanged[ri]);
+				 res2.close();
+			 }
+			 String unit = "";
+			 if (sampleUnit == KILO) 
+				 unit = "kb";
+			 else if (sampleUnit == MEGA)
+				 unit = "mb";
+			 else if (sampleUnit == 1)
+				 unit = "b";
+			 else if (sampleUnit == GIGA)
+				 unit = "gb";
+
+			 String[] tputResultLines = calcSummary(bytesChanged,concurrency,threshold,unit);
+			 for (int j = 0; j < tputResultLines.length; j++) {
+				 LOG.info(tputResultLines[j]);
+				 res.println(tputResultLines[j]);
+			 }
+		 }
+		 res.println("\n-- Result Analyse -- : " + ((System.currentTimeMillis() - t1)/1000) + "s");
+		 res.close();
+	 }
+	 
+	 @Deprecated
+	 protected static void analyzeResult( FileSystem fs, 
                                      int testType,
                                      long execTime,
                                      String resFileName,
@@ -834,129 +1016,124 @@ public class TestDFSIOEnh extends Configured implements Tool {
                                     ) throws IOException {
     
 
-    //the original report
-    //TestDFSIO.analyzeResult(fs,testType,execTime,resFileName);
+		 //the original report
+		 //TestDFSIO.analyzeResult(fs,testType,execTime,resFileName);
+	
+	
+		 long tasks = 0;
+		 long size = 0;
+		 long time = 0;
+		 float rate = 0;
+		 float sqrate = 0;
+	
+		 Path reduceFile;
+		 if (testType == TEST_TYPE_WRITE)
+			 reduceFile = new Path(WRITE_DIR, "part-00000");
+		 else
+			 reduceFile = new Path(READ_DIR, "part-00000");
+	    
+	
+		 //long time = 0;
+		 float loggingTime = 0;
+		 String line;
+		 ArrayList<String> wrSamples = new ArrayList<String> (); 
+	
+		 int maxslot = (int)(execTime/plotInterval)+1;
+		 int[] concurrency = new int[maxslot+1];
+		 for (int i=0; i<maxslot+1; i++)
+			 concurrency[i] = 0;
+	
+		 DataInputStream in = null;
+		 BufferedReader lines = null;
+		 try {
+			 in = new DataInputStream(fs.open(reduceFile));
+			 lines = new BufferedReader(new InputStreamReader(in));  
+			 while((line = lines.readLine()) != null) {
+				 StringTokenizer tokens = new StringTokenizer(line, " \t\n\r\f%");
+				 String attr = tokens.nextToken(); 
+				 if (attr.endsWith(":time")) {
+					 time = Long.parseLong(tokens.nextToken());
+				 } else if (attr.endsWith(":logging_time")) {
+					 loggingTime = Float.parseFloat(tokens.nextToken());
+				 } else if (attr.endsWith(":tput_samples")){
+					 String[] tags=attr.split(":");
+					 wrSamples.add(tags[1]);
+					 wrSamples.add(tokens.nextToken());
+				 } else if (attr.endsWith(":io_start_end")){
+					 String[] t=tokens.nextToken().split(";");
+					 int start = (int)((Long.parseLong(t[0])-tStart)/plotInterval) + 1;
+					 int end = (int)((Long.parseLong(t[1])-tStart)/plotInterval) - 1;
+					 if(start < 0)
+						 start = 0;
+					 for (int i=start; i<=end; i++){
+						 if(i > concurrency.length-1)
+							 break;
+						 concurrency[i]++;
+					 }
+				 } else if (attr.endsWith(":tasks")){
+					 tasks = Long.parseLong(tokens.nextToken());
+				 } else if (attr.endsWith(":size")){
+					 size = Long.parseLong(tokens.nextToken());
+				 } else if (attr.endsWith(":rate")) {
+					 rate = Float.parseFloat(tokens.nextToken());
+				 } else if (attr.endsWith(":sqrate")) {
+					 sqrate = Float.parseFloat(tokens.nextToken());
+				 }
+			 }
+		 } finally {
+			 if(in != null) in.close();
+			 if(lines != null) lines.close();  
+		 }
+	
+		 double med = rate / 1000 / tasks;
+		 double stdDev = Math.sqrt(Math.abs(sqrate / 1000 / tasks - med*med));
+		 String resultLines[] = {
+				 "----- TestDFSIO ----- : " + ((testType == TEST_TYPE_WRITE) ? "write" : (testType == TEST_TYPE_READ) ? "read" : "unknown"),
+				 "           Date & time: " + new Date(System.currentTimeMillis()),
+				 "       Number of files: " + tasks,
+				 "Total MBytes processed: " + size/MEGA,
+				 "     Throughput mb/sec: " + size * 1000.0 / (time * MEGA),
+				 "Average IO rate mb/sec: " + med,
+				 " IO rate std deviation: " + stdDev,
+				 "    Test exec time sec: " + (float)execTime / 1000, "" };
+	
+		 String[] tputResultLines = analyzeTputSamples(wrSamples, nrFiles, fileSize,  
+	                                                    tStart, execTime, concurrency,
+	                                                      plotInterval, sampleUnit, threshold,
+	                                                    tputResFileName, tputReportTotal, tputReportEach);
+	    
+		 String enhResultLines[] = {
+	        "-- Extended Metrics --   : " + ((testType == TEST_TYPE_WRITE) ? "write" :
+	                                        (testType == TEST_TYPE_READ) ? "read" : 
+	                                    "unknown"),
+	        "Result file name         : " + tputResFileName,
+	        "Sampling overhead        : " + (loggingTime/time)*100 + "%",
+	        "Reference Start Time     : " + String.valueOf(tStart)
+		 };
+	
+		 PrintStream res = new PrintStream(new FileOutputStream(new File(resFileName), true)); 
+	   
+		 for(int i = 0; i < resultLines.length; i++) {
+			 LOG.info(resultLines[i]);
+			 res.println(resultLines[i]);
+		 } 
+	
+		 for(int i = 0; i < enhResultLines.length; i++) {
+			 LOG.info(enhResultLines[i]);
+			 res.println(enhResultLines[i]);
+		 }
+	    
+		 for (int j = 0; j < tputResultLines.length; j++) {
+			 LOG.info(tputResultLines[j]);
+			 res.println(tputResultLines[j]);
+		 }
+		 res.close();
+	 }
 
-
-    long tasks = 0;
-    long size = 0;
-    long time = 0;
-    float rate = 0;
-    float sqrate = 0;
-
-    Path reduceFile;
-    if (testType == TEST_TYPE_WRITE)
-        reduceFile = new Path(WRITE_DIR, "part-00000");
-    else
-        reduceFile = new Path(READ_DIR, "part-00000");
-    
-
-    //long time = 0;
-    float loggingTime = 0;
-    String line;
-    ArrayList<String> wrSamples = new ArrayList<String> (); 
-
-    int maxslot = (int)(execTime/plotInterval)+1;
-    int[] concurrency = new int[maxslot+1];
-    for (int i=0; i<maxslot+1; i++)
-        concurrency[i] = 0;
-
-    DataInputStream in = null;
-    BufferedReader lines = null;
-    try {
-      in = new DataInputStream(fs.open(reduceFile));
-      lines = new BufferedReader(new InputStreamReader(in));  
-      while((line = lines.readLine()) != null) {
-        StringTokenizer tokens = new StringTokenizer(line, " \t\n\r\f%");
-        String attr = tokens.nextToken(); 
-        if (attr.endsWith(":time")) {
-            time = Long.parseLong(tokens.nextToken());
-        } else if (attr.endsWith(":logging_time")) {
-            loggingTime = Float.parseFloat(tokens.nextToken());
-        } else if (attr.endsWith(":tput_samples")){
-            String[] tags=attr.split(":");
-            wrSamples.add(tags[1]);
-            wrSamples.add(tokens.nextToken());
-        } else if (attr.endsWith(":io_start_end")){
-            String[] t=tokens.nextToken().split(";");
-            int start = (int)((Long.parseLong(t[0])-tStart)/plotInterval) + 1;
-            int end = (int)((Long.parseLong(t[1])-tStart)/plotInterval) - 1;
-	    if(start < 0)
-		start = 0;
-            for (int i=start; i<=end; i++){
-		if(i > concurrency.length-1)
-			break;
-                concurrency[i]++;
-	    }
-        } else if (attr.endsWith(":tasks")){
-            tasks = Long.parseLong(tokens.nextToken());
-        } else if (attr.endsWith(":size")){
-            size = Long.parseLong(tokens.nextToken());
-        } else if (attr.endsWith(":rate")) {
-            rate = Float.parseFloat(tokens.nextToken());
-        } else if (attr.endsWith(":sqrate")) {
-            sqrate = Float.parseFloat(tokens.nextToken());
-        }
-      }
-   } finally {
-      if(in != null) in.close();
-      if(lines != null) lines.close();  
-  }
-
-    double med = rate / 1000 / tasks;
-    double stdDev = Math.sqrt(Math.abs(sqrate / 1000 / tasks - med*med));
-    String resultLines[] = {
-      "----- TestDFSIO ----- : " + ((testType == TEST_TYPE_WRITE) ? "write" :
-                                    (testType == TEST_TYPE_READ) ? "read" :
-                                    "unknown"),
-      "           Date & time: " + new Date(System.currentTimeMillis()),
-      "       Number of files: " + tasks,
-      "Total MBytes processed: " + size/MEGA,
-      "     Throughput mb/sec: " + size * 1000.0 / (time * MEGA),
-      "Average IO rate mb/sec: " + med,
-      " IO rate std deviation: " + stdDev,
-      "    Test exec time sec: " + (float)execTime / 1000,
-      "" };
-
-    String[] tputResultLines = analyzeTputSamples(wrSamples, nrFiles, fileSize,  
-                                                    tStart, execTime, concurrency,
-                                                      plotInterval, sampleUnit, threshold,
-                                                    tputResFileName, tputReportTotal, tputReportEach);
-    
-    String enhResultLines[] = {
-        "-- Extended Metrics --   : " + ((testType == TEST_TYPE_WRITE) ? "write" :
-                                        (testType == TEST_TYPE_READ) ? "read" : 
-                                    "unknown"),
-        "Result file name         : " + tputResFileName,
-        "Sampling overhead        : " + (loggingTime/time)*100 + "%",
-        "Reference Start Time     : " + String.valueOf(tStart)
-    };
-
-    PrintStream res = new PrintStream(
-                                      new FileOutputStream(
-                                                           new File(resFileName), true)); 
-   
-    for(int i = 0; i < resultLines.length; i++) {
-        LOG.info(resultLines[i]);
-        res.println(resultLines[i]);
-    } 
-
-    for(int i = 0; i < enhResultLines.length; i++) {
-        LOG.info(enhResultLines[i]);
-        res.println(enhResultLines[i]);
-    }
-    
-    for (int j = 0; j < tputResultLines.length; j++) {
-        LOG.info(tputResultLines[j]);
-        res.println(tputResultLines[j]);
-    }
-
-  }
-
-  private static void cleanup(FileSystem fs) throws IOException {
-    LOG.info("Cleaning up test files");
-    fs.delete(new Path(TEST_ROOT_DIR), true);
-  }
+	 private static void cleanup(FileSystem fs) throws IOException {
+		 LOG.info("Cleaning up test files");
+		 fs.delete(new Path(TEST_ROOT_DIR), true);
+	 }
 
 }//end 
 

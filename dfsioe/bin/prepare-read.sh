@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,17 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== preparing dfsioe data =========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # path check
 $HADOOP_HOME/bin/hadoop dfs -rmr /benchmarks/TestDFSIO-Enh
 
 # generate data
-${HADOOP_HOME}/bin/hadoop jar ${DIR}/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096              
+${HADOOP_HOME}/bin/hadoop jar ${DIR}/dist/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096              
 

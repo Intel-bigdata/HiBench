@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -18,8 +19,8 @@ INPUT_HDFS=/benchmarks/TestDFSIO-Enh
 
 # dfsioe-read
 RD_NUM_OF_FILES=256
-RD_FILE_SIZE=2000
+RD_FILE_SIZE=2000 #2000
 
 # dfsioe-write
-WT_NUM_OF_FILES=256
-WT_FILE_SIZE=1000
+WT_NUM_OF_FILES=32
+WT_FILE_SIZE=500 #1000

@@ -121,9 +121,9 @@ public class TestDFSIO extends Configured implements Tool {
       SequenceFile.Writer writer = null;
       try {
         writer = SequenceFile.createWriter(fs, fsConfig, controlFile,
-                                           UTF8.class, LongWritable.class,
+                                           Text.class, LongWritable.class,
                                            CompressionType.NONE);
-        writer.append(new UTF8(name), new LongWritable(fileSize));
+        writer.append(new Text(name), new LongWritable(fileSize));
       } catch(Exception e) {
         throw new IOException(e.getLocalizedMessage());
       } finally {
@@ -156,7 +156,7 @@ public class TestDFSIO extends Configured implements Tool {
       super(fsConfig);
     }
     
-    void collectStats(OutputCollector<UTF8, UTF8> output, 
+    void collectStats(OutputCollector<Text, Text> output, 
                       String name,
                       long execTime, 
                       Object objSize) throws IOException {
@@ -166,11 +166,11 @@ public class TestDFSIO extends Configured implements Tool {
       LOG.info("Exec time = " + execTime);
       LOG.info("IO rate = " + ioRateMbSec);
       
-      output.collect(new UTF8("l:tasks"), new UTF8(String.valueOf(1)));
-      output.collect(new UTF8("l:size"), new UTF8(String.valueOf(totalSize)));
-      output.collect(new UTF8("l:time"), new UTF8(String.valueOf(execTime)));
-      output.collect(new UTF8("f:rate"), new UTF8(String.valueOf(ioRateMbSec*1000)));
-      output.collect(new UTF8("f:sqrate"), new UTF8(String.valueOf(ioRateMbSec*ioRateMbSec*1000)));
+      output.collect(new Text("l:tasks"), new Text(String.valueOf(1)));
+      output.collect(new Text("l:size"), new Text(String.valueOf(totalSize)));
+      output.collect(new Text("l:time"), new Text(String.valueOf(execTime)));
+      output.collect(new Text("f:rate"), new Text(String.valueOf(ioRateMbSec*1000)));
+      output.collect(new Text("f:sqrate"), new Text(String.valueOf(ioRateMbSec*ioRateMbSec*1000)));
     }
   }
 
@@ -232,8 +232,8 @@ public class TestDFSIO extends Configured implements Tool {
     job.setReducerClass(AccumulatingReducer.class);
 
     FileOutputFormat.setOutputPath(job, outputDir);
-    job.setOutputKeyClass(UTF8.class);
-    job.setOutputValueClass(UTF8.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
     job.setNumReduceTasks(1);
     JobClient.runJob(job);
   }

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== Running dfsioe-read bench =========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # path check
 $HADOOP_HOME/bin/hadoop dfs -rmr ${INPUT_HDFS}/io_read
@@ -27,11 +29,12 @@ $HADOOP_HOME/bin/hadoop dfs -rmr ${INPUT_HDFS}/_*
 
 # pre-running
 SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
-OPTION="-read -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 131072 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5"
+#OPTION="-read -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 131072 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5"
+OPTION="-read -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 131072 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal"
 START_TIME=`timestamp`
 
 # run bench
-${HADOOP_HOME}/bin/hadoop jar ${DIR}/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_read.txt -tputFile ${DIR}/throughput_read.csv
+${HADOOP_HOME}/bin/hadoop jar ${DIR}/dist/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_read.txt -tputFile ${DIR}/throughput_read.csv
 
 # post-running
 END_TIME=`timestamp`

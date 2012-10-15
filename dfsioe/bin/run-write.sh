@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,23 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
 echo "========== Running dfsioe write =========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 #path check
-$HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}
+#$HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-OPTION="-write -skipAnalyze -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5"
+OPTION="-write -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal"
 START_TIME=`timestamp`
 
 #run benchmark
-${HADOOP_HOME}/bin/hadoop jar ${DIR}/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_write.txt -tputFile ${DIR}/throughput_write.csv
+${HADOOP_HOME}/bin/hadoop jar ${DIR}/dist/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_write.txt -tputFile ${DIR}/throughput_write.csv
 
 # post-running
 END_TIME=`timestamp`
