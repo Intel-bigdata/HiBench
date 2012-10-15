@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,31 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-echo "========== preparing sort data=========="
+echo "========== preparing terasort data=========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
 # path check
 $HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-    -D mapred.output.compression.type=BLOCK "
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
-# generate data
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar randomtextwriter \
-    -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
-    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
-    $COMPRESS_OPT \
-    $INPUT_HDFS
+# Generate the terasort data
+$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar teragen \
+    -D mapred.map.tasks=$NUM_MAPS \
+    $DATASIZE $INPUT_HDFS
 
 $HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS/_*

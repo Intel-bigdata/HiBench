@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,32 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/sh
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-echo "========== preparing pagerank data =========="
+echo "========== preparing sort data=========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# compress
+# path check
+$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
+
+# compress check
 if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+    COMPRESS_OPT="-D mapred.output.compress=true \
+    -D mapred.output.compression.codec=$COMPRESS_CODEC \
+    -D mapred.output.compression.type=BLOCK "
+else
+    COMPRESS_OPT="-D mapred.output.compress=false"
 fi
 
 # generate data
-DELIMITER=","
-OPTION="-u pagerank \
-	-b ${PAGERANK_BASE_HDFS} \
-	-n ${PAGERANK_INPUT} \
-	-m ${NUM_MAPS} \
-	-r ${NUM_REDS} \
-	-p ${PAGES} \
-	-d ${DELIMITER} \
-	-o sequence"
+$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar randomtextwriter \
+    -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
+    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+    $COMPRESS_OPT \
+    $INPUT_HDFS
 
-$HADOOP_HOME/bin/hadoop jar $DIR/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
-
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/working
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/edges/_*
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/vertices/_*
+$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS/_*

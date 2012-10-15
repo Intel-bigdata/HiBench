@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,20 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-echo "========== preparing terasort data=========="
+echo "========== preparing pagerank data =========="
 # configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
+# compress
+if [ $COMPRESS -eq 1 ]; then
+    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+fi
 
-# Generate the terasort data
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar teragen \
-    -D mapred.map.tasks=$NUM_MAPS \
-    $DATASIZE $INPUT_HDFS
+# generate data
+DELIMITER=","
+OPTION="-u pagerank \
+	-b ${PAGERANK_BASE_HDFS} \
+	-n ${PAGERANK_INPUT} \
+	-m ${NUM_MAPS} \
+	-r ${NUM_REDS} \
+	-p ${PAGES} \
+	-d ${DELIMITER} \
+	-o sequence"
 
-$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS/_*
+$HADOOP_HOME/bin/hadoop jar $DIR/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
+
+$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/working
+$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/edges/_*
+$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/vertices/_*

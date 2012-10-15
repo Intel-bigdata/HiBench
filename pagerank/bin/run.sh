@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,40 +14,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-echo "========== running sort bench =========="
+echo "========== running pagerank bench =========="
 # configure
-DIR=`dirname "$0"`
-source ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# compress
+# compress check
 if [ $COMPRESS -eq 1 ]
 then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
+    COMPRESS_OPT="-Dmapred.output.compress=true \
+    -Dmapred.output.compression.codec=$COMPRESS_CODEC"
 else
-    COMPRESS_OPT="-D mapred.output.compress=false"
+    COMPRESS_OPT="-Dmapred.output.compress=false"
 fi
 
-#path check
+# path check
+$HADOOP_HOME/bin/hadoop dfs -rmr $TEMP_HDFS
 $HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
 
 # pre-running
 SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+OPTION="${COMPRESS_OPT} --vertices ${INPUT_HDFS}/vertices --edges ${INPUT_HDFS}/edges --output ${OUTPUT_HDFS} --numIterations ${NUM_ITERATIONS} --tempDir ${TEMP_HDFS}"
 START_TIME=`timestamp`
 
 # run bench
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar sort \
-    $COMPRESS_OPT \
-    -outKey org.apache.hadoop.io.Text \
-    -outValue org.apache.hadoop.io.Text \
-    -r ${NUM_REDS} \
-    $INPUT_HDFS $OUTPUT_HDFS
+$MAHOUT_HOME/bin/mahout pagerank $OPTION
 
 # post-running
 END_TIME=`timestamp`
-gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
-
+gen_report "PAGERANK" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,35 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/sh
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
 
-echo "========== running pagerank bench =========="
+echo "========== running wordcount bench =========="
 # configure
-DIR=`dirname "$0"`
-source ${DIR}/../funcs.sh
-configure ${DIR}
+DIR=`cd $bin/../; pwd`
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# compress check
+# compress
 if [ $COMPRESS -eq 1 ]
 then
-    COMPRESS_OPT="-Dmapred.output.compress=true \
-    -Dmapred.output.compression.codec=$COMPRESS_CODEC"
+    COMPRESS_OPT="-D mapred.output.compress=true \
+    -D mapred.output.compression.type=BLOCK \
+    -D mapred.output.compression.codec=$COMPRESS_CODEC"
 else
-    COMPRESS_OPT="-Dmapred.output.compress=false"
+    COMPRESS_OPT="-D mapred.output.compress=false"
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $TEMP_HDFS
-$HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
+$HADOOP_HOME/bin/hadoop dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
 SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
-OPTION="${COMPRESS_OPT} --vertices ${INPUT_HDFS}/vertices --edges ${INPUT_HDFS}/edges --output ${OUTPUT_HDFS} --numIterations ${NUM_ITERATIONS} --tempDir ${TEMP_HDFS}"
 START_TIME=`timestamp`
 
 # run bench
-$MAHOUT_HOME/bin/mahout pagerank $OPTION
+$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar wordcount \
+    $COMPRESS_OPT \
+    -D mapred.reduce.tasks=${NUM_REDS} \
+    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
+    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
+    $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`
-gen_report "PAGERANK" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
