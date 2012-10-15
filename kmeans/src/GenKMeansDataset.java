@@ -137,10 +137,10 @@ public class GenKMeansDataset extends AbstractJob {
     public int produceInitialCentroids(int numClusters, Path centroidsPath) throws Exception {
         List<Vector> iCentroids = new ArrayList<Vector>(numClusters); 
         produceInitialCentroids(numClusters, iCentroids);
-        SequenceFile.Writer writer = new SequenceFile.Writer(getFileSystem(), getJobConf(), centroidsPath, Text.class, Cluster.class);
+        SequenceFile.Writer writer = new SequenceFile.Writer(getFileSystem(), getJobConf(), centroidsPath, Text.class, Kluster.class);
         for (int i = 0; i < iCentroids.size(); i++) {
             Vector vec = iCentroids.get(i);
-            Cluster cluster = new Cluster(vec,i,dm);
+            Kluster cluster = new Kluster(vec,i,dm);
             // add the center so the centroid will be correct upon output
             cluster.observe(cluster.getCenter(),1);
             writer.append(new Text(cluster.getIdentifier()), cluster);
