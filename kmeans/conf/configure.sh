@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,26 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/bash
+# compress
+COMPRESS=$COMPRESS_GLOBAL
+COMPRESS_CODEC=$COMPRESS_CODEC_GLOBAL
 
-echo "========== preparing kmeans data =========="
-# configure
-DIR=`dirname "$0"`
-. ${DIR}/../funcs.sh
-configure ${DIR}
-
-# compress check
+# paths
+INPUT_HDFS=${DATA_HDFS}/KMeans/Input
+OUTPUT_HDFS=${DATA_HDFS}/KMeans/Output
 if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-compress true \
-        -compressCodec $COMPRESS_CODEC \
-        -compressType BLOCK "
-else
-    COMPRESS_OPT="-compress false"
+    INPUT_HDFS=${INPUT_HDFS}-comp
+    OUTPUT_HDFS=${OUTPUT_HDFS}-comp
 fi
+INPUT_SAMPLE=${INPUT_HDFS}/samples
+INPUT_CLUSTER=${INPUT_HDFS}/cluster
 
-# paths check
-$HADOOP_HOME/bin/hadoop dfs -rmr ${INPUT_HDFS}
+# for prepare
+NUM_OF_CLUSTERS=10
+NUM_OF_SAMPLES=20000000
+SAMPLES_PER_INPUTFILE=4000000
+DIMENSIONS=10
 
-# generate data
-OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
-$MAHOUT_HOME/bin/mahout kmeansDataSetGenerator ${COMPRESS_OPT} ${OPTION}
+# for running
+MAX_ITERATION=5

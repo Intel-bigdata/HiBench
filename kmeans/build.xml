@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<!-- 
+     created by yue zhou
+     contact yue.y.zhou@intel.com
+-->
+<project name="kmeans-datagen" default="package">
+
+    <property environment="env" />
+    <property name="mahout.home" value="${env.MAHOUT_HOME}" />
+
+    <path id="compile.classpath">
+        <fileset dir="${mahout.home}/examples/target/dependency">
+            <include name="hadoop-core*.jar" />
+            <include name="mahout-core*.jar" />
+            <include name="mahout-math*.jar" />
+            <include name="uncommons-maths*.jar" />
+            <include name="slf4j-api*.jar" />
+        </fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="build/classes" />
+        <mkdir dir="dist" />
+    </target>
+
+    <target name="compile" depends="init" description="Compile Source Code" >
+        <javac srcdir="src" destdir="build/classes" classpathref="compile.classpath" includeantruntime="false"/>
+    </target>
+
+    <target name="package" depends="clean,compile" description="Generate JAR file" >
+        <jar destfile="dist/datagen.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Built-By" value="yue.y.zhou@intel.com" />
+                <attribute name="Implimentation-Version" value="0.1" />
+            </manifest>
+        </jar>
+
+    </target>
+
+    <target name="clean" description="Deletes Build directories" >
+        <delete dir="build" />
+        <delete dir="dist" />
+    </target>
+
+</project>
