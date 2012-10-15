@@ -29,7 +29,7 @@ if [ $COMPRESS -eq 1 ]; then
 fi
 
 # generate data
-DELIMITER=","
+DELIMITER="\t"
 OPTION="-u pagerank \
 	-b ${PAGERANK_BASE_HDFS} \
 	-n ${PAGERANK_INPUT} \
@@ -37,9 +37,9 @@ OPTION="-u pagerank \
 	-r ${NUM_REDS} \
 	-p ${PAGES} \
 	-d ${DELIMITER} \
-	-o sequence"
+	-o text"
 
-$HADOOP_HOME/bin/hadoop jar $DIR/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_HOME/bin/hadoop jar ${DIR}/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
 
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/working
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/edges/_*

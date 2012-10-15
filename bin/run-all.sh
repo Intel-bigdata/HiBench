@@ -47,4 +47,4 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
         $DIR/${benchmark}/bin/run.sh
     fi
 done
-  
+
