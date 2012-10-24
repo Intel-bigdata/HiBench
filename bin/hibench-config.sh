@@ -19,7 +19,7 @@ bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 script="$(basename -- "$this")"
 this="$bin/$script"
 
-export HIBENCH_VERSION="2.1"
+export HIBENCH_VERSION="2.2"
 
 ###################### Global Paths ##################
 if [ -z "$HIBENCH_HOME" ]; then
@@ -36,7 +36,7 @@ if [ -f "${HIBENCH_CONF}/funcs.sh" ]; then
 fi
 
 if [ -z "$HADOOP_HOME" ]; then
-    export HADOOP_HOME=/home/${USER}/hadoop-0.20.2-cdh3u4 #/home/${USER}/hadoop-1.0.2
+    export HADOOP_HOME=/home/Mingfei/hadoop/cdh3u4
 fi
 
 if [ -z "$HIVE_HOME" ]; then
@@ -44,7 +44,11 @@ if [ -z "$HIVE_HOME" ]; then
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    export MAHOUT_HOME=${HIBENCH_HOME}/common/mahout-distribution-0.6
+    export MAHOUT_HOME=${HIBENCH_HOME}/common/mahout-distribution-0.7
+fi
+
+if [ -z "$DATATOOLS" ]; then
+    export DATATOOLS=${HIBENCH_HOME}/common/autogen/dist/datatools.jar
 fi
 
 if [ $# -gt 1 ]
@@ -62,7 +66,6 @@ HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 # on HDFS
 export DATA_HDFS=/HiBench
 # local
-export DATA_LOCAL=${HIBENCH_HOME}/../HiBench-Data
 export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report
 
 ################# Compress Options #################
@@ -71,4 +74,3 @@ export COMPRESS_GLOBAL=1
 export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.DefaultCodec
 #export COMPRESS_CODEC_GLOBAL=com.hadoop.compression.lzo.LzoCodec
 #export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.SnappyCodec
-

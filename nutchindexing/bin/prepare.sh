@@ -23,10 +23,18 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
+# compress
+if [ $COMPRESS -eq 1 ]; then
+    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+fi
 
 # generate data
-echo "copy local data ${INPUT_LOCAL} to hdfs ..."
-$HADOOP_HOME/bin/hadoop dfs -put $INPUT_LOCAL $INPUT_HDFS
+OPTION="-t nutch \
+        -b ${NUTCH_BASE_HDFS} \
+        -n ${NUTCH_INPUT} \
+        -m ${NUM_MAPS} \
+        -r ${NUM_REDS} \
+        -p ${PAGES} \
+        -o sequence"
 
+$HADOOP_HOME/bin/hadoop jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}

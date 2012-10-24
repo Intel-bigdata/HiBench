@@ -25,25 +25,17 @@ DIR=`cd $bin/../; pwd`
 
 # compress check
 if [ ${COMPRESS} -eq 1 ]; then
-    COMPRESS_OPT="-codec ${COMPRESS_CODEC}"
-else
-    COMPRESS_OPT=-nocompress
+    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
-
-# path check
-if [ ! -d ${INPUT_LOCAL} ]; then
-    echo "input dir ${INPUT_LOCAL} not exist!"
-    exit 1
-fi
-${HADOOP_HOME}/bin/hadoop fs -rmr ${INPUT_HDFS}
-${HADOOP_HOME}/bin/hadoop fs -rmr ${INPUT_HDFS}-tmp
 
 # generate data
-echo "copy local data ${INPUT_LOCAL} to hdfs......"
-${HADOOP_HOME}/bin/hadoop fs -put ${INPUT_LOCAL} ${INPUT_HDFS}-tmp
+OPTION="-t bayes \
+        -b ${BAYES_BASE_HDFS} \
+        -n ${BAYES_INPUT} \
+        -m ${NUM_MAPS} \
+        -r ${NUM_REDS} \
+        -p ${PAGES} \
+        -class ${CLASSES} \
+        -o sequence"
 
-$HADOOP_HOME/bin/hadoop jar ${HIBENCH_HOME}/common/compression/dist/compression.jar ${COMPRESS_OPT} ${INPUT_HDFS}-tmp ${INPUT_HDFS}
-
-${HADOOP_HOME}/bin/hadoop fs -rmr ${INPUT_HDFS}-tmp
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/_*
-
+$HADOOP_HOME/bin/hadoop jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}

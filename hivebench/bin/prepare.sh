@@ -29,7 +29,7 @@ if [ $COMPRESS -eq 1 ]; then
 fi
 
 # generate data
-OPTION="-u hive \
+OPTION="-t hive \
 	-b ${HIVE_BASE_HDFS} \
 	-n ${HIVE_INPUT} \
 	-m ${NUM_MAPS} \
@@ -40,9 +40,8 @@ OPTION="-u hive \
 
 START_TIME=`timestamp`
 
-$HADOOP_HOME/bin/hadoop jar ${DIR}/../common/webdatagen.jar hibench.WebDataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_HOME/bin/hadoop jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/working
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/rankings/_*
 $HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/uservisits/_*
 

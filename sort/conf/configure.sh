@@ -29,8 +29,9 @@ if [ $COMPRESS -eq 1 ]; then
 fi
 
 # for prepare (per node) - 24G/node
+#DATASIZE=24000000000
 DATASIZE=24000000000
-NUM_MAPS=15
+NUM_MAPS=16
 
 # for running (in total)
-NUM_REDS=64
+NUM_REDS=48

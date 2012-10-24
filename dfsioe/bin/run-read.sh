@@ -34,7 +34,7 @@ OPTION="-read -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 
 START_TIME=`timestamp`
 
 # run bench
-${HADOOP_HOME}/bin/hadoop jar ${DIR}/dist/dfsioe.jar org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_read.txt -tputFile ${DIR}/throughput_read.csv
+${HADOOP_HOME}/bin/hadoop jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_read.txt -tputFile ${DIR}/throughput_read.csv
 
 # post-running
 END_TIME=`timestamp`
