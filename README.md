@@ -85,14 +85,13 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 
 2. Configure for the all workloads
 
-    You need to set some global environmental variables in the `configure.sh` file located in the root dir.
+    You need to set some global environment variables in the `bin/hibench-config.sh` file located in the root dir.
 
-          HIBENCH_HOME     <The HiBench installation location>
           HADOOP_HOME      <The Hadoop installation location>
-          HIVE_HOME        <The Hive installation location>
-          MAHOUT_HOME      <The Mahout installation location>
           HADOOP_CONF_DIR  <The hadoop configuration DIR, default is $HADOOP_HOME/conf>
           COMPRESS_GLOBAL  <whether to enable the in/out compression for all workloads, 0 is disable, 1 is enable>
+
+    Note: Do not change the default values of other global environment variables unless necessary.
 
 3. Configure each workload
 
@@ -115,7 +114,7 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
         bin/prepare*.sh   Generate or copy the job input data into HDFS.
         bin/run*.sh       Execute the workload
 
-- Follow the steps below to run a workload
+  Follow the steps below to run a workload
 
   1. Configure the benchmark: 
       

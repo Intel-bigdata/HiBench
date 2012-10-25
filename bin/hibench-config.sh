@@ -23,7 +23,6 @@ export HIBENCH_VERSION="2.2"
 
 ###################### Global Paths ##################
 if [ -z "$HIBENCH_HOME" ]; then
-    #export HIBENCH_HOME=/home/${USER}/HiBench/HiBench-${HIBENCH_VERSION}
     export HIBENCH_HOME=`dirname "$this"`/..
 fi
 
@@ -63,9 +62,10 @@ then
 fi
 HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 
-# on HDFS
+# base dir HDFS
 export DATA_HDFS=/HiBench
-# local
+
+# local report
 export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report
 
 ################# Compress Options #################
