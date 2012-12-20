@@ -32,10 +32,12 @@ else
 fi
 
 # path check
-${HADOOP_HOME}/bin/hadoop fs -rmr ${OUTPUT_HDFS}
+${HADOOP_EXECUTABLE} fs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+SIZE=${SIZE##*|}
+SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench
@@ -47,5 +49,5 @@ $MAHOUT_HOME/bin/mahout trainnb \
 
 # post-running
 END_TIME=`timestamp`
-gen_report "BAYES" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "BAYES" ${START_TIME} ${END_TIME} ${SIZE}
 

@@ -37,4 +37,4 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-$HADOOP_HOME/bin/hadoop jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}

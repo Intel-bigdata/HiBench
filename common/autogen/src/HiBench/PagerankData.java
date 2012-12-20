@@ -134,8 +134,9 @@ public class PagerankData {
 			
 			for (long i=range[0]; i<range[1]; i++) {
 				key.set(i);
-				output.collect(key,
-						new Text(Long.toString(i)));
+				Text v = new Text(Long.toString(i));
+				output.collect(key, v);
+				reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+v.getLength());
 			}
 		}
 	}
@@ -200,9 +201,6 @@ public class PagerankData {
 		log.info("Vertices file " + fout + " as output");
 		JobClient.runJob(job);
 		log.info("Finished Running Job: " + jobname);
-
-		log.info("Cleaning temp files...");
-		Utils.cleanTempFiles(fout);
 	}
 
 	public static class DummyToPageRankLinksMapper extends MapReduceBase implements
@@ -212,7 +210,7 @@ public class PagerankData {
 		private HtmlCore html;
 		private long pages, slotpages;
 		private String delim;
-		
+
 		private void getOptions(JobConf job) {
 			pages = job.getLong("pages", 0);
 			slotpages = job.getLong("slotpages", 0);
@@ -249,7 +247,9 @@ public class PagerankData {
 				long[] linkids = html.genPureLinkIds();
 				for (int j=0; j<linkids.length; j++) {
 					to = Long.toString(linkids[j]);
-					output.collect(key, new Text(from + delim + to));
+					Text v = new Text(from + delim + to);
+					output.collect(key, v);
+					reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+v.getLength());
 				}
 				
 				if (0==(i % 10000)) {
@@ -302,9 +302,6 @@ public class PagerankData {
 		log.info("Edges file " + fout + " as output");
 		JobClient.runJob(job);
 		log.info("Finished Running Job: " + jobname);
-
-		log.info("Cleaning temp files...");
-		Utils.cleanTempFiles(fout);
 	}
 
 	public void generate() throws IOException, URISyntaxException {

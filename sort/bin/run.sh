@@ -34,14 +34,16 @@ else
 fi
 
 #path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
+SIZE=${SIZE##*|}
+SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar sort \
+$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
     $COMPRESS_OPT \
     -outKey org.apache.hadoop.io.Text \
     -outValue org.apache.hadoop.io.Text \
@@ -50,5 +52,5 @@ $HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar sort \
 
 # post-running
 END_TIME=`timestamp`
-gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE}
 

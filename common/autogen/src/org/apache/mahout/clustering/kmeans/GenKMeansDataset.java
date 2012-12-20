@@ -204,6 +204,7 @@ public class GenKMeansDataset extends Configured implements Tool {
 	public static class MapClass extends MapReduceBase implements
         Mapper<IntWritable,Text,LongWritable,VectorWritable> {
 		private int dimension = 2;
+
 		public void configure(JobConf jobConf){
 			this.dimension = Integer.parseInt(jobConf.get("genkmeansdataset.dimensions"));
 
@@ -235,7 +236,9 @@ public class GenKMeansDataset extends Configured implements Tool {
                 	Vector p = new RandomAccessSparseVector(dimension);
                 	p.assign(vec);
                 	output.collect(new LongWritable(count), new VectorWritable(p));
-					reporter.setStatus(Long.toString(count+1)+" samples generated");		
+					reporter.setStatus(Long.toString(count+1)+" samples generated");
+					reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED,
+							8+p.getNumNondefaultElements()*8);
             	}
 			} catch (Exception e) {
                 LOG.warn("Exception in GussianSampleGenerator.MapClass");

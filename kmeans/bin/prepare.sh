@@ -34,11 +34,11 @@ else
 fi
 
 # paths check
-$HADOOP_HOME/bin/hadoop dfs -rmr ${INPUT_HDFS}
+$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS}
 
 # generate data
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
 export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
 
-exec "$HADOOP_HOME/bin/hadoop" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset ${COMPRESS_OPT} ${OPTION}
+exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar ${COMPRESS_OPT} ${OPTION}
 

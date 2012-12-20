@@ -139,7 +139,9 @@ public class Utils {
         return new PathFilter() {
             public boolean accept(final Path path) {
                 try {
-                    return fs.getFileStatus(path).isDir();
+                    return fs.getFileStatus(path).isDir() &&
+                            !path.getName().startsWith("_");
+                    
                 } catch (IOException ioe) {
                     return false;
                 }
@@ -192,7 +194,7 @@ public class Utils {
 		FileSystem fs = FileSystem.getLocal(job);
 		MapFile.Reader[] readers = new MapFile.Reader[slots];
 		for (int i=0; i<slots; i++) {
-			String symbfile = symbol + "-" + Integer.toString(i);
+			String symbfile = fs.getWorkingDirectory().toString() + "/" + symbol + "-" + Integer.toString(i);
 			readers[i] = new MapFile.Reader(fs, symbfile, job);
 		}
 		

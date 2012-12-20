@@ -24,17 +24,17 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 #path check
-#$HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}
+#$HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}
 
 # pre-running
 OPTION="-write -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal"
 START_TIME=`timestamp`
 
 #run benchmark
-${HADOOP_HOME}/bin/hadoop jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_write.txt -tputFile ${DIR}/throughput_write.csv
+${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_write.txt -tputFile ${DIR}/throughput_write.csv
 
 # post-running
 END_TIME=`timestamp`
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
-gen_report "DFSIOE-WRITE" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+SIZE=`dir_size $INPUT_HDFS`
+gen_report "DFSIOE-WRITE" ${START_TIME} ${END_TIME} ${SIZE}
 

@@ -24,15 +24,15 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar terasort -D mapred.reduce.tasks=$NUM_REDS $INPUT_HDFS $OUTPUT_HDFS
+$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D mapred.reduce.tasks=$NUM_REDS $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`
-gen_report "TERASORT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "TERASORT" ${START_TIME} ${END_TIME} ${SIZE}

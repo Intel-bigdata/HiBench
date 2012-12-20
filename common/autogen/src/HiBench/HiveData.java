@@ -271,15 +271,17 @@ public class HiveData {
 			
 			if (0!=v.ulen) {
 				if (v.refs > 0) {
+					Text value = new Text(
+							new String(v.url) +
+							delim +
+							v.refs +
+							delim +
+							(rand.nextInt(99) + 1)
+							);
 					output.collect(
-							key,
-							new Text(
-									new String(v.url) +
-									delim +
-									v.refs +
-									delim +
-									(rand.nextInt(99) + 1)
-									));
+							key, value);
+							
+					reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+value.getLength());
 				} else {
 					missed++;
 				}
@@ -353,9 +355,6 @@ public class HiveData {
 		log.info("Rankings file " + fout + " as output");
 		JobClient.runJob(job);
 		log.info("Finished Running Job: " + jobname);
-
-		log.info("Cleaning temp files...");
-		Utils.cleanTempFiles(fout);
 	}
 
 	/***
@@ -516,9 +515,9 @@ public class HiveData {
 			if (0!=vitem.ulen) {
 				if (vitem.refs > 0) {
 					for (int i=0; i<vitem.refs; i++) {
-						output.collect(
-								key,
-								new Text(visit.nextAccess(new String(vitem.url))));
+						Text value = new Text(visit.nextAccess(new String(vitem.url)));
+						output.collect(key, value);
+						reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+value.getLength());
 					}
 				} else {
 					missed++;
@@ -606,9 +605,6 @@ public class HiveData {
 		log.info("Ouput file " + fout);
 		JobClient.runJob(job);
 		log.info("Finished Running Job: " + jobname);
-
-		log.info("Cleaning temp files...");
-		Utils.cleanTempFiles(fout);
 	}
 
 	public void generate() throws Exception {

@@ -31,10 +31,14 @@ else
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}
+$HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_SAMPLE | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+SSIZE=${SSIZE##*|}
+SSIZE=${SSIZE//,/}
+CSIZE=`dir_size $INPUT_CLUSTER`
+SIZE=$(($SSIZE+$CSIZE))
 OPTION="$COMPRESS_OPT -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
 
@@ -43,5 +47,5 @@ ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
 
 # post-running
 END_TIME=`timestamp`
-gen_report "KMEANS" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "KMEANS" ${START_TIME} ${END_TIME} ${SIZE}
 

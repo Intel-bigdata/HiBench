@@ -84,7 +84,8 @@ public class BayesData {
 				k.set(classname);
 				value.set(generator.genBayesWords());
 				output.collect(k, value);
-				
+				reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED,
+					k.getLength()+value.getLength());
 				if (0==(i % 10000)) {
 					log.info("still running: " + (i - range[0]) + " of " + slotpages);
 				}
@@ -135,9 +136,6 @@ public class BayesData {
 		log.info("Rankings file " + fout + " as output");
 		JobClient.runJob(job);
 		log.info("Finished Running Job: " + jobname);
-
-		log.info("Cleaning temp files...");
-		Utils.cleanTempFiles(fout);
 	}
 	
 	private void init() throws IOException {
