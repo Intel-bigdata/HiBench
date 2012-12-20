@@ -24,8 +24,8 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr /benchmarks/TestDFSIO-Enh
+$HADOOP_EXECUTABLE dfs -rmr /benchmarks/TestDFSIO-Enh
 
 # generate data
-${HADOOP_HOME}/bin/hadoop jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
+${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
 

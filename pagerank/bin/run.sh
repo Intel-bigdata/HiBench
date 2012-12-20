@@ -33,11 +33,11 @@ else
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $TEMP_HDFS
-$HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $TEMP_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
 
 if [ $BLOCK -eq 0 ]
 then
@@ -51,23 +51,23 @@ START_TIME=`timestamp`
 # run bench
 if [ $BLOCK -eq 0 ]
 then
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
 else
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_input
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_input
 
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_iv_block
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_initvector
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_iv_block
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_initvector
 
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
 
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
-    $HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
 
-    $HADOOP_HOME/bin/hadoop jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
 fi
 
 # post-running

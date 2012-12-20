@@ -31,10 +31,10 @@ else
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr ${OUTPUT_HDFS}
+$HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SIZE=`$HADOOP_EXECUTABLE fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
 OPTION="$COMPRESS_OPT -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
 

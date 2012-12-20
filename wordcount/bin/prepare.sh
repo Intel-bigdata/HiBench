@@ -33,13 +33,13 @@ else
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
 # generate data
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar randomtextwriter \
+$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
    $COMPRESS_OPT \
    -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
    $INPUT_HDFS
 
-$HADOOP_HOME/bin/hadoop dfs -rmr $INPUT_HDFS/_*
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*

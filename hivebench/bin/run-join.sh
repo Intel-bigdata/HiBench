@@ -26,8 +26,8 @@ DIR=`cd $bin/../; pwd`
 # path check
 rm -rf ${DIR}/metastore_db
 rm -rf ${DIR}/TempStatsStore
-$HADOOP_HOME/bin/hadoop fs -rmr /user/hive/warehouse/rankings_uservisits_join
-$HADOOP_HOME/bin/hadoop fs -rmr /tmp
+$HADOOP_EXECUTABLE fs -rmr /user/hive/warehouse/rankings_uservisits_join
+$HADOOP_EXECUTABLE fs -rmr /tmp
 
 # pre-running
 echo "USE DEFAULT;">$DIR/hive-benchmark/rankings_uservisits_join.hive
@@ -49,7 +49,7 @@ echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration 
 echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits/';">>$DIR/hive-benchmark/rankings_uservisits_join.hive
 cat $DIR/hive-benchmark/rankings_uservisits_join.template>>$DIR/hive-benchmark/rankings_uservisits_join.hive
 
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
 START_TIME=`timestamp`
 
 # run bench
@@ -59,5 +59,5 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/rankings_uservisits_join.hive
 END_TIME=`timestamp`
 gen_report "HIVEJOIN" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
 
-$HADOOP_HOME/bin/hadoop fs -rmr $OUTPUT_HDFS/hive-join
-$HADOOP_HOME/bin/hadoop fs -cp /user/hive/warehouse/rankings_uservisits_join $OUTPUT_HDFS/hive-join
+$HADOOP_EXECUTABLE fs -rmr $OUTPUT_HDFS/hive-join
+$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/rankings_uservisits_join $OUTPUT_HDFS/hive-join

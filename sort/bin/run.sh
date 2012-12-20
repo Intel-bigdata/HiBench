@@ -34,14 +34,14 @@ else
 fi
 
 #path check
-$HADOOP_HOME/bin/hadoop dfs -rmr $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
 START_TIME=`timestamp`
 
 # run bench
-$HADOOP_HOME/bin/hadoop jar $HADOOP_HOME/hadoop-examples*.jar sort \
+$HADOOP_EXECUTABLE jar $HADOOP_HOME/hadoop-examples*.jar sort \
     $COMPRESS_OPT \
     -outKey org.apache.hadoop.io.Text \
     -outValue org.apache.hadoop.io.Text \

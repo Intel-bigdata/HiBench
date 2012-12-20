@@ -40,10 +40,10 @@ OPTION="-t hive \
 
 START_TIME=`timestamp`
 
-$HADOOP_HOME/bin/hadoop jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/rankings/_*
-$HADOOP_HOME/bin/hadoop fs -rmr ${INPUT_HDFS}/uservisits/_*
+$HADOOP_EXECUTABLE fs -rmr ${INPUT_HDFS}/rankings/_*
+$HADOOP_EXECUTABLE fs -rmr ${INPUT_HDFS}/uservisits/_*
 
 END_TIME=`timestamp`
 CODEC=`echo ${COMPRESS_CODEC} | sed 's/.*\.//'`

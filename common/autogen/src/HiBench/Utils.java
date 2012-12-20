@@ -192,7 +192,7 @@ public class Utils {
 		FileSystem fs = FileSystem.getLocal(job);
 		MapFile.Reader[] readers = new MapFile.Reader[slots];
 		for (int i=0; i<slots; i++) {
-			String symbfile = symbol + "-" + Integer.toString(i);
+			String symbfile = fs.getWorkingDirectory().toString() + "/" + symbol + "-" + Integer.toString(i);
 			readers[i] = new MapFile.Reader(fs, symbfile, job);
 		}
 		

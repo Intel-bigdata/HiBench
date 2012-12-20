@@ -33,15 +33,15 @@ else
 fi
 
 # path check
-$HADOOP_HOME/bin/hadoop fs -rmr $INPUT_HDFS/indexes
+$HADOOP_EXECUTABLE fs -rmr $INPUT_HDFS/indexes
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus $INPUT_HDFS | awk '{ print $2 }'`
-export NUTCH_HOME=$DIR/nutch-1.2
-export NUTCH_CONF_DIR=$HADOOP_HOME/conf:$NUTCH_HOME/conf
+SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME/conf
 START_TIME=`timestamp`
 
 # run bench
+echo $NUTCH_HOME
 $NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 # post-running

@@ -32,10 +32,10 @@ else
 fi
 
 # path check
-${HADOOP_HOME}/bin/hadoop fs -rmr ${OUTPUT_HDFS}
+${HADOOP_EXECUTABLE} fs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_HOME/bin/hadoop fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SIZE=`$HADOOP_EXECUTABLE fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
 START_TIME=`timestamp`
 
 # run bench
