@@ -34,8 +34,10 @@ function gen_report() {
     fi
     local duration=`echo "scale=6;($end-$start)/1000"|bc`
     local tput=`echo "scale=6;$size/$duration"|bc`
+    NODES=`$HADOOP_EXECUTABLE job -list-active-trackers | wc -l` 
+    local tput_node=`echo "scale=6;$tput/$NODES"|bc`
 
-    echo "$type `date +%T` <$start,$end> $size $duration $tput"
+    echo "$type `date +%T` <$start,$end> $size $duration $tput $tput_node"
 }
 
 function check_dir() {

@@ -41,5 +41,3 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
    -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
    $INPUT_HDFS
-
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*

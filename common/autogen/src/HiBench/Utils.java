@@ -139,7 +139,9 @@ public class Utils {
         return new PathFilter() {
             public boolean accept(final Path path) {
                 try {
-                    return fs.getFileStatus(path).isDir();
+                    return fs.getFileStatus(path).isDir() &&
+                            !path.getName().startsWith("_");
+                    
                 } catch (IOException ioe) {
                     return false;
                 }

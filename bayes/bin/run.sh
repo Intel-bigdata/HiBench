@@ -35,7 +35,9 @@ fi
 ${HADOOP_EXECUTABLE} fs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_EXECUTABLE fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+SIZE=${SIZE##*|}
+SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench

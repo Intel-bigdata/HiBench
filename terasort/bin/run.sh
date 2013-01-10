@@ -27,7 +27,9 @@ DIR=`cd $bin/../; pwd`
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HDFS_BYTES_WRITTEN')
+SIZE=${SIZE##*|}
+SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench

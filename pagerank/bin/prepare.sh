@@ -41,5 +41,3 @@ OPTION="-t pagerank \
 #	-d ${DELIMITER} \
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 
-$HADOOP_EXECUTABLE fs -rmr ${INPUT_HDFS}/edges/_*
-$HADOOP_EXECUTABLE fs -rmr ${INPUT_HDFS}/vertices/_*

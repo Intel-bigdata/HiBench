@@ -37,8 +37,15 @@ $HADOOP_EXECUTABLE dfs -rmr $TEMP_HDFS
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+VSIZE=${VSIZE##*|}
+VSIZE=${VSIZE//,/}
 
+ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/edges | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+ESIZE=${ESIZE##*|}
+ESIZE=${ESIZE//,/}
+
+SIZE=$((VSIZE+ESIZE))
 if [ $BLOCK -eq 0 ]
 then
     OPTION="${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS} ${PAGES} ${NUM_REDS} ${NUM_ITERATIONS} nosym new"

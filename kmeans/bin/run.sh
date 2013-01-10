@@ -34,7 +34,12 @@ fi
 $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}
 
 # pre-running
-SIZE=`$HADOOP_EXECUTABLE fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
+SSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_SAMPLE | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+SSIZE=${SSIZE##*|}
+SSIZE=${SSIZE//,/}
+CSIZE=$($HADOOP_EXECUTABLE fs -dus $INPUT_CLUSTER| awk '{ print $2 }')
+SIZE=$(($SSIZE+$CSIZE))
+exit
 OPTION="$COMPRESS_OPT -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
 
