@@ -79,4 +79,4 @@ fi
 
 # post-running
 END_TIME=`timestamp`
-gen_report "PAGERANK" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "PAGERANK" ${START_TIME} ${END_TIME} ${SIZE}

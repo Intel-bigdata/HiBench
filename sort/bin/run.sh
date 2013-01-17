@@ -43,7 +43,7 @@ SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench
-$HADOOP_EXECUTABLE jar $HADOOP_HOME/hadoop-examples*.jar sort \
+$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
     $COMPRESS_OPT \
     -outKey org.apache.hadoop.io.Text \
     -outValue org.apache.hadoop.io.Text \
@@ -52,5 +52,5 @@ $HADOOP_EXECUTABLE jar $HADOOP_HOME/hadoop-examples*.jar sort \
 
 # post-running
 END_TIME=`timestamp`
-gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE}
 

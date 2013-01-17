@@ -57,7 +57,7 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/uservisits_aggre.hive
 
 # post-running
 END_TIME=`timestamp`
-gen_report "HIVEAGGR" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "HIVEAGGR" ${START_TIME} ${END_TIME} ${SIZE}
 
 $HADOOP_EXECUTABLE fs -rmr $OUTPUT_HDFS/hive-aggre
 $HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/uservisits_aggre $OUTPUT_HDFS/hive-aggre

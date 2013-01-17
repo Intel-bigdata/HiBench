@@ -52,4 +52,4 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 
 # post-running
 END_TIME=`timestamp`
-gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}

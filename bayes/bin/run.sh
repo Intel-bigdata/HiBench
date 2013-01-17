@@ -49,5 +49,5 @@ $MAHOUT_HOME/bin/mahout trainnb \
 
 # post-running
 END_TIME=`timestamp`
-gen_report "BAYES" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "BAYES" ${START_TIME} ${END_TIME} ${SIZE}
 

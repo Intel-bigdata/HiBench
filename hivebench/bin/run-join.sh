@@ -66,7 +66,7 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/rankings_uservisits_join.hive
 
 # post-running
 END_TIME=`timestamp`
-gen_report "HIVEJOIN" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "HIVEJOIN" ${START_TIME} ${END_TIME} ${SIZE}
 
 $HADOOP_EXECUTABLE fs -rmr $OUTPUT_HDFS/hive-join
 $HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/rankings_uservisits_join $OUTPUT_HDFS/hive-join

@@ -36,7 +36,8 @@ fi
 $HADOOP_EXECUTABLE fs -rmr $INPUT_HDFS/indexes
 
 # pre-running
-SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS | awk '{ print $2 }'`
+SIZE=`dir_size $INPUT_HDFS`
+#SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS |  grep -o [0-9]* `
 export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME/conf
 START_TIME=`timestamp`
 
@@ -46,4 +47,4 @@ $NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawl
 
 # post-running
 END_TIME=`timestamp`
-gen_report "NUTCHINDEX" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "NUTCHINDEX" ${START_TIME} ${END_TIME} ${SIZE}

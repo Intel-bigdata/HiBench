@@ -35,6 +35,6 @@ ${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh $
 
 # post-running
 END_TIME=`timestamp`
-SIZE=`$HADOOP_EXECUTABLE fs -dus ${INPUT_HDFS} | awk '{ print $2 }'`
-gen_report "DFSIOE-WRITE" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+SIZE=`dir_size $INPUT_HDFS`
+gen_report "DFSIOE-WRITE" ${START_TIME} ${END_TIME} ${SIZE}
 

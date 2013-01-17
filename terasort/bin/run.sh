@@ -27,9 +27,7 @@ DIR=`cd $bin/../; pwd`
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HDFS_BYTES_WRITTEN')
-SIZE=${SIZE##*|}
-SIZE=${SIZE//,/}
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
@@ -37,4 +35,4 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D mapred.reduce.tasks=$NUM
 
 # post-running
 END_TIME=`timestamp`
-gen_report "TERASORT" ${START_TIME} ${END_TIME} ${SIZE} >> ${HIBENCH_REPORT}
+gen_report "TERASORT" ${START_TIME} ${END_TIME} ${SIZE}
