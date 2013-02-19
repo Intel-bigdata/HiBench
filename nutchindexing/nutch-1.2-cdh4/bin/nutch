@@ -148,34 +148,13 @@ for f in $NUTCH_HOME/lib/jsp-2.1/*.jar; do
   CLASSPATH=${CLASSPATH}:$f;
 done
 
-for f in /usr/lib/hadoop-0.20-mapreduce/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
-
-for f in /usr/lib/hadoop-0.20-mapreduce/lib/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
-
-for f in /usr/lib/hadoop/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
-
-for f in /usr/lib/hadoop/lib/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
-
-for f in /usr/lib/hadoop-hdfs/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
-
-for f in /usr/lib/hadoop-hdfs/lib/*.jar; do
-  CLASSPATH=${CLASSPATH}:$f;
-done
+CLASSPATH=${CLASSPATH}:`$HADOOP_EXECUTABLE classpath`
 
 # cygwin path translation
 if $cygwin; then
   CLASSPATH=`cygpath -p -w "$CLASSPATH"`
 fi
+
 
 # setup 'java.library.path' for native-hadoop code if necessary
 JAVA_LIBRARY_PATH=''
