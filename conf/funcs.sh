@@ -64,7 +64,7 @@ function check_dir() {
 
 function dir_size() {
     for item in $($HADOOP_EXECUTABLE fs -dus $1); do
-        if [[ $item = +([0-9]) ]]; then
+        if [[ $item =~ [0-9]+ ]]; then
             echo $item
         fi
     done
