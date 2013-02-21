@@ -156,6 +156,8 @@ for f in $HADOOP_HOME/lib/*.jar; do
   CLASSPATH=${CLASSPATH}:$f;
 done
 
+CLASSPATH=${CLASSPATH}:`$HADOOP_EXECUTABLE classpath`
+
 # cygwin path translation
 if $cygwin; then
   CLASSPATH=`cygpath -p -w "$CLASSPATH"`
