@@ -1,0 +1,17 @@
+USE tpcds_etl;
+
+DROP VIEW df_i_v;
+CREATE VIEW df_i_v AS
+SELECT /*+MAPJOIN(s_delete)*/
+       d_date_sk
+       ,d_date
+       ,dele_start_date
+       ,dele_end_date
+FROM s_delete JOIN date_dim
+WHERE (d_date BETWEEN dele_start_date AND dele_end_date);
+
+CREATE TABLE IF NOT EXISTS inventory_deleted like inventory;
+
+INSERT INTO TABLE inventory_deleted
+SELECT /*+MAPJOIN(df_i_v)*/`inv_.*`
+FROM df_i_v JOIN inventory ON (inventory.inv_date_sk = df_i_v.d_date_sk);

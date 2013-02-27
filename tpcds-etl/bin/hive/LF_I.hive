@@ -1,0 +1,15 @@
+USE tpcds_etl;
+
+DROP VIEW iv;
+CREATE VIEW iv AS
+SELECT /*+ MAPJOIN(warehouse), MAPJOIN(date_dim), STREAMTABLE(s_inventory)*/
+	d_date_sk inv_date_sk
+       ,i_item_sk inv_item_sk
+       ,w_warehouse_sk inv_warehouse_sk
+       ,invn_qty_on_hand inv_quantity_on_hand
+FROM s_inventory
+LEFT OUTER JOIN warehouse ON (s_inventory.invn_warehouse_id=warehouse.w_warehouse_id)
+LEFT OUTER JOIN item ON (s_inventory.invn_item_id=item.i_item_id AND item.i_rec_end_date IS NULL)
+LEFT OUTER JOIN date_dim ON (date_dim.d_date=s_inventory.invn_date);
+
+INSERT INTO TABLE inventory SELECT * FROM iv;

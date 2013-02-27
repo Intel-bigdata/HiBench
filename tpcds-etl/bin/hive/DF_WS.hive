@@ -1,0 +1,38 @@
+USE tpcds_etl;
+
+DROP VIEW dv;
+CREATE VIEW dv AS
+SELECT /*+MAPJOIN(s_delete)*/
+       d_date_sk
+       ,d_date
+       ,dele_start_date
+       ,dele_end_date
+FROM s_delete JOIN date_dim
+WHERE (d_date BETWEEN dele_start_date AND dele_end_date);
+
+DROP VIEW dv2;
+CREATE VIEW dv2 AS
+SELECT /*+MAPJOIN(dv)*/
+       ws_item_sk
+       ,ws_order_number
+       ,wr_item_sk
+       ,wr_order_number
+FROM
+dv
+JOIN web_sales ON (dv.d_date_sk = web_sales.ws_sold_date_sk)
+LEFT OUTER JOIN web_returns ON (web_returns.wr_item_sk = web_sales.ws_item_sk AND web_returns.wr_order_number = web_sales.ws_order_number);
+
+CREATE TABLE IF NOT EXISTS web_sales_deleted 
+(wsd_item_sk BIGINT, wsd_order_number BIGINT)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+CREATE TABLE IF NOT EXISTS web_returns_deleted
+(wrd_item_sk BIGINT, wrd_order_number BIGINT)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+FROM dv2
+INSERT INTO TABLE web_sales_deleted
+SELECT ws_item_sk, ws_order_number
+INSERT INTO TABLE web_returns_deleted
+SELECT wr_item_sk, wr_order_number
+WHERE (wr_item_sk IS NOT NULL AND wr_order_number IS NOT NULL);

@@ -1,0 +1,55 @@
+USE tpcds_etl;
+
+--set mapred.min.split.size=536870912;
+
+DROP VIEW cadrv;
+CREATE VIEW cadrv AS
+SELECT /*+ MAPJOIN(szip) */
+       ca_address_id cust_address_id
+      ,cust_street_number
+      ,concat(rtrim(cust_street_name1),' ',rtrim(cust_street_name2)) cust_street_name
+      ,cust_street_type
+      ,cust_suite_number
+      ,cust_city
+      ,cust_county
+      ,cust_state
+      ,cust_zip
+      ,cust_country
+      ,zipg_gmt_offset
+      ,cust_loc_type
+FROM s_customer
+JOIN customer ON (s_customer.cust_customer_id = customer.c_customer_id)
+JOIN customer_address ca ON (customer.c_current_addr_sk = ca.ca_address_sk)
+JOIN s_zip_to_gmt szip ON (szip.zipg_zip = s_customer.cust_zip);
+
+DROP VIEW cadrv2;
+CREATE VIEW cadrv2 AS
+SELECT /*+ STREAMTABLE(customer_address) */ *
+FROM customer_address ca
+LEFT OUTER JOIN cadrv ON(cadrv.cust_address_id = ca.ca_address_id);
+
+CREATE TABLE IF NOT EXISTS customer_address_update_tmp LIKE customer_address;
+ALTER TABLE customer_address_update_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+FROM cadrv2
+INSERT OVERWRITE TABLE customer_address
+SELECT `ca_.*`
+WHERE (cust_address_id IS NULL)
+INSERT OVERWRITE TABLE customer_address_update_tmp
+SELECT ca_address_sk
+      ,cust_address_id ca_address_id
+      ,cust_street_number ca_street_number
+      ,cust_street_name ca_street_name
+      ,cust_street_type ca_street_type
+      ,cust_suite_number ca_suite_number
+      ,cust_city ca_city
+      ,cust_county ca_county
+      ,cust_state ca_state
+      ,cust_zip ca_zip
+      ,cust_country ca_country
+      ,zipg_gmt_offset ca_gmt_offset
+      ,cust_loc_type ca_location_type
+WHERE (cust_address_id IS NOT NULL);
+
+LOAD DATA INPATH 'warehouse/tpcds_etl.db/customer_address_update_tmp' INTO TABLE customer_address;
+DROP TABLE IF EXISTS customer_address_update_tmp;
