@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 DROP VIEW websv;
 CREATE VIEW websv as
 SELECT /*+ MAPJOIN(d1), MAPJOIN(d2) */
@@ -113,8 +113,8 @@ SELECT web_site_sk
       ,wsit_tax_percentage web_tax_percentage
 WHERE (wsit_web_site_id IS NOT NULL AND web_rec_end_date IS NULL);
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/web_site_update_tmp' INTO TABLE web_site;
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/web_site_new_tmp_tmp' INTO TABLE web_site;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/web_site_update_tmp' INTO TABLE web_site;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/web_site_new_tmp_tmp' INTO TABLE web_site;
 
 DROP TABLE IF EXISTS web_site_update_tmp;
 DROP TABLE IF EXISTS web_site_new_tmp;

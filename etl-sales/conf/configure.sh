@@ -4,7 +4,7 @@
 DBGEN_HOME=/home/hadoop/projects/dbgen
 
 # paths
-DBGEN_BASE_HDFS=/HiBench/TPCDS
+DBGEN_BASE_HDFS=/HiBench/etl_sales
 DBGEN_INPUT=${DBGEN_BASE_HDFS}/Input
 DBGEN_OUTPUT=${DBGEN_BASE_HDFS}/Output
 DBGEN_DATA=${DBGEN_BASE_HDFS}/DATA
