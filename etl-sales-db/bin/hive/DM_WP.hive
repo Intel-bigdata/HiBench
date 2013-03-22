@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 DROP VIEW webv;
 CREATE VIEW webv as
 SELECT wpag_web_page_id
@@ -81,8 +81,8 @@ WHERE (wpag_web_page_id IS NOT NULL AND wp_rec_end_date IS NULL);
 
 set mapred.min.split.size=536870912;
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/web_page_update_tmp' INTO TABLE web_page;
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/web_page_new_tmp' INTO TABLE web_page;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/web_page_update_tmp' INTO TABLE web_page;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/web_page_new_tmp' INTO TABLE web_page;
 
 DROP TABLE IF EXISTS web_page_update_tmp;
 DROP TABLE IF EXISTS web_page_new_tmp;

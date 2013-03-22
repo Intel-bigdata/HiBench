@@ -1,7 +1,7 @@
-DROP database IF EXISTS tpcds_etl CASCADE;
-CREATE DATABASE tpcds_etl;
+DROP database IF EXISTS etl_sales_db CASCADE;
+CREATE DATABASE etl_sales_db;
 
-USE tpcds_etl;
+USE etl_sales_db;
 
 CREATE EXTERNAL TABLE customer_address
 (
@@ -21,7 +21,7 @@ CREATE EXTERNAL TABLE customer_address
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/customer_address';
+LOCATION 'ETL_SALES_DB_DIR/customer_address';
 
 CREATE EXTERNAL TABLE customer_demographics
 (
@@ -37,7 +37,7 @@ CREATE EXTERNAL TABLE customer_demographics
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/customer_demographics';
+LOCATION 'ETL_SALES_DB_DIR/customer_demographics';
 
 CREATE EXTERNAL TABLE date_dim
 (
@@ -72,7 +72,7 @@ CREATE EXTERNAL TABLE date_dim
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/date_dim';
+LOCATION 'ETL_SALES_DB_DIR/date_dim';
 
 CREATE EXTERNAL TABLE warehouse
 (
@@ -93,7 +93,7 @@ CREATE EXTERNAL TABLE warehouse
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/warehouse';
+LOCATION 'ETL_SALES_DB_DIR/warehouse';
 
 CREATE EXTERNAL TABLE ship_mode
 (
@@ -106,7 +106,7 @@ CREATE EXTERNAL TABLE ship_mode
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/ship_mode';
+LOCATION 'ETL_SALES_DB_DIR/ship_mode';
 
 CREATE EXTERNAL TABLE time_dim
 (
@@ -123,7 +123,7 @@ CREATE EXTERNAL TABLE time_dim
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/time_dim';
+LOCATION 'ETL_SALES_DB_DIR/time_dim';
 
 CREATE EXTERNAL TABLE reason
 (
@@ -133,7 +133,7 @@ CREATE EXTERNAL TABLE reason
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/reason';
+LOCATION 'ETL_SALES_DB_DIR/reason';
 
 CREATE EXTERNAL TABLE income_band
 (
@@ -143,7 +143,7 @@ CREATE EXTERNAL TABLE income_band
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/income_band';
+LOCATION 'ETL_SALES_DB_DIR/income_band';
 
 CREATE EXTERNAL TABLE item
 (
@@ -172,7 +172,7 @@ CREATE EXTERNAL TABLE item
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/item';
+LOCATION 'ETL_SALES_DB_DIR/item';
 
 CREATE EXTERNAL TABLE store
 (
@@ -208,7 +208,7 @@ CREATE EXTERNAL TABLE store
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/store';
+LOCATION 'ETL_SALES_DB_DIR/store';
 
 CREATE EXTERNAL TABLE call_center
 (
@@ -246,7 +246,7 @@ CREATE EXTERNAL TABLE call_center
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/call_center';
+LOCATION 'ETL_SALES_DB_DIR/call_center';
 
 CREATE EXTERNAL TABLE customer
 (
@@ -271,7 +271,7 @@ CREATE EXTERNAL TABLE customer
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/customer';
+LOCATION 'ETL_SALES_DB_DIR/customer';
 
 CREATE EXTERNAL TABLE web_site
 (
@@ -304,7 +304,7 @@ CREATE EXTERNAL TABLE web_site
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/web_site'
+LOCATION 'ETL_SALES_DB_DIR/web_site'
 TBLPROPERTIES('serialization.null.format'='');
 
 CREATE EXTERNAL TABLE household_demographics
@@ -317,7 +317,7 @@ CREATE EXTERNAL TABLE household_demographics
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/household_demographics';
+LOCATION 'ETL_SALES_DB_DIR/household_demographics';
 
 CREATE EXTERNAL TABLE web_page
 (
@@ -338,7 +338,7 @@ CREATE EXTERNAL TABLE web_page
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/web_page';
+LOCATION 'ETL_SALES_DB_DIR/web_page';
 
 CREATE EXTERNAL TABLE promotion
 (
@@ -364,7 +364,7 @@ CREATE EXTERNAL TABLE promotion
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/promotion';
+LOCATION 'ETL_SALES_DB_DIR/promotion';
 
 CREATE EXTERNAL TABLE catalog_page
 (
@@ -380,7 +380,7 @@ CREATE EXTERNAL TABLE catalog_page
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/catalog_page';
+LOCATION 'ETL_SALES_DB_DIR/catalog_page';
 
 CREATE EXTERNAL TABLE inventory
 (
@@ -391,7 +391,7 @@ CREATE EXTERNAL TABLE inventory
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/inventory';
+LOCATION 'ETL_SALES_DB_DIR/inventory';
 
 CREATE EXTERNAL TABLE web_returns
 (
@@ -422,7 +422,7 @@ CREATE EXTERNAL TABLE web_returns
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/web_returns';
+LOCATION 'ETL_SALES_DB_DIR/web_returns';
 
 CREATE EXTERNAL TABLE web_sales
 (
@@ -463,4 +463,4 @@ CREATE EXTERNAL TABLE web_sales
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/web_sales';
+LOCATION 'ETL_SALES_DB_DIR/web_sales';

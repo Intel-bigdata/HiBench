@@ -1,4 +1,4 @@
-use tpcds_etl;
+use etl_sales_db;
 
 -- ============================================================
 --   Table: s_zip_to_gmt                                       
@@ -10,7 +10,7 @@ create table s_zip_to_gmt
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_zip_to_gmt';
+LOCATION 'ETL_SALES_DB_DIR/s_zip_to_gmt';
 
 -- ============================================================
 --   Table: s_customer                                         
@@ -57,7 +57,7 @@ create table s_customer
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_customer';
+LOCATION 'ETL_SALES_DB_DIR/s_customer';
 
 -- ============================================================
 --   Table: s_customer_address                                 
@@ -78,7 +78,7 @@ create table s_customer_address
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_customer_address';
+LOCATION 'ETL_SALES_DB_DIR/s_customer_address';
 
 -- ============================================================
 --   Table: s_web_order                                        
@@ -96,7 +96,7 @@ create table s_web_order
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_web_order';
+LOCATION 'ETL_SALES_DB_DIR/s_web_order';
 
 -- ============================================================
 --   Table: s_item                                             
@@ -116,7 +116,7 @@ create table s_item
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_item';
+LOCATION 'ETL_SALES_DB_DIR/s_item';
 
 -- ============================================================
 --   Table: s_web_order_lineitem                               
@@ -137,7 +137,7 @@ create table s_web_order_lineitem
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_web_order_lineitem';
+LOCATION 'ETL_SALES_DB_DIR/s_web_order_lineitem';
 
 -- ============================================================
 --   Table: s_call_center                                      
@@ -157,7 +157,7 @@ create table s_call_center
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_call_center';
+LOCATION 'ETL_SALES_DB_DIR/s_call_center';
 
 -- ============================================================
 --   Table: s_web_site                                         
@@ -174,7 +174,7 @@ create table s_web_site
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_web_site';
+LOCATION 'ETL_SALES_DB_DIR/s_web_site';
 
 -- ============================================================
 --   Table: s_warehouse                                        
@@ -187,7 +187,7 @@ create table s_warehouse
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_warehouse';
+LOCATION 'ETL_SALES_DB_DIR/s_warehouse';
 
 -- ============================================================
 --   Table: s_web_page                                         
@@ -207,7 +207,7 @@ create table s_web_page
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_web_page';
+LOCATION 'ETL_SALES_DB_DIR/s_web_page';
 
 -- ============================================================
 --   Table: s_promotion                                        
@@ -235,7 +235,7 @@ create table s_promotion
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_promotion';
+LOCATION 'ETL_SALES_DB_DIR/s_promotion';
 
 -- ============================================================
 --   Table: s_web_returns                                      
@@ -262,7 +262,7 @@ create table s_web_returns
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_web_returns';
+LOCATION 'ETL_SALES_DB_DIR/s_web_returns';
 
 -- ============================================================
 --   Table: s_inventory                                        
@@ -276,7 +276,7 @@ create table s_inventory
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/s_inventory';
+LOCATION 'ETL_SALES_DB_DIR/s_inventory';
 
 create table s_delete
 (
@@ -285,5 +285,5 @@ create table s_delete
 )
 ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
 WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
-LOCATION 'TPCDS_DATA_DIR/delete';
+LOCATION 'ETL_SALES_DB_DIR/delete';
 

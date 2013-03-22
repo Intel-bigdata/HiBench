@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 
 DROP VIEW ccv;
 CREATE VIEW ccv AS
@@ -130,8 +130,8 @@ SELECT cc_call_center_sk
        ,call_center_tax_percentage cc_tax_percentage
 WHERE (call_center_id IS NOT NULL AND cc_rec_end_date IS NULL);
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/call_center_update_tmp' INTO TABLE call_center;
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/call_center_new_tmp' INTO TABLE call_center;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/call_center_update_tmp' INTO TABLE call_center;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/call_center_new_tmp' INTO TABLE call_center;
 
 DROP TABLE IF EXISTS call_center_update_tmp;
 DROP TABLE IF EXISTS call_center_new_tmp;

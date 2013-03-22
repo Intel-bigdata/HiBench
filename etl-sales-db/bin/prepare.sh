@@ -52,31 +52,30 @@ OPTION="-input ${DBGEN_INPUT} \
 -mapper ./run.sh \
 -file ${DBGEN_HOME}/tools/dsdgen -file run.sh -file ${DBGEN_HOME}/tools/tpcds.idx -file ${DIR}/conf/configure.sh \
 -jobconf mapred.reduce.tasks=0 \
--jobconf mapred.job.name=prepare_data_tpcds_etl \
+-jobconf mapred.job.name=prepare_etl_sales_db \
 -jobconf mapred.task.timeout=${TIMEOUT}"
 
-# add to hibench-config.sh
+# export streaming
 if [ -z "$STREAMING" ]; then
     export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
 fi
 
 START_TIME=`timestamp`
-echo "start generating data"
+# echo "start generating data"
 ${HADOOP_EXECUTABLE} jar ${STREAMING} ${OPTION}
 
 echo "start loading to hive `date`"
 # Create tables
-sed "s#TPCDS_DATA_DIR#${DBGEN_DATA}#g" $DIR/bin/hive/tpcds.template > $DIR/bin/hive/tpcds.hive
+sed "s#ETL_SALES_DB_DIR#${DBGEN_DATA}#g" $DIR/bin/hive/create_base.template > $DIR/bin/hive/create_base.hive
 cd ${DIR}/bin
-$HIVE_HOME/bin/hive -f $DIR/bin/hive/tpcds.hive
-echo $HIVE_HOME/bin/hive
+$HIVE_HOME/bin/hive -f $DIR/bin/hive/create_base.hive
 echo "start loading refresh data `date`"
 # Create refresh tables
-sed "s#TPCDS_DATA_DIR#${DBGEN_DATA}#g" $DIR/bin/hive/tpcds_source.template > $DIR/bin/hive/tpcds_source.hive
+sed "s#ETL_SALES_DB_DIR#${DBGEN_DATA}#g" $DIR/bin/hive/create_refresh.template > $DIR/bin/hive/create_refresh.hive
 pwd
-$HIVE_HOME/bin/hive -f $DIR/bin/hive/tpcds_source.hive
+$HIVE_HOME/bin/hive -f $DIR/bin/hive/create_refresh.hive
 
 echo "all finish `date`"
 END_TIME=`timestamp`
 
-echo "all finished"
+# echo "all finished"

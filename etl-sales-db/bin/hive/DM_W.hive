@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 
 DROP VIEW wrhsv;
 
@@ -48,6 +48,6 @@ SELECT w_warehouse_sk
        ,w_gmt_offset
 WHERE wrhs_warehouse_id is not NULL;
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/warehouse_update_tmp' INTO TABLE warehouse;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/warehouse_update_tmp' INTO TABLE warehouse;
 
 DROP TABLE IF EXISTS warehouse_update_tmp;
