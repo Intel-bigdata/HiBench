@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 set mapred.min.split.size=536870912;
 
 DROP VIEW custv;
@@ -72,6 +72,6 @@ SELECT c_customer_sk
         ,cust_last_review_date c_last_review_date
 WHERE (cust_customer_id IS NOT NULL);
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/customer_update_tmp' INTO TABLE customer;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/customer_update_tmp' INTO TABLE customer;
 
 DROP TABLE IF EXISTS customer_update_tmp;

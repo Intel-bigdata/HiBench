@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 DROP VIEW promv;
 CREATE view promv as
 SELECT  /*+ MAPJOIN(d1), MAPJOIN(d2) */
@@ -78,6 +78,6 @@ WHERE (prom_promotion_id IS NOT NULL);
 
 set mapred.min.split.size=536870912;
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/promotion_update_tmp' INTO TABLE promotion;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/promotion_update_tmp' INTO TABLE promotion;
 
 DROP TABLE IF EXISTS promotion_update_tmp;

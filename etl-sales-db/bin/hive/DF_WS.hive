@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 
 DROP VIEW dv;
 CREATE VIEW dv AS

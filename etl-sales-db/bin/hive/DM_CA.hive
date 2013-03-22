@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 
 --set mapred.min.split.size=536870912;
 
@@ -51,5 +51,5 @@ SELECT ca_address_sk
       ,cust_loc_type ca_location_type
 WHERE (cust_address_id IS NOT NULL);
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/customer_address_update_tmp' INTO TABLE customer_address;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/customer_address_update_tmp' INTO TABLE customer_address;
 DROP TABLE IF EXISTS customer_address_update_tmp;

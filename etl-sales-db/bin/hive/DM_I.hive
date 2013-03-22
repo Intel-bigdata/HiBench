@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 
 DROP VIEW itemv;
 CREATE VIEW itemv AS
@@ -88,8 +88,8 @@ SELECT i_item_sk
       ,i_product_name
 WHERE (item_item_id IS NOT NULL AND i_rec_end_date IS NULL);
 
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/item_update_tmp' INTO TABLE item;
-LOAD DATA INPATH 'warehouse/tpcds_etl.db/item_new_tmp' INTO TABLE item;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/item_update_tmp' INTO TABLE item;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/item_new_tmp' INTO TABLE item;
 
 DROP TABLE IF EXISTS item_update_tmp;
 DROP TABLE IF EXISTS item_new_tmp;

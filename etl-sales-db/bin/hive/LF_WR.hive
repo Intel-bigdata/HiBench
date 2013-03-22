@@ -1,4 +1,4 @@
-USE tpcds_etl;
+USE etl_sales_db;
 CREATE VIEW wrv AS
 SELECT d_date_sk wr_return_date_sk
       ,t_time_sk wr_return_time_sk
