@@ -1,0 +1,95 @@
+USE etl_sales_db;
+
+DROP VIEW itemv;
+CREATE VIEW itemv AS
+SELECT *
+FROM item
+LEFT OUTER JOIN s_item ON (item.i_item_id = s_item.item_item_id);
+
+CREATE TABLE IF NOT EXISTS item_update_tmp LIKE item;
+ALTER TABLE item_update_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+CREATE TABLE IF NOT EXISTS item_new_tmp LIKE item;
+ALTER TABLE item_new_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+set mapred.min.split.size=536870912;
+
+FROM itemv
+INSERT OVERWRITE TABLE item
+SELECT i_item_sk
+      ,i_item_id
+      ,i_rec_start_date
+      ,i_rec_end_date
+      ,i_item_desc
+      ,i_current_price
+      ,i_wholesale_cost
+      ,i_brand_id
+      ,i_brand
+      ,i_class_id
+      ,i_class
+      ,i_category_id
+      ,i_category
+      ,i_manufact_id
+      ,i_manufact
+      ,i_size
+      ,i_formulation
+      ,i_color
+      ,i_units
+      ,i_container
+      ,i_manager_id
+      ,i_product_name
+WHERE (item_item_id IS NULL OR i_rec_end_date IS NOT NULL)
+INSERT OVERWRITE TABLE item_update_tmp
+SELECT i_item_sk
+      ,i_item_id
+      ,i_rec_start_date
+      ,date_sub(to_date(from_unixtime(unix_timestamp())), 1) i_rec_end_date
+      ,i_item_desc
+      ,i_current_price
+      ,i_wholesale_cost
+      ,i_brand_id
+      ,i_brand
+      ,i_class_id
+      ,i_class
+      ,i_category_id
+      ,i_category
+      ,i_manufact_id
+      ,i_manufact
+      ,i_size
+      ,i_formulation
+      ,i_color
+      ,i_units
+      ,i_container
+      ,i_manager_id
+      ,i_product_name
+WHERE (item_item_id IS NOT NULL AND i_rec_end_date IS NULL)
+INSERT OVERWRITE TABLE item_new_tmp
+SELECT i_item_sk
+      ,item_item_id i_item_id
+      ,to_date(from_unixtime(unix_timestamp())) i_rec_start_date
+      ,to_date(NULL) i_rec_end_date
+      ,item_item_description i_item_desc
+      ,item_list_price i_current_price
+      ,item_wholesale_cost i_wholesale_cost
+      ,i_brand_id
+      ,i_brand
+      ,i_class_id
+      ,i_class
+      ,i_category_id
+      ,i_category
+      ,i_manufact_id
+      ,i_manufact
+      ,item_size i_size
+      ,item_formulation i_formulation
+      ,item_color i_color
+      ,item_units i_units
+      ,item_container i_container
+      ,item_manager_id i_manager_id
+      ,i_product_name
+WHERE (item_item_id IS NOT NULL AND i_rec_end_date IS NULL);
+
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/item_update_tmp' INTO TABLE item;
+LOAD DATA INPATH 'warehouse/etl_sales_db.db/item_new_tmp' INTO TABLE item;
+
+DROP TABLE IF EXISTS item_update_tmp;
+DROP TABLE IF EXISTS item_new_tmp;

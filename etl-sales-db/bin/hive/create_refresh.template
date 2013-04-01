@@ -1,0 +1,289 @@
+use etl_sales_db;
+
+-- ============================================================
+--   Table: s_zip_to_gmt                                       
+-- ============================================================
+create table s_zip_to_gmt
+(
+    zipg_zip                    STRING               ,
+    zipg_gmt_offset             BIGINT               
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_zip_to_gmt';
+
+-- ============================================================
+--   Table: s_customer                                         
+-- ============================================================
+create table s_customer
+(
+    cust_customer_id            STRING              ,
+    cust_salutation             STRING                      ,
+    cust_last_name              STRING                      ,
+    cust_first_name             STRING                      ,
+    cust_preffered_flag         STRING                       ,
+    cust_birth_date             STRING                      ,
+    cust_birth_country          STRING                      ,
+    cust_login_id               STRING                      ,
+    cust_email_address          STRING                      ,
+    cust_last_login_chg_date    STRING                      ,
+    cust_first_shipto_date      STRING                      ,
+    cust_first_purchase_date    STRING                      ,
+    cust_last_review_date       STRING                      ,
+    cust_primary_machine_id     STRING                      ,
+    cust_secondary_machine_id   STRING                      ,
+    cust_street_number          INT                      ,
+    cust_suite_number           STRING                      ,
+    cust_street_name1           STRING                      ,
+    cust_street_name2           STRING                      ,
+    cust_street_type            STRING                      ,
+    cust_city                   STRING                      ,
+    cust_zip                    STRING                      ,
+    cust_county                 STRING                      ,
+    cust_state                  STRING                       ,
+    cust_country                STRING                      ,
+    cust_loc_type               STRING                      ,
+    cust_gender                 STRING                       ,
+    cust_marital_status         STRING                       ,
+    cust_educ_status            STRING                      ,
+    cust_credit_rating          STRING                      ,
+    cust_purch_est              DOUBLE                  ,
+    cust_buy_potential          STRING                      ,
+    cust_depend_cnt             INT                      ,
+    cust_depend_emp_cnt         INT                      ,
+    cust_depend_college_cnt     INT                      ,
+    cust_vehicle_cnt            INT                      ,
+    cust_annual_income          DOUBLE                  
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_customer';
+
+-- ============================================================
+--   Table: s_customer_address                                 
+-- ============================================================
+create table s_customer_address
+(
+    cadr_address_id             STRING              ,
+    cadr_street_number          BIGINT                       ,
+    cadr_street_name1           STRING                      ,
+    cadr_street_name2           STRING                      ,
+    cadr_street_type            STRING                      ,
+    cadr_suitnumber             STRING                      ,
+    cadr_city                   STRING                      ,
+    cadr_county                 STRING                      ,
+    cadr_state                  STRING                       ,
+    cadr_zip                    STRING                      ,
+    cadr_country                STRING                      
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_customer_address';
+
+-- ============================================================
+--   Table: s_web_order                                        
+-- ============================================================
+create table s_web_order
+(
+    word_order_id               BIGINT               ,
+    word_bill_customer_id       STRING                      ,
+    word_ship_customer_id       STRING                      ,
+    word_order_date             STRING                      ,
+    word_order_time             BIGINT                       ,
+    word_ship_mode_id           STRING                      ,
+    word_web_site_id            STRING                      ,
+    word_order_comments         STRING                     
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_web_order';
+
+-- ============================================================
+--   Table: s_item                                             
+-- ============================================================
+create table s_item
+(
+    item_item_id                STRING              ,
+    item_item_description       STRING                     ,
+    item_list_price             DOUBLE                  ,
+    item_wholesale_cost         DOUBLE                  ,
+    item_size                   STRING                      ,
+    item_formulation            STRING                      ,
+    item_color                  STRING                      ,
+    item_units                  STRING                      ,
+    item_container              STRING                      ,
+    item_manager_id             BIGINT                       
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_item';
+
+-- ============================================================
+--   Table: s_web_order_lineitem                               
+-- ============================================================
+create table s_web_order_lineitem
+(
+    wlin_order_id               BIGINT               ,
+    wlin_line_number            BIGINT               ,
+    wlin_item_id                STRING                      ,
+    wlin_promotion_id           STRING                      ,
+    wlin_quantity               BIGINT                       ,
+    wlin_sales_price            DOUBLE                  ,
+    wlin_coupon_amt             DOUBLE                  ,
+    wlin_warehouse_id           STRING                      ,
+    wlin_ship_date              STRING                      ,
+    wlin_ship_cost              DOUBLE                  ,
+    wlin_web_page_id            STRING                      
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_web_order_lineitem';
+
+-- ============================================================
+--   Table: s_call_center                                      
+-- ============================================================
+create table s_call_center
+(
+    call_center_id              STRING              ,
+    call_open_date              STRING                      ,
+    call_closed_date            STRING                      ,
+    call_center_name            STRING                      ,
+    call_center_class           STRING                      ,
+    call_center_employees       BIGINT                       ,
+    call_center_sq_ft           BIGINT                       ,
+    call_center_hours           STRING                      ,
+    call_center_manager         STRING                      ,
+    call_center_tax_percentage  DOUBLE                  
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_call_center';
+
+-- ============================================================
+--   Table: s_web_site                                         
+-- ============================================================
+create table s_web_site
+(
+    wsit_web_site_id            STRING              ,
+    wsit_open_date              STRING                      ,
+    wsit_closed_date            STRING                      ,
+    wsit_site_name              STRING                      ,
+    wsit_site_class             STRING                      ,
+    wsit_site_manager           STRING                      ,
+    wsit_tax_percentage         DOUBLE                  
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_web_site';
+
+-- ============================================================
+--   Table: s_warehouse                                        
+-- ============================================================
+create table s_warehouse
+(
+    wrhs_warehouse_id           STRING              ,
+    wrhs_warehouse_desc         STRING                     ,
+    wrhs_warehouse_sq_ft        BIGINT                       
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_warehouse';
+
+-- ============================================================
+--   Table: s_web_page                                         
+-- ============================================================
+create table s_web_page
+(
+    wpag_web_page_id            STRING              ,
+    wpag_create_date            STRING                      ,
+    wpag_access_date            STRING                      ,
+    wpag_autogen_flag           STRING                       ,
+    wpag_url                    STRING                     ,
+    wpag_type                   STRING                      ,
+    wpag_char_cnt               BIGINT                       ,
+    wpag_link_cnt               BIGINT                       ,
+    wpag_image_cnt              BIGINT                       ,
+    wpag_max_ad_cnt             BIGINT                       
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_web_page';
+
+-- ============================================================
+--   Table: s_promotion                                        
+-- ============================================================
+create table s_promotion
+(
+    prom_promotion_id           STRING              ,
+    prom_promotion_name         STRING                      ,
+    prom_start_date             STRING                      ,
+    prom_end_date               STRING                      ,
+    prom_cost                   DOUBLE                  ,
+    prom_response_target        STRING                       ,
+    prom_channel_dmail          STRING                       ,
+    prom_channel_email          STRING                       ,
+    prom_channel_catalog        STRING                       ,
+    prom_channel_tv             STRING                       ,
+    prom_channel_radio          STRING                       ,
+    prom_channel_press          STRING                       ,
+    prom_channel_event          STRING                       ,
+    prom_channel_demo           STRING                       ,
+    prom_channel_details        STRING                     ,
+    prom_purpose                STRING                      ,
+    prom_discount_active        STRING                       ,
+    prom_discount_pct           DOUBLE                  
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_promotion';
+
+-- ============================================================
+--   Table: s_web_returns                                      
+-- ============================================================
+create table s_web_returns
+(
+    wret_web_page_id            STRING                      ,
+    wret_order_id               BIGINT               ,
+    wret_line_number            BIGINT               ,
+    wret_item_id                STRING              ,
+    wret_return_customer_id     STRING                      ,
+    wret_refund_customer_id     STRING                      ,
+    wret_return_date            STRING                      ,
+    wret_return_time            STRING                      ,
+    wret_return_qty             BIGINT                       ,
+    wret_return_amt             DOUBLE                  ,
+    wret_return_tax             DOUBLE                  ,
+    wret_return_fee             DOUBLE                  ,
+    wret_return_ship_cost       DOUBLE                  ,
+    wret_refunded_cash          DOUBLE                  ,
+    wret_reversed_charge        DOUBLE                  ,
+    wret_account_credit         DOUBLE                  ,
+    wret_reason_id              STRING                      
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_web_returns';
+
+-- ============================================================
+--   Table: s_inventory                                        
+-- ============================================================
+create table s_inventory
+(
+    invn_warehouse_id           STRING              ,
+    invn_item_id                STRING              ,
+    invn_date                   STRING              ,
+    invn_qty_on_hand            BIGINT                       
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/s_inventory';
+
+create table s_delete
+(
+    dele_start_date  STRING,
+    dele_end_date    STRING
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='')
+LOCATION 'ETL_SALES_DB_DIR/delete';
+

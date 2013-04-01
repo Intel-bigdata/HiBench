@@ -4,7 +4,7 @@
 ---
 - Release version: 2.2
 - Release date: 2012/10/23
-- Contact: [Lan Yi](mailto:lan.yi@intel.com), [Yan Liu](mailto:yan.b.liu@intel.com), [Jason Dai](mailto:jason.dai@intel.com) 
+- Contact: [Lan Yi](mailto:lan.yi@intel.com), [Kai Wei](mailto:kai.wei@intel.com), [Shengsheng Huang](mailto:shengsheng.huang@intel.com), [Jason Dai](mailto:jason.dai@intel.com) 
 - Homepage: https://github.com/intel-hadoop/Hibench
 
 - Contents:

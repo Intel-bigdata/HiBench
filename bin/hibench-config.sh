@@ -67,7 +67,7 @@ fi
 
 
 if [ -z "$HIVE_HOME" ]; then
-    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.9.0-bin
+    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.10.0-bin
 fi
 
 
