@@ -1,0 +1,88 @@
+USE etl_sales_db;
+DROP VIEW webv;
+CREATE VIEW webv as
+SELECT wpag_web_page_id
+      ,d1.d_date_sk wpag_creation_date_sk
+      ,d2.d_date_sk wpag_access_date_sk
+      ,wpag_autogen_flag
+      ,wpag_url
+      ,wpag_type
+      ,wpag_char_cnt
+      ,wpag_link_cnt
+      ,wpag_image_cnt
+      ,wpag_max_ad_cnt
+FROM  s_web_page swp1
+LEFT OUTER JOIN date_dim d1 ON swp1.wpag_create_date = d1.d_date
+LEFT OUTER JOIN date_dim d2 ON swp1.wpag_access_date = d2.d_date;
+
+
+DROP VIEW webv2;
+CREATE VIEW webv2 as
+SELECT *
+FROM web_page
+LEFT OUTER JOIN webv
+ON (webv.wpag_web_page_id = web_page.wp_web_page_id);
+
+CREATE TABLE IF NOT EXISTS web_page_update_tmp LIKE web_page LOCATION '${SALES_DATA}/web_page_update_tmp';
+ALTER TABLE web_page_update_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+CREATE TABLE IF NOT EXISTS web_page_new_tmp LIKE web_page LOCATION '${SALES_DATA}/web_page_new_tmp';
+ALTER TABLE web_page_new_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+FROM webv2
+INSERT OVERWRITE TABLE web_page
+SELECT wp_web_page_sk
+      ,wp_web_page_id
+      ,wp_rec_start_date
+      ,wp_rec_end_date
+      ,wp_creation_date_sk
+      ,wp_access_date_sk
+      ,wp_autogen_flag
+      ,wp_customer_sk
+      ,wp_url
+      ,wp_type
+      ,wp_char_count
+      ,wp_link_count
+      ,wp_image_count
+      ,wp_max_ad_count
+WHERE (wpag_web_page_id IS NULL OR wp_rec_end_date IS NOT NULL)
+INSERT OVERWRITE TABLE web_page_update_tmp
+SELECT wp_web_page_sk
+      ,wp_web_page_id
+      ,wp_rec_start_date
+      ,date_sub(to_date(from_unixtime(unix_timestamp())), 1) wp_rec_end_date
+      ,wp_creation_date_sk
+      ,wp_access_date_sk
+      ,wp_autogen_flag
+      ,wp_customer_sk
+      ,wp_url
+      ,wp_type
+      ,wp_char_count
+      ,wp_link_count
+      ,wp_image_count
+      ,wp_max_ad_count
+WHERE (wpag_web_page_id IS NOT NULL AND wp_rec_end_date IS NULL)
+INSERT OVERWRITE TABLE web_page_new_tmp
+SELECT wp_web_page_sk
+      ,wpag_web_page_id
+      ,to_date(from_unixtime(unix_timestamp())) wp_rec_start_date
+      ,to_date(NULL) wp_rec_end_date
+      ,wpag_creation_date_sk wp_creation_date_sk
+      ,wpag_access_date_sk wp_access_date_sk
+      ,wpag_autogen_flag wp_autogen_flag
+      ,wp_customer_sk
+      ,wpag_url wp_url
+      ,wpag_type wp_type
+      ,wpag_char_cnt wp_char_count
+      ,wpag_link_cnt wp_link_count
+      ,wpag_image_cnt wp_image_count
+      ,wpag_max_ad_cnt wp_max_ad_count
+WHERE (wpag_web_page_id IS NOT NULL AND wp_rec_end_date IS NULL);
+
+set mapred.min.split.size=536870912;
+
+LOAD DATA INPATH '${SALES_DATA}/web_page_update_tmp' INTO TABLE web_page;
+LOAD DATA INPATH '${SALES_DATA}/web_page_new_tmp' INTO TABLE web_page;
+
+DROP TABLE IF EXISTS web_page_update_tmp;
+DROP TABLE IF EXISTS web_page_new_tmp;
