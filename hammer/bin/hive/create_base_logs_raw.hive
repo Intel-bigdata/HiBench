@@ -1,10 +1,18 @@
 use etl_sales_db;
 
-drop table web_logs;
+drop table web_logs_input;
 
-create table web_logs (ws_sold_time_sk bigint,ws_item_sk bigint, ws_bill_customer_sk bigint,date_dim string,wp_url string) row format delimited fields terminated by '|';
+create table web_logs_input (
+	ws_sold_time_sk bigint,
+	ws_item_sk bigint, 
+	ws_bill_customer_sk bigint,
+	date_dim string,
+	wp_url string
+)
+row format delimited fields terminated by '|'
+LOCATION '${LOG_HOME}/web_logs_input';
 
-insert into table web_logs select /*+ MAPJOIN(date_dim) */ web_sales.ws_sold_time_sk,web_sales.ws_item_sk,web_sales.ws_bill_customer_sk,date_dim.d_date,wp_url from date_dim join web_sales on web_sales.ws_sold_date_sk=date_dim.d_date_sk join web_page on web_page.wp_web_page_sk=web_sales.ws_web_page_sk;
+insert into table web_logs_input select /*+ MAPJOIN(date_dim) */ web_sales.ws_sold_time_sk,web_sales.ws_item_sk,web_sales.ws_bill_customer_sk,date_dim.d_date,wp_url from date_dim join web_sales on web_sales.ws_sold_date_sk=date_dim.d_date_sk join web_page on web_page.wp_web_page_sk=web_sales.ws_web_page_sk;
 
 drop table web_logs_raw;
 create external table web_logs_raw (
