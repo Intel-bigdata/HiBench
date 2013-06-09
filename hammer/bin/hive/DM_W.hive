@@ -1,0 +1,53 @@
+USE etl_sales_db;
+
+DROP VIEW wrhsv;
+
+CREATE VIEW wrhsv as
+SELECT /*+ STREAMTABLE(w) */
+        *
+FROM    warehouse w 
+LEFT OUTER JOIN s_warehouse sw 
+ON sw.wrhs_warehouse_id = w.w_warehouse_id;
+
+--set mapred.min.split.size=536870912;
+
+CREATE TABLE IF NOT EXISTS warehouse_update_tmp LIKE warehouse LOCATION '${SALES_DATA}/warehouse_update_tmp';
+ALTER TABLE warehouse_update_tmp SET TBLPROPERTIES ('serialization.null.format'='');
+
+FROM wrhsv
+INSERT OVERWRITE TABLE warehouse
+SELECT w_warehouse_sk
+       ,w_warehouse_id
+       ,w_warehouse_name
+       ,w_warehouse_sq_ft
+       ,w_street_number
+       ,w_street_name
+       ,w_street_type
+       ,w_suite_number
+       ,w_city
+       ,w_county
+       ,w_state
+       ,w_zip	
+       ,w_country
+       ,w_gmt_offset
+WHERE wrhs_warehouse_id is NULL
+INSERT OVERWRITE TABLE warehouse_update_tmp
+SELECT w_warehouse_sk
+       ,w_warehouse_id
+       ,wrhs_warehouse_desc w_warehouse_name
+       ,wrhs_warehouse_sq_ft w_warehouse_sq_ft
+       ,w_street_number
+       ,w_street_name
+       ,w_street_type
+       ,w_suite_number
+       ,w_city
+       ,w_county
+       ,w_state
+       ,w_zip	
+       ,w_country
+       ,w_gmt_offset
+WHERE wrhs_warehouse_id is not NULL;
+
+LOAD DATA INPATH '${SALES_DATA}/warehouse_update_tmp' INTO TABLE warehouse;
+
+DROP TABLE IF EXISTS warehouse_update_tmp;

@@ -1,0 +1,27 @@
+use etl_sales_db;
+DROP VIEW IF EXISTS prefv;
+CREATE VIEW prefv AS
+    SELECT ws_bill_customer_sk AS customer_sk, ws_item_sk AS item_sk, sum(ws_quantity)*10 AS pref
+    FROM web_sales
+    WHERE ws_bill_customer_sk IS NOT NULL AND ws_item_sk IS NOT NULL AND ws_quantity IS NOT NULL AND ws_sold_date_sk<=${TRAIN_ENDDATE} AND ws_sold_date_sk>=${TRAIN_STARTDATE}
+    GROUP BY ws_bill_customer_sk, ws_item_sk;
+DROP TABLE IF EXISTS user_item_pref;
+CREATE TABLE user_item_pref
+    (customer_sk BIGINT, item_sk BIGINT, prefrence BIGINT)
+    ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+    WITH SERDEPROPERTIES ('field.delim'=',','serialization.null.format'='');
+
+DROP VIEW IF EXISTS prefv2;
+CREATE VIEW prefv2 AS
+    SELECT cookies.c_customer_sk AS customer_sk,web_log_fact.w_item_sk AS item_sk, count(*) AS pref
+    FROM cookies RIGHT OUTER JOIN web_log_fact on web_log_fact.w_cookie=cookies.c_cookie 
+    WHERE web_log_fact.w_date_sk<=${TRAIN_ENDDATE} AND web_log_fact.w_date_sk>=${TRAIN_STARTDATE} and cookies.c_customer_sk IS NOT NULL
+    GROUP BY cookies.c_customer_sk,web_log_fact.w_item_sk;
+
+INSERT OVERWRITE TABLE user_item_pref
+SELECT customer_sk, item_sk, sum(pref)
+FROM (
+SELECT * FROM prefv
+UNION ALL
+SELECT * FROM prefv2) combined_pref
+GROUP BY customer_sk, item_sk;
