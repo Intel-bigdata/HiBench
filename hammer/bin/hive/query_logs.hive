@@ -1,1 +1,0 @@
-select distinct cookies.c_customer_sk,web_log_fact.w_item_sk,count(*) from cookies right outer join web_log_fact on web_log_fact.w_cookie=cookies.c_cookie where web_log_fact.w_date_sk='${TEST_DATE}' group by cookies.c_customer_sk,web_log_fact.w_item_sk;
