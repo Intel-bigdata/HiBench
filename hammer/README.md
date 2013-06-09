@@ -22,7 +22,7 @@ To run the benchmark, You need to:
 
 2.	Assign the tool's full path to the variable DBGEN_HOME in hammer/conf/configure.sh
 
-3.	cd <HIBENCH_ROOT_DIRECTORY>
+3.	cd HIBENCH_ROOT_DIRECTORY
 
 4.	bash etl-sales-db/bin/prepare.sh
 
