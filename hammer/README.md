@@ -24,6 +24,6 @@ To run the benchmark, You need to:
 
 3.	cd HIBENCH_ROOT_DIRECTORY
 
-4.	bash etl-sales-db/bin/prepare.sh
+4.	bash hammer/bin/prepare.sh
 
-5.	bash etl-sales-db/bin/run.sh
+5.	bash hammer/bin/run.sh
