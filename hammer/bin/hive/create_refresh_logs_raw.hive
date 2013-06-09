@@ -1,10 +1,18 @@
 use etl_sales_db;
 
-drop table s_web_logs;
+drop table s_web_logs_input;
 
-create table s_web_logs (ws_sold_time_sk bigint,ws_item_sk bigint, ws_bill_customer_sk bigint,date_dim string,wp_url string) row format delimited fields terminated by '|';
+create table s_web_logs_input (
+	ws_sold_time_sk bigint,
+	ws_item_sk bigint, 
+	ws_bill_customer_sk bigint,
+	date_dim string,
+	wp_url string
+)
+row format delimited fields terminated by '|'
+LOCATION '${REFRESH_HOME}/s_web_logs_input';
 
-insert into table s_web_logs select /*+ MAPJOIN(s_web_order) */ s_web_order.word_order_time,item.i_item_sk,customer.c_customer_sk,s_web_order.word_order_date,web_page.wp_url from s_web_order join s_web_order_lineitem on s_web_order.word_order_id=s_web_order_lineitem.wlin_order_id join web_page on web_page.wp_web_page_id=s_web_order_lineitem.wlin_web_page_id join item on item.i_item_id=s_web_order_lineitem.wlin_item_id join customer on customer.c_customer_id=s_web_order.word_bill_customer_id;
+insert into table s_web_logs_input select /*+ MAPJOIN(s_web_order) */ s_web_order.word_order_time,item.i_item_sk,customer.c_customer_sk,s_web_order.word_order_date,web_page.wp_url from s_web_order join s_web_order_lineitem on s_web_order.word_order_id=s_web_order_lineitem.wlin_order_id join web_page on web_page.wp_web_page_id=s_web_order_lineitem.wlin_web_page_id join item on item.i_item_id=s_web_order_lineitem.wlin_item_id join customer on customer.c_customer_id=s_web_order.word_bill_customer_id;
 
 drop table s_web_logs_raw;
 create external table s_web_logs_raw (
