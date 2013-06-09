@@ -1,0 +1,90 @@
+use etl_sales_db;
+
+add jar lib/Hammer-java.jar;
+create temporary function parser as 'com.intel.hammer.mahout.cf.ResultParser';
+
+drop table recomm_result;
+create external table recomm_result (
+  user bigint,
+  scores string
+) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+location '${HDFS_PATH}';
+
+drop table recomm_fact;
+create table recomm_fact(
+  user bigint,
+  item bigint,
+  recomm_score double
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+drop table recomm_test;
+create table recomm_test(
+  user bigint,
+  item bigint,
+  is_recomm double,
+  is_sales bigint,
+  is_logs bigint
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|';
+
+drop view web_sales_tmp_v;
+create view web_sales_tmp_v 
+(user ,item ,date_sk ,quantity )
+as select web_sales.ws_bill_customer_sk,web_sales.ws_item_sk,web_sales.ws_sold_date_sk,web_sales.ws_quantity
+from web_sales
+where ws_sold_date_sk>=${TEST_STARTDATE} and ws_sold_date_sk<=${TEST_ENDDATE};
+
+drop view web_logs_tmp_v;
+create view web_logs_tmp_v
+(user,item,date_sk,quantity)
+as select cookies.c_customer_sk,web_log_fact.w_item_sk,web_log_fact.w_date_sk,count(*) from cookies right outer join web_log_fact on web_log_fact.w_cookie=cookies.c_cookie where w_date_sk>=${TEST_STARTDATE} and w_date_sk<=${TEST_ENDDATE} group by cookies.c_customer_sk,web_log_fact.w_item_sk,web_log_fact.w_date_sk;
+
+insert overwrite table recomm_fact select user,scores.item,scores.score from recomm_result lateral view parser(scores) scores as item,score order by user,scores.item;
+
+insert overwrite table recomm_test
+select
+COALESCE(recomm_fact.user,web_sales_tmp_v.user,web_logs_tmp_v.user) as u,
+COALESCE(recomm_fact.item,web_sales_tmp_v.item,web_logs_tmp_v.item) as i,
+recomm_fact.recomm_score,
+web_sales_tmp_v.quantity,
+web_logs_tmp_v.quantity
+from recomm_fact
+full outer join web_sales_tmp_v on recomm_fact.user=web_sales_tmp_v.user and recomm_fact.item=web_sales_tmp_v.item
+full outer join web_logs_tmp_v on web_logs_tmp_v.user=COALESCE(recomm_fact.user,web_sales_tmp_v.user) and web_logs_tmp_v.item=COALESCE(recomm_fact.item,web_sales_tmp_v.item)
+where 
+COALESCE(recomm_fact.user,web_sales_tmp_v.user,web_logs_tmp_v.user) is not null and COALESCE(recomm_fact.item,web_sales_tmp_v.item,web_logs_tmp_v.item) is not null 
+order by u,i;
+
+drop table recomm_test_effective_size;
+create table recomm_test_effective_size(
+  user bigint,
+  size bigint
+)
+row format delimited fields terminated by '|';
+
+insert overwrite table recomm_test_effective_size
+select user,count(*) from recomm_test where is_recomm is not null and is_recomm>0 group by user order by user;
+
+drop table recomm_test_recommend_frequency;
+create table recomm_test_recommend_frequency(
+  item bigint,
+  times bigint
+)
+row format delimited fields terminated by '|';
+
+insert overwrite table recomm_test_recommend_frequency
+select item,count(*) from recomm_test where is_recomm is not null and is_recomm>0 group by item order by item;
+
+select count(*) from recomm_test where is_recomm is not null and is_recomm>0 and is_logs is not null and is_logs>0;
+select count(*) from recomm_test where is_recomm is not null and is_recomm>0;
+select count(*) from recomm_test where is_logs is not null and is_logs>0;
+select count(*) from item;
+
+select count(*) from recomm_test where is_recomm is not null and is_recomm>0 and is_sales is not null and is_sales>0;
+
+drop view web_return_tmp_v;
+create view web_return_tmp_v(user,item) as select web_sales.ws_bill_customer_sk,web_returns.wr_item_sk from web_returns join web_sales on web_returns.wr_order_number=web_sales.ws_order_number where web_sales.ws_sold_date_sk>=${TEST_STARTDATE} and web_sales.ws_sold_date_sk<=${TEST_ENDDATE};
+
+select count(*) from recomm_test left semi join web_return_tmp_v on web_return_tmp_v.user=recomm_test.user and web_return_tmp_v.item=recomm_test.item; 

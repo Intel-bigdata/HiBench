@@ -1,0 +1,23 @@
+use etl_sales_db;
+
+add jar lib/logEtl.jar;
+create temporary function etl as 'etl.LogParser';
+
+drop table web_log_fact;
+
+create table web_log_fact(
+	w_date_sk bigint,
+	w_time_sk bigint,
+	w_url string,
+	w_ip_sk bigint,
+	w_agent_sk bigint,
+	w_agent_raw string,
+	w_cookie string,
+	w_retcode int,
+	w_request string,
+	w_item_sk bigint
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' 
+WITH SERDEPROPERTIES ('field.delim'='|','serialization.null.format'='');
+
+insert overwrite table web_log_fact select etl(w_content) as (w_date_sk,w_time_sk,w_url,w_ip_sk,w_agent_sk,w_agent_raw,w_cookie,w_retcode,w_request,w_item_sk) from web_logs_raw;
