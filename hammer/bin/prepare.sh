@@ -12,6 +12,38 @@ echo "HAMMER - START PREPARING" >> $HAMMER_HOME/hammer.report
 # local configuration
 . "$HAMMER_HOME/conf/configure.sh"
 
+# check for existence of hadoop streaming
+export STREAMING=
+
+if [ -n "$HADOOP_HOME" ]; then
+    # for hadoop 1.0.x
+    if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar" ]; then
+      export STREAMING=$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar
+    fi
+    # for hadoop 2.0.x
+    if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar" ]; then
+      export STREAMING=$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar
+    fi
+    # for other hadoop version
+    if [ -z "$STREAMING" ]; then
+      export STREAMING=`find $HADOOP_HOME -name hadoop-stream*.jar -type f`
+    fi
+else
+    # for hadoop 1.0.x
+    if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar ]; then
+      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
+    fi
+    # for hadoop 2.0.x
+    if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar ]; then
+      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar
+    fi
+fi
+
+if [ -z "$STREAMING" ]; then
+    echo 'Hammer can not find hadoop-streaming jar file, please set STREAMING path.'
+    exit
+fi
+
 # check for existence of dsgen tool
 if [ -z $DSGEN_HOME ] ; then 
     echo "Please set DSGEN_HOME in conf/configure.sh."
@@ -20,7 +52,7 @@ elif [ ! -d $DSGEN_HOME ] ; then
     echo "$DSGEN_HOME doesn't exist or is not a directory."
     exit
 fi
-    
+   
 cd $HAMMER_HOME
 
 #####################
@@ -81,17 +113,15 @@ OPTION="-input ${DBGEN_HDFS_INPUT} \
 -jobconf mapred.job.name=prepare_etl_sales_db \
 -jobconf mapred.task.timeout=0"
 
-if [ -z "$STREAMING" ]; then
-    export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
-fi
-
 ${HADOOP_EXECUTABLE} jar ${STREAMING} ${OPTION}
 
 # import sales data to hive tables
-$HIVE_HOME/bin/hive -d ETL_SALES_DB_DIR=${DBGEN_HDFS_DATA} -f $HAMMER_HOME/bin/hive/create_base.hive
+sed "s#ETL_SALES_DB_DIR#${DBGEN_HDFS_DATA}#g" $HAMMER_HOME/bin/hive/create_base.template > $HAMMER_HOME/bin/hive/create_base.hive
+$HIVE_HOME/bin/hive -f $HAMMER_HOME/bin/hive/create_base.hive
 
 # import sales refresh data to hive tables
-$HIVE_HOME/bin/hive -d ETL_SALES_DB_DIR=${DBGEN_HDFS_DATA} -f $HAMMER_HOME/bin/hive/create_refresh.hive
+sed "s#ETL_SALES_DB_DIR#${DBGEN_HDFS_DATA}#g" $HAMMER_HOME/bin/hive/create_refresh.template > $HAMMER_HOME/bin/hive/create_refresh.hive
+$HIVE_HOME/bin/hive -f $HAMMER_HOME/bin/hive/create_refresh.hive
 
 GENERATE_SALES_END_TIME=`timestamp`
 echo -e "GENERATE SALES DATA\t${GENERATE_SALES_START_TIME}\t${GENERATE_SALES_END_TIME}" >> $HAMMER_HOME/hammer.report
@@ -101,23 +131,22 @@ echo -e "GENERATE SALES DATA\t${GENERATE_SALES_START_TIME}\t${GENERATE_SALES_END
 #######################
 GENERATE_LOGS_START_TIME=`timestamp`
 
-# create web log generator input
+# create web log tables
 WEBLOG_OUTPUT_HDFS=${HAMMER_HDFS_BASE}/weblog/Output
-if ${HADOOP_EXECUTABLE} fs -test -e ${WEBLOG_OUTPUT_HDFS} ; then
-    ${HADOOP_EXECUTABLE} fs -rmr ${WEBLOG_OUTPUT_HDFS}
-fi
 export HADOOP_HOME=${HADOOP_EXECUTABLE%/bin*}
 $HIVE_HOME/bin/hive -f $HAMMER_HOME/bin/hive/create_base_logs_raw.hive -d LOG_HOME=${WEBLOG_OUTPUT_HDFS}
 unset HADOOP_HOME
 
 # generate raw web log data
-${HADOOP_EXECUTABLE} fs -rmr ${WEBLOG_OUTPUT_HDFS}/web_logs
+if ${HADOOP_EXECUTABLE} fs -test -e ${WEBLOG_OUTPUT_HDFS} ; then
+    ${HADOOP_EXECUTABLE} fs -rmr ${WEBLOG_OUTPUT_HDFS}
+fi
 ${HADOOP_EXECUTABLE} fs -mkdir ${WEBLOG_OUTPUT_HDFS}/cookies
 ${HADOOP_EXECUTABLE} fs -mkdir ${WEBLOG_OUTPUT_HDFS}/ip
 ${HADOOP_EXECUTABLE} fs -mkdir ${WEBLOG_OUTPUT_HDFS}/useragents
 CUSTOMERS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(c_customer_sk) from etl_sales_db.customer'`
 ITEMS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(i_item_sk) from etl_sales_db.item'`
-${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob ${WEBLOG_OUTPUT_HDFS}/web_logs_input ${WEBLOG_OUTPUT_HDFS}/web_logs ${PARTNUM} $CUSTOMERS_MAX $ITEMS_MAX
+${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob /user/hive/warehouse/etl_sales_db.db/web_logs ${WEBLOG_OUTPUT_HDFS}/web_logs ${PARTNUM} $CUSTOMERS_MAX $ITEMS_MAX
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/cookies-* ${WEBLOG_OUTPUT_HDFS}/cookies/
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/useragents-* ${WEBLOG_OUTPUT_HDFS}/useragents/
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/ip-* ${WEBLOG_OUTPUT_HDFS}/ip/
@@ -129,21 +158,20 @@ unset HADOOP_HOME
 
 # create web_logs refresh tables
 REFRESH_SOURCE_HDFS=${HAMMER_HDFS_BASE}/weblog/Refresh
-if ${HADOOP_EXECUTABLE} fs -test -e ${REFRESH_SOURCE_HDFS} ; then
-    ${HADOOP_EXECUTABLE} fs -rmr ${REFRESH_SOURCE_HDFS}
-fi
 export HADOOP_HOME=${HADOOP_EXECUTABLE%/bin*}
 $HIVE_HOME/bin/hive -f $HAMMER_HOME/bin/hive/create_refresh_logs_raw.hive -d REFRESH_HOME=${REFRESH_SOURCE_HDFS}
 unset HADOOP_HOME
 
 # generate raw web log refersh data
-${HADOOP_EXECUTABLE} fs -rmr ${REFRESH_SOURCE_HDFS}/s_web_logs
+if ${HADOOP_EXECUTABLE} fs -test -e ${REFRESH_SOURCE_HDFS} ; then
+    ${HADOOP_EXECUTABLE} fs -rmr ${REFRESH_SOURCE_HDFS}
+fi
 ${HADOOP_EXECUTABLE} fs -mkdir ${REFRESH_SOURCE_HDFS}/s_cookies
 ${HADOOP_EXECUTABLE} fs -mkdir ${REFRESH_SOURCE_HDFS}/s_ip
 ${HADOOP_EXECUTABLE} fs -mkdir ${REFRESH_SOURCE_HDFS}/s_useragents
 CUSTOMERS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(c_customer_sk) from etl_sales_db.customer'`
 ITEMS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(i_item_sk) from etl_sales_db.item'`
-${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob ${REFRESH_SOURCE_HDFS}/s_web_logs_input ${REFRESH_SOURCE_HDFS}/s_web_logs ${PARTNUM} $CUSTOMERS_MAX $ITEMS_MAX
+${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob /user/hive/warehouse/etl_sales_db.db/s_web_logs ${REFRESH_SOURCE_HDFS}/s_web_logs ${PARTNUM} $CUSTOMERS_MAX $ITEMS_MAX
 ${HADOOP_EXECUTABLE} fs -mv ${REFRESH_SOURCE_HDFS}/s_web_logs/cookies-* ${REFRESH_SOURCE_HDFS}/s_cookies/
 ${HADOOP_EXECUTABLE} fs -mv ${REFRESH_SOURCE_HDFS}/s_web_logs/useragents-* ${REFRESH_SOURCE_HDFS}/s_useragents/
 ${HADOOP_EXECUTABLE} fs -mv ${REFRESH_SOURCE_HDFS}/s_web_logs/ip-* ${REFRESH_SOURCE_HDFS}/s_ip/
