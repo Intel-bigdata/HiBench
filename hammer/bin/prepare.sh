@@ -12,6 +12,38 @@ echo "HAMMER - START PREPARING" >> $HAMMER_HOME/hammer.report
 # local configuration
 . "$HAMMER_HOME/conf/configure.sh"
 
+# check for existence of hadoop streaming
+export STREAMING=
+
+if [ -n "$HADOOP_HOME" ]; then
+    # for hadoop 1.0.x
+    if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar" ]; then
+      export STREAMING=$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar
+    fi
+    # for hadoop 2.0.x
+    if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar" ]; then
+      export STREAMING=$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar
+    fi
+    # for other hadoop version
+    if [ -z "$STREAMING" ]; then
+      export STREAMING=`find $HADOOP_HOME -name hadoop-stream*.jar -type f`
+    fi
+else
+    # for hadoop 1.0.x
+    if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar ]; then
+      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
+    fi
+    # for hadoop 2.0.x
+    if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar ]; then
+      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar
+    fi
+fi
+
+if [ -z "$STREAMING" ]; then
+    echo 'Hammer can not find hadoop-streaming jar file, please set STREAMING path.'
+    exit
+fi
+
 # check for existence of dsgen tool
 if [ -z $DSGEN_HOME ] ; then 
     echo "Please set DSGEN_HOME in conf/configure.sh."
@@ -81,10 +113,6 @@ OPTION="-input ${DBGEN_HDFS_INPUT} \
 -jobconf mapred.job.name=prepare_etl_sales_db \
 -jobconf mapred.task.timeout=0"
 
-if [ -z "$STREAMING" ]; then
-    export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
-fi
-
 ${HADOOP_EXECUTABLE} jar ${STREAMING} ${OPTION}
 
 # import sales data to hive tables
@@ -150,3 +178,4 @@ ${HADOOP_EXECUTABLE} fs -mv ${REFRESH_SOURCE_HDFS}/s_web_logs/ip-* ${REFRESH_SOU
 
 GENERATE_LOGS_END_TIME=`timestamp`
 echo -e "GENERATE LOGS\t${GENERATE_LOGS_START_TIME}\t${GENERATE_LOGS_END_TIME}" >> $HAMMER_HOME/hammer.report
+
