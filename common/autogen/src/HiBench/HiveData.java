@@ -349,6 +349,7 @@ public class HiveData {
 		}
 
 		FileOutputFormat.setOutputPath(job, fout);
+        job.set("hadoop.job.history.user.location", fout.toString());
 
 		log.info("Running Job: " +jobname);
 		log.info("Pages file " + dummy.getPath() + " as input");
@@ -598,6 +599,7 @@ public class HiveData {
 		}
 		
 		FileOutputFormat.setOutputPath(job, fout);
+        job.set("hadoop.job.history.user.location", fout.toString());
 		
 		log.info("Running Job: " +jobname);
 		log.info("Dummy file " + dummy.getPath() + " as input");
