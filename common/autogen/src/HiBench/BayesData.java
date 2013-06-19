@@ -125,6 +125,7 @@ public class BayesData {
 		job.setNumReduceTasks(0);
 		
 		FileOutputFormat.setOutputPath(job, fout);
+        job.set("hadoop.job.history.user.location", fout.toString());
 		job.setOutputFormat(SequenceFileOutputFormat.class);
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(Text.class);

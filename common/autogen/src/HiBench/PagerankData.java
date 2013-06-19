@@ -195,6 +195,7 @@ public class PagerankData {
 		}
 		
 		FileOutputFormat.setOutputPath(job, fout);
+        job.set("hadoop.job.history.user.location", fout.toString());
 
 		log.info("Running Job: " +jobname);
 		log.info("Dummy file " + dummy.getPath() + " as input");
@@ -296,6 +297,7 @@ public class PagerankData {
 		}
 		
 		FileOutputFormat.setOutputPath(job, fout);
+        job.set("hadoop.job.history.user.location", fout.toString());
 		
 		log.info("Running Job: " +jobname);
 		log.info("Dummy file " + dummy.getPath() + " as input");

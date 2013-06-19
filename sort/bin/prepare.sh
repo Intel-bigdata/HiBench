@@ -39,5 +39,6 @@ fi
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
     -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
     -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+    -D hadoop.job.history.user.location=${INPUT_HDFS} \
     $COMPRESS_OPT \
     $INPUT_HDFS
