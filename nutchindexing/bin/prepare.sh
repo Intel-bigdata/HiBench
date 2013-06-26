@@ -18,6 +18,8 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
 echo "========== preparing nutchindex data =========="
+
+
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
@@ -35,6 +37,7 @@ OPTION="-t nutch \
         -m ${NUM_MAPS} \
         -r ${NUM_REDS} \
         -p ${PAGES} \
+	-x ${DICT_HOME} \
         -o sequence"
 
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}

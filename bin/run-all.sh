@@ -16,8 +16,13 @@
 
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
+DICT_PATH=/usr/share/dict/words
 
-. $DIR/bin/hibench-config.sh
+if [ -n "$1" ]; then
+	DICT_PATH="$2"
+fi
+
+. $DIR/bin/hibench-config.sh "-dict" "$DICT_PATH"
 
 if [ -f $HIBENCH_REPORT ]; then
     rm $HIBENCH_REPORT

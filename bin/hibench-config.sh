@@ -28,6 +28,21 @@ HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
 
+if [ -z "$DICT_HOME" ]; then
+	if [ -n "$1" ]; then
+		export DICT_HOME="$2"
+	else
+		export DICT_HOME=/usr/share/dict/words
+	fi
+fi
+if [ -z "$DICT_HOME" ] || [[ ! -e "$DICT_HOME" ]]; then
+	echo "ERROR: Please input the right path of dict!"
+fi
+count=`cat $DICT_HOME | wc -w`
+if (($count < 20)); then
+	echo "The number of dict is too less!"
+fi
+
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
 	HADOOP_CONF_DIR=$HADOOP_HOME/conf
