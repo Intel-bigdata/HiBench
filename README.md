@@ -91,6 +91,7 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
           HADOOP_CONF_DIR  <The hadoop configuration DIR, default is $HADOOP_HOME/conf>
           COMPRESS_GLOBAL  <Whether to enable the in/out compression for all workloads, 0 is disable, 1 is enable>
           COMPRESS_CODEC_GLOBAL  <The default codec used for in/out data compression>
+          DICT_PATH        <The dict location>
 
     Note: Do not change the default values of other global environment variables unless necessary.
 
