@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #paths
-DSGEN_HOME=/home/hadoop/projects/dbgen/
+DSGEN_HOME=/home/hadoop/project/dbgen/
 HAMMER_HDFS_BASE=${DATA_HDFS}/hammer
 
 # parameters for dsgen
