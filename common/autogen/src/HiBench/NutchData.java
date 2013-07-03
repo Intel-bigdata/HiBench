@@ -488,6 +488,7 @@ public class NutchData {
 		Utils.checkHdfsPath(options.getResultPath(), true);
 		Utils.checkHdfsPath(options.getWorkPath(), true);
 		
+		RawData.setDictPath(options.getDictPath());	
 		int words = RawData.putDictToHdfs(new Path(options.getWorkPath(), HtmlCore.getDictName()), options.getNumWords());
 		options.setNumWords(words);
 		

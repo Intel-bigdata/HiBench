@@ -85,6 +85,10 @@ public class RawData {
 		
 		return new String(sword);
 	}
+	
+	public static void setDictPath(String dictPath) {
+		dict = dictPath;
+	}
 
 	public static void createUserAgents(Path hdfs_uagent) throws IOException {
 		Utils.checkHdfsPath(hdfs_uagent);

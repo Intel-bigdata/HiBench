@@ -21,7 +21,7 @@ public class DataOptions {
 	}
 	private DataType type;
 
-	private String base, dname;
+	private String base, dname, dictPath;
 	private Path workPath, resultPath;
 	
 	private int maps, reds;
@@ -87,6 +87,8 @@ public class DataOptions {
 			} else if ("-c".equals(args[i])) {
 				codecClass =
 						Class.forName(args[++i]).asSubclass(CompressionCodec.class);
+			} else if("-x".equals(args[i])) {
+				dictPath = args[++i];
 			} else {
 				remainArgs.append(args[i]).append(" ");
 				remainArgs.append(args[++i]).append(" ");
@@ -158,12 +160,12 @@ public class DataOptions {
 		System.out.println("generate -t nutch -p <pages> [-w <words>] "
 				+ "[-b <base path>] [-n <data name>] "
 				+ "[-m <num maps>] [-r <num reduces>] "
-				+ "[-o sequence] [-c <codec>]");
+				+ "[-o sequence] [-c <codec>] [-x <dict path>]");
 		
 		System.out.println("generate -t bayes -p <pages> [-w <words>] -g <num classes>"
 				+ "[-b <base path>] [-n <data name>] "
 				+ "[-m <num maps>] [-r <num reduces>] "
-				+ "[-o sequence] [-c <codec>]");
+				+ "[-o sequence] [-c <codec>] [-x <dict path>]");
 		
 		return -1;
 	}
@@ -196,6 +198,10 @@ public class DataOptions {
 		return words;
 	}
 	
+	public String getDictPath() {
+		return dictPath;
+	}
+
 	public void setNumWords(int words) {
 		this.words = words;
 	}
