@@ -85,25 +85,26 @@ if ${HADOOP_EXECUTABLE} fs -test -e ${DBGEN_HDFS_BASE} ; then
     ${HADOOP_EXECUTABLE} fs -rmr ${DBGEN_HDFS_BASE}
 fi
 
-${HADOOP_EXECUTABLE} fs -Dfs.permissions.umask-mode=000 -mkdir ${DBGEN_HDFS_DATA}
+${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}
+${HADOOP_EXECUTEBLE} fs -chmod 777 ${DBGEN_HDFS_DATA}
 ${HADOOP_EXECUTABLE} fs -moveFromLocal ${DBGEN_LOCAL_DIR}/Input ${DBGEN_HDFS_INPUT}
 
 for TNP in dbgen_version date_dim time_dim call_center income_band household_demographics item warehouse promotion reason ship_mode store web_site web_page 
 do
-  ${HADOOP_EXECUTABLE} fs -Dfs.permissions.umask-mode=000 -mkdir ${DBGEN_HDFS_DATA}/${TNP} &
+  ${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}/${TNP} &
 done
 
 for TP in customer customer_address customer_demographics inventory web_sales web_returns
 do
-  ${HADOOP_EXECUTABLE} fs -Dfs.permissions.umask-mode=000 -mkdir ${DBGEN_HDFS_DATA}/${TP} &
+  ${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}/${TP} &
 done
 
 for RT in s_customer s_customer_address s_inventory s_item s_promotion delete s_web_order s_web_order_lineitem s_web_page s_web_returns s_web_site s_call_center s_warehouse s_zip_to_gmt
 do
-  ${HADOOP_EXECUTABLE} fs -Dfs.permissions.umask-mode=000 -mkdir ${DBGEN_HDFS_DATA}/${RT} &
+  ${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}/${RT} &
 done
 wait
-
+${HADOOP_EXECUTABLE} fs -chmod -R 777 ${DBGEN_HDFS_DATA}
 # generate raw sales data
 OPTION="-input ${DBGEN_HDFS_INPUT} \
 -output ${DBGEN_HDFS_OUTPUT} \

@@ -145,7 +145,8 @@ public class BayesData {
 		Utils.checkHdfsPath(options.getWorkPath(), true);
 
 		dummy = new Dummy(options.getWorkPath(), options.getNumMaps());
-
+		
+		RawData.setDictPath(options.getDictPath());
 		int words = RawData.putDictToHdfs(new Path(options.getWorkPath(), HtmlCore.getDictName()), options.getNumWords());
 		options.setNumWords(words);
 		

@@ -18,6 +18,7 @@ bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
 echo "========== preparing bayes data =========="
+
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
@@ -35,6 +36,7 @@ OPTION="-t bayes \
         -m ${NUM_MAPS} \
         -r ${NUM_REDS} \
         -p ${PAGES} \
+        -x ${DICT_PATH} \
         -class ${CLASSES} \
         -o sequence"
 
