@@ -87,13 +87,18 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 
     You need to set some global environment variables in the `bin/hibench-config.sh` file located in the root dir.
 
-          HADOOP_HOME      <The Hadoop installation location>
-          HADOOP_CONF_DIR  <The hadoop configuration DIR, default is $HADOOP_HOME/conf>
-          COMPRESS_GLOBAL  <Whether to enable the in/out compression for all workloads, 0 is disable, 1 is enable>
-          COMPRESS_CODEC_GLOBAL  <The default codec used for in/out data compression>
-          DICT_PATH        <The dict location>
+          HADOOP_HOME            < The Hadoop installation location >
+          HADOOP_CONF_DIR        < The hadoop configuration DIR >
+          HADOOP_EXAMPLES_JAR    < The path to hadoop-examples-xxx.jar >
+          DICT_PATH              < The dict location >
+          DATA_PATH              < The base HDFS path to hold HiBench data >
+          HIBENCH_REPORT         < The path to HiBench reports >
+          COMPRESS_GLOBAL        < Switch on/off the in/out compression for all workloads, 0 is disable, 1 is enable >
+          COMPRESS_CODEC_GLOBAL  < The default codec used for in/out data compression >
 
-    Note: Do not change the default values of other global environment variables unless necessary.
+    Note:
+      i.  HiBench will guess the value of these variables if they are not explicitly set. If so, HiBench guarantees neither the correctness of guess nor the success running of benchmarks.
+      ii. Do not change the default values of other global environment variables unless necessary.
 
 3. Configure each workload
 

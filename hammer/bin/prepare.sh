@@ -13,29 +13,27 @@ echo "HAMMER - START PREPARING" >> $HAMMER_HOME/hammer.report
 . "$HAMMER_HOME/conf/configure.sh"
 
 # check for existence of hadoop streaming
-export STREAMING=
-
 if [ -n "$HADOOP_HOME" ]; then
     # for hadoop 1.0.x
     if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar" ]; then
-      export STREAMING=$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar
+        STREAMING=$HADOOP_HOME/contrib/streaming/hadoop-streaming-*.jar
     fi
     # for hadoop 2.0.x
     if [ -z "$STREAMING" ] && [ -e "$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar" ]; then
-      export STREAMING=$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar
+        STREAMING=$HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar
     fi
     # for other hadoop version
     if [ -z "$STREAMING" ]; then
-      export STREAMING=`find $HADOOP_HOME -name hadoop-stream*.jar -type f`
+        STREAMING=`find $HADOOP_HOME -name hadoop-stream*.jar -type f`
     fi
 else
     # for hadoop 1.0.x
     if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar ]; then
-      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
+        STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/contrib/streaming/hadoop-streaming-*.jar
     fi
     # for hadoop 2.0.x
     if [ -z "$STREAMING" ] && [ -e `dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar ]; then
-      export STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar
+        STREAMING=`dirname ${HADOOP_EXAMPLES_JAR}`/../tools/lib/hadoop-streaming-*.jar
     fi
 fi
 
@@ -86,7 +84,6 @@ if ${HADOOP_EXECUTABLE} fs -test -e ${DBGEN_HDFS_BASE} ; then
 fi
 
 ${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}
-${HADOOP_EXECUTEBLE} fs -chmod 777 ${DBGEN_HDFS_DATA}
 ${HADOOP_EXECUTABLE} fs -moveFromLocal ${DBGEN_LOCAL_DIR}/Input ${DBGEN_HDFS_INPUT}
 
 for TNP in dbgen_version date_dim time_dim call_center income_band household_demographics item warehouse promotion reason ship_mode store web_site web_page 
@@ -105,14 +102,15 @@ do
 done
 wait
 ${HADOOP_EXECUTABLE} fs -chmod -R 777 ${DBGEN_HDFS_DATA}
+
 # generate raw sales data
-OPTION="-input ${DBGEN_HDFS_INPUT} \
+OPTION="-D mapred.reduce.tasks=0 \
+-D mapred.job.name=prepare_etl_sales_db \
+-D mapred.task.timeout=0 \
+-input ${DBGEN_HDFS_INPUT} \
 -output ${DBGEN_HDFS_OUTPUT} \
 -mapper $HAMMER_HOME/bin/dbgen.sh \
--file ${DSGEN_HOME}/tools/dsdgen -file $HAMMER_HOME/bin/dbgen.sh -file ${DSGEN_HOME}/tools/tpcds.idx -file ${HAMMER_HOME}/conf/configure.sh \
--jobconf mapred.reduce.tasks=0 \
--jobconf mapred.job.name=prepare_etl_sales_db \
--jobconf mapred.task.timeout=0"
+-file ${DSGEN_HOME}/tools/dsdgen -file $HAMMER_HOME/bin/dbgen.sh -file ${DSGEN_HOME}/tools/tpcds.idx -file ${HAMMER_HOME}/conf/configure.sh"
 
 ${HADOOP_EXECUTABLE} jar ${STREAMING} ${OPTION}
 
