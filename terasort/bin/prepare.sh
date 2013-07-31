@@ -24,11 +24,11 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS
 
 # Generate the terasort data
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
-    -D mapred.map.tasks=$NUM_MAPS \
+    -D $CONFIG_MAP_NUMBER=$NUM_MAPS \
     $DATASIZE $INPUT_HDFS
 
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*
+$HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS/_*

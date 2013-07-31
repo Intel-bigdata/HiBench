@@ -14,6 +14,16 @@
 # limitations under the License.
 
 ############### common functions ################
+
+
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+  RMDIR_CMD="fs -rm -r"
+  DUS_CMD="fs -du -s"
+else
+  RMDIR_CMD="fs -rmr"
+  DUS_CMD="fs -dus"
+fi
+
 FORMATS="%-12s %-10s %-8s %-20s %-20s %-20s %-20s\n"
 function timestamp(){
     sec=`date +%s`
@@ -39,7 +49,13 @@ function gen_report() {
     fi
     local duration=$(echo "scale=3;($end-$start)/1000"|bc)
     local tput=`echo "$size/$duration"|bc`
-    local nodes=`$HADOOP_EXECUTABLE job -list-active-trackers | wc -l` 
+
+    if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+      local nodes=`$MAPRED_EXECUTABLE job -list-active-trackers | wc -l`
+    else
+      local nodes=`$HADOOP_EXECUTABLE job -list-active-trackers | wc -l`
+    fi
+
     local tput_node=`echo "$tput/$nodes"|bc`
 
     if [ ! -f $HIBENCH_REPORT ] ; then
@@ -48,7 +64,6 @@ function gen_report() {
 
     printf "$FORMATS" $type $(date +%F) $(date +%T) $size $duration $tput $tput_node >> $HIBENCH_REPORT
 }
-
 
 function check_dir() {
     local dir=$1
@@ -63,9 +78,37 @@ function check_dir() {
 }
 
 function dir_size() {
-    for item in $($HADOOP_EXECUTABLE fs -dus $1); do
+    for item in $($HADOOP_EXECUTABLE $DUS_CMD $1); do
         if [[ $item =~ ^[0-9]+$ ]]; then
             echo $item
         fi
     done
+}
+
+
+function check_compress() {
+  if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+
+     if [ $COMPRESS -eq 1 ]; then
+       COMPRESS_OPT="-D mapreduce.map.output.compress=true \
+                     -D mapreduce.map.output.compress.codec=$COMPRESS_CODEC \
+                     -D mapreduce.output.fileoutputformat.compress=true \
+                     -D mapreduce.output.fileoutputformat.compress==$COMPRESS_CODEC \
+                     -D mapreduce.output.fileoutputformat.compress.type=BLOCK "
+     else
+       COMPRESS_OPT="-D mapreduce.map.output.compress=false \
+                     -D mapreduce.output.fileoutputformat.compress=false "
+     fi
+
+  else
+    if [ $COMPRESS -eq 1 ]; then
+
+      COMPRESS_OPT="-D mapred.output.compress=true \
+                    -D mapred.output.compression.codec=$COMPRESS_CODEC \
+                    -D mapred.output.compression.type=BLOCK "
+
+    else
+      COMPRESS_OPT="-D mapred.output.compress=false"
+    fi
+  fi
 }

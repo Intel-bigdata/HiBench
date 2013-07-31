@@ -23,24 +23,15 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
+check_compress
 
-#path check
-$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
+$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
 
+echo "== start MR job =="
 # pre-running
-SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-SIZE=${SIZE##*|}
-SIZE=${SIZE//,/}
 START_TIME=`timestamp`
+
+TMPLOGFILE=tmplog.log
 
 # run bench
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
@@ -48,9 +39,22 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
     -outKey org.apache.hadoop.io.Text \
     -outValue org.apache.hadoop.io.Text \
     -r ${NUM_REDS} \
-    $INPUT_HDFS $OUTPUT_HDFS
+    $INPUT_HDFS $OUTPUT_HDFS \
+    2>&1 | tee $TMPLOGFILE
 
 # post-running
 END_TIME=`timestamp`
+
+echo "== MR job done=="
+
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
+else
+  SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
+  SIZE=${SIZE##*|}
+  SIZE=${SIZE//,/}
+fi
+
+rm -rf $TMPLOGFILE
 gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE}
 

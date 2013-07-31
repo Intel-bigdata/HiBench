@@ -23,21 +23,28 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+check_compress
+$HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-    -D mapred.output.compression.type=BLOCK "
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+
+#--- for hadoop version 2.0.5 above ---
+
+  # generate data
+  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
+    -D mapreduce.randomtextwriter.bytespermap=$((${DATASIZE} / ${NUM_MAPS})) \
+    -D mapreduce.randomtextwriter.mapsperhost=${NUM_MAPS} \
+    $COMPRESS_OPT \
+    $INPUT_HDFS
+
 else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
+#--- for hadoop version 1 ---
 
-# generate data
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
+  # generate data
+  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
     -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
     -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
     $COMPRESS_OPT \
     $INPUT_HDFS
+
+fi

@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
@@ -23,21 +22,29 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-    -D mapred.output.compression.type=BLOCK "
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
+check_compress
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS
+
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+
+#--- for hadoop version 2.0.5 above ---
 
 # generate data
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
-   $COMPRESS_OPT \
-   -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
-   -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
-   $INPUT_HDFS
+  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
+    -D mapreduce.randomtextwriter.bytespermap=$((${DATASIZE} / ${NUM_MAPS})) \
+    -D mapreduce.randomtextwriter.mapsperhost=${NUM_MAPS} \
+    $COMPRESS_OPT \
+    $INPUT_HDFS
+
+else
+#--- for hadoop version 1 ---
+
+# generate data
+    $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
+      -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
+      -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+      $COMPRESS_OPT \
+      $INPUT_HDFS
+
+fi

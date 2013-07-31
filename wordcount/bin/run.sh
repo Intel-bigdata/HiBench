@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
@@ -23,33 +22,36 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
+check_compress
+
+TMPLOGFILE=tmplog.log
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
 
-# pre-running
-SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-SIZE=${SIZE##*|}
-SIZE=${SIZE//,/}
 START_TIME=`timestamp`
 
 # run bench
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
     $COMPRESS_OPT \
-    -D mapred.reduce.tasks=${NUM_REDS} \
+    -D $CONFIG_REDUCER_NUMBER=${NUM_REDS} \
     -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
     -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-    $INPUT_HDFS $OUTPUT_HDFS
+    $INPUT_HDFS $OUTPUT_HDFS \
+    2>&1 | tee $TMPLOGFILE
 
 # post-running
 END_TIME=`timestamp`
+
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
+else
+  SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
+  SIZE=${SIZE##*|}
+  SIZE=${SIZE//,/}
+fi
+
+rm -rf $TMPLOGFILE
+
 gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+
