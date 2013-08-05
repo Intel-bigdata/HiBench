@@ -26,20 +26,32 @@ DIR=`cd $bin/../; pwd`
 # path check
 rm -rf ${DIR}/metastore_db
 rm -rf ${DIR}/TempStatsStore
-$HADOOP_EXECUTABLE fs -rmr /user/hive/warehouse/rankings_uservisits_join
-$HADOOP_EXECUTABLE fs -rmr /tmp
+$HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/rankings_uservisits_join
+#$HADOOP_EXECUTABLE $RMDIR_CMD /tmp
 
 # pre-running
 echo "USE DEFAULT;">$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set mapred.map.tasks=$NUM_MAPS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set mapred.reduce.tasks=$NUM_REDS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
 echo "set hive.stats.autogather=false;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
 
-if [ $COMPRESS -eq 1 ]; then
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+  echo "set mapreduce.jobtracker.address=ignorethis">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+  echo "set hive.exec.show.job.failure.debug.info=false">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+
+  if [ $COMPRESS -eq 1 ]; then
+    echo "set mapreduce.map.output.compress=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set hive.exec.compress.output=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+  fi
+else
+  if [ $COMPRESS -eq 1 ]; then
     echo "set mapred.output.compress=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
     echo "set hive.exec.compress.output=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
     echo "set mapred.output.compression.type=BLOCK;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
     echo "set mapred.output.compression.codec=${COMPRESS_CODEC};">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+  fi
 fi
 
 echo "DROP TABLE rankings;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
@@ -68,5 +80,5 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/rankings_uservisits_join.hive
 END_TIME=`timestamp`
 gen_report "HIVEJOIN" ${START_TIME} ${END_TIME} ${SIZE}
 
-$HADOOP_EXECUTABLE fs -rmr $OUTPUT_HDFS/hive-join
+$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/hive-join
 $HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/rankings_uservisits_join $OUTPUT_HDFS/hive-join

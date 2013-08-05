@@ -28,6 +28,8 @@ if [ ${COMPRESS} -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
+rm -rf $TMPLOGFILE
+
 # generate data
 OPTION="-t bayes \
         -b ${BAYES_BASE_HDFS} \
@@ -38,4 +40,4 @@ OPTION="-t bayes \
         -class ${CLASSES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE

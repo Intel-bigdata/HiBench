@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export HADOOP_HOME=/home/raymond/hadoop2
+#export HADOOP_HOME=
+#export JAVA_HOME=/usr/lib/jvm/default-java
 
 this="${BASH_SOURCE-$0}"
 bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
@@ -42,14 +43,14 @@ else
 fi
 
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-	HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+	export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 	HADOOP_EXAMPLES_JAR=$HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples*.jar
   MAPRED_EXECUTABLE=$HADOOP_HOME/bin/mapred
 
   CONFIG_REDUCER_NUMBER=mapreduce.job.reduces
   CONFIG_MAP_NUMBER=mapreduce.job.maps
 else
-  HADOOP_CONF_DIR=$HADOOP_HOME/conf
+  export HADOOP_CONF_DIR=$HADOOP_HOME/conf
   HADOOP_EXAMPLES_JAR=$HADOOP_HOME/hadoop-examples*.jar
 
   CONFIG_REDUCER_NUMBER=mapred.reduce.tasks

@@ -28,6 +28,8 @@ if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
+rm -rf $TMPLOGFILE
+
 # generate data
 OPTION="-t nutch \
         -b ${NUTCH_BASE_HDFS} \
@@ -37,4 +39,4 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE

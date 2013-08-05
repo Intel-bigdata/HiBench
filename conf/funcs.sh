@@ -24,6 +24,8 @@ else
   DUS_CMD="fs -dus"
 fi
 
+TMPLOGFILE=tmplog.log
+
 FORMATS="%-12s %-10s %-8s %-20s %-20s %-20s %-20s\n"
 function timestamp(){
     sec=`date +%s`
@@ -90,25 +92,25 @@ function check_compress() {
   if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
 
      if [ $COMPRESS -eq 1 ]; then
-       COMPRESS_OPT="-D mapreduce.map.output.compress=true \
-                     -D mapreduce.map.output.compress.codec=$COMPRESS_CODEC \
-                     -D mapreduce.output.fileoutputformat.compress=true \
-                     -D mapreduce.output.fileoutputformat.compress==$COMPRESS_CODEC \
-                     -D mapreduce.output.fileoutputformat.compress.type=BLOCK "
+       COMPRESS_OPT="-Dmapreduce.map.output.compress=true \
+                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC \
+                     -Dmapreduce.output.fileoutputformat.compress=true \
+                     -Dmapreduce.output.fileoutputformat.compress.codec=$COMPRESS_CODEC \
+                     -Dmapreduce.output.fileoutputformat.compress.type=BLOCK "
      else
-       COMPRESS_OPT="-D mapreduce.map.output.compress=false \
-                     -D mapreduce.output.fileoutputformat.compress=false "
+       COMPRESS_OPT="-Dmapreduce.map.output.compress=false \
+                     -Dmapreduce.output.fileoutputformat.compress=false "
      fi
 
   else
     if [ $COMPRESS -eq 1 ]; then
 
-      COMPRESS_OPT="-D mapred.output.compress=true \
-                    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-                    -D mapred.output.compression.type=BLOCK "
+      COMPRESS_OPT="-Dmapred.output.compress=true \
+                    -Dmapred.output.compression.codec=$COMPRESS_CODEC \
+                    -Dmapred.output.compression.type=BLOCK "
 
     else
-      COMPRESS_OPT="-D mapred.output.compress=false"
+      COMPRESS_OPT="-Dmapred.output.compress=false"
     fi
   fi
 }
