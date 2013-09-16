@@ -11,6 +11,7 @@
     1. Overview
     2. Getting Started
     3. Running
+    4. For Yarn
 
 ---
 ### OVERVIEW ###
@@ -126,3 +127,15 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
   3. Run the benchmark:
       
       `bin/run*.sh` to run the corresponding benchmark
+
+---
+### For Yarn ###
+
+At present, To run Hibench on top of Yarn is supported in Yarn branch.
+And not all test cases are ported, currently only the following cases are supported:
+
+sort / terasort / wordcount / dfsioe / bayes / kmeans
+
+verified upon apache hadoop 2.0.5-alpha
+
+you might need to tweak a little bit for the other versions, since before release, Hadoop 2.0 API do change a lot.
