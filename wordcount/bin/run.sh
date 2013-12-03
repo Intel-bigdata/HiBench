@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -49,6 +50,12 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
     -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
     -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
     $INPUT_HDFS $OUTPUT_HDFS
+
+if [ $? -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit 1
+fi
 
 # post-running
 END_TIME=`timestamp`

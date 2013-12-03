@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u 
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -30,5 +31,12 @@ $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
     -D mapred.map.tasks=$NUM_MAPS \
     $DATASIZE $INPUT_HDFS
+
+if [ $? -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit 1
+fi
+
 
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*

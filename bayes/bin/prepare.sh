@@ -13,6 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u 
+
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -39,3 +41,8 @@ OPTION="-t bayes \
         -o sequence"
 
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+if [ $? -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit 1
+fi
