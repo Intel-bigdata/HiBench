@@ -48,7 +48,7 @@ ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
 if [ $? -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 # post-running

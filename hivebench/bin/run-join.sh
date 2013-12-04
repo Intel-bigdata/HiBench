@@ -67,7 +67,7 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/rankings_uservisits_join.hive
 if [ $? -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 

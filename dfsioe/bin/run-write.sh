@@ -36,7 +36,7 @@ ${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh $
 if [ $? -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 # post-running

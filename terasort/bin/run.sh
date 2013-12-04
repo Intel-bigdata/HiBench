@@ -36,7 +36,7 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D mapred.reduce.tasks=$NUM
 if [ $? -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 # post-running

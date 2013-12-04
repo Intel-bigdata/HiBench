@@ -35,21 +35,21 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	if [ $? -ne 0 ]
 	then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-	    exit 1
+	    exit $?
 	fi
 	
         $DIR/dfsioe/bin/run-read.sh
 	if [ $? -ne 0 ]
         then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
 
         $DIR/dfsioe/bin/run-write.sh
 	if [ $? -ne 0 ]
 	then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
     elif [ "$benchmark" = "hivebench" ]; then
         # hivebench specific
@@ -57,21 +57,21 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	if [ $? -ne 0 ]
         then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
 
         $DIR/hivebench/bin/run-aggregation.sh
 	if [ $? -ne 0 ]
         then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
 
         $DIR/hivebench/bin/run-join.sh
 	if [ $? -ne 0 ]
         then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
     else
         if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
@@ -79,14 +79,14 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	    if [ $? -ne 0 ]
 	    then
 		echo "ERROR: Hadoop job failed to run successfully." 
-		exit 1
+		exit $?
             fi
         fi
         $DIR/${benchmark}/bin/run.sh
 	if [ $? -ne 0 ]
 	then
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit 1
+            exit $?
         fi
     fi
 done

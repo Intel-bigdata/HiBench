@@ -48,7 +48,7 @@ $NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawl
 if [ $? -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 # post-running

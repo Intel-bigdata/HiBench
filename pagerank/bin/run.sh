@@ -66,7 +66,7 @@ else
     if [ $? -ne 0 ]
     then
 	echo "ERROR: Hadoop job failed to run successfully." 
-	exit 1
+	exit $?
     fi
 
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_input
@@ -76,7 +76,7 @@ else
     if [ $? -ne 0 ]
     then
         echo "ERROR: Hadoop job failed to run successfully."
-        exit 1
+        exit $?
     fi
 
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_initvector
@@ -86,7 +86,7 @@ else
     if [ $? -ne 0 ]
     then
         echo "ERROR: Hadoop job failed to run successfully."
-        exit 1
+        exit $?
     fi
 
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
@@ -95,7 +95,7 @@ else
     if [ $? -ne 0 ]
     then
         echo "ERROR: Hadoop job failed to run successfully."
-        exit 1
+        exit $?
     fi
 
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
@@ -104,7 +104,7 @@ else
     if [ $? -ne 0 ]
     then
         echo "ERROR: Hadoop job failed to run successfully."
-        exit 1
+        exit $?
     fi
 fi
 

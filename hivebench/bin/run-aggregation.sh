@@ -58,7 +58,7 @@ $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/uservisits_aggre.hive
 if [ $? -ne 0 ] 
 then
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit 1
+    exit $?
 fi
 
 # post-running

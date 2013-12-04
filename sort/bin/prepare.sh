@@ -46,5 +46,5 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
  if [ $? -ne 0 ]
  then
      echo "ERROR: Hadoop job failed to run successfully."
-     exit 1
+     exit $?
  fi
