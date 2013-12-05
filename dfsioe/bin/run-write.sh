@@ -35,8 +35,9 @@ START_TIME=`timestamp`
 ${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_write.txt -tputFile ${DIR}/throughput_write.csv
 if [ $? -ne 0 ]
 then
+    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit $?
+    exit $result
 fi
 
 # post-running

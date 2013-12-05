@@ -34,59 +34,67 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
         $DIR/dfsioe/bin/prepare-read.sh
 	if [ $? -ne 0 ]
 	then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-	    exit $?
+	    exit $result
 	fi
 	
         $DIR/dfsioe/bin/run-read.sh
 	if [ $? -ne 0 ]
         then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
 
         $DIR/dfsioe/bin/run-write.sh
 	if [ $? -ne 0 ]
 	then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
     elif [ "$benchmark" = "hivebench" ]; then
         # hivebench specific
         $DIR/hivebench/bin/prepare.sh
 	if [ $? -ne 0 ]
         then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
 
         $DIR/hivebench/bin/run-aggregation.sh
 	if [ $? -ne 0 ]
         then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
 
         $DIR/hivebench/bin/run-join.sh
 	if [ $? -ne 0 ]
         then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
     else
         if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
             $DIR/${benchmark}/bin/prepare.sh
 	    if [ $? -ne 0 ]
 	    then
+		result=$?
 		echo "ERROR: Hadoop job failed to run successfully." 
-		exit $?
+		exit $result
             fi
         fi
         $DIR/${benchmark}/bin/run.sh
 	if [ $? -ne 0 ]
 	then
+	    result=$?
 	    echo "ERROR: Hadoop job failed to run successfully." 
-            exit $?
+            exit $result
         fi
     fi
 done

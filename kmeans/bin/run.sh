@@ -47,8 +47,9 @@ START_TIME=`timestamp`
 ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
 if [ $? -ne 0 ]
 then
+    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit $?
+    exit $result
 fi
 
 # post-running

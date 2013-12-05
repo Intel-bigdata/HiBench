@@ -57,8 +57,9 @@ START_TIME=`timestamp`
 $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/uservisits_aggre.hive
 if [ $? -ne 0 ] 
 then
+    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit $?
+    exit $result
 fi
 
 # post-running

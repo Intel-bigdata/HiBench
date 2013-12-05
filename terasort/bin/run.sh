@@ -35,8 +35,9 @@ START_TIME=`timestamp`
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D mapred.reduce.tasks=$NUM_REDS $INPUT_HDFS $OUTPUT_HDFS
 if [ $? -ne 0 ]
 then
+    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
-    exit $?
+    exit $result
 fi
 
 # post-running

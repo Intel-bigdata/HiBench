@@ -47,8 +47,9 @@ $MAHOUT_HOME/bin/mahout seq2sparse \
 
 if [ $? -ne 0 ]
 then
+    result=$?
     echo "ERROR: Mahout command failed to execute successfully." 
-    exit $?
+    exit $result
 fi
 
 $MAHOUT_HOME/bin/mahout trainnb \
@@ -56,8 +57,9 @@ $MAHOUT_HOME/bin/mahout trainnb \
 
 if [ $? -ne 0 ]
 then
+    result=$?
     echo "ERROR: Mahout command failed to execute successfully."
-    exit $?
+    exit $result
 fi
 
 # post-running
