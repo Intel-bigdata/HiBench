@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -44,6 +45,12 @@ START_TIME=`timestamp`
 # run bench
 echo $NUTCH_HOME
 $NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit $result
+fi
 
 # post-running
 END_TIME=`timestamp`

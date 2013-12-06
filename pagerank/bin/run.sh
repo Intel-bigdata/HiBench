@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -59,22 +60,57 @@ START_TIME=`timestamp`
 if [ $BLOCK -eq 0 ]
 then
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
+    
 else
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
+    result=$?
+    if [ $result -ne 0 ]
+    then
+	echo "ERROR: Hadoop job failed to run successfully." 
+	exit $result
+    fi
+
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_input
-
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_iv_block
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_initvector
 
+    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
+    result=$?
+    if [ $result -ne 0 ]
+    then
+        echo "ERROR: Hadoop job failed to run successfully."
+        exit $result
+    fi
+
+    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_initvector
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
+
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
+    result=$?
+    if [ $result -ne 0 ]
+    then
+        echo "ERROR: Hadoop job failed to run successfully."
+        exit $result
+    fi
 
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
+    
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
+    result=$?
+    if [ $result -ne 0 ]
+    then
+        echo "ERROR: Hadoop job failed to run successfully."
+        exit $result
+    fi
+
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
 
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
+    result=$?
+    if [ $result -ne 0 ]
+    then
+        echo "ERROR: Hadoop job failed to run successfully."
+        exit $result
+    fi
 fi
 
 # post-running

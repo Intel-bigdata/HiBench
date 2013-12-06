@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u 
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -36,6 +37,13 @@ START_TIME=`timestamp`
 
 # run bench
 ${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh ${OPTION} -resFile ${DIR}/result_read.txt -tputFile ${DIR}/throughput_read.csv
+
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit $result
+fi
 
 # post-running
 END_TIME=`timestamp`

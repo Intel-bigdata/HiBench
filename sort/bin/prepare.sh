@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
@@ -41,3 +42,10 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
     -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
     $COMPRESS_OPT \
     $INPUT_HDFS
+
+result=$?
+ if [ $result -ne 0 ]
+ then
+     echo "ERROR: Hadoop job failed to run successfully."
+     exit $result
+ fi
