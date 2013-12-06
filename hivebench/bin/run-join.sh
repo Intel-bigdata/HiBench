@@ -64,9 +64,9 @@ START_TIME=`timestamp`
 
 # run bench
 $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/rankings_uservisits_join.hive
-if [ $? -ne 0 ]
+result=$?
+if [ $result -ne 0 ]
 then
-    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi

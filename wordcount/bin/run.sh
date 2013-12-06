@@ -50,10 +50,9 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
     -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
     -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
     $INPUT_HDFS $OUTPUT_HDFS
-
-if [ $? -ne 0 ]
+result=$?
+if [ $result -ne 0 ]
 then
-    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi

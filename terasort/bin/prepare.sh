@@ -31,10 +31,9 @@ $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
     -D mapred.map.tasks=$NUM_MAPS \
     $DATASIZE $INPUT_HDFS
-
-if [ $? -ne 0 ]
+result=$?
+if [ $result -ne 0 ]
 then
-    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi

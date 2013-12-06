@@ -45,9 +45,9 @@ START_TIME=`timestamp`
 
 # run bench
 ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
+result=$?
 if [ $? -ne 0 ]
 then
-    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi

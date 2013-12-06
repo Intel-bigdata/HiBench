@@ -30,9 +30,9 @@ $HADOOP_EXECUTABLE dfs -rmr /benchmarks/TestDFSIO-Enh
 
 # generate data
 ${HADOOP_EXECUTABLE} jar ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
-if [ $? -ne 0 ]
+result=$?
+if [ $result -ne 0 ]
 then
-    result=$?
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi

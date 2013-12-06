@@ -63,9 +63,9 @@ then
     
 else
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
-    if [ $? -ne 0 ]
+    result=$?
+    if [ $result -ne 0 ]
     then
-	result=$?
 	echo "ERROR: Hadoop job failed to run successfully." 
 	exit $result
     fi
@@ -74,9 +74,9 @@ else
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_iv_block
 
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    if [ $? -ne 0 ]
+    result=$?
+    if [ $result -ne 0 ]
     then
-	result=$?
         echo "ERROR: Hadoop job failed to run successfully."
         exit $result
     fi
@@ -85,9 +85,9 @@ else
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
 
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
-    if [ $? -ne 0 ]
+    result=$?
+    if [ $result -ne 0 ]
     then
-	result=$?
         echo "ERROR: Hadoop job failed to run successfully."
         exit $result
     fi
@@ -95,9 +95,9 @@ else
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
     
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
-    if [ $? -ne 0 ]
+    result=$?
+    if [ $result -ne 0 ]
     then
-	result=$?
         echo "ERROR: Hadoop job failed to run successfully."
         exit $result
     fi
@@ -105,9 +105,9 @@ else
     $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
 
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
-    if [ $? -ne 0 ]
+    result=$?
+    if [ $result -ne 0 ]
     then
-	result=$?
         echo "ERROR: Hadoop job failed to run successfully."
         exit $result
     fi
