@@ -127,7 +127,7 @@ public class PagerankData {
 
 		@Override
 		public void map(LongWritable key, Text value,
-				OutputCollector<LongWritable, Text> output, Reporter reporter) throws IOException {
+				OutputCollector<LongWritable, NullWritable> output, Reporter reporter) throws IOException {
 	
 			int slotId = Integer.parseInt(value.toString().trim());
 			long[] range = HtmlCore.getPageRange(slotId, pages, slotpages);
@@ -135,7 +135,7 @@ public class PagerankData {
 			for (long i=range[0]; i<range[1]; i++) {
 				key.set(i);
 				Text v = new Text(Long.toString(i));
-				output.collect(key, v);
+				output.collect(key, NullWritable.get());
 				reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+v.getLength());
 			}
 		}
@@ -247,7 +247,7 @@ public class PagerankData {
 				long[] linkids = html.genPureLinkIds();
 				for (int j=0; j<linkids.length; j++) {
 					to = Long.toString(linkids[j]);
-					Text v = new Text(from + delim + to);
+					Text v = new Text(to);
 					output.collect(key, v);
 					reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+v.getLength());
 				}
