@@ -83,7 +83,7 @@ if ${HADOOP_EXECUTABLE} fs -test -e ${DBGEN_HDFS_BASE} ; then
     ${HADOOP_EXECUTABLE} fs -rmr ${DBGEN_HDFS_BASE}
 fi
 
-${HADOOP_EXECUTABLE} fs -mkdir ${DBGEN_HDFS_DATA}
+${HADOOP_EXECUTABLE} fs -mkdir -p ${DBGEN_HDFS_DATA}
 ${HADOOP_EXECUTABLE} fs -moveFromLocal ${DBGEN_LOCAL_DIR}/Input ${DBGEN_HDFS_INPUT}
 
 for TNP in dbgen_version date_dim time_dim call_center income_band household_demographics item warehouse promotion reason ship_mode store web_site web_page 
