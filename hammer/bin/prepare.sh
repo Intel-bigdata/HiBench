@@ -144,7 +144,7 @@ ${HADOOP_EXECUTABLE} fs -mkdir ${WEBLOG_OUTPUT_HDFS}/ip
 ${HADOOP_EXECUTABLE} fs -mkdir ${WEBLOG_OUTPUT_HDFS}/useragents
 CUSTOMERS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(c_customer_sk) from etl_sales_db.customer'`
 ITEMS_MAX=`${HIVE_HOME}/bin/hive -e 'select max(i_item_sk) from etl_sales_db.item'`
-${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob ${WEBLOG_OUTPUT_HDFS}/web_logs_input ${WEBLOG_OUTPUT_HDFS}/web_logs ${PARTNUM} $CUSTOMERS_MAX $ITEMS_MAX
+${HADOOP_EXECUTABLE} jar ${HAMMER_HOME}/lib/Hammer-java.jar com.intel.hammer.log.generator.hadoop.LogGenJob ${WEBLOG_OUTPUT_HDFS}/web_logs_input ${WEBLOG_OUTPUT_HDFS}/web_logs ${PARTNUM} ${CUSTOMERS_MAX} ${ITEMS_MAX}
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/cookies-* ${WEBLOG_OUTPUT_HDFS}/cookies/
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/useragents-* ${WEBLOG_OUTPUT_HDFS}/useragents/
 ${HADOOP_EXECUTABLE} fs -mv ${WEBLOG_OUTPUT_HDFS}/web_logs/ip-* ${WEBLOG_OUTPUT_HDFS}/ip/
