@@ -33,7 +33,6 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $TEMP_HDFS
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
