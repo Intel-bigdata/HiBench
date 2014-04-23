@@ -37,7 +37,7 @@ $HADOOP_EXECUTABLE dfs -rmr $TEMP_HDFS
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+VSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
 VSIZE=${VSIZE##*|}
 VSIZE=${VSIZE//,/}
 
