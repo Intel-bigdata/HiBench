@@ -26,24 +26,23 @@ DIR=`cd $bin/../; pwd`
 check_compress
 $HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS
 
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-
-#--- for hadoop version 2.0.5 above ---
-
-  # generate data
-  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
-    -D mapreduce.randomtextwriter.bytespermap=$((${DATASIZE} / ${NUM_MAPS})) \
-    -D mapreduce.randomtextwriter.mapsperhost=${NUM_MAPS} \
-    $COMPRESS_OPT \
-    $INPUT_HDFS
-
-else
+if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
 #--- for hadoop version 1 ---
 
   # generate data
   $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
     -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
     -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+    $COMPRESS_OPT \
+    $INPUT_HDFS
+
+else
+#--- for hadoop version 2.0.5 above ---
+
+  # generate data
+  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
+    -D mapreduce.randomtextwriter.bytespermap=$((${DATASIZE} / ${NUM_MAPS})) \
+    -D mapreduce.randomtextwriter.mapsperhost=${NUM_MAPS} \
     $COMPRESS_OPT \
     $INPUT_HDFS
 

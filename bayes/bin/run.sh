@@ -27,7 +27,7 @@ check_compress
 # path check
 ${HADOOP_EXECUTABLE} $RMDIR_CMD ${OUTPUT_HDFS}
 
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+if [ "x"$HADOOP_VERSION == "xhadoop2" -o "x"$HADOOP_VERSION == "xcdh5" ]; then
   SIZE=`grep "BYTES_DATA_GENERATED=" $TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
 else
   SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')

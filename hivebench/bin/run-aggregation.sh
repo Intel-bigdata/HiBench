@@ -31,15 +31,24 @@ $HADOOP_EXECUTABLE fs -rmr /tmp
 
 # pre-running
 echo "USE DEFAULT;" > $DIR/hive-benchmark/uservisits_aggre.hive
-echo "set mapred.map.tasks=$NUM_MAPS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-echo "set mapred.reduce.tasks=$NUM_REDS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
 echo "set hive.stats.autogather=false;" >> $DIR/hive-benchmark/uservisits_aggre.hive
 
+
 if [ $COMPRESS -eq 1 ]; then
+  echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
     echo "set mapred.output.compress=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
     echo "set mapred.output.compression.type=BLOCK;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapred.output.compression.codec=$COMPRESS_CODEC;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/uservisits_aggre.hive
+  else
+    echo "set mapreduce.jobtracker.address=ignorethis" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set hive.exec.show.job.failure.debug.info=false" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapreduce.map.output.compress=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+  fi
 fi
 
 echo "DROP TABLE uservisits;" >> $DIR/hive-benchmark/uservisits_aggre.hive

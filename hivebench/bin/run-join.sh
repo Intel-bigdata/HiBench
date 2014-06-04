@@ -30,36 +30,32 @@ $HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/rankings_uservisits_join
 #$HADOOP_EXECUTABLE $RMDIR_CMD /tmp
 
 # pre-running
-echo "USE DEFAULT;">$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "set hive.stats.autogather=false;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "USE DEFAULT;" > $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "set hive.stats.autogather=false;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
 
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  echo "set mapreduce.jobtracker.address=ignorethis">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-  echo "set hive.exec.show.job.failure.debug.info=false">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-
-  if [ $COMPRESS -eq 1 ]; then
-    echo "set mapreduce.map.output.compress=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set hive.exec.compress.output=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-  fi
-else
-  if [ $COMPRESS -eq 1 ]; then
-    echo "set mapred.output.compress=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set hive.exec.compress.output=true;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set mapred.output.compression.type=BLOCK;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};">>$DIR/hive-benchmark/rankings_uservisits_join.hive
+if [ $COMPRESS -eq 1 ]; then
+  echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
+    echo "set mapred.output.compress=true;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapred.output.compression.type=BLOCK;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+  else
+    echo "set mapreduce.jobtracker.address=ignorethis" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set hive.exec.show.job.failure.debug.info=false" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapreduce.map.output.compress=true;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
   fi
 fi
 
-echo "DROP TABLE rankings;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "DROP TABLE uservisits;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "DROP TABLE rankings_uservisits_join;">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits/';">>$DIR/hive-benchmark/rankings_uservisits_join.hive
-cat $DIR/hive-benchmark/rankings_uservisits_join.template>>$DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "DROP TABLE rankings;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "DROP TABLE uservisits;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "DROP TABLE rankings_uservisits_join;" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits/';" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
+cat $DIR/hive-benchmark/rankings_uservisits_join.template >> $DIR/hive-benchmark/rankings_uservisits_join.hive
 
 USIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
 USIZE=${USIZE##*|}
