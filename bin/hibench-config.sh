@@ -29,37 +29,36 @@ export HIBENCH_VERSION="2.2"
 HADOOP_EXECUTABLE= 
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
+MAPRED_EXECUTABLE=
 
 if [ -n "$HADOOP_HOME" ]; then
-	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
+        HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
 fi 					
 
 if $HADOOP_EXECUTABLE version|grep -i -q cdh4; then
 	HADOOP_VERSION=cdh4
+elif $HADOOP_EXECUTABLE version|grep -i -q cdh5; then
+        HADOOP_VERSION=cdh5
 elif $HADOOP_EXECUTABLE version|grep -i -q "hadoop 2"; then
-  HADOOP_VERSION=hadoop2
+        HADOOP_VERSION=hadoop2
 else
-	HADOOP_VERSION=hadoop1
+        HADOOP_VERSION=hadoop1
 fi
 
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-	export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-	HADOOP_EXAMPLES_JAR=$HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples*.jar
-  MAPRED_EXECUTABLE=$HADOOP_HOME/bin/mapred
-
-  CONFIG_REDUCER_NUMBER=mapreduce.job.reduces
-  CONFIG_MAP_NUMBER=mapreduce.job.maps
-else
-  export HADOOP_CONF_DIR=$HADOOP_HOME/conf
-  HADOOP_EXAMPLES_JAR=$HADOOP_HOME/hadoop-examples*.jar
+if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
 
   CONFIG_REDUCER_NUMBER=mapred.reduce.tasks
   CONFIG_MAP_NUMBER=mapred.map.tasks
+else
+
+  CONFIG_REDUCER_NUMBER=mapreduce.job.reduces
+  CONFIG_MAP_NUMBER=mapreduce.job.maps
 fi
 
 echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
+echo MAPRED_EXECUTABLE=${MAPRED_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 
 if [ -z "$HIBENCH_HOME" ]; then
     export HIBENCH_HOME=`dirname "$this"`/..
@@ -75,7 +74,7 @@ fi
 
 
 if [ -z "$HIVE_HOME" ]; then
-    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.9.0-bin
+    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.12.0-bin
 fi
 
 
@@ -104,7 +103,7 @@ fi
 HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 
 # base dir HDFS
-export DATA_HDFS=/tmp/HiBench
+export DATA_HDFS=/HiBench
 
 # local report
 export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report

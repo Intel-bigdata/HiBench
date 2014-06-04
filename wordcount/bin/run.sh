@@ -43,12 +43,12 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 # post-running
 END_TIME=`timestamp`
 
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
-else
+if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
   SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
   SIZE=${SIZE##*|}
   SIZE=${SIZE//,/}
+else
+  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
 fi
 
 rm -rf $TMPLOGFILE

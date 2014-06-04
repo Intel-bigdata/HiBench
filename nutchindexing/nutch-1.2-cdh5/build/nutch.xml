@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><Context path="/nutch" docBase="nutch-0.9-dev.war" debug="5" reloadable="true" crossContext="true">
+<Parameter override="false" name="searcher.dir" value="crawl"/>
+<Parameter override="false" name="searcher.filter.cache.size" value="16"/>
+<Parameter override="false" name="searcher.filter.cache.threshold" value="0.05"/>
+<Parameter override="false" name="searcher.hostgrouping.rawhits.factor" value="2.0"/>
+<Parameter override="false" name="searcher.summary.context" value="5"/>
+<Parameter override="false" name="searcher.summary.length" value="20"/>
+<Parameter override="false" name="searcher.max.hits" value="-1"/>
+<Parameter override="false" name="searcher.max.time.tick_count" value="-1"/>
+<Parameter override="false" name="searcher.max.time.tick_length" value="200"/>
+<Parameter override="false" name="searcher.num.handlers" value="10"/>
+<Parameter override="false" name="searcher.max.hits.per.page" value="1000"/>
+<Parameter override="false" name="plugin.folders" value="plugins"/>
+<Parameter override="false" name="plugin.auto-activation" value="true"/>
+<Parameter override="false" name="plugin.includes" value="protocol-http|urlfilter-regex|parse-(text|html|js|tika)|index-(basic|anchor)|query-(basic|site|url)|response-(json|xml)|summary-basic|scoring-opic|urlnormalizer-(pass|regex|basic)"/>
+<Parameter override="false" name="plugin.excludes" value=""/>
+<Parameter override="false" name="parse.plugin.file" value="parse-plugins.xml"/>
+<Parameter override="false" name="extension.clustering.hits-to-cluster" value="100"/>
+<Parameter override="false" name="extension.clustering.extension-name" value=""/>
+<Parameter override="false" name="extension.ontology.extension-name" value=""/>
+<Parameter override="false" name="extension.ontology.urls" value="&#10;  "/>
+<Parameter override="false" name="query.url.boost" value="4.0"/>
+<Parameter override="false" name="query.anchor.boost" value="2.0"/>
+<Parameter override="false" name="query.title.boost" value="1.5"/>
+<Parameter override="false" name="query.host.boost" value="2.0"/>
+<Parameter override="false" name="query.phrase.boost" value="1.0"/>
+<Parameter override="false" name="query.phrase.slop" value="5"/>
+<Parameter override="false" name="query.cc.boost" value="0.0"/>
+<Parameter override="false" name="query.type.boost" value="0.0"/>
+<Parameter override="false" name="query.site.boost" value="0.0"/>
+<Parameter override="false" name="query.tag.boost" value="1.0"/>
+<Parameter override="false" name="query.lang.boost" value="0.0"/>
+<Parameter override="false" name="searcher.response.maxage" value="86400"/>
+<Parameter override="false" name="searcher.response.prettyprint" value="true"/>
+</Context>
