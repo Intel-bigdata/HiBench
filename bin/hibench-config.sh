@@ -31,10 +31,6 @@ HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
 MAPRED_EXECUTABLE=
 
-if [ -n "$HADOOP_HOME" ]; then
-        HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
-fi 					
-
 if $HADOOP_EXECUTABLE version|grep -i -q cdh4; then
 	HADOOP_VERSION=cdh4
 elif $HADOOP_EXECUTABLE version|grep -i -q cdh5; then
@@ -100,7 +96,6 @@ then
               HADOOP_CONF_DIR=$confdir
     fi
 fi
-HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 
 # base dir HDFS
 export DATA_HDFS=/HiBench
