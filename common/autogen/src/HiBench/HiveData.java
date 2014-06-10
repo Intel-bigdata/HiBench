@@ -306,6 +306,7 @@ public class HiveData {
 		setRankingsOptions(job);
 		job.setJobName(jobname);
 		job.set("mapred.reduce.slowstart.completed.maps", "0.3");
+		job.set("mapreduce.job.reduce.slowstart.completedmaps", "0.3");
 
 		job.setOutputKeyClass(LongWritable.class);
 		job.setOutputValueClass(Text.class);
@@ -331,6 +332,7 @@ public class HiveData {
 		FileInputFormat.setInputPaths(job, dummy.getPath());
 
 		job.set("mapred.map.output.compression.type", "BLOCK");
+	 	job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");	
 		MapFileOutputFormat.setCompressOutput(job, true);
 //		MapFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.LzoCodec.class);
 		MapFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.DefaultCodec.class);
@@ -343,7 +345,7 @@ public class HiveData {
 		
 		if (null != options.getCodecClass()) {
 			job.set("mapred.output.compression.type","BLOCK");
-			
+		 	job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");	
 			FileOutputFormat.setCompressOutput(job, true);
 			FileOutputFormat.setOutputCompressorClass(job, options.getCodecClass());
 		}
@@ -593,6 +595,7 @@ public class HiveData {
 		
 		if (null != options.getCodecClass()) {
 			job.set("mapred.output.compression.type","BLOCK");
+                        job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");
 			FileOutputFormat.setCompressOutput(job, true);
 			FileOutputFormat.setOutputCompressorClass(job, options.getCodecClass());
 		}

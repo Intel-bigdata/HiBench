@@ -17,10 +17,10 @@
 
 
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  RMDIR_CMD="fs -rm -r"
+  RMDIR_CMD="fs -rm -r -skipTrash"
   DUS_CMD="fs -du -s"
 else
-  RMDIR_CMD="fs -rmr"
+  RMDIR_CMD="fs -rmr -skipTrash"
   DUS_CMD="fs -dus"
 fi
 

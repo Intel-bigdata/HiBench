@@ -23,15 +23,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress check
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-Dmapred.output.compress=true \
-    -Dmapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-Dmapred.output.compress=false"
-fi
-
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
