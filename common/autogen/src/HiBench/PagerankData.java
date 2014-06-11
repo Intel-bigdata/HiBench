@@ -190,6 +190,7 @@ public class PagerankData {
 		
 		if (null != options.getCodecClass()) {
 			job.set("mapred.output.compression.type","BLOCK");
+			job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");
 			FileOutputFormat.setCompressOutput(job, true);
 			FileOutputFormat.setOutputCompressorClass(job, options.getCodecClass());
 		}
@@ -291,6 +292,7 @@ public class PagerankData {
 		
 		if (null != options.getCodecClass()) {
 			job.set("mapred.output.compression.type","BLOCK");
+			job.set("mapreduce.output.fileoutputformat.compress.type", "BLOCK");
 			FileOutputFormat.setCompressOutput(job, true);
 			FileOutputFormat.setOutputCompressorClass(job, options.getCodecClass());
 		}

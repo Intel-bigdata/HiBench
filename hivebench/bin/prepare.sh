@@ -38,9 +38,11 @@ OPTION="-t hive \
 	-v ${USERVISITS} \
 	-o sequence"
 
+
+rm -rf $TMPLOGFILE
 START_TIME=`timestamp`
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE
 
 END_TIME=`timestamp`
 CODEC=`echo ${COMPRESS_CODEC} | sed 's/.*\.//'`

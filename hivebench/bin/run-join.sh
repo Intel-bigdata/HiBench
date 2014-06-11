@@ -77,4 +77,5 @@ END_TIME=`timestamp`
 gen_report "HIVEJOIN" ${START_TIME} ${END_TIME} ${SIZE}
 
 $HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/hive-join
+$HADOOP_EXECUTABLE fs -mkdir $OUTPUT_HDFS/hive-join
 $HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/rankings_uservisits_join $OUTPUT_HDFS/hive-join

@@ -23,14 +23,7 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress check
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-Dmapred.output.compress=true \
-    -Dmapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-Dmapred.output.compress=false"
-fi
+check_compress
 
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
@@ -60,18 +53,18 @@ then
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
 else
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_input
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_input
 
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_iv_block
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_iv_block
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_initvector
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_initvector
 
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_colnorm
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
 
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_block
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_block
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
-    $HADOOP_EXECUTABLE dfs -rmr ${OUTPUT_HDFS}/pr_edge_colnorm
+    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_colnorm
 
     $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
 fi
