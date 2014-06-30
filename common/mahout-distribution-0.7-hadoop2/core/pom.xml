@@ -200,43 +200,26 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
+        <dependency>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client</artifactId>
+        </dependency>
 
   </dependencies>
   
   <profiles>
-    <profile>
-      <id>hadoop-0.20</id>
-      <activation>
-        <property>
-          <name>!hadoop.version</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-common</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>hadoop-0.23</id>
+   <profile>
+      <id>cdh4</id>
       <activation>
         <property>
           <name>hadoop.version</name>
+          <value>2.0.0-mr1-cdh4.1.2</value>
         </property>
       </activation>
       <dependencies>
         <dependency>
           <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-common</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-mapreduce-client-common</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.hadoop</groupId>
-          <artifactId>hadoop-mapreduce-client-core</artifactId>
+          <artifactId>hadoop-client</artifactId>
         </dependency>
       </dependencies>
     </profile>
