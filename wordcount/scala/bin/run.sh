@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.SparkPi --master local ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar
+$SPARK_HOME/bin/spark-submit --class ScalaWordCount --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-word-count_2.10-1.0.jar $INPUT_HDFS
 #$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 #    $COMPRESS_OPT \
 #    -D mapred.reduce.tasks=${NUM_REDS} \

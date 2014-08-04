@@ -22,13 +22,13 @@ export HIBENCH_VERSION="2.2"
 
 ###################### Global Paths ##################
 
-HADOOP_EXECUTABLE= 
+HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
-SPARK_MASTER=`printenv SPARK_MASTER`
-SPARK_HOME=`printenv SPARK_HOME`
-HADOOP_HOME=`printenv HADOOP_HOME`
-HIBENCH_HOME=`printenv HIBENCH_HOME`
+SPARK_MASTER=spark://lv-dev:7077
+SPARK_HOME=/deploy/spark
+HADOOP_HOME=/deploy/hadoop-1.2.1
+HIBENCH_HOME=/home/lv/intel/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`
 HIVE_HOME=`printenv HIVE_HOME`
 MAHOUT_HOME=`printenv MAHOUT_HOME`
@@ -109,7 +109,7 @@ fi
 HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 
 # base dir HDFS
-export DATA_HDFS=/HiBench
+export DATA_HDFS=hdfs://localhost:54310/HiBench
 
 # local report
 export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report

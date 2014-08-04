@@ -41,12 +41,12 @@ fi
 #SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
 #SIZE=${SIZE##*|}
 #SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+START_TIME=`timestamp`
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --master local ${DIR}/wordcount.py $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/wordcount.py $INPUT_HDFS
 
 # post-running
-#END_TIME=`timestamp`
+END_TIME=`timestamp`
 #gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
