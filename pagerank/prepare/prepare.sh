@@ -33,7 +33,7 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS_DIR
 
 # generate data
 #DELIMITER=\t
@@ -51,5 +51,12 @@ result=$?
 if [ $result -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
+    exit $result
+fi
+( cd `dirname $0` && sbt "run `dirname ${DATA_HDFS}` ${INPUT_HDFS_DIR}/edges/ ${INPUT_HDFS}" )
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: covert job failed to run successfully." 
     exit $result
 fi
