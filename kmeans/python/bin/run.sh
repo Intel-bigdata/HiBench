@@ -18,21 +18,13 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running Scala Kmeans bench =========="
+echo "========== running python kmeans bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
 # compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
 
 # path check
 #$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
@@ -41,11 +33,12 @@ fi
 #SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
 #SIZE=${SIZE##*|}
 #SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.DenseKMeans --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
+echo $SPARK_HOME
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/kmeans.py $INPUT_HDFS $K $MAX_ITERATION 
 
 # post-running
-#END_TIME=`timestamp`
+END_TIME=`timestamp`
 #gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}

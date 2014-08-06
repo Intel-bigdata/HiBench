@@ -24,7 +24,7 @@ object Convert{
       val dirs = fileSystem.listStatus(new Path(input_path))
       dirs.foreach { it =>
         if (it.getPath.getName.startsWith("part-")) {
-          println("open file", it.getPath)
+          println("Processing file %s".format(it.getPath))
           val in = new BufferedReader(new InputStreamReader(fileSystem.open(it.getPath), "utf-8"))
           Iterator.continually(in.readLine()).takeWhile(_ != null).foreach{line =>
             val elements = line.split('\t')

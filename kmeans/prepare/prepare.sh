@@ -34,11 +34,24 @@ else
 fi
 
 # paths check
-$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS}
+$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS_DIR}
 
 # generate data
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
 export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
 
-exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION}
+"$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION}
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: Hadoop job failed to run successfully." 
+    exit $result
+fi
+( cd `dirname $0` && sbt "run `dirname ${DATA_HDFS}` ${INPUT_SAMPLE} ${INPUT_HDFS}" )
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: covert job failed to run successfully." 
+    exit $result
+fi
 
