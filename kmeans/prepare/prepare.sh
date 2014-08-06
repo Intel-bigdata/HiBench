@@ -13,43 +13,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== preparing pagerank data=========="
+echo "========== preparing kmeans data =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+
 # compress check
-# compress
 if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+    COMPRESS_OPT="-compress true \
+        -compressCodec $COMPRESS_CODEC \
+        -compressType BLOCK "
 else
-    COMPRESS_OPT=""
+    COMPRESS_OPT="-compress false"
 fi
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+# paths check
+$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS}
 
 # generate data
-#DELIMITER=\t
-OPTION="-t pagerank \
-        -b ${PAGERANK_BASE_HDFS} \
-        -n ${PAGERANK_INPUT} \
-        -m ${NUM_MAPS} \
-        -r ${NUM_REDS} \
-        -p ${PAGES} \
-        -o text"
-#       -d ${DELIMITER} \
-echo $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Hadoop job failed to run successfully." 
-    exit $result
-fi
+OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
+export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
+
+exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION}
+

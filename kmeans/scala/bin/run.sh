@@ -44,8 +44,7 @@ fi
 #START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.SparkKMeans --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.SparkKMeans --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar $INPUT_HDFS $K $CONVERGEDIST
 
 # post-running
 #END_TIME=`timestamp`
