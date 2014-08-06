@@ -29,15 +29,20 @@ check_compress
 $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
-VSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-VSIZE=${VSIZE##*|}
-VSIZE=${VSIZE//,/}
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+    SIZE=`grep "BYTES_DATA_GENERATED=" tmplog.log | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
+else
+    VSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+    VSIZE=${VSIZE##*|}
+    VSIZE=${VSIZE//,/}
 
-ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/edges | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-ESIZE=${ESIZE##*|}
-ESIZE=${ESIZE//,/}
+    ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/edges | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
+    ESIZE=${ESIZE##*|}
+    ESIZE=${ESIZE//,/}
 
-SIZE=$((VSIZE+ESIZE))
+    SIZE=$((VSIZE+ESIZE))
+fi
+
 if [ $BLOCK -eq 0 ]
 then
     OPTION="${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS} ${PAGES} ${NUM_REDS} ${NUM_ITERATIONS} nosym new"
