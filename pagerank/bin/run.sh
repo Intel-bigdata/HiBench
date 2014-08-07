@@ -30,7 +30,7 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-    SIZE=`grep "BYTES_DATA_GENERATED=" tmplog.log | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
+    SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
 else
     VSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
     VSIZE=${VSIZE##*|}

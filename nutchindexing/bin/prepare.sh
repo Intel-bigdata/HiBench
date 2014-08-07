@@ -39,4 +39,4 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1

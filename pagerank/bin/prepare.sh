@@ -28,6 +28,7 @@ if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
+rm -rf ${DIR}/$TMPLOGFILE
 # generate data
 #DELIMITER=\t
 OPTION="-t pagerank \
@@ -39,5 +40,5 @@ OPTION="-t pagerank \
 	-o text"
 
 #	-d ${DELIMITER} \
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} | tee ${DIR}/$TMPLOGFILE
 

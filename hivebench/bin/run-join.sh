@@ -58,7 +58,7 @@ echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate
 cat $DIR/hive-benchmark/rankings_uservisits_join.template >> $DIR/hive-benchmark/rankings_uservisits_join.hive
 
 if ["x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "BYTES_DATA_GENERATED=" $TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
+  SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
 else
   USIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
   USIZE=${USIZE##*|}
