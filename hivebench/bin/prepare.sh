@@ -28,7 +28,7 @@ if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
-$TMPLOGFILE=tmplog.log
+rm -rf ${DIR}/$TMPLOGFILE
 # generate data
 OPTION="-t hive \
 	-b ${HIVE_BASE_HDFS} \

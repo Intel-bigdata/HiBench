@@ -28,6 +28,7 @@ if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
+rm -rf ${DIR}/$TMPLOGFILE
 # generate data
 #DELIMITER=\t
 OPTION="-t pagerank \
