@@ -28,6 +28,7 @@ if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
+$TMPLOGFILE=tmplog.log
 # generate data
 OPTION="-t hive \
 	-b ${HIVE_BASE_HDFS} \
@@ -42,7 +43,7 @@ OPTION="-t hive \
 rm -rf $TMPLOGFILE
 START_TIME=`timestamp`
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee ${DIR}/$TMPLOGFILE
 
 END_TIME=`timestamp`
 CODEC=`echo ${COMPRESS_CODEC} | sed 's/.*\.//'`

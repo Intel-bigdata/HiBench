@@ -31,8 +31,6 @@ echo "== start MR job =="
 # pre-running
 START_TIME=`timestamp`
 
-TMPLOGFILE=tmplog.log
-
 # run bench
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
     $COMPRESS_OPT \
@@ -40,7 +38,7 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
     -outValue org.apache.hadoop.io.Text \
     -r ${NUM_REDS} \
     $INPUT_HDFS $OUTPUT_HDFS \
-    2>&1 | tee $TMPLOGFILE
+    2>&1 | tee ${DIR}/$TMPLOGFILE
 
 # post-running
 END_TIME=`timestamp`
@@ -52,9 +50,9 @@ if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
   SIZE=${SIZE##*|}
   SIZE=${SIZE//,/}
 else
-  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
+  SIZE=`grep "Bytes Read" ${DIR}/$TMPLOGFILE | sed 's/Bytes Read=//'`
 fi
 
-rm -rf $TMPLOGFILE
+rm -rf ${DIR}/$TMPLOGFILE
 gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE}
 

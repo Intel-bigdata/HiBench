@@ -28,7 +28,7 @@ if [ ${COMPRESS} -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 fi
 
-rm -rf $TMPLOGFILE
+rm -rf ${DIR}/$TMPLOGFILE
 
 # generate data
 OPTION="-t bayes \
@@ -40,4 +40,4 @@ OPTION="-t bayes \
         -class ${CLASSES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee $TMPLOGFILE
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee ${DIR}/$TMPLOGFILE

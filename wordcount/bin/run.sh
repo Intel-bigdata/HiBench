@@ -24,8 +24,6 @@ DIR=`cd $bin/../; pwd`
 
 check_compress
 
-TMPLOGFILE=tmplog.log
-
 # path check
 $HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
 
@@ -40,7 +38,7 @@ $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
     -D mapreduce.job.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
     -D mapreduce.job.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
     $INPUT_HDFS $OUTPUT_HDFS \
-    2>&1 | tee $TMPLOGFILE
+    2>&1 | tee ${DIR}/$TMPLOGFILE
 
 # post-running
 END_TIME=`timestamp`
@@ -50,10 +48,10 @@ if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
   SIZE=${SIZE##*|}
   SIZE=${SIZE//,/}
 else
-  SIZE=`grep "Bytes Read" $TMPLOGFILE | sed 's/Bytes Read=//'`
+  SIZE=`grep "Bytes Read" ${DIR}/$TMPLOGFILE | sed 's/Bytes Read=//'`
 fi
 
-rm -rf $TMPLOGFILE
+rm -rf ${DIR}/$TMPLOGFILE
 
 gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
 

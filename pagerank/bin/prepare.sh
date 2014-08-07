@@ -39,5 +39,5 @@ OPTION="-t pagerank \
 	-o text"
 
 #	-d ${DELIMITER} \
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} | tee ${DIR}/$TMPLOGFILE
 
