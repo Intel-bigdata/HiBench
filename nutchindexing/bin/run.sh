@@ -23,7 +23,7 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-check-compress
+check_compress
 
 # path check
 $HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS/indexes
