@@ -136,5 +136,5 @@ And all test cases are supported.
 
 If you are using mapreduce 1.0 on cdh4/5, you need to configure a little to run nutchindexing:
 
-    Change the `nutch-site-mr1.xml` to `nutch-site.xml` to replace the default one in `HiBench/nutchindexing/nutch-1.2-cdh4/conf` or `HiBench/nutchindexing/nutch-1.2-cdh5/conf` which depends on your cdh version. 
+  Change the `nutch-site-mr1.xml` to `nutch-site.xml` to replace the default one in `HiBench/nutchindexing/nutch-1.2-cdh4/conf` or `HiBench/nutchindexing/nutch-1.2-cdh5/conf` which depends on your cdh version. 
 
