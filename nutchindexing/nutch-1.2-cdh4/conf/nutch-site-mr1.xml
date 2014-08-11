@@ -11,7 +11,7 @@
 
 <property>
 <name>plugin.folders</name>
-<value>${java.io.tmpdir}/../job.jar/plugins</value>
+<value>${java.io.tmpdir}/../plugins</value>
 </property> 
 
 <property>
