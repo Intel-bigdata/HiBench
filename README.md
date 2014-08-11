@@ -132,10 +132,9 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 ### For Yarn ###
 
 At present, To run Hibench on top of Yarn is supported in Yarn branch.
-And not all test cases are ported, currently only the following cases are supported:
+And all test cases are supported.
 
-sort / terasort / wordcount / dfsioe / bayes / kmeans
+If you are using mapreduce 1.0 on cdh4/5, you need to configure a little to run nutchindexing:
 
-verified upon apache hadoop 2.0.5-alpha
+    Change the `nutch-site-mr1.xml` to `nutch-site.xml` to replace the default one in `HiBench/nutchindexing/nutch-1.2-cdh4/conf` or `HiBench/nutchindexing/nutch-1.2-cdh5/conf` which depends on your cdh version. 
 
-you might need to tweak a little bit for the other versions, since before release, Hadoop 2.0 API do change a lot.
