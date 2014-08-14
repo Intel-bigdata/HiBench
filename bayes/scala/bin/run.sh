@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running java sort bench =========="
+echo "========== running Scala Kmeans bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -44,8 +44,7 @@ fi
 #START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/java-sort-project-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar ${INPUT_HDFS}/vectors.txt
 
 # post-running
 #END_TIME=`timestamp`

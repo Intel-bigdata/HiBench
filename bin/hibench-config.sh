@@ -34,6 +34,8 @@ HIVE_HOME=`printenv HIVE_HOME`
 MAHOUT_HOME=`printenv MAHOUT_HOME`
 NUTCH_HOME=`printenv NUTCH_HOME`
 DATATOOLS=`printenv DATATOOLS`
+# dict path
+DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
@@ -94,6 +96,22 @@ fi
 
 if [ -z "$DATATOOLS" ]; then
     export DATATOOLS=${HIBENCH_HOME}/common/autogen/dist/datatools.jar
+fi
+
+# check dict path and dict file
+if [ -z "$DICT_PATH" ]; then
+    DICT_PATH=/usr/share/dict/words
+fi
+
+if [[ ! -e "$DICT_PATH" ]]; then
+    echo "ERROR: Dict file ${DICT_PATH} does not exist!"
+exit
+fi
+
+count=`cat $DICT_PATH | wc -w`
+if (($count < 20)); then
+    echo "ERROR: The number of dict words in ${DICT_PATH} is less than 20!"
+exit
 fi
 
 if [ $# -gt 1 ]

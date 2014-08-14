@@ -14,39 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 set -u
-
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running java sort bench =========="
+echo "========== preparing bayes data =========="
+
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/hibench-config.sh"
-. "${DIR}/../conf/configure.sh"
+. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
+# compress check
+if [ ${COMPRESS} -eq 1 ]; then
+	COMPRESS_OPT="-c ${COMPRESS_CODEC}"
 else
-    COMPRESS_OPT="-D mapred.output.compress=false"
+	COMPRESS_OPT=""
 fi
 
-# path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+# generate data
+OPTION="-t bayes \
+        -b ${BAYES_BASE_HDFS} \
+        -n ${BAYES_INPUT} \
+        -m ${NUM_MAPS} \
+        -r ${NUM_REDS} \
+        -p ${PAGES} \
+        -x ${DICT_PATH} \
+        -class ${CLASSES} \
+        -o sequence"
 
-# pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
-
-# run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/java-sort-project-1.0.jar $INPUT_HDFS
-
-# post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+echo $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
