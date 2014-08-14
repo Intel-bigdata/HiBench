@@ -24,12 +24,21 @@ export HIBENCH_VERSION="2.2"
 
 ###################### Global Paths ##################
 
+<<<<<<< HEAD
 export JAVA_HOME=
 export HADOOP_HOME=
-export HADOOP_EXECUTABLE= 
+export HADOOP_EXECUTABLE=
 export HADOOP_CONF_DIR=
 export HADOOP_EXAMPLES_JAR=
 export MAPRED_EXECUTABLE=
+=======
+export JAVA_HOME=/usr/java/jdk1.7.0_04
+export HADOOP_HOME=/home/shilei/hadoop-2/hadoop-2.3.0-cdh5.1.0
+export HADOOP_EXECUTABLE=/home/shilei/hadoop-2/hadoop-2.3.0-cdh5.1.0/bin/hadoop
+export HADOOP_CONF_DIR=/home/shilei/hadoop-2/hadoop-2.3.0-cdh5.1.0/etc/hadoop
+export HADOOP_EXAMPLES_JAR=/home/shilei/hadoop-2/hadoop-2.3.0-cdh5.1.0/share/hadoop/mapreduce/hadoop-mapreduce-example-2.3.0-cdh5.1.0.jar
+export MAPRED_EXECUTABLE=/home/shilei/hadoop-2/hadoop-2.3.0-cdh5.1.0/bin/mapred
+>>>>>>> 936f0e330efb134d7d73b65c60d1c8b4f2b8a551
 
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_VERSION=hadoop2 # set it to hadoop1 to enable MR1, hadoop2 to enable MR2
@@ -83,8 +92,15 @@ if [ -z "$MAHOUT_HOME" ]; then
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
-    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch-1.2-$HADOOP_RELEASE
+#    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch-1.2-$HADOOP_RELEASE
+<<<<<<< HEAD
+    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch
+=======
+    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch-1.8
+>>>>>>> 936f0e330efb134d7d73b65c60d1c8b4f2b8a551
 fi
+
+echo $NUTCH_HOME
 
 if [ -z "$DATATOOLS" ]; then
     export DATATOOLS=${HIBENCH_HOME}/common/autogen/dist/datatools.jar

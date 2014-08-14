@@ -36,7 +36,8 @@ START_TIME=`timestamp`
 
 # run bench
 echo $NUTCH_HOME
-$NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+$NUTCH_HOME/bin/nutch myindex $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+#$NUTCH_HOME/bin/nutch solrindex $COMPRESS_OPTS http://127.0.0.1:8983/solr $INPUT_HDFS/crawldb -linkdb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 # post-running
 END_TIME=`timestamp`
