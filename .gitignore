@@ -3,3 +3,5 @@ target/
 .idea_modules/
 *.swp
 .emacs.desktop
+derby.log
+metastore_db/

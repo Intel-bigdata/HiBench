@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running scala scan bench =========="
+echo "========== running python aggregation bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -45,20 +45,8 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 #START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaScan --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-scan_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
-#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
-#    $COMPRESS_OPT \
-#    -D mapred.reduce.tasks=${NUM_REDS} \
-#    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-#    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-#    $INPUT_HDFS $OUTPUT_HDFS
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: Hadoop job failed to run successfully."
-#    exit $result
-#fi
+#echo $SPARK_HOME
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/aggregation.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`

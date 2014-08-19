@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running scala scan bench =========="
+echo "========== running scala join bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -46,7 +46,7 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaScan --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-scan_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class ScalaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-join-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 #$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 #    $COMPRESS_OPT \
 #    -D mapred.reduce.tasks=${NUM_REDS} \
