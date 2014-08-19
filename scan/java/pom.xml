@@ -1,0 +1,40 @@
+<project>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <groupId>com.intel</groupId>
+  <artifactId>java-sort-project</artifactId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>Java Sort Project</name>
+  <packaging>jar</packaging>
+  <version>1.0</version>
+  <repositories>
+    <repository>
+      <id>Akka repository</id>
+      <url>http://repo.akka.io/releases</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency> <!-- Spark dependency -->
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.10</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency> <!-- Spark dependency -->
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.10</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+  </dependencies>
+</project>
+
