@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running java sort bench =========="
+echo "========== running java sleep bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/java-sort-project-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaSort --master ${SPARK_MASTER} ${DIR}/target/scala_2.10/java-sleep-1.0.jar $INPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`
