@@ -21,13 +21,13 @@ from pyspark import SparkContext
 from pyspark.sql import SQLContext, HiveContext
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: scan <file>"
+    if len(sys.argv) != 3:
+        print >> sys.stderr, "Usage: scan <hdfs_in_file> <hdfs_out_file>"
         exit(-1)
     sc = SparkContext(appName="PythonScan")
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
     hc.hql("DROP TABLE if exists rankings")
     hc.hql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
-    hc.hql("FROM rankings SELECT count(*)").collect()
+    hc.hql("FROM rankings SELECT *").saveAsTextFile("%s/rankings" % sys.argv[2])
     sc.stop()

@@ -41,11 +41,12 @@ fi
 #SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
 #SIZE=${SIZE##*|}
 #SIZE=${SIZE//,/}
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 #START_TIME=`timestamp`
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaScan --master local ${DIR}/target/scala-2.10/scala-scan_2.10-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class ScalaScan --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-scan_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 #$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 #    $COMPRESS_OPT \
 #    -D mapred.reduce.tasks=${NUM_REDS} \

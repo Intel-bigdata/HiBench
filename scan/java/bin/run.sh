@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running java sort bench =========="
+echo "========== running java scan bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -41,11 +41,12 @@ fi
 #SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
 #SIZE=${SIZE##*|}
 #SIZE=${SIZE//,/}
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 #START_TIME=`timestamp`
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/java-sort-project-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaScan  --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-scan_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`

@@ -35,6 +35,7 @@ fi
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
+echo "Pages:${PAGES}, USERVISITS:${USERVISITS}"
 # generate data
 #DELIMITER=\t
 OPTION="-t hive \
