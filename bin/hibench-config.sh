@@ -86,8 +86,6 @@ if [ -z "$NUTCH_HOME" ]; then
     export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch
 fi
 
-echo $NUTCH_HOME
-
 if [ -z "$DATATOOLS" ]; then
     export DATATOOLS=${HIBENCH_HOME}/common/autogen/dist/datatools.jar
 fi

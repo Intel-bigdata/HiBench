@@ -23,6 +23,41 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+TMP_DIR="/tmp"
+DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/target/dependency"
+
+if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
+  wget -P $TMP_DIR http://archive.apache.org/dist/nutch/apache-nutch-1.2-bin.tar.gz
+fi
+if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
+  echo "Error: Cannot download apache-nutch-1.2-bin.tar.gz, please check your wget!"
+  exit
+fi
+
+cd $TMP_DIR
+if [ ! -d $TMP_DIR"/nutch-1.2" ]; then
+  tar zxf apache-nutch-1.2-bin.tar.gz
+fi
+
+NUTCH_HOME=$TMP_DIR/nutch-1.2
+rm -rf $NUTCH_HOME/conf/*
+rm -rf $NUTCH_HOME/bin/*
+cp $DIR/nutch/conf/nutch-site.xml $NUTCH_HOME/conf
+cp $DIR/nutch/bin/nutch $NUTCH_HOME/bin
+mkdir $NUTCH_HOME/temp
+unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
+rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
+cp $DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+rm $NUTCH_HOME/nutch-1.2.job
+cd $NUTCH_HOME/temp
+zip -qr $NUTCH_HOME/nutch-1.2.job *
+cd $NUTCH_HOME
+rm -rf $NUTCH_HOME/temp
+
+if [ -d $TMP_DIR"/nutch-1.2/lib" ]; then
+  rm -rf $TMP_DIR"/nutch-1.2/lib"
+fi
+
 check_compress
 
 # path check
@@ -35,7 +70,6 @@ export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME/conf
 START_TIME=`timestamp`
 
 # run bench
-echo $NUTCH_HOME
 $NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 # post-running
