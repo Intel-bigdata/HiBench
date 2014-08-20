@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/java-sort-project-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/scala-2.10/java-sort_2.10-1.0.jar $INPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`
