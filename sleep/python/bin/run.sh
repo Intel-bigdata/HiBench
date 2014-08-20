@@ -46,7 +46,7 @@ fi
 # run bench
 #echo $SPARK_HOME
 #$SPARK_HOME/bin/spark-submit --master local ${DIR}/sort.py $INPUT_HDFS
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/sleep.py $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/sleep.py $PARALLEL $SLEEP
 
 # post-running
 #END_TIME=`timestamp`

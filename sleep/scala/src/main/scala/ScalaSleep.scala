@@ -4,7 +4,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
-object ScalaSort{
+object ScalaSleep{
   def main(args: Array[String]){
     if (args.length < 2){
       System.err.println(

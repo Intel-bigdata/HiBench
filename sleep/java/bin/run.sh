@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master ${SPARK_MASTER} ${DIR}/target/scala_2.10/java-sleep-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaSleep --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-sleep_2.10-1.0.jar $PARALLEL $SLEEP 
 
 # post-running
 #END_TIME=`timestamp`

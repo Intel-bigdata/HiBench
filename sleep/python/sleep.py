@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import sys
+import sys, time
 
 from pyspark import SparkContext
 
@@ -25,8 +25,8 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: sleep <parallel> <seconds>"
         exit(-1)
     sc = SparkContext(appName="PythonSleep")
-    parallel = sys.argv[1]
-    seconds  = sys.argv[2]
-    workload = sc.parallel(range(parallel))
+    parallel = int(sys.argv[1])
+    seconds  = int(sys.argv[2])
+    workload = sc.parallelize(range(parallel))
     workload.map(lambda x: time.sleep(seconds)).collect()
     sc.stop()
