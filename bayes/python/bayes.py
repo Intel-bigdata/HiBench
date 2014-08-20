@@ -30,7 +30,6 @@ from pyspark.mllib.classification import NaiveBayes
 def parseVector(line):
     return np.array([float(x) for x in line.split(' ')])
 
-
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >> sys.stderr, "Usage: bayes <file> <numFeatures>"
@@ -38,10 +37,16 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonNaiveBayes")
     filename = sys.argv[1]
     numFeatures = int(sys.argv[2])
+    print "###### Load svm file", filename
     examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
+    print "###### done"
     examples.cache()
+    print "###### cached"
+    exampels_len = examples.count()
+    print "###### data size:", examples_len
 
-    training, test = examples.randomSplit([0.8, 0.2])
+    training = examples.take(0.8 * examples_len)
+    test = examples.take(0.2 * examples_len)
 
     numTraining = training.count()
     numTest = test.count()
@@ -52,6 +57,6 @@ if __name__ == "__main__":
     prediction = model.predict(test.map( lambda x: x.features ))
     predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
     accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count().toDouble() / numTest
-    println(s"Test accuracy = %s." % accuracy)
+    println("Test accuracy = %s." % accuracy)
 
 
