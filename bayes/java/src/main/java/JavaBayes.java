@@ -1,6 +1,7 @@
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.mllib.classification.NaiveBayesModel;
+import org.apache.spark.rdd.RDD;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -15,10 +16,14 @@ import org.apache.spark.mllib.classification.NaiveBayes;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
+
+
 
 public final class JavaBayes {
   private static final Pattern SPACE = Pattern.compile(" ");
+
 
   public static void main(String[] args) throws Exception {
 
@@ -27,14 +32,17 @@ public final class JavaBayes {
       System.exit(1);
     }
 
+    Random rand = new Random();
+
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    Integer numFeatures = Integer.parseInt(args[1]);
+    int numFeatures = Integer.parseInt(args[1]);
 
-    JavaRDD<LabeledPoint> examples = MLUtils.loadLibSVMFile(ctx.sc(), args[0]).toJavaRDD();
-    JavaRDD<LabeledPoint>[] split = examples.randomSplit(new Double[]{0.8, 0.2});
-    JavaRDD<LabeledPoint> training = split[0];
-    JavaRDD<LabeledPoint> test = split[1];
+    RDD<LabeledPoint> examples = MLUtils.loadLibSVMFile(ctx.sc(), args[0], false, numFeatures);
+    RDD<LabeledPoint>[] split = examples.randomSplit(new double[]{0.8, 0.2}, rand.nextLong());
+
+    JavaRDD<LabeledPoint> training = split[0].toJavaRDD();
+    JavaRDD<LabeledPoint> test = split[1].toJavaRDD();
 
     final NaiveBayesModel model = NaiveBayes.train(training.rdd(), 1.0);
     JavaRDD<Double> prediction =
@@ -61,7 +69,7 @@ public final class JavaBayes {
                 }
             }). count() / test.count();
 
-    System.out.println(String.format("Test accuracy = %lf", accuracy));
+    System.out.println(String.format("Test accuracy = %f", accuracy));
     ctx.stop();
   }
 }

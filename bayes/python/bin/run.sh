@@ -37,7 +37,7 @@ START_TIME=`timestamp`
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/bayes.py $INPUT_HDFS $K $MAX_ITERATION 
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/bayes.py ${INPUT_HDFS}/vectors.txt ${NUM_FEATURES}
 
 # post-running
 END_TIME=`timestamp`

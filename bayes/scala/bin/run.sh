@@ -44,7 +44,7 @@ fi
 #START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar ${INPUT_HDFS}/vectors.txt
+$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
 
 # post-running
 #END_TIME=`timestamp`

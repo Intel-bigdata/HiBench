@@ -40,3 +40,5 @@ NUM_REDS=48
 
 # bench parameters
 NGRAMS=3
+
+NUM_FEATURES=`cat ${DICT_PATH} | wc -l`

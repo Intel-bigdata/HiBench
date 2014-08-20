@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaBayes --master local ${DIR}/target/java-bayes-project-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaBayes --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-bayes-bench_2.10-1.0.jar ${INPUT_HDFS}/vectors.txt ${NUM_FEATURES}
 
 # post-running
 #END_TIME=`timestamp`
