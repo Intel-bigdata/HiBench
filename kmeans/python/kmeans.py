@@ -36,7 +36,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 4:
         print >> sys.stderr, "Usage: kmeans <file> <k> <max_iteration>"
         exit(-1)
-    sc = SparkContext(appName="KMeans")
+    sc = SparkContext(appName="PythonKMeans")
     lines = sc.textFile(sys.argv[1])
     data = lines.map(parseVector)
     k = int(sys.argv[2])
