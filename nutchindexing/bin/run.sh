@@ -24,7 +24,8 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 TMP_DIR="/tmp"
-DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/target/dependency"
+export COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
+export NUTCHINDEXING_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
 
 if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
   wget -P $TMP_DIR http://archive.apache.org/dist/nutch/apache-nutch-1.2-bin.tar.gz
@@ -47,7 +48,7 @@ cp $DIR/nutch/bin/nutch $NUTCH_HOME/bin
 mkdir $NUTCH_HOME/temp
 unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
 rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
-cp $DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+cp $COMMON_DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
 rm $NUTCH_HOME/nutch-1.2.job
 cd $NUTCH_HOME/temp
 zip -qr $NUTCH_HOME/nutch-1.2.job *

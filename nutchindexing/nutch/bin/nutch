@@ -137,7 +137,10 @@ if [ -d "$NUTCH_HOME/plugins" ]; then
 fi
 
 # add libs to CLASSPATH
-for f in $HIBENCH_HOME/nutchindexing/nutch/lib/*.jar; do
+for f in $COMMON_DEPENDENCY_DIR/*.jar; do
+  CLASSPATH=${CLASSPATH}:$f;
+done
+for f in $NUTCHINDEXING_DEPENDENCY_DIR/*.jar; do
   CLASSPATH=${CLASSPATH}:$f;
 done
 
