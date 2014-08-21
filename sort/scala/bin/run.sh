@@ -24,16 +24,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
 # path check
 #$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
@@ -44,20 +34,7 @@ fi
 #START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaSort --master local ${DIR}/target/scala-2.10/scala-sort_2.10-1.0.jar $INPUT_HDFS
-#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
-#    $COMPRESS_OPT \
-#    -D mapred.reduce.tasks=${NUM_REDS} \
-#    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-#    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-#    $INPUT_HDFS $OUTPUT_HDFS
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: Hadoop job failed to run successfully."
-#    exit $result
-#fi
+$SPARK_HOME/bin/spark-submit --class ScalaSort --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-sort_2.10-1.0.jar $INPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`

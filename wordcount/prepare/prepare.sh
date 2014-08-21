@@ -24,27 +24,13 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-    -D mapred.output.compression.type=BLOCK "
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
-# generate data
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR randomtextwriter \
-   $COMPRESS_OPT \
-   -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
-   -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
-   $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class RandomTextWriter --master ${SPARK_MASTER} ${DIR}/../data_gen/target/scala-2.10/data-generator_2.10-1.0.jar $INPUT_HDFS ${DATASIZE} ${NUM_PARALLEL}
 result=$?
 if [ $result -ne 0 ]
 then
-    echo "ERROR: Hadoop job failed to run successfully." 
+    echo "ERROR: Spark job failed to run successfully." 
     exit $result
 fi

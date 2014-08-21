@@ -15,23 +15,11 @@
 # limitations under the License.
 set -u 
 
-# compress
-COMPRESS=$COMPRESS_GLOBAL
-COMPRESS_CODEC=$COMPRESS_CODEC_GLOBAL
-
 # paths
-INPUT_HDFS=${DATA_HDFS}/Wordcount/Input
-OUTPUT_HDFS=${DATA_HDFS}/Wordcount/Output
-
-if [ $COMPRESS -eq 1 ]; then
-    INPUT_HDFS=${INPUT_HDFS}-comp
-    OUTPUT_HDFS=${OUTPUT_HDFS}-comp
-fi
+INPUT_HDFS=${DATA_HDFS}/Sort/Input
+OUTPUT_HDFS=${DATA_HDFS}/Sort/Output
 
 # for preparation (per node) - 32G
 #DATASIZE=32000000000
 DATASIZE=3200000
-NUM_MAPS=16
-
-# for running (in total)
-NUM_REDS=48
+NUM_PARALLEL=16

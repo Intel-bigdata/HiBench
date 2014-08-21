@@ -6,11 +6,10 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 
 object RandomTextWriter {
-  var numMaps:Int = _
-  var minWordsInKey:Int = _
-  var minWordsInValue:Int = _
-  var wordsInKeyRange:Int = _
-  var wordsInValueRange:Int = _
+  var minWordsInKey:Int = 5
+  var maxWordsInKey:Int = 20
+  var minWordsInValue:Int = 10
+  var maxWordsInValue:Int = 100
 
   def generateSentence(noWords:Int):String ={
     var sentence = new ListBuffer[String]
@@ -22,36 +21,43 @@ object RandomTextWriter {
   }
 
   def main(args: Array[String]): Unit = {
-    if (args.length < 1) {
+    if ((args.length < 3) || ((args.length > 3) && (args.length < 7))){
       System.err.println(
-        s"Usage: $RandomTextWriter <Output_data_URL>"
+        s"Usage: $RandomTextWriter <Output_data_URL> <TOTAL_DATA_SIZE> <PARALLEL> [<MIN_WORDS_KEY> <MAX_WORDS_KEY> <MIN_WORDS_VALUE> <MAX_WORDS_VALUE>]"
       )
       System.exit(1)
     }
     val sparkConf = new SparkConf().setAppName("RandomTextWriter")
     val sc = new SparkContext(sparkConf)
 
-    configure(sparkConf)
+    val totalDataSize = args(1).toLong
+    val numParallel = args(2).toInt
 
-    val noWordsKey = minWordsInKey + (if (wordsInKeyRange!=0) util.Random.nextInt(wordsInKeyRange) else 0)
+    if (args.length>3){
+      minWordsInKey =  args(3).toInt
+      maxWordsInKey =  args(4).toInt
+      minWordsInValue =  args(5).toInt
+      maxWordsInValue =  args(6).toInt
+    }
+    val wordsInKeyRange = maxWordsInKey - minWordsInKey
+    val wordsInValueRange = maxWordsInValue - minWordsInValue
+
+    val noWordsKey = minWordsInKey + (if (wordsInKeyRange != 0) util.Random.nextInt(wordsInKeyRange) else 0)
     val noWordsValue = minWordsInValue + (if (wordsInValueRange!=0) util.Random.nextInt(wordsInValueRange) else 0)
-    sc.parallelize(1 to numMaps, numMaps).map{x =>
+
+    val sizePerTask = totalDataSize / numParallel.toLong
+
+//  sampled over 100 scale
+    val mean_size = (1 to 100).map(x=>
+      generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)
+    ).mkString(" ").length() / 100
+
+    println(s"total:$totalDataSize, mean_size:$mean_size, numParallel:$numParallel, HDFS:" + args(0))
+
+    sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
       generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)
     }.saveAsTextFile(args(0))
     sc.stop()
-  }
-
-  def configure(sparkConf: SparkConf)={
-    val numBytesToWrite = sparkConf.getLong("test.randomtextwrite.bytes_per_map", 1L*1024*1024*1024)
-    val minWordsInKey =  sparkConf.getInt("test.randomtextwrite.min_words_key", 5)
-    val wordsInKeyRange = sparkConf.getInt("test.randomtextwrite.max_words_key", 10) - minWordsInKey
-    val minWordsInValue = sparkConf.getInt("test.randomtextwrite.min_words_value", 10)
-    val wordsInValueRange = sparkConf.getInt("test.randomtextwrite.max_words_value", 100) - minWordsInValue
-    val numMapsPerHost = sparkConf.getLong("test.randomtextwrite.maps_per_host", 10)
-    val totalBytesToWrite = sparkConf.getLong("test.randomtextwrite.total_bytes",
-      numMapsPerHost * numBytesToWrite)
-
-    val numMaps = totalBytesToWrite / numBytesToWrite
   }
 
   private val words = List[String](

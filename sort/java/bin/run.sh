@@ -24,19 +24,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
-# path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
-
 # pre-running
 #SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
 #SIZE=${SIZE##*|}
