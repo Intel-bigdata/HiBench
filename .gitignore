@@ -2,6 +2,6 @@ target/
 .idea/
 .idea_modules/
 *.swp
-.emacs.desktop
+.emacs.desktop*
 derby.log
 metastore_db/
