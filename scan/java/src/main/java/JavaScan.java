@@ -5,7 +5,6 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
-java2;
 import org.apache.spark.api.java.function.PairFunction;
 
 import java.util.Arrays;

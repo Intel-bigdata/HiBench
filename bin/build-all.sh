@@ -24,31 +24,33 @@ if [ -f $HIBENCH_REPORT ]; then
     rm $HIBENCH_REPORT
 fi
 
-for benchmark in `cat $DIR/conf/benchmarks.lst`; do
-    if [[ $benchmark == \#* ]]; then
-        continue
-    fi
-
-    if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
-        $DIR/${benchmark}/bin/prepare.sh
+function check_and_build {
+    local folder=$1
+    local module=$2
+    echo $folder/*.sbt
+    if ls $folder/*.sbt &> /dev/null; then
+	echo "====================="
+	echo "Build ${module}..."
+	echo "====================="
+	( cd $folder && sbt package )
 	result=$?
-	if [ $result -ne 0 ]
-	then
-	    echo "ERROR: ${benchmark} failed to prepare successfully." 
+	if [ $result -ne 0 ]; then
+	    echo "Build ${module} failed!"
 	    exit $result
-        fi
-    fi
-    for target in java scala python ; do
-	echo "====================="
-	echo "Run ${benchmark}/${target}"
-	echo "====================="
-	$DIR/${benchmark}/${target}/bin/run.sh
-	result=$?
-	if [ $result -ne 0 ]
-	then
-	    echo "ERROR: ${benchmark}/${target} failed to run successfully." 
-            exit $result
 	fi
+    fi
+}
+
+# build data generator
+check_and_build $DIR/data_gen data_gen
+
+for benchmark in `cat $DIR/conf/benchmarks.lst`; do
+    if [[ $benchmark == \#* ]]; then continue; fi
+    if [ -z $benchmark ]; then continue; fi
+
+    # build prepare, java, scala for each benchmarks
+    for target in prepare java scala; do	
+	check_and_build $DIR/$benchmark/$target ${benchmark}/${target}
     done
 done
 
