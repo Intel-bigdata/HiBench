@@ -26,10 +26,12 @@ public final class JavaAggregation {
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaHiveContext hc = new JavaHiveContext(ctx);
 
-    hc.hql("DROP TABLE if exists rankings");
-    hc.hql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
-    hc.hql("FROM rankings SELECT *").saveAsTextFile(String.format("%s/rankings", args[1]));
-
+    hc.hql("DROP TABLE IF EXISTS uservisits");
+    hc.hql("DROP TABLE IF EXISTS uservisits_aggre");
+    hc.hql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));
+    hc.hql(String.format("CREATE TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '%s/uservisits_aggre'", args[1]));
+    hc.hql("INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP");
+    
     ctx.stop();
   }
 }

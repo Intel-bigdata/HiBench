@@ -46,7 +46,7 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaAggregation --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-aggregation-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class ScalaAggregation --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-aggregation_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 #$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
 #    $COMPRESS_OPT \
 #    -D mapred.reduce.tasks=${NUM_REDS} \
