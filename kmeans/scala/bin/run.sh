@@ -44,7 +44,7 @@ fi
 #START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.DenseKMeans --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.DenseKMeans --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`

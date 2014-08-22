@@ -17,23 +17,24 @@ import org.apache.spark.SparkContext._
 object Convert{
   val conf = new Configuration()
   def main(args: Array[String]){
-    if (args.length>3){
-      System.err.println("Usage: Convert <hdfs_master> <input_directory> <output_file_path>")
+    if (args.length!=2){
+      System.err.println("Usage: Convert <hdfs_master> <input_path>")
       System.exit(1)
     }
 
     val hdfs_master =  "hdfs://localhost:54310/"
-    val input_path =   "/HiBench/Bayes/Input"
-    val output_name =  "/HiBench/Bayes/Input/samples.txt"
-    val output_vector_name = "/HiBench/Bayes/Input/vectors.txt"
+    val input_path =   "hdfs://localhost:54310/HiBench/Bayes/Input"
+    val output_name =  input_path +"/samples.txt"
+    val output_vector_name = input_path + "/vectors.txt"
+    val hdfs_head = hdfs_master.length - 1
 
     conf.setStrings("fs.default.name", hdfs_master)
     conf.setStrings("dfs.replication", "1")
 
     val fileSystem = FileSystem.get(conf)
-    val out = fileSystem.create(new Path(output_name)) //new BufferedWriter(new OutputStreamWriter(fileSystem.create(new Path(output_name))))
+    val out = fileSystem.create(new Path(output_name.substring(hdfs_head))) //new BufferedWriter(new OutputStreamWriter(fileSystem.create(new Path(output_name))))
 
-    val dirs = fileSystem.listStatus(new Path(input_path))
+    val dirs = fileSystem.listStatus(new Path(input_path.substring(hdfs_head)))
     dirs.foreach { it =>
       if (it.getPath.getName.startsWith("part-")) {
         println("Processing file %s".format(it.getPath))
@@ -43,8 +44,9 @@ object Convert{
     out.close()
 
     // calc word frequency
-    val sc = new SparkContext("local[8]", "Doc2Vector",System.getenv("SPARK_HOME"), SparkContext.jarOfClass(this.getClass).toSeq)
-    val data = sc.textFile(hdfs_master + output_name).map({ line =>
+    val sparkConf = new SparkConf().setAppName("Doc2Vector")
+    val sc = new SparkContext(sparkConf)
+    val data = sc.textFile(output_name).map({ line =>
       val x = line.split(":")
       (x(0), x(1))
     }) // map line to key:data
@@ -63,16 +65,19 @@ object Convert{
       val doc_vector = doc.split(" ").map(x => shared_word_dict.value(x)) //map to word index: freq
         .groupBy(_._1) // combine freq with same word
         .map { case (k, v) => (k, v.map(_._2).sum)}
+
+      val sorted_doc_vector = doc_vector.toList.sortBy(_._1)
         .map { case (k, v) => "%d:%f".format(k + 1,  // LIBSVM's index starts from 1 !!!
                                              v)} // convert to LIBSVM format
 
       // key := /classXXX
       // key.substring(6) := XXX
-      key.substring(6) + " " + doc_vector.mkString(" ") // label index1:value1 index2:value2 ...
+      key.substring(6) + " " + sorted_doc_vector.mkString(" ") // label index1:value1 index2:value2 ...
     }
-    println(vector.count())
-    try { fileSystem.delete(new Path(output_vector_name), true) } catch { case _ : Throwable => { } }
-    vector.saveAsTextFile(hdfs_master + output_vector_name)
+//    println(vector.count())
+//    println("delete:" + output_vector_name.substring(hdfs_head))
+    try { fileSystem.delete(new Path(output_vector_name.substring(hdfs_head)), true) } catch { case _ : Throwable => { } }
+    vector.saveAsTextFile(output_vector_name)
     fileSystem.close()
     sc.stop()
   }

@@ -39,15 +39,18 @@ if __name__ == "__main__":
     numFeatures = int(sys.argv[2])
     print "###### Load svm file", filename
     examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
+#    .sortBy(
+#        lambda x:x.label)
     print "###### done"
     examples.cache()
     print "###### cached"
-    exampels_len = examples.count()
+    examples_len = examples.count()
     print "###### data size:", examples_len
 
-    training = examples.take(0.8 * examples_len)
-    test = examples.take(0.2 * examples_len)
+    training = examples
+    test = examples
 
+    # FIXME: need randomSplit!
     numTraining = training.count()
     numTest = test.count()
 

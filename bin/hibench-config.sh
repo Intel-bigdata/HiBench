@@ -27,6 +27,7 @@ HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
 SPARK_MASTER=spark://lv-dev:7077
 SPARK_HOME=/deploy/spark
+SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
 HADOOP_HOME=/deploy/hadoop-1.2.1
 HIBENCH_HOME=/home/lv/intel/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`

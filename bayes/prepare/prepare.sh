@@ -42,5 +42,6 @@ OPTION="-t bayes \
         -class ${CLASSES} \
         -o sequence"
 
-echo $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+
+${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${DATA_HDFS} ${INPUT_HDFS}

@@ -45,7 +45,7 @@ fi
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.SparkPageRank --master ${SPARK_MASTER} ${DIR}/../../common/spark/spark-examples-1.0.0-SNAPSHOT-hadoop1.0.4.jar $INPUT_HDFS $NUM_ITERATIONS
+$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.SparkPageRank --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} $INPUT_HDFS $NUM_ITERATIONS
 
 # post-running
 #END_TIME=`timestamp`

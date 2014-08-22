@@ -30,6 +30,9 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
 
     if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
+	echo "====================="
+	echo "Prepare for ${benchmark}"
+	echo "====================="
         $DIR/${benchmark}/bin/prepare.sh
 	result=$?
 	if [ $result -ne 0 ]
