@@ -25,18 +25,23 @@ DIR=`cd $bin/../; pwd`
 START_TIME=`timestamp`
 
 #run bench
-$HADOOP_EXECUTABLE jar $HADOOP_JOBCLIENT_TESTS_JAR sleep \
-    -m $NUM_MAPS \
-    -r $NUM_REDS \
-    -mt $MAP_SLEEP_TIME \
-    -mr $RED_SLEEP_TIME \
-    2>&1 | tee ${DIR}/$TMPLOGFILE
+if [ $HADOOP_VERSION == "hadoop1" ]; then
+  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sleep \
+      -m $NUM_MAPS \
+      -r $NUM_REDS \
+      -mt $MAP_SLEEP_TIME \
+      -mr $RED_SLEEP_TIME
+else
+  $HADOOP_EXECUTABLE jar $HADOOP_JOBCLIENT_TESTS_JAR sleep \
+      -m $NUM_MAPS \
+      -r $NUM_REDS \
+      -mt $MAP_SLEEP_TIME \
+      -mr $RED_SLEEP_TIME
+fi
 
 #post-running
 END_TIME=`timestamp`
 
 SIZE="0"
-
-rm -rf ${DIR}/$TMPLOGFILE
 
 gen_report "SLEEP" ${START_TIME} ${END_TIME} ${SIZE}
