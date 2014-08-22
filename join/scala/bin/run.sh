@@ -46,19 +46,13 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-join-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
-#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
-#    $COMPRESS_OPT \
-#    -D mapred.reduce.tasks=${NUM_REDS} \
-#    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-#    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-#    $INPUT_HDFS $OUTPUT_HDFS
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: Hadoop job failed to run successfully."
-#    exit $result
-#fi
+$SPARK_HOME/bin/spark-submit --class ScalaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-join_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: Spark job failed to run successfully."
+    exit $result
+fi
 
 # post-running
 #END_TIME=`timestamp`

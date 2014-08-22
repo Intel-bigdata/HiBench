@@ -46,7 +46,7 @@ $HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # run bench
 echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-join-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-join_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 #END_TIME=`timestamp`
