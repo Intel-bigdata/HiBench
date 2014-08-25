@@ -93,13 +93,12 @@ function check_compress() {
 
      if [ $COMPRESS -eq 1 ]; then
        COMPRESS_OPT="-Dmapreduce.map.output.compress=true \
-                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC \
+                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC_MAP \
                      -Dmapreduce.output.fileoutputformat.compress=true \
                      -Dmapreduce.output.fileoutputformat.compress.codec=$COMPRESS_CODEC \
                      -Dmapreduce.output.fileoutputformat.compress.type=BLOCK "
      else
-       COMPRESS_OPT="-Dmapreduce.map.output.compress=false \
-                     -Dmapreduce.output.fileoutputformat.compress=false "
+       COMPRESS_OPT="-Dmapreduce.output.fileoutputformat.compress=false "
      fi
 
   else

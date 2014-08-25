@@ -16,6 +16,8 @@
 #!/bin/bash
 
 # compress
+# for best performance set COMPRESS=1 for MR1 and COMPRESS=0 for MR2 (for WordCount)
+#COMPRESS=1  
 COMPRESS=$COMPRESS_GLOBAL
 COMPRESS_CODEC=$COMPRESS_CODEC_GLOBAL
 
