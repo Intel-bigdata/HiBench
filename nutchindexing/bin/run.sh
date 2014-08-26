@@ -27,6 +27,14 @@ TMP_DIR="/tmp"
 export COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
 export NUTCHINDEXING_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
 
+if [ $HADOOP_VERSION == "hadoop1" -a -e $DIR"/nutch/conf/nutch-site-mr1.xml" ]; then
+  mv $DIR/nutch/conf/nutch-site.xml $DIR/nutch/conf/nutch-site-mr2.xml
+  mv $DIR/nutch/conf/nutch-site-mr1.xml $DIR/nutch/conf/nutch-site.xml
+elif [ $HADOOP_VERSION == "hadoop2" -a -e $DIR"/nutch/conf/nutch-site-mr2.xml" ]; then
+  mv $DIR/nutch/conf/nutch-site.xml $DIR/nutch/conf/nutch-site-mr1.xml
+  mv $DIR/nutch/conf/nutch-site-mr2.xml $DIR/nutch/conf/nutch-site.xml
+fi
+
 if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
   wget -P $TMP_DIR http://archive.apache.org/dist/nutch/apache-nutch-1.2-bin.tar.gz
 fi
