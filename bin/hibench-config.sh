@@ -30,6 +30,8 @@ export HADOOP_EXECUTABLE=
 export HADOOP_CONF_DIR=
 export HADOOP_EXAMPLES_JAR=
 export MAPRED_EXECUTABLE=
+#Set the varaible below only in YARN mode
+export HADOOP_JOBCLIENT_TESTS_JAR=
 
 export HADOOP_MAPRED_HOME=$HADOOP_HOME
 export HADOOP_VERSION=hadoop2 # set it to hadoop1 to enable MR1, hadoop2 to enable MR2
