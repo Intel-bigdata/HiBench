@@ -27,6 +27,15 @@ TMP_DIR="/tmp"
 export COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
 export NUTCHINDEXING_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
 
+mvn -f $HIBENCH_HOME"/common/hibench/pom.xml" process-sources
+common_jar_counts=`ls -1 $COMMON_DEPENDENCY_DIR/*.jar 2>/dev/null | wc -l`
+nutchindexing_jar_counts=`ls -1 $NUTCHINDEXING_DEPENDENCY_DIR/*.jar 2>/dev/null | wc -l`
+if [ $common_jar_counts == 0 -o $nutchindexing_jar_counts == 0 ]; then
+  echo "Error: Cannot download jar dependencies by maven, please check!"
+  exit
+fi
+
+
 if [ $HADOOP_VERSION == "hadoop1" -a -e $DIR"/nutch/conf/nutch-site-mr1.xml" ]; then
   mv $DIR/nutch/conf/nutch-site.xml $DIR/nutch/conf/nutch-site-mr2.xml
   mv $DIR/nutch/conf/nutch-site-mr1.xml $DIR/nutch/conf/nutch-site.xml
