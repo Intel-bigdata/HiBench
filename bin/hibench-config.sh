@@ -110,8 +110,13 @@ export DATA_HDFS=/HiBench
 export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report
 
 ################# Compress Options #################
-# swith on/off compression: 0-off, 1-on
+# swith on/off compression: 0-off, 1-on.
+# Switch it off (COMPRESS_GLOBAL=0) for better performance
 export COMPRESS_GLOBAL=1
 export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.DefaultCodec
+export COMPRESS_CODEC_MAP=org.apache.hadoop.io.compress.DefaultCodec
+# Set COMPRESS_CODEC_MAP to SnappyCodec (as shown below) for better performance
+#export COMPRESS_CODEC_MAP=org.apache.hadoop.io.compress.SnappyCodec 
+
 #export COMPRESS_CODEC_GLOBAL=com.hadoop.compression.lzo.LzoCodec
 #export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.SnappyCodec

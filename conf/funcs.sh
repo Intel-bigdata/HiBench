@@ -93,19 +93,20 @@ function check_compress() {
 
      if [ $COMPRESS -eq 1 ]; then
        COMPRESS_OPT="-Dmapreduce.map.output.compress=true \
-                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC \
+                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC_MAP \
                      -Dmapreduce.output.fileoutputformat.compress=true \
                      -Dmapreduce.output.fileoutputformat.compress.codec=$COMPRESS_CODEC \
                      -Dmapreduce.output.fileoutputformat.compress.type=BLOCK "
      else
-       COMPRESS_OPT="-Dmapreduce.map.output.compress=false \
-                     -Dmapreduce.output.fileoutputformat.compress=false "
+       COMPRESS_OPT="-Dmapreduce.output.fileoutputformat.compress=false "
      fi
 
   else
     if [ $COMPRESS -eq 1 ]; then
 
-      COMPRESS_OPT="-Dmapred.output.compress=true \
+      COMPRESS_OPT="-Dmapred.map.output.compress=true \
+                    -Dmapred.map.output.compress.codec=$COMPRESS_CODEC_MAP \
+                    -Dmapred.output.compress=true \
                     -Dmapred.output.compression.codec=$COMPRESS_CODEC \
                     -Dmapred.output.compression.type=BLOCK "
 
