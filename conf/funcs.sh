@@ -104,7 +104,9 @@ function check_compress() {
   else
     if [ $COMPRESS -eq 1 ]; then
 
-      COMPRESS_OPT="-Dmapred.output.compress=true \
+      COMPRESS_OPT="-Dmapred.map.output.compress=true \
+                    -Dmapred.map.output.compress.codec=$COMPRESS_CODEC_MAP \
+                    -Dmapred.output.compress=true \
                     -Dmapred.output.compression.codec=$COMPRESS_CODEC \
                     -Dmapred.output.compression.type=BLOCK "
 
