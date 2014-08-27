@@ -27,6 +27,8 @@ DIR=`cd $bin/../; pwd`
 # compress
 if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+else
+    COMPRESS_OPT=""
 fi
 
 # generate data
