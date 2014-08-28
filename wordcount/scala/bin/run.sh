@@ -35,7 +35,7 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
 SIZE=`dir_size $INPUT_HDFS`
