@@ -7,8 +7,8 @@
 
 - Current version: 0.1
 - Release data: TBD
-- Contact: [Lv Qi](mailto:qi.lv@intel.com), [Grace Huang](mailto:grace.huang@intel.com)
-- Homepage: https://githib.com/intel-bigdata/Sparkbench
+- Contact: [Lv Qi](mailto:qi.lv@intel.com), [Grace Huang](mailto:jie.huang@intel.com)
+- Homepage: https://github.com/intel-bigdata/Sparkbench
 
 - Contents:
   1. Overview
@@ -107,7 +107,7 @@ This benchmark suite contains 9 typical micro workloads:
 
 5. Build
 
-    You will need to execute `bin/build-all.sh` to build all workloads. (Assume `sbt` is installed properly and accessible in PATH)
+    You will need to execute `bin/build-all.sh` to build all workloads. (Assume `sbt` is installed properly and accessible in $PATH)
 
 ---
 ### Running ###
