@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running wordcount bench =========="
+echo "========== running Java WordCount bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
