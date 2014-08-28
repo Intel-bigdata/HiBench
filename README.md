@@ -134,11 +134,7 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 At present, To run Hibench on top of Yarn is supported in Yarn branch.
 And all test cases are supported.
 
-First, make sure these things are installed: maven, wget.
+First, make sure these things are installed: maven.
 
 Then, locate into `HiBench/common/hibench` and run `mvn process-sources` to get dependencies.
-
-- If you are using mapreduce 1.0 on cdh4/5, you need to configure a little to run nutchindexing:
-
-  Change the `nutch-site-mr1.xml` to `nutch-site.xml` to replace the default one in `HiBench/nutchindexing/nutch/conf`. 
 

@@ -24,6 +24,7 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -33,6 +34,22 @@
             </goals>
             <configuration>
               <outputDirectory>${targetdirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>maven-download-plugin</artifactId>
+        <version>1.1.0</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+                <url>http://archive.apache.org/dist/nutch/apache-nutch-1.2-bin.tar.gz</url>
             </configuration>
           </execution>
         </executions>

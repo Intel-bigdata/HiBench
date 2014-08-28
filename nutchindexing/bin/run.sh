@@ -23,18 +23,14 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-TMP_DIR="/tmp"
+NUTCH_BIN_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target"
 export COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
-export NUTCHINDEXING_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
+export NUTCHINDEXING_DEPENDENCY_DIR=$NUTCH_BIN_DIR"/dependency"
 
-mvn -f $HIBENCH_HOME"/common/hibench/pom.xml" process-sources
-common_jar_counts=`ls -1 $COMMON_DEPENDENCY_DIR/*.jar 2>/dev/null | wc -l`
-nutchindexing_jar_counts=`ls -1 $NUTCHINDEXING_DEPENDENCY_DIR/*.jar 2>/dev/null | wc -l`
-if [ $common_jar_counts == 0 -o $nutchindexing_jar_counts == 0 ]; then
-  echo "Error: Cannot download jar dependencies by maven, please check!"
+if [ ! -e $NUTCH_BIN_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
+  echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
   exit
 fi
-
 
 if [ $HADOOP_VERSION == "hadoop1" -a -e $DIR"/nutch/conf/nutch-site-mr1.xml" ]; then
   mv $DIR/nutch/conf/nutch-site.xml $DIR/nutch/conf/nutch-site-mr2.xml
@@ -44,20 +40,12 @@ elif [ $HADOOP_VERSION == "hadoop2" -a -e $DIR"/nutch/conf/nutch-site-mr2.xml" ]
   mv $DIR/nutch/conf/nutch-site-mr2.xml $DIR/nutch/conf/nutch-site.xml
 fi
 
-if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
-  wget -P $TMP_DIR http://archive.apache.org/dist/nutch/apache-nutch-1.2-bin.tar.gz
-fi
-if [ ! -e $TMP_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
-  echo "Error: Cannot download apache-nutch-1.2-bin.tar.gz, please check your wget!"
-  exit
-fi
-
-cd $TMP_DIR
-if [ ! -d $TMP_DIR"/nutch-1.2" ]; then
+cd $NUTCH_BIN_DIR
+if [ ! -d $NUTCH_BIN_DIR"/nutch-1.2" ]; then
   tar zxf apache-nutch-1.2-bin.tar.gz
 fi
 
-NUTCH_HOME=$TMP_DIR/nutch-1.2
+NUTCH_HOME=$NUTCH_BIN_DIR/nutch-1.2
 rm -rf $NUTCH_HOME/conf/*
 rm -rf $NUTCH_HOME/bin/*
 cp $DIR/nutch/conf/nutch-site.xml $NUTCH_HOME/conf
@@ -72,8 +60,8 @@ zip -qr $NUTCH_HOME/nutch-1.2.job *
 cd $NUTCH_HOME
 rm -rf $NUTCH_HOME/temp
 
-if [ -d $TMP_DIR"/nutch-1.2/lib" ]; then
-  rm -rf $TMP_DIR"/nutch-1.2/lib"
+if [ -d $NUTCH_BIN_DIR"/nutch-1.2/lib" ]; then
+  rm -rf $NUTCH_BIN_DIR"/nutch-1.2/lib"
 fi
 
 check_compress
