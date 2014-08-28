@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running Scala Kmeans bench =========="
+echo "========== running Scala Bayes bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -35,17 +35,15 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS/vectors.txt` 
+START_TIME=`timestamp`
 
 # run bench
 $SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "ScalaBayes" ${START_TIME} ${END_TIME} ${SIZE}
