@@ -16,8 +16,8 @@ public final class JavaSort {
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length < 1) {
-      System.err.println("Usage: JavaSort <file>");
+    if (args.length < 2) {
+      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT");
       System.exit(1);
     }
 
@@ -41,10 +41,8 @@ public final class JavaSort {
 
     JavaPairRDD<String, Integer> counts = ones.sortByKey( true );
 
-    List<Tuple2<String, Integer>> output = counts.collect();
-    for (Tuple2<?,?> tuple : output) {
-      System.out.println(tuple._1() + ": " + tuple._2());
-    }
+    counts.saveAsTextFile(args[1]);
+
     ctx.stop();
   }
 }

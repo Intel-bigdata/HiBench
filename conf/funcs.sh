@@ -24,7 +24,7 @@ function timestamp(){
 }
 
 function print_field_name() {
-    printf "$FORMATS" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > $HIBENCH_REPORT
+    printf "$FORMATS" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > $SPARKBENCH_REPORT
 }
 
 function gen_report() {
@@ -42,11 +42,11 @@ function gen_report() {
     local nodes=`$HADOOP_EXECUTABLE job -list-active-trackers | wc -l` 
     local tput_node=`echo "$tput/$nodes"|bc`
 
-    if [ ! -f $HIBENCH_REPORT ] ; then
+    if [ ! -f $SPARKBENCH_REPORT ] ; then
         print_field_name
     fi
 
-    printf "$FORMATS" $type $(date +%F) $(date +%T) $size $duration $tput $tput_node >> $HIBENCH_REPORT
+    printf "$FORMATS" $type $(date +%F) $(date +%T) $size $duration $tput $tput_node >> $SPARKBENCH_REPORT
 }
 
 
@@ -69,3 +69,4 @@ function dir_size() {
         fi
     done
 }
+

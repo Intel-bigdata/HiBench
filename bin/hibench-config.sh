@@ -18,10 +18,9 @@ bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 script="$(basename -- "$this")"
 this="$bin/$script"
 
-export HIBENCH_VERSION="2.2"
+export SPARKBENCH_VERSION="0.1"
 
 ###################### Global Paths ##################
-
 HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
@@ -29,6 +28,8 @@ SPARK_MASTER=spark://lv-dev:7077
 SPARK_HOME=/deploy/spark
 SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
 HADOOP_HOME=/deploy/hadoop-1.2.1
+SPARKBENCH_HOME=`printenv SPARKBENCH_HOME`
+SPARKBENCH_CONF=`printenv SPARKBENCH_CONF`
 HIBENCH_HOME=/home/lv/intel/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`
 HIVE_HOME=`printenv HIVE_HOME`
@@ -59,27 +60,32 @@ else
 	unset IFS
 fi
 
+
+
 echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
+
+
+if [ -z "$SPARKBENCH_HOME" ]; then
+    export SPARKBENCH_HOME=`dirname ${this}`/..
+fi
 
 if [ -z "$HIBENCH_HOME" ]; then
     export HIBENCH_HOME=`dirname "$this"`/..
 fi
 
-if [ -z "$HIBENCH_CONF" ]; then
-    export HIBENCH_CONF=${HIBENCH_HOME}/conf
+if [ -z "$SPARKBENCH_CONF" ]; then
+    export SPARKBENCH_CONF=${SPARKBENCH_HOME}/conf
 fi
 
-if [ -f "${HIBENCH_CONF}/funcs.sh" ]; then
-    . "${HIBENCH_CONF}/funcs.sh"
+if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
+    . "${SPARKBENCH_CONF}/funcs.sh"
 fi
-
 
 if [ -z "$HIVE_HOME" ]; then
     export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.9.0-bin
 fi
-
 
 if $HADOOP_EXECUTABLE version|grep -i -q cdh4; then
 	HADOOP_VERSION=cdh4
@@ -131,11 +137,10 @@ HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
 export DATA_HDFS=hdfs://localhost:54310/HiBench
 
 # local report
-export HIBENCH_REPORT=${HIBENCH_HOME}/hibench.report
+export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 
 ################# Compress Options #################
 # swith on/off compression: 0-off, 1-on
 export COMPRESS_GLOBAL=0
 export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.DefaultCodec
-#export COMPRESS_CODEC_GLOBAL=com.hadoop.compression.lzo.LzoCodec
-#export COMPRESS_CODEC_GLOBAL=org.apache.hadoop.io.compress.SnappyCodec
+

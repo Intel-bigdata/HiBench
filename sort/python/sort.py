@@ -21,8 +21,8 @@ from pyspark import SparkContext
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: sort <file>"
+    if len(sys.argv) != 3:
+        print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
     lines = sc.textFile(sys.argv[1], 1)
@@ -31,7 +31,5 @@ if __name__ == "__main__":
         .sortByKey(lambda x: x)
     # This is just a demo on how to bring all the sorted data back to a single node.
     # In reality, we wouldn't want to collect all the data to the driver node.
-    output = sortedCount.collect()
-    for (num, unitcount) in output:
-        print num.encode('utf-8')
+    sortedCount.saveAsTextFile(sys.argv[2])
     sc.stop()

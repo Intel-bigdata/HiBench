@@ -6,9 +6,9 @@ import org.apache.spark.SparkConf
 
 object ScalaSort{
   def main(args: Array[String]){
-    if (args.length < 1){
+    if (args.length < 2){
       System.err.println(
-        s"Usage: $ScalaSort <INPUT_DATA_URL>"
+        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS>"
       )
       System.exit(1)
     }
@@ -19,9 +19,7 @@ object ScalaSort{
     val counts = file.flatMap(line => line.split(" "))
                      .map(word => (word, 1))
                      .sortByKey()
-    counts.collect().foreach(it =>
-      println(it)
-    )
+    counts.saveAsTextFile(args(1))
     sc.stop()
   }
 }

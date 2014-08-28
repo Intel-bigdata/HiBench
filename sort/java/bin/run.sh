@@ -24,16 +24,16 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
+# path check
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class JavaSort --master local ${DIR}/target/scala-2.10/java-sort_2.10-1.0.jar $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class JavaSort --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/java-sort_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "JavaSort" ${START_TIME} ${END_TIME} ${SIZE}

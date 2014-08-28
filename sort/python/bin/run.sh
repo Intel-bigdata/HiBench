@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running wordcount bench =========="
+echo "========== running python sort bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -28,14 +28,12 @@ DIR=`cd $bin/../; pwd`
 $HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/sort.py $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/sort.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "PythonSort" ${START_TIME} ${END_TIME} ${SIZE}
