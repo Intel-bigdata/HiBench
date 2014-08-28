@@ -35,17 +35,13 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS` 
+START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
 $SPARK_HOME/bin/spark-submit --class ScalaJoin --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-join_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
 result=$?
 if [ $result -ne 0 ]
@@ -55,5 +51,5 @@ then
 fi
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "ScalaJoin" ${START_TIME} ${END_TIME} ${SIZE}

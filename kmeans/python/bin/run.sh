@@ -41,4 +41,4 @@ $SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/kmeans.py $INPUT_HD
 
 # post-running
 END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+gen_report "PythonKmeans" ${START_TIME} ${END_TIME} ${SIZE}
