@@ -35,24 +35,21 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=0
+START_TIME=`timestamp`
 
 # run bench
-#echo $SPARK_HOME
 $SPARK_HOME/bin/spark-submit --class ScalaSleep --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-sleep_2.10-1.0.jar $PARALLEL $SLEEP
 result=$?
 if [ $result -ne 0 ]
 then
-    echo "ERROR: Hadoop job failed to run successfully."
+    echo "ERROR: Spark job failed to run successfully."
     exit $result
 fi
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "ScalaSleep" ${START_TIME} ${END_TIME} ${SIZE}
