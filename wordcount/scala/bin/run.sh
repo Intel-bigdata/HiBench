@@ -38,27 +38,18 @@ fi
 #$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --class ScalaWordCount --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-word-count_2.10-1.0.jar $INPUT_HDFS
-#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
-#    $COMPRESS_OPT \
-#    -D mapred.reduce.tasks=${NUM_REDS} \
-#    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-#    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-#    $INPUT_HDFS $OUTPUT_HDFS
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: Hadoop job failed to run successfully."
-#    exit $result
-#fi
+$SPARK_HOME/bin/spark-submit --class ScalaWordCount --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-word-count_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+result=$?
+if [ $result -ne 0 ]
+then
+    echo "ERROR: Spark job failed to run successfully."
+    exit $result
+fi
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "ScalaWordCount" ${START_TIME} ${END_TIME} ${SIZE}

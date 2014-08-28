@@ -35,18 +35,15 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/wordcount.py $INPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/wordcount.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+gen_report "PythonWordCount" ${START_TIME} ${END_TIME} ${SIZE}
