@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running python kmeans bench =========="
+echo "========== running python Bayes bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -27,18 +27,15 @@ DIR=`cd $bin/../; pwd`
 # compress
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
+SIZE=`dir_size $INPUT_HDFS/vectors.txt` 
 START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
 $SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/bayes.py ${INPUT_HDFS}/vectors.txt ${NUM_FEATURES}
 
 # post-running
 END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+gen_report "PythonBayes" ${START_TIME} ${END_TIME} ${SIZE}
