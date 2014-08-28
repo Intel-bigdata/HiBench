@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== running wordcount bench =========="
+echo "========== running Java PageRank bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/hibench-config.sh"
@@ -35,18 +35,15 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
 # pre-running
-#SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-#SIZE=${SIZE##*|}
-#SIZE=${SIZE//,/}
-#START_TIME=`timestamp`
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
 
 # run bench
-echo $SPARK_HOME
 $SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.JavaPageRank --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} $INPUT_HDFS $NUM_ITERATIONS
 
 # post-running
-#END_TIME=`timestamp`
-#gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
+END_TIME=`timestamp`
+gen_report "JavaPageRank" ${START_TIME} ${END_TIME} ${SIZE}
