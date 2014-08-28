@@ -3,7 +3,7 @@
 
 ---
 
-**WARNING: UNDER CONSTRUCTION**
+**<font color='red'>WARNING: UNDER CONSTRUCTION</font>**
 
 - Current version: 0.1
 - Release data: TBD
