@@ -15,7 +15,11 @@
 # limitations under the License.
 
 # paths
-INPUT_HDFS=/benchmarks/TestDFSIO-Enh
+INPUT_HDFS=${DATA_HDFS}/benchmarks/TestDFSIO-Enh
+
+export HADOOP_OPTS="$HADOOP_OPTS -Dtest.build.data=${INPUT_HDFS}"
+MAP_JAVA_OPTS=`cat $HADOOP_CONF_DIR/mapred-site.xml | grep "mapreduce.map.java.opts" | awk -F\< '{print $5}' | awk -F\> '{print $NF}'`
+RED_JAVA_OPTS=`cat $HADOOP_CONF_DIR/mapred-site.xml | grep "mapreduce.reduce.java.opts" | awk -F\< '{print $5}' | awk -F\> '{print $NF}'`
 
 # dfsioe-read
 RD_NUM_OF_FILES=256
