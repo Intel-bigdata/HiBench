@@ -26,7 +26,7 @@ export HIBENCH_VERSION="2.2"
 
 export JAVA_HOME=
 export HADOOP_HOME=
-export HADOOP_EXECUTABLE= 
+export HADOOP_EXECUTABLE=
 export HADOOP_CONF_DIR=
 export HADOOP_EXAMPLES_JAR=
 export MAPRED_EXECUTABLE=
@@ -85,7 +85,7 @@ if [ -z "$MAHOUT_HOME" ]; then
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
-    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch-1.2-$HADOOP_RELEASE
+    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch
 fi
 
 if [ -z "$DATATOOLS" ]; then
