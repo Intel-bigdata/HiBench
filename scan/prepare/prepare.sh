@@ -33,7 +33,7 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS' EXIT
 
 echo "Pages:${PAGES}, USERVISITS:${USERVISITS}"
 # generate data

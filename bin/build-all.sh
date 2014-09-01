@@ -20,8 +20,8 @@ DIR=`cd "${DIR}/.."; pwd`
 
 . $DIR/bin/hibench-config.sh
 
-if [ -f $HIBENCH_REPORT ]; then
-    rm $HIBENCH_REPORT
+if [ -f $SPARKBENCH_REPORT ]; then
+    rm $SPARKBENCH_REPORT
 fi
 
 function check_and_build {

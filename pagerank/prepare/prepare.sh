@@ -33,7 +33,7 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS_DIR
+trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS_DIR' EXIT
 
 # generate data
 #DELIMITER=\t

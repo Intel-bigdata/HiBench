@@ -38,6 +38,11 @@ NUTCH_HOME=`printenv NUTCH_HOME`
 DATATOOLS=`printenv DATATOOLS`
 # dict path
 DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
+# base dir HDFS
+export DATA_HDFS=hdfs://localhost:54310/SparkBench
+# local report
+export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
+
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
@@ -132,12 +137,6 @@ then
     fi
 fi
 HADOOP_CONF_DIR="${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}"
-
-# base dir HDFS
-export DATA_HDFS=hdfs://localhost:54310/HiBench
-
-# local report
-export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 
 ################# Compress Options #################
 # swith on/off compression: 0-off, 1-on

@@ -34,6 +34,6 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS' EXIT
 
 # generate data

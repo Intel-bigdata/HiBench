@@ -67,7 +67,7 @@ This benchmark suite contains 9 typical micro workloads:
 
   1. Setup HiBench-2.2
 
-      Download/checkout HiBench-2.2 benchmark suite from [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2)
+      Download/checkout HiBench-2.2 benchmark suite from [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). Use etl-comm branch
 
   2. Setup Hadoop
 
@@ -80,6 +80,8 @@ This benchmark suite contains 9 typical micro workloads:
   4. Setup SparkBench
 
       Download/checkout SparkBench benchmark suite from [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip)
+
+  5. Setup numpy for Python related MLLib operations
 
 2. Configure for the all workloads
 

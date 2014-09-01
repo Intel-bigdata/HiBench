@@ -20,8 +20,8 @@ DIR=`cd "${DIR}/.."; pwd`
 
 . $DIR/bin/hibench-config.sh
 
-if [ -f $HIBENCH_REPORT ]; then
-    rm $HIBENCH_REPORT
+if [ -f $SPARKBENCH_REPORT ]; then
+    rm $SPARKBENCH_REPORT
 fi
 
 for benchmark in `cat $DIR/conf/benchmarks.lst`; do
@@ -29,11 +29,11 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
         continue
     fi
 
-    if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
+    if [ -e $DIR/${benchmark}/prepare/prepare.sh ]; then
 	echo "====================="
 	echo "Prepare for ${benchmark}"
 	echo "====================="
-        $DIR/${benchmark}/bin/prepare.sh
+        $DIR/${benchmark}/prepare/prepare.sh
 	result=$?
 	if [ $result -ne 0 ]
 	then
@@ -41,6 +41,10 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	    exit $result
         fi
     fi
+    
+    # clear hive metastore
+    trap 'find . -name "metastore_db" -exec "rm -rf {}" \;' EXIT
+
     for target in java scala python ; do
 	echo "====================="
 	echo "Run ${benchmark}/${target}"
