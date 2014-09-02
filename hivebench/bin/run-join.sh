@@ -23,6 +23,21 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+HIVE_BIN_DIR=$HIBENCH_HOME"/common/hibench/hivebench/target"
+
+if [ ! -e $HIVE_BIN_DIR"/hive-0.12.0-bin.tar.gz" ]; then
+  echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
+cd $HIVE_BIN_DIR
+if [ ! -d $HIVE_BIN_DIR"/hive-0.12.0-bin" ]; then
+  tar zxf hive-0.12.0-bin.tar.gz
+fi
+
+HIVE_HOME=$HIVE_BIN_DIR"/hive-0.12.0-bin"
+cp ${DIR}/hive/bin/hive $HIVE_HOME/bin
+
 # path check
 rm -rf ${DIR}/metastore_db
 rm -rf ${DIR}/TempStatsStore
@@ -57,7 +72,7 @@ echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration 
 echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits/';" >> $DIR/hive-benchmark/rankings_uservisits_join.hive
 cat $DIR/hive-benchmark/rankings_uservisits_join.template >> $DIR/hive-benchmark/rankings_uservisits_join.hive
 
-if ["x"$HADOOP_VERSION == "xhadoop2" ]; then
+if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
   SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
 else
   USIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')

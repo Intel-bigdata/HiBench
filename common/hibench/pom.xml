@@ -17,6 +17,7 @@
   <modules>
     <module>common</module>
     <module>nutchindexing</module>
+    <module>hivebench</module>
   </modules>
 
 </project>
