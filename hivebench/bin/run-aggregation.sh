@@ -23,6 +23,21 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+HIVE_BIN_DIR=$HIBENCH_HOME"/common/hibench/hivebench/target"
+
+if [ ! -e $HIVE_BIN_DIR"/hive-0.12.0-bin.tar.gz" ]; then
+  echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
+cd $HIVE_BIN_DIR
+if [ ! -d $HIVE_BIN_DIR"/hive-0.12.0-bin" ]; then
+  tar zxf hive-0.12.0-bin.tar.gz
+fi
+
+HIVE_HOME=$HIVE_BIN_DIR"/hive-0.12.0-bin"
+cp ${DIR}/hive/bin/hive $HIVE_HOME/bin
+
 # path check
 rm -rf ${DIR}/metastore_db
 rm -rf ${DIR}/TempStatsStore

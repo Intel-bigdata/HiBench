@@ -18,6 +18,7 @@
     <module>common</module>
     <module>nutchindexing</module>
     <module>mahout</module>
+    <module>hivebench</module>
   </modules>
 
 </project>
