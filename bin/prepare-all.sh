@@ -14,30 +14,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 set -u
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
 
-echo "========== preparing bayes data =========="
+DIR=`dirname "$0"`
+DIR=`cd "${DIR}/.."; pwd`
 
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+. $DIR/bin/hibench-config.sh
 
-# path check
-trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS' EXIT
+if [ -f $SPARKBENCH_REPORT ]; then
+    rm $SPARKBENCH_REPORT
+fi
 
-# generate data
-OPTION="-t bayes \
-        -b ${BAYES_BASE_HDFS} \
-        -n ${BAYES_INPUT} \
-        -m ${NUM_MAPS} \
-        -r ${NUM_REDS} \
-        -p ${PAGES} \
-#        -x ${DICT_PATH} \
-        -class ${CLASSES} \
-        -o sequence"
+for benchmark in `cat $DIR/conf/benchmarks.lst`; do
+    if [[ $benchmark == \#* ]]; then
+        continue
+    fi
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+    if [ -e $DIR/${benchmark}/prepare/prepare.sh ]; then
+	echo "====================="
+	echo "Prepare for ${benchmark}"
+	echo "====================="
+        $DIR/${benchmark}/prepare/prepare.sh
+	result=$?
+	if [ $result -ne 0 ]
+	then
+	    echo "ERROR: ${benchmark} failed to prepare successfully." 
+	    exit $result
+        fi
+    fi
+    
+    # clear hive metastore
+    trap 'find . -name "metastore_db" -exec "rm -rf {}" \;' EXIT
+done
 
-${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${DATA_HDFS} ${INPUT_HDFS}

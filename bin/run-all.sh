@@ -29,19 +29,6 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
         continue
     fi
 
-    if [ -e $DIR/${benchmark}/prepare/prepare.sh ]; then
-	echo "====================="
-	echo "Prepare for ${benchmark}"
-	echo "====================="
-        $DIR/${benchmark}/prepare/prepare.sh
-	result=$?
-	if [ $result -ne 0 ]
-	then
-	    echo "ERROR: ${benchmark} failed to prepare successfully." 
-	    exit $result
-        fi
-    fi
-    
     # clear hive metastore
     trap 'find . -name "metastore_db" -exec "rm -rf {}" \;' EXIT
 
