@@ -22,8 +22,8 @@ object Convert{
       System.exit(1)
     }
 
-    val hdfs_master =  "hdfs://localhost:54310/"
-    val input_path =   "hdfs://localhost:54310/HiBench/Bayes/Input"
+    val hdfs_master =  args(0)  //"hdfs://localhost:54310/"
+    val input_path =   args(1)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
     val output_name =  input_path +"/samples.txt"
     val output_vector_name = input_path + "/vectors.txt"
     val hdfs_head = hdfs_master.length - 1
