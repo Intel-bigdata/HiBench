@@ -77,7 +77,7 @@ fi
 
 
 if [ -z "$HIVE_HOME" ]; then
-    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.12.0-bin
+    export HIVE_HOME=${HIBENCH_HOME}/common/hibench/hivebench/target/hive-0.12.0-bin
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
@@ -85,7 +85,7 @@ if [ -z "$MAHOUT_HOME" ]; then
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
-    export NUTCH_HOME=${HIBENCH_HOME}/nutchindexing/nutch
+    export NUTCH_HOME=${HIBENCH_HOME}/common/hibench/nutchindexing/target/nutch-1.2
 fi
 
 if [ -z "$DATATOOLS" ]; then
