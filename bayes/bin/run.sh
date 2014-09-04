@@ -24,6 +24,11 @@ DIR=`cd $bin/../; pwd`
 
 MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
 
+if [ ! -e $MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0.tar.gz" ]; then
+  echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
 check_compress
 
 # path check
@@ -39,7 +44,7 @@ fi
 
 cd $MAHOUT_BIN_DIR
 if [ ! -d $MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0" ]; then
-  tar zxf mahout-distribution-0.7.tar.gz
+  tar zxf mahout-0.9-cdh5.1.0.tar.gz
 fi
 
 MAHOUT_HOME=$MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0"

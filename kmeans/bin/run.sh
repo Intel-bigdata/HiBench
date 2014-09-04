@@ -23,6 +23,13 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
+
+if [ ! -e $MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0.tar.gz" ]; then
+  echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
 check_compress
 
 $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}
@@ -37,6 +44,13 @@ fi
 
 CSIZE=`dir_size $INPUT_CLUSTER`
 SIZE=$(($SSIZE+$CSIZE))
+
+cd $MAHOUT_BIN_DIR
+if [ ! -d $MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0" ]; then
+  tar zxf mahout-0.9-cdh5.1.0.tar.gz
+fi
+
+MAHOUT_HOME=$MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0"
 
 # pre-running
 OPTION="$COMPRESS_OPT -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
