@@ -75,13 +75,12 @@ if [ -f "${HIBENCH_CONF}/funcs.sh" ]; then
     . "${HIBENCH_CONF}/funcs.sh"
 fi
 
-
 if [ -z "$HIVE_HOME" ]; then
     export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.12.0-bin
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    export MAHOUT_HOME=${HIBENCH_HOME}/common/mahout-distribution-0.7-$HADOOP_RELEASE
+    export MAHOUT_HOME=${HIBENCH_HOME}/common/hibench/mahout/target/mahout-0.9-cdh5.1.0
 fi
 
 if [ -z "$NUTCH_HOME" ]; then

@@ -22,6 +22,8 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
+
 check_compress
 
 # path check
@@ -34,6 +36,13 @@ else
   SIZE=${SIZE##*|}
   SIZE=${SIZE//,/}
 fi
+
+cd $MAHOUT_BIN_DIR
+if [ ! -d $MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0" ]; then
+  tar zxf mahout-distribution-0.7.tar.gz
+fi
+
+MAHOUT_HOME=$MAHOUT_BIN_DIR"/mahout-0.9-cdh5.1.0"
 
 # pre-running
 START_TIME=`timestamp`

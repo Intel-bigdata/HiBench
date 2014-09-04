@@ -42,5 +42,5 @@ export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
 
 rm -rf ${DIR}/$TMPLOGFILE
 
-exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar ${COMPRESS_OPT} ${OPTION} 2>&1 | tee ${DIR}/$TMPLOGFILE
+exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/mahout-examples-0.7-job.jar ${COMPRESS_OPT} ${OPTION} 2>&1 | tee ${DIR}/$TMPLOGFILE
 
