@@ -39,7 +39,8 @@ DATATOOLS=`printenv DATATOOLS`
 # dict path
 DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
 # base dir HDFS
-export DATA_HDFS=hdfs://localhost:54310/SparkBench
+HDFS_MASTER=hdfs://localhost:54310
+DATA_HDFS=$HDFS_MASTER/SparkBench
 # local report
 export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 

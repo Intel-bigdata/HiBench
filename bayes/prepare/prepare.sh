@@ -24,16 +24,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
 # path check
 trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS' EXIT
 
@@ -44,10 +34,11 @@ OPTION="-t bayes \
         -m ${NUM_MAPS} \
         -r ${NUM_REDS} \
         -p ${PAGES} \
-#        -x ${DICT_PATH} \
         -class ${CLASSES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+#        -x ${DICT_PATH} \
 
-${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${DATA_HDFS} ${INPUT_HDFS}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
+
+${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${HDFS_MASTER} ${INPUT_HDFS}
