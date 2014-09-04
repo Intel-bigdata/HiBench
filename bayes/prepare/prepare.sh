@@ -25,7 +25,7 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # path check
-trap '$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS' EXIT
+run $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
 # generate data
 OPTION="-t bayes \
@@ -36,9 +36,7 @@ OPTION="-t bayes \
         -p ${PAGES} \
         -class ${CLASSES} \
         -o sequence"
-
 #        -x ${DICT_PATH} \
 
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
-
 ${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${HDFS_MASTER} ${INPUT_HDFS}

@@ -24,22 +24,22 @@ export SPARKBENCH_VERSION="0.1"
 HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
-SPARK_MASTER=spark://lv-dev:7077
-SPARK_HOME=/deploy/spark
+SPARK_MASTER=spark://sr459:7077
+SPARK_HOME=/july_02/spark
 SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
-HADOOP_HOME=/deploy/hadoop-1.2.1
+HADOOP_HOME=/july_02/hadoop
 SPARKBENCH_HOME=`printenv SPARKBENCH_HOME`
 SPARKBENCH_CONF=`printenv SPARKBENCH_CONF`
-HIBENCH_HOME=/home/lv/intel/HiBench
+HIBENCH_HOME=/root/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`
 HIVE_HOME=`printenv HIVE_HOME`
 MAHOUT_HOME=`printenv MAHOUT_HOME`
 NUTCH_HOME=`printenv NUTCH_HOME`
 DATATOOLS=`printenv DATATOOLS`
 # dict path
-DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
+DICT_PATH=
 # base dir HDFS
-HDFS_MASTER=hdfs://localhost:54310
+HDFS_MASTER=hdfs://sr459:54310
 DATA_HDFS=$HDFS_MASTER/SparkBench
 # local report
 export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report

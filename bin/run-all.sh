@@ -30,7 +30,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
 
     # clear hive metastore
-    trap 'find . -name "metastore_db" -exec "rm -rf {}" \;' EXIT
+    find . -name "metastore_db" -exec "rm -rf {}" \;  || true
 
     for target in java scala python ; do
 	echo "====================="
@@ -46,3 +46,4 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     done
 done
 
+echo "Run all done!"

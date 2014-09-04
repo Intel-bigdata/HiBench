@@ -17,7 +17,7 @@ object ScalaSleep{
 
     val parallel = args(0).toInt
     val seconds  = args(1).toInt
-    val workload = sc.parallelize(1 to parallel).map(x=> Thread.sleep(seconds * 1000L))
+    val workload = sc.parallelize(1 to parallel, parallel).map(x=> Thread.sleep(seconds * 1000L))
     workload.collect();
     sc.stop()
   }

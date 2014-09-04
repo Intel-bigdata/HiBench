@@ -43,6 +43,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
     
     # clear hive metastore
-    trap 'find . -name "metastore_db" -exec "rm -rf {}" \;' EXIT
+    find . -name "metastore_db" -exec "rm -rf {}" \; || true 
 done
 
+echo "Prepare all done!"

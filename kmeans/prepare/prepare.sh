@@ -34,7 +34,7 @@ else
 fi
 
 # paths check
-trap '$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS_DIR}' EXIT
+$HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS_DIR} || true
 
 # generate data
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"

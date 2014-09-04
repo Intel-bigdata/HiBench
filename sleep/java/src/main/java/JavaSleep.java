@@ -29,7 +29,7 @@ public final class JavaSleep{
     Integer[] init_val = new Integer[parallel];
     Arrays.fill(init_val, seconds);
 
-    JavaRDD<Integer> workload = ctx.parallelize(Arrays.asList(init_val)).map(new Function<Integer, Integer>() {
+    JavaRDD<Integer> workload = ctx.parallelize(Arrays.asList(init_val), parallel).map(new Function<Integer, Integer>() {
       @Override
       public Integer call(Integer s) throws InterruptedException {
 	    Thread.sleep(s * 1000);

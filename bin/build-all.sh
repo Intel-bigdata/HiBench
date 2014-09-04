@@ -54,3 +54,4 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     done
 done
 
+echo "Build all done!"

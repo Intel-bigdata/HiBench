@@ -27,6 +27,6 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonSleep")
     parallel = int(sys.argv[1])
     seconds  = int(sys.argv[2])
-    workload = sc.parallelize(range(parallel))
+    workload = sc.parallelize(range(parallel), parallel)
     workload.map(lambda x: time.sleep(seconds)).collect()
     sc.stop()
