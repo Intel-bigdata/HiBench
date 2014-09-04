@@ -47,7 +47,7 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-( cd `dirname $0` && sbt "run `dirname ${DATA_HDFS}` ${INPUT_SAMPLE} ${INPUT_HDFS}" )
+( cd `dirname $0` && sbt "run ${HDFS_MASTER} ${INPUT_SAMPLE} ${INPUT_HDFS}" )
 result=$?
 if [ $result -ne 0 ]
 then
