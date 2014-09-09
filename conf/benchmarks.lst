@@ -6,4 +6,4 @@ scan
 sleep
 sort
 wordcount
-bayes
+#bayes

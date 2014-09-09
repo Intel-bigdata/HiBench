@@ -27,10 +27,12 @@ DIR=`cd $bin/../; pwd`
 # compress check
 if [ ${COMPRESS} -eq 1 ]; then
     COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+else
+    COMPRESS_OPT=""
 fi
 
 # path check
-run $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 
 # generate data
 OPTION="-t bayes \

@@ -22,7 +22,7 @@ OUTPUT_HDFS=${DATA_HDFS}/Sort/Output
 # for preparation (per node) - 32G
 DATASIZE=32000000000
 #DATASIZE=3200000        # small scale
-NUM_PARALLEL=16
+NUM_PARALLEL=256
 
 # for genreport
 SIZE=$DATASIZE

@@ -47,8 +47,8 @@ if __name__ == "__main__":
     examples_len = examples.count()
     print "###### data size:", examples_len
 
-    training = examples
-    test = examples
+    training = examples.sample(False, 0.8, 2)
+    test = examples.sample(False, 0.2, 2)
 
     # FIXME: need randomSplit!
     numTraining = training.count()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     print " numTraining = %d, numTest = %d." % (numTraining, numTest)
     model = NaiveBayes.train(training, 1.0)
-
+    from remote_pdb import RemotePdb; RemotePdb(host='0.0.0.0', port=4444).set_trace()
     prediction = model.predict(test.map( lambda x: x.features ))
     predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
     accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count().toDouble() / numTest

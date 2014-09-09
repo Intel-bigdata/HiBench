@@ -17,7 +17,7 @@ import org.apache.spark.SparkContext._
 object Convert{
   val conf = new Configuration()
   def main(args: Array[String]){
-    if (args.length!=2){
+    if (args.length!=3){
       System.err.println("Usage: Convert <hdfs_master> <input_path>")
       System.exit(1)
     }
@@ -52,6 +52,7 @@ object Convert{
       val x = line.split(":")
       (x(0), x(1))
     }) // map line to key:data
+    data.repartition(256)
     val wordcount = data.flatMap{case(key, doc) => doc.split(" ")}
                         .map(word => (word, 1))
                         .reduceByKey(_ + _)
