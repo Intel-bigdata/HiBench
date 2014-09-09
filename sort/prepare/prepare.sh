@@ -28,7 +28,7 @@ DIR=`cd $bin/../; pwd`
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 
 # generate data
-$SPARK_HOME/bin/spark-submit --class RandomTextWriter --master ${SPARK_MASTER} ${DIR}/../data_gen/target/scala-2.10/data-generator_2.10-1.0.jar $INPUT_HDFS ${DATASIZE} ${NUM_PARALLEL}
+$SPARK_HOME/bin/spark-submit --class RandomTextWriter --master ${SPARK_MASTER} ${DIR}/../data_gen/target/scala-2.10/data-generator_2.10-1.0.jar $INPUT_HDFS ${DATASIZE} ${PARALLEL}
 result=$?
 if [ $result -ne 0 ]
 then

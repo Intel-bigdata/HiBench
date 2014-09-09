@@ -31,5 +31,4 @@ fi
 # for preparation (per node) - 32G
 DATASIZE=32000000000
 #DATASIZE=3200000000      # small scale
-NUM_PARALLEL=256
 

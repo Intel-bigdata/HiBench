@@ -36,14 +36,19 @@ HIVE_HOME=`printenv HIVE_HOME`
 MAHOUT_HOME=`printenv MAHOUT_HOME`
 NUTCH_HOME=`printenv NUTCH_HOME`
 DATATOOLS=`printenv DATATOOLS`
+
 # dict path
 DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
+
 # base dir HDFS
 HDFS_MASTER=hdfs://localhost:54310
 DATA_HDFS=$HDFS_MASTER/SparkBench
-# local report
-export SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 
+# local report
+SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
+
+# Parallelism of your cluster
+PARALLEL=256
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop

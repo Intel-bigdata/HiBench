@@ -28,6 +28,4 @@ if [ $COMPRESS -eq 1 ]; then
     OUTPUT_HDFS=${OUTPUT_HDFS}-comp
 fi
 
-PARALLEL=256
 SLEEP=10
-
