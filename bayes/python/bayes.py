@@ -45,9 +45,9 @@ if __name__ == "__main__":
     training = examples.sample(False, 0.8, 2)
     test = examples.sample(False, 0.2, 2)
 
-#    numTraining = training.count()
-#    numTest = test.count()
-#    print " numTraining = %d, numTest = %d." % (numTraining, numTest)
+    numTraining = training.count()
+    numTest = test.count()
+    print " numTraining = %d, numTest = %d." % (numTraining, numTest)
     model = NaiveBayes.train(training, 1.0)
 
     model_share=sc.broadcast(model)
