@@ -4,5 +4,7 @@ target/
 *.swp
 *~
 .emacs.desktop*
+*.png
+*.report
 derby.log
 metastore_db/
