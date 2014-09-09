@@ -4,59 +4,40 @@ import org.apache.hadoop.conf._
 import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.fs._
 import org.apache.hadoop.io._
+import org.apache.hadoop.mapred.TextInputFormat
 import org.apache.hadoop.util.ReflectionUtils
 import org.apache.mahout.math.VectorWritable
 import org.apache.mahout.math.Vector
-
-
+import org.apache.spark._
+import org.apache.spark.rdd._
+import org.apache.spark.SparkContext._
 
 object Convert{
   val conf = new Configuration()
-  def main(args: Array[String]){
-    if (args.length!=4){
-      System.err.println("Usage: Convert <hdfs_master> <input_directory> <output_file_path> <PARALLEL>")
+  def main(args: Array[String]) {
+    if ( args.length != 3 ) {
+      System.err.println("Usage: Convert <input_directory> <output_file_path> <PARALLEL>")
       System.exit(1)
     }
 
-    val hdfs_master =  args(0) //"hdfs://localhost:54310/"
-    val input_path =   args(1) //"/HiBench/KMeans/Input/samples/"
-    val output_name =  args(2) //"/HiBench/KMeans/Input/samples.txt"
-    val parallel = args(3).toInt
+    val sparkConf = new SparkConf().setAppName("Doc2Vector")
+    val sc = new SparkContext(sparkConf)
 
-    conf.setStrings("fs.default.name", hdfs_master)
-    conf.setStrings("dfs.replication", "1")
+    val input_path = args(0) //"hdfs://localhost:54310/SparkBench/KMeans/Input/samples/"
+    val output_name = args(1) //"/HiBench/KMeans/Input/samples.txt"
+    val parallel = args(2).toInt  //256
 
-    val fileSystem = FileSystem.get(conf)
-    val out = fileSystem.create(new Path(output_name)) //new BufferedWriter(new OutputStreamWriter(fileSystem.create(new Path(output_name))))
-
-    val dirs = fileSystem.listStatus(new Path(input_path))
-    dirs.foreach { it =>
-      if (it.getPath.getName.startsWith("part-")) {
-        println("Processing file %s".format(it.getPath))
-        IterTextRecordInputStream(fileSystem, it.getPath, conf, out)
-      }
-    }
-    out.close()
-  }
-
-  def IterTextRecordInputStream(fs: FileSystem, path:Path, conf:Configuration, out:FSDataOutputStream):Int = {
-    var r: SequenceFile.Reader = new SequenceFile.Reader(fs, path, conf)
-    var key:Writable = ReflectionUtils.newInstance(r.getKeyClass.asSubclass(classOf[Writable]), conf)
-    var `val`:VectorWritable = ReflectionUtils.newInstance(r.getValueClass.asSubclass(classOf[VectorWritable]), conf)
-
-    var vector:Array[Double] = null
-    var size = -1
-    while (true){
-      if (!r.next(key, `val`)) return -1
-      val v:Vector = `val`.get()
+    val data = sc.sequenceFile[LongWritable, VectorWritable](input_path)
+    data.repartition(parallel)
+    data.map { case (k, v) =>
+      var vector: Array[Double] = null
       if (vector == null) {
-        vector = new Array[Double](v.size)
-        size = v.size
+        vector = new Array[Double](v.get().size)
       }
-      for (i <- 0 until size) vector(i) = v.get(i)
-      out.write((vector.mkString(" ")+"\n").getBytes)
-    }
-    0
+      for (i <- 0 until v.get().size) vector(i) = v.get().get(i)
+      vector.mkString(" ")
+    }.saveAsTextFile(output_name)
+    sc.stop()
   }
 }
 

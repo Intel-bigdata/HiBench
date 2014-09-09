@@ -47,7 +47,7 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-( cd `dirname $0` && sbt "run ${HDFS_MASTER} ${INPUT_SAMPLE} ${INPUT_HDFS} ${PARALLEL}" )
+${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class Convert --master local ${DIR}/prepare/target/scala-2.10/hibench-kmean-converter_2.10-1.0.jar ${INPUT_SAMPLE} ${INPUT_HDFS} ${PARALLEL}
 result=$?
 if [ $result -ne 0 ]
 then
