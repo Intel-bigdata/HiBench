@@ -13,14 +13,15 @@ import org.apache.mahout.math.Vector
 object Convert{
   val conf = new Configuration()
   def main(args: Array[String]){
-    if (args.length>3){
-      System.err.println("Usage: Convert <hdfs_master> <input_directory> <output_file_path>")
+    if (args.length!=4){
+      System.err.println("Usage: Convert <hdfs_master> <input_directory> <output_file_path> <PARALLEL>")
       System.exit(1)
     }
 
     val hdfs_master =  args(0) //"hdfs://localhost:54310/"
     val input_path =   args(1) //"/HiBench/KMeans/Input/samples/"
     val output_name =  args(2) //"/HiBench/KMeans/Input/samples.txt"
+    val parallel = args(3).toInt
 
     conf.setStrings("fs.default.name", hdfs_master)
     conf.setStrings("dfs.replication", "1")

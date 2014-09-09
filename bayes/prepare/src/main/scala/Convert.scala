@@ -17,13 +17,14 @@ import org.apache.spark.SparkContext._
 object Convert{
   val conf = new Configuration()
   def main(args: Array[String]){
-    if (args.length!=2){
-      System.err.println("Usage: Convert <hdfs_master> <input_path>")
+    if (args.length!=3){
+      System.err.println("Usage: Convert <hdfs_master> <input_path> <PARALLEL>")
       System.exit(1)
     }
 
     val hdfs_master =  args(0)  //"hdfs://localhost:54310/"
     val input_path =   args(1)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
+    val parallel   = args(2).toInt
     val output_name =  input_path +"/samples.txt"
     val output_vector_name = input_path + "/vectors.txt"
     val hdfs_head = if (hdfs_master.endsWith("/"))  hdfs_master.length - 1 else hdfs_master.length
@@ -52,6 +53,7 @@ object Convert{
       val x = line.split(":")
       (x(0), x(1))
     }) // map line to key:data
+    data.repartition(parallel)
     val wordcount = data.flatMap{case(key, doc) => doc.split(" ")}
                         .map(word => (word, 1))
                         .reduceByKey(_ + _)

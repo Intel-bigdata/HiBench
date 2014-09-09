@@ -37,26 +37,21 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonNaiveBayes")
     filename = sys.argv[1]
     numFeatures = int(sys.argv[2])
-    print "###### Load svm file", filename
+#    print "###### Load svm file", filename
     examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
-#    .sortBy(
-#        lambda x:x.label)
     examples.cache()
-    examples_len = examples.count()
 
     # FIXME: need randomSplit!
     training = examples.sample(False, 0.8, 2)
     test = examples.sample(False, 0.2, 2)
 
-    numTraining = training.count()
-    numTest = test.count()
-
-    print " numTraining = %d, numTest = %d." % (numTraining, numTest)
+#    numTraining = training.count()
+#    numTest = test.count()
+#    print " numTraining = %d, numTest = %d." % (numTraining, numTest)
     model = NaiveBayes.train(training, 1.0)
-#    import ipdb; ipdb.set_trace()
 
-    predictionAndLabel = test.map( lambda x: (x.label, model.predict(x.features)))
-#    prediction = model.predict(test.map( lambda x: x.features.toArray())
+    model_share=sc.broadcast(model)
+    predictionAndLabel = test.map( lambda x: (x.label, model_share.value.predict(x.features)))
 #    prediction = model.predict(test.map( lambda x: x.features ))
 #    predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
     accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count() * 1.0 / numTest

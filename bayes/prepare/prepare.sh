@@ -46,4 +46,4 @@ then
     exit $result
 fi
 
-${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${HDFS_MASTER} ${INPUT_HDFS}
+${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${HDFS_MASTER} ${INPUT_HDFS} ${PARALLEL}
