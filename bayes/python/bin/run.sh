@@ -24,8 +24,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../../bin/sparkbench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
-# compress
-
 # path check
 $HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 

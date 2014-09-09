@@ -24,6 +24,13 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+# compress check
+if [ ${COMPRESS} -eq 1 ]; then
+    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
+else
+    COMPRESS_OPT=""
+fi
+
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
