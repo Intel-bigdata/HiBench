@@ -38,7 +38,7 @@ NUTCH_HOME=`printenv NUTCH_HOME`
 DATATOOLS=`printenv DATATOOLS`
 
 # dict path
-DICT_PATH=/usr/share/dict/words.pre-dictionaries-common
+DICT_PATH=/usr/share/dict/words
 
 # base dir HDFS
 HDFS_MASTER=hdfs://localhost:54310
