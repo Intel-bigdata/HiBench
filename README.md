@@ -75,7 +75,14 @@ This benchmark suite contains 9 typical micro workloads:
 
   3. Setup Spark
 
-      Please make sure you have properly set up Hive in your cluster if you want to test hivebench. Or the benchmark willuse the default Hive-0.9 release which is included in package.
+      SPARK_HIVE=true sbt/sbt assembly
+NOTE: SPARK_HIVE is deprecated, please use -Phive flag.
+
+      conf/spark-default.conf
+      spark.serializer       org.apache.spark.serializer.KryoSerializer
+      spark.kryoserializer.buffer.mb  256
+
+      lease make sure you have properly set up Hive in your cluster if you want to test hivebench. Or the benchmark willuse the default Hive-0.9 release which is included in package.
 
   4. Setup SparkBench
 
@@ -85,7 +92,7 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Configure for the all workloads
 
-    You need to set some global environment variables in the `bin/hibench-config.sh` file located in the root dir.
+    You need to set some global environment variables in the `bin/sparkbench-config.sh` file located in the root dir.
 
           HADOOP_HOME            < The Hadoop installation location >
           HADOOP_CONF_DIR        < The hadoop configuration DIR >

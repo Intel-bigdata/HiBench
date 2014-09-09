@@ -21,7 +21,7 @@ bin=`cd "$bin"; pwd`
 echo "========== running Scala Bayes bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/hibench-config.sh"
+. "${DIR}/../../bin/sparkbench-config.sh"
 . "${DIR}/../conf/configure.sh"
 
 # compress

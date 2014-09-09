@@ -21,16 +21,11 @@ echo "========== preparing bayes data =========="
 
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/../bin/sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-# compress check
-if [ ${COMPRESS} -eq 1 ]; then
-    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
-fi
-
 # path check
-run $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
 # generate data
 OPTION="-t bayes \
@@ -43,7 +38,7 @@ OPTION="-t bayes \
         -o sequence"
 #        -x ${DICT_PATH} \
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} 
 result=$?
 if [ $result -ne 0 ]
 then

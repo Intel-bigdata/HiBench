@@ -21,7 +21,7 @@ bin=`cd "$bin"; pwd`
 echo "========== preparing scan data=========="
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/../bin/sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
 # compress check

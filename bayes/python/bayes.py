@@ -41,25 +41,25 @@ if __name__ == "__main__":
     examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
 #    .sortBy(
 #        lambda x:x.label)
-    print "###### done"
     examples.cache()
-    print "###### cached"
     examples_len = examples.count()
-    print "###### data size:", examples_len
-
-    training = examples
-    test = examples
 
     # FIXME: need randomSplit!
+    training = examples.sample(False, 0.8, 2)
+    test = examples.sample(False, 0.2, 2)
+
     numTraining = training.count()
     numTest = test.count()
 
     print " numTraining = %d, numTest = %d." % (numTraining, numTest)
     model = NaiveBayes.train(training, 1.0)
+#    import ipdb; ipdb.set_trace()
 
-    prediction = model.predict(test.map( lambda x: x.features ))
-    predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
-    accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count().toDouble() / numTest
+    predictionAndLabel = test.map( lambda x: (x.label, model.predict(x.features)))
+#    prediction = model.predict(test.map( lambda x: x.features.toArray())
+#    prediction = model.predict(test.map( lambda x: x.features ))
+#    predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
+    accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count() * 1.0 / numTest
     println("Test accuracy = %s." % accuracy)
 
 

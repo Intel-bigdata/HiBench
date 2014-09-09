@@ -21,7 +21,7 @@ bin=`cd "$bin"; pwd`
 echo "========== preparing sleep =========="
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
+. "${DIR}/../bin/sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
 # compress check
