@@ -42,15 +42,15 @@ def report_plot(fn):
     groups = group_by_type([RecordRaw(type = x[0],
                                       data_size = int(x[3]),
                                       durtation = float(x[4]),
-                                      throughput_total = int(x[5]) / 1024 / 1024,
-                                      throughput_per_node = int(x[6]) / 1024 /1024
+                                      throughput_total = int(x[5]) / 1024.0 / 1024,
+                                      throughput_per_node = int(x[6]) / 1024.0 /1024
                                       ) for x in data])
 
     #print groups
     base_dir = os.path.dirname(fn)
     plot(groups, "Seconds of durtations (Less is better)", "Seconds", "durtation", os.path.join(base_dir, "durtation.png"))
-    plot(groups, "Throughput in total (Higher is better)", "MB/s", "throughput_total", os.path.join(base_dir, "throughput_total.png"))
-    plot(groups, "Throughput per node (Higher is better)", "MB/s", "throughput_per_node", os.path.join(base_dir, "throughput_per_node.png"))
+#    plot(groups, "Throughput in total (Higher is better)", "MB/s", "throughput_total", os.path.join(base_dir, "throughput_total.png"))
+#    plot(groups, "Throughput per node (Higher is better)", "MB/s", "throughput_per_node", os.path.join(base_dir, "throughput_per_node.png"))
 
 def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="durtation", fig_fn = "foo.png"):
     # plot it
@@ -63,7 +63,7 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
     fig, ax = plt.subplots()
     colors='rgb'
     for idx, lang in enumerate(languages):
-        rects.append(ax.bar([x + width * idx for x in range(len(keys))], # x index
+        rects.append(ax.bar([x + width * (idx+1) for x in range(len(keys))], # x index
                             [getattr(groups[x][lang], value_field) if x in groups else 0 for x in keys], # value
                             width,
                             color = colors[idx]
@@ -71,7 +71,9 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
         )
     ax.set_ylabel(ylabel)
     ax.set_title(title)
-    ax.set_xticks([(x + width) for x in range(len(keys))])
+
+    x_axis_offset = len(languages)* width /2.0
+    ax.set_xticks([(x + width + x_axis_offset) for x in range(len(keys))])
     ax.set_xticklabels(["%s \n@%s" % (x, human_readable_size(groups[x].values()[0].data_size)) for x in keys])
     ax.grid(True)
 
@@ -89,8 +91,6 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
     fig.set_size_inches(18.5,10.5)
     
     plt.savefig(fig_fn, dpi=100)
-
-
 
 if __name__ == "__main__":
     try:
