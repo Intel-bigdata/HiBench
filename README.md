@@ -3,8 +3,6 @@
 
 ---
 
-**WARNING: UNDER CONSTRUCTION**
-
 - Current version: 0.1
 - Release data: TBD
 - Contact: [Lv Qi](mailto:qi.lv@intel.com), [Grace Huang](mailto:jie.huang@intel.com)
@@ -62,7 +60,7 @@ This benchmark suite contains 9 typical micro workloads:
 
 6. Aggregate (aggregation)
 
-   Query large table with `SUM` and `group by` operations:
+   Query large table with `SUM` and `GROUP BY` operations:
 
    `SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP`
 
@@ -106,7 +104,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       Download/checkout HiBench-2.2 benchmark suite from
       [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). Use
-      etl-comm branch
+      etl-comm branch.
 
   2. Setup Hadoop
 
@@ -118,17 +116,17 @@ This benchmark suite contains 9 typical micro workloads:
 
       `SPARK_HIVE=true sbt/sbt assembly`
       
-        NOTE: SPARK_HIVE is deprecated, please use `-Phive` flag in future.
+        Note: SPARK_HIVE is deprecated, please use `-Phive` flag in future.
 
       Please refer to `Possible Issues` to set
-      `conf/spark-default.conf` properly
+      `conf/spark-default.conf` properly.
 
   4. Setup SparkBench
 
       Download/checkout SparkBench benchmark suite from
-      [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip)
+      [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
 
-  5. Setup `numpy` for Python related MLLib workloads
+  5. Setup `numpy` in all nodes for Python related MLLib workloads.
 
 2. Configure for the all workloads
 
@@ -193,7 +191,7 @@ This benchmark suite contains 9 typical micro workloads:
       python/bin/run.sh       Execute the python workload
       
 
-  Follow the steps below to run a workload
+  Follow the steps below to run a workload:
 
   1. Configure the benchmark:
 
