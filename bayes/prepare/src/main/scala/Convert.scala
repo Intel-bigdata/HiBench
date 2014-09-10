@@ -21,42 +21,10 @@ object Convert{
       System.exit(1)
     }
 
-//    val hdfs_master =  args(0)  //"hdfs://localhost:54310/"
-    val input_path =   args(0)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
-    val parallel   = args(1).toInt
-//    val output_name =  input_path +"/samples.txt"
-    val output_vector_name = input_path + "/vectors.txt"
-
-//    val hdfs_head = if (hdfs_master.endsWith("/"))  hdfs_master.length - 1 else hdfs_master.length
-
-//    conf.setStrings("fs.default.name", hdfs_master)
-//    conf.setStrings("dfs.replication", "1")
-
-//    val fileSystem = FileSystem.get(conf)
-//    val hdfs_input_path = output_name.substring(hdfs_head)
-//    println(s"$hdfs_input_path, $hdfs_master, $input_path, $output_name")
-//    val out = fileSystem.create(new Path(output_name.substring(hdfs_head))) //new BufferedWriter(new OutputStreamWriter(fileSystem.create(new Path(output_name))))
-
-    val sparkConf = new SparkConf().setAppName("Doc2Vector")
+    val sparkConf = new SparkConf().setAppName("HiBench Bayes Converter")
     val sc = new SparkContext(sparkConf)
 
     val data = sc.sequenceFile[Text, Text](input_path).map{case(k, v) => (k.toString, v.toString)}
-
-//    val dirs = fileSystem.listStatus(new Path(input_path.substring(hdfs_head)))
-//    dirs.foreach { it =>
-//      if (it.getPath.getName.startsWith("part-")) {
-//        println("Processing file %s".format(it.getPath))
-//        IterTextRecordInputStream(fileSystem, it.getPath, conf, out)
-//      }
-//    }
-//    out.close()
-
-    // calc word frequency
-    
-//    val data = sc.textFile(output_name).map({ line =>
-//      val x = line.split(":")
-//      (x(0), x(1))
-//    }) // map line to key:data
 
     data.repartition(parallel)
     val wordcount = data.flatMap{case(key, doc) => doc.split(" ")}
@@ -83,11 +51,7 @@ object Convert{
       // key.substring(6) := XXX
       key.substring(6) + " " + sorted_doc_vector.mkString(" ") // label index1:value1 index2:value2 ...
     }
-//    println(vector.count())
-//    println("delete:" + output_vector_name.substring(hdfs_head))
-//    try { fileSystem.delete(new Path(output_vector_name.substring(hdfs_head)), true) } catch { case _ : Throwable => { } }
     vector.saveAsTextFile(output_vector_name)
-//    fileSystem.close()
     sc.stop()
   }
 }

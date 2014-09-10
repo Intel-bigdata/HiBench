@@ -20,7 +20,7 @@ object Convert{
       System.exit(1)
     }
 
-    val sparkConf = new SparkConf().setAppName("Doc2Vector")
+    val sparkConf = new SparkConf().setAppName("HiBench KMeans Converter")
     val sc = new SparkContext(sparkConf)
 
     val input_path = args(0) //"hdfs://localhost:54310/SparkBench/KMeans/Input/samples/"
