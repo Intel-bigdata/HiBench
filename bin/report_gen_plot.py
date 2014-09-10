@@ -8,6 +8,14 @@ import matplotlib.pyplot as plt
 RecordRaw=namedtuple("RecordRaw", "type durtation data_size throughput_total throughput_per_node")
 Record=namedtuple("Record", "type language durtation data_size throughput_total throughput_per_node")
 
+def human_readable_size(n):
+    "convert number into human readable string"
+    if n<1000: return str(n)
+    if n<800000: return "%.3fK" % (n/1000.0)
+    if n<800000000: return "%.3fM" % (n/1000000.0)
+    if n<800000000000: return "%.3fG" % (n/1000000000.0)
+    return "%.3fT" % (n/1000000000000.0)
+
 def group_by_type(datas):
     groups = defaultdict(dict)
     for i in datas:
@@ -40,9 +48,9 @@ def report_plot(fn):
 
     #print groups
     base_dir = os.path.dirname(fn)
-    plot(groups, "Seconds of durtations", "Seconds", "durtation", os.path.join(base_dir, "durtation.png"))
-    plot(groups, "Throughput in total", "MB/s", "throughput_total", os.path.join(base_dir, "throughput_total.png"))
-    plot(groups, "Throughput per node", "MB/s", "throughput_per_node", os.path.join(base_dir, "throughput_per_node.png"))
+    plot(groups, "Seconds of durtations (Less is better)", "Seconds", "durtation", os.path.join(base_dir, "durtation.png"))
+    plot(groups, "Throughput in total (Higher is better)", "MB/s", "throughput_total", os.path.join(base_dir, "throughput_total.png"))
+    plot(groups, "Throughput per node (Higher is better)", "MB/s", "throughput_per_node", os.path.join(base_dir, "throughput_per_node.png"))
 
 def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="durtation", fig_fn = "foo.png"):
     # plot it
@@ -64,7 +72,8 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
     ax.set_ylabel(ylabel)
     ax.set_title(title)
     ax.set_xticks([(x + width) for x in range(len(keys))])
-    ax.set_xticklabels(keys)
+    ax.set_xticklabels(["%s \n@%s" % (x, human_readable_size(groups[x].values()[0].data_size)) for x in keys])
+    ax.grid(True)
 
     ax.legend([x[0] for x in rects],
               languages)
@@ -78,6 +87,7 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
 
     fig = plt.gcf()
     fig.set_size_inches(18.5,10.5)
+    
     plt.savefig(fig_fn, dpi=100)
 
 
