@@ -36,8 +36,8 @@ INPUT_HDFS=${INPUT_HDFS_DIR}/edges.txt
 OUTPUT_HDFS=${OUTPUT_HDFS_DIR}.txt
 	
 # for preparation (per node) - 32G
-#PAGES=500000
-PAGES=5000      # small scale
+PAGES=500000
+#PAGES=5000      # small scale
 NUM_MAPS=96
 NUM_REDS=48
 
