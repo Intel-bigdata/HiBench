@@ -27,6 +27,7 @@ object Convert{
     val output_name = args(1) //"/HiBench/KMeans/Input/samples.txt"
     val parallel = args(2).toInt  //256
 
+    BytesWritable
     val data = sc.sequenceFile[LongWritable, VectorWritable](input_path)
     data.repartition(parallel)
     data.map { case (k, v) =>
