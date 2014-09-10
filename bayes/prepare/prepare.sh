@@ -32,7 +32,7 @@ else
 fi
 
 # path check
-#$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS
 
 # generate data
 OPTION="-t bayes \
@@ -45,12 +45,11 @@ OPTION="-t bayes \
         -o sequence"
 #        -x ${DICT_PATH} \
 
-#$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} 
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} 
 result=$?
 if [ $result -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-echo ${PARALLEL}
 ${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${INPUT_HDFS} ${PARALLEL}
