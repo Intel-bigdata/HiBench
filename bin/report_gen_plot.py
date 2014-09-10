@@ -83,4 +83,9 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
 
 
 if __name__ == "__main__":
-    report_plot(os.path.join(os.path.dirname(__file__), "../sparkbench.report"))
+    try:
+        default_report_fn = sys.argv[1]
+    except:
+        default_report_fn = "sparkbench.report"
+        
+    report_plot(os.path.join(os.path.dirname(__file__), "..", default_report_fn))
