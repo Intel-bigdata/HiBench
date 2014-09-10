@@ -28,6 +28,6 @@ if __name__ == "__main__":
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
     hc.hql("DROP TABLE if exists rankings")
-    hc.hql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[2])
+    hc.hql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
     hc.hql("FROM rankings SELECT *").saveAsTextFile("%s/rankings" % sys.argv[2])
     sc.stop()

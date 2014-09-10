@@ -56,5 +56,5 @@ if __name__ == "__main__":
 #    predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
     accuracy = predictionAndLabel.filter(lambda x: x[0] == x[1]).count() * 1.0 / numTest
 
-    println("Test accuracy = %s." % accuracy)
+    print "Test accuracy = %s." % accuracy
 
