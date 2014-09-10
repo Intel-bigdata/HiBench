@@ -111,9 +111,8 @@ This benchmark suite contains 9 typical micro workloads:
   2. Setup Hadoop
 
       Before you run any workload in the package, please verify the
-      Hadoop framework is running correctly. All the workloads have
-      been tested with Cloudera Distribution of Hadoop 3 update 4
-      (cdh3u4) and Hadoop version 1.0.3
+      Hadoop framework is running correctly. Currently Hadoop 1.x has
+      been tested.
 
   3. Setup Spark
 
@@ -145,15 +144,15 @@ This benchmark suite contains 9 typical micro workloads:
           DICT_PATH              < The dict location >
           DATA_PATH              < The base HDFS path to hold HiBench data >
           SPARKBENCH_REPORT      < The path to SparkBench reports >
-	  PARALLEL               < The Parallelism of the executions >
+          PARALLEL               < The Parallelism of the executions >
 
     Note:
 
-      i.  SparkBench will guess the value of these variables if they
+      1.  SparkBench will guess the value of these variables if they
       are not explicitly set. If so, SparkBench guarantees neither the
       correctness of guess nor the success running of benchmarks.
 
-      ii. Do not change the default values of other global environment
+      2. Do not change the default values of other global environment
       variables unless necessary.
 
 3. Configure each workload
@@ -189,38 +188,41 @@ This benchmark suite contains 9 typical micro workloads:
       conf/configure.sh       Configuration file contains all parameters 
                               such as data size and test options.
       prepare/prepare.sh      Generate or copy the job input data into HDFS.
-      bin/run.sh              Execute the workload
+      java/bin/run.sh         Execute the java workload
+      scala/bin/run.sh        Execute the scala workload
+      python/bin/run.sh       Execute the python workload
+      
 
   Follow the steps below to run a workload
 
   1. Configure the benchmark:
 
       set your own configurations by modifying `configure.sh` if
-      necessary
+      necessary.
 
   2. Prepare data:
 
-      `bin/prepare.sh` (`bin/prepare-read.sh` for dfsioe) to prepare
-      input data in HDFS for running the benchmark
+      `prepare/prepare.sh` to prepare input data in HDFS for running the
+      benchmark.
 
   3. Run the benchmark:
 
-      `bin/run*.sh` to run the corresponding benchmark
+      `*/bin/run.sh` to run the corresponding benchmark.
 
   4. Plot the report:
       
-      `bin/report_gen_plot.py` to generate report figures.
+      `${SPARKBENCH}/bin/report_gen_plot.py` to generate report figures.
 
       Note:
       
-        `report_gen_plot.py` requires `python2.x` and `python-matplotlib`
+        `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
 
 ---
 ### Possible issues ###
 
    1. com.esotericsoftware.kryo.KryoException: Buffer overflow....
 
-      MLLib may use KryoSerializer. Raise or add a line in
+      MLLib may use KryoSerializer. Add a line or raise the value in
       `conf/spark-defaults.conf`:
 
        `spark.kryoserializer.buffer.mb  2000`
