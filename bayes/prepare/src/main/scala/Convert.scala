@@ -40,7 +40,7 @@ object Convert{
     val sparkConf = new SparkConf().setAppName("Doc2Vector")
     val sc = new SparkContext(sparkConf)
 
-    val data = sc.sequenceFile[BytesWritable, BytesWritable](input_path).map{case(k, v) => (k.toString, v.toString)}
+    val data = sc.sequenceFile[Text, Text](input_path).map{case(k, v) => (k.toString, v.toString)}
 
 //    val dirs = fileSystem.listStatus(new Path(input_path.substring(hdfs_head)))
 //    dirs.foreach { it =>
@@ -86,7 +86,7 @@ object Convert{
 //    println(vector.count())
 //    println("delete:" + output_vector_name.substring(hdfs_head))
 //    try { fileSystem.delete(new Path(output_vector_name.substring(hdfs_head)), true) } catch { case _ : Throwable => { } }
-//    vector.saveAsTextFile(output_vector_name)
+    vector.saveAsTextFile(output_vector_name)
 //    fileSystem.close()
     sc.stop()
   }
