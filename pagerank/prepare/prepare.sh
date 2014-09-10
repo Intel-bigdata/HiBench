@@ -34,6 +34,7 @@ fi
 
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS_DIR || true
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 
 # generate data
 #DELIMITER=\t
@@ -45,7 +46,6 @@ OPTION="-t pagerank \
         -p ${PAGES} \
         -o text"
 #       -d ${DELIMITER} \
-echo $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 $HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 result=$?
 if [ $result -ne 0 ]
@@ -53,7 +53,7 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-( cd `dirname $0` && sbt "run ${HDFS_MASTER} ${INPUT_HDFS_DIR}/edges/ ${INPUT_HDFS}" )
+${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-pagerank-converter_2.10-1.0.jar ${INPUT_HDFS_DIR}/edges ${INPUT_HDFS} ${PARALLEL}
 result=$?
 if [ $result -ne 0 ]
 then
