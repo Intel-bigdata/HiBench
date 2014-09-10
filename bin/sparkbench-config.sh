@@ -20,7 +20,7 @@ this="$bin/$script"
 
 export SPARKBENCH_VERSION="0.1"
 
-###################### Global Paths ##################
+###################### Global Configurations ##################
 HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
@@ -44,11 +44,17 @@ DICT_PATH=/usr/share/dict/words
 HDFS_MASTER=hdfs://sr459:54310
 DATA_HDFS=$HDFS_MASTER/SparkBench
 
+if [ -z "$SPARKBENCH_HOME" ]; then
+    export SPARKBENCH_HOME=`dirname ${this}`/..
+fi
+
 # local report
 SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 
 # Parallelism of your cluster
 PARALLEL=256
+
+################### Configuration done ##########3
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
@@ -77,10 +83,6 @@ echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this b
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
 
-
-if [ -z "$SPARKBENCH_HOME" ]; then
-    export SPARKBENCH_HOME=`dirname ${this}`/..
-fi
 
 if [ -z "$HIBENCH_HOME" ]; then
     export HIBENCH_HOME=`dirname "$this"`/..
