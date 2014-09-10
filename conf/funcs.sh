@@ -39,7 +39,7 @@ function gen_report() {
     fi
     local duration=$(echo "scale=3;($end-$start)/1000"|bc)
     local tput=`echo "$size/$duration"|bc`
-    local nodes=`$HADOOP_EXECUTABLE job -list-active-trackers | wc -l` 
+    local nodes=`cat ${SPARK_HOME}/conf/slaves | grep -v '^\s*$' | sed "/^#/ d" | wc -l` 
     local tput_node=`echo "$tput/$nodes"|bc`
 
     if [ ! -f $SPARKBENCH_REPORT ] ; then
