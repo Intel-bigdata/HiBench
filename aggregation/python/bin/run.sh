@@ -43,7 +43,7 @@ START_TIME=`timestamp`
 
 # run bench
 #echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/aggregation.py $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/aggregation.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`

@@ -1,4 +1,4 @@
-package com.intel.sparkbench.aggregration;
+package com.intel.sparkbench.aggregation;
 
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;

@@ -42,7 +42,7 @@ SIZE=`dir_size $INPUT_HDFS/uservisits`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class ScalaAggregation --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-aggregation_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.aggregation.ScalaAggregation --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
 result=$?
 if [ $result -ne 0 ]
 then
