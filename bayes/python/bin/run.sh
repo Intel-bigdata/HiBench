@@ -32,7 +32,7 @@ SIZE=`dir_size $INPUT_HDFS/vectors.txt`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/bayes.py ${INPUT_HDFS}/vectors.txt ${NUM_FEATURES}
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/bayes.py ${INPUT_HDFS}/vectors.txt ${NUM_FEATURES}
 
 # post-running
 END_TIME=`timestamp`
