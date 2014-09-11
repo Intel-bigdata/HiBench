@@ -34,7 +34,7 @@ public final class JavaBayes {
 
     Random rand = new Random();
 
-    SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
+    SparkConf sparkConf = new SparkConf().setAppName("JavaBayes");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     int numFeatures = Integer.parseInt(args[1]);
 
