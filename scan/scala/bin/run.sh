@@ -42,7 +42,7 @@ SIZE=`dir_size $INPUT_HDFS/rankings`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class ScalaScan --master ${SPARK_MASTER} ${DIR}/target/scala-2.10/scala-scan_2.10-1.0.jar $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.scan.ScalaScan --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
 result=$?
 if [ $result -ne 0 ]
 then

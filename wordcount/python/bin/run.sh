@@ -42,7 +42,7 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/wordcount.py $INPUT_HDFS $OUTPUT_HDFS
+$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/wordcount.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`

@@ -52,4 +52,4 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-${SPARK_HOME}/bin/spark-submit --class Convert --master ${SPARK_MASTER} ${DIR}/prepare/target/scala-2.10/hibench-bayes-data-converter_2.10-1.0.jar ${INPUT_HDFS} ${PARALLEL}
+${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.BayesConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS} ${PARALLEL}
