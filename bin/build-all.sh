@@ -20,10 +20,6 @@ DIR=`cd "${DIR}/.."; pwd`
 
 . $DIR/bin/sparkbench-config.sh
 
-if [ -f $SPARKBENCH_REPORT ]; then
-    rm $SPARKBENCH_REPORT
-fi
-
 function check_and_build {
     local folder=$1
     local module=$2
@@ -42,16 +38,6 @@ function check_and_build {
 }
 
 # build data generator
-check_and_build $DIR/data_gen data_gen
-
-for benchmark in `cat $DIR/conf/benchmarks.lst`; do
-    if [[ $benchmark == \#* ]]; then continue; fi
-    if [ -z $benchmark ]; then continue; fi
-
-    # build prepare, java, scala for each benchmarks
-    for target in prepare java scala; do	
-	check_and_build $DIR/$benchmark/$target ${benchmark}/${target}
-    done
-done
+check_and_build $DIR/common SparkBench 
 
 echo "Build all done!"

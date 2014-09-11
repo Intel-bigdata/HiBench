@@ -55,6 +55,10 @@ SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 # Parallelism of your cluster
 PARALLEL=256
 
+# default Mappers and reducers
+NUM_MAPS=256
+NUM_REDS=128
+
 ################### Configuration done ##########3
 
 if [ -n "$HADOOP_HOME" ]; then
