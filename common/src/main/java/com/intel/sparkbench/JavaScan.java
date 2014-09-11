@@ -1,4 +1,4 @@
-package com.intel.sparkbench.scan
+package com.intel.sparkbench.scan;
 
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;

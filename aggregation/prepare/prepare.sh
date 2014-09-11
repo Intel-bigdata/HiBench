@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== preparing scan data=========="
+echo "========== preparing aggregation data=========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/sparkbench-config.sh"
@@ -54,11 +54,4 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-#( cd `dirname $0` && sbt "run `dirname ${DATA_HDFS}` ${INPUT_HDFS_DIR}/edges/ ${INPUT_HDFS}" )
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: covert job failed to run successfully." 
-#    exit $result
-#fi
 

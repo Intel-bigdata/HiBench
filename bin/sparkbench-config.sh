@@ -30,6 +30,7 @@ SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*
 HADOOP_HOME=/july_02/hadoop
 SPARKBENCH_HOME=`printenv SPARKBENCH_HOME`
 SPARKBENCH_CONF=`printenv SPARKBENCH_CONF`
+SPARKBENCH_JAR=`printenv SPARKBENCH_JAR`
 HIBENCH_HOME=/root/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`
 HIVE_HOME=`printenv HIVE_HOME`
@@ -90,6 +91,10 @@ fi
 
 if [ -z "$SPARKBENCH_CONF" ]; then
     export SPARKBENCH_CONF=${SPARKBENCH_HOME}/conf
+fi
+
+if [ -z "$SPARKBENCH_JAR" ]; then
+    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/sparkbench_*.jar
 fi
 
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
