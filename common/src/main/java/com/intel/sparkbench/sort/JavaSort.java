@@ -16,6 +16,7 @@
 
 package com.intel.sparkbench.sort;
 
+import org.apache.commons.collections.IteratorUtils;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -26,6 +27,7 @@ import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -50,16 +52,16 @@ public final class JavaSort {
       }
     });
 
-    JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
-      @Override
-      public Tuple2<String, Integer> call(String s) {
-        return new Tuple2<String, Integer>(s, 1);
-      }
-    });
+    JavaRDD<String> sorted_words = words.mapPartitions(new FlatMapFunction<java.util.Iterator<String>, String>() {
+        @Override
+        public Iterable<String> call(java.util.Iterator<String> i) {
+            List<String> lst = IteratorUtils.toList(i);
+            Collections.sort(lst);
+            return lst;
+        }
+    }, true);
 
-    JavaPairRDD<String, Integer> counts = ones.sortByKey( true );
-
-    counts.saveAsTextFile(args[1]);
+    sorted_words.saveAsTextFile(args[1]);
 
     ctx.stop();
   }
