@@ -17,11 +17,36 @@
 package com.intel.sparkbench.sort
 
 import org.apache.spark.rdd._
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+import org.apache.spark._
+import scala.reflect.ClassTag
+
+
+class HashedRDDFunctions[K : Ordering : ClassTag,
+                          V: ClassTag,
+                          P <: Product2[K, V] : ClassTag](self: RDD[P])
+  extends Logging with Serializable {
+
+  private val ordering = implicitly[Ordering[K]]
+
+  def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.size): RDD[P] = {
+    println("in custom sort by key")
+    val part = new HashPartitioner(numPartitions)
+    val shuffled = new ShuffledRDD[K, V, P](self, part)
+    shuffled.mapPartitions(iter => {
+      val buf = iter.toArray
+      if (ascending) {
+        buf.sortWith((x, y) => ordering.lt(x._1, y._1)).iterator
+      } else {
+        buf.sortWith((x, y) => ordering.gt(x._1, y._1)).iterator
+      }
+    }, preservesPartitioning = true)
+  }
+}
 
 object ScalaSort{
+  implicit def rddToHashedRDDFunctions[K : Ordering : ClassTag, V: ClassTag](rdd: RDD[(K, V)]) =
+    new HashedRDDFunctions[K, V, (K, V)](rdd)
+
   def main(args: Array[String]){
     if (args.length < 2){
       System.err.println(
@@ -29,7 +54,7 @@ object ScalaSort{
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaSort")//.setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
 
     val file = sc.textFile(args(0))

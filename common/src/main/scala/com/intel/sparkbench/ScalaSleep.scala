@@ -29,7 +29,7 @@ object ScalaSleep{
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaSleep")//.setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("ScalaSleep")
     val sc = new SparkContext(sparkConf)
 
     val parallel = args(0).toInt

@@ -36,9 +36,9 @@ object KmeansConvert{
     val sparkConf = new SparkConf().setAppName("HiBench KMeans Converter")
     val sc = new SparkContext(sparkConf)
 
-    val input_path = args(0) //"hdfs://localhost:54310/SparkBench/KMeans/Input/samples/"
+    val input_path  = args(0) //"hdfs://localhost:54310/SparkBench/KMeans/Input/samples/"
     val output_name = args(1) //"/HiBench/KMeans/Input/samples.txt"
-    val parallel = args(2).toInt  //256
+    val parallel    = args(2).toInt  //256
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](input_path)
     data.repartition(parallel)

@@ -30,7 +30,7 @@ object ScalaAggregation{
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaAggregation")//.setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("ScalaAggregation")
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 

@@ -30,7 +30,7 @@ object ScalaJoin{
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaJoin")//.setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("ScalaJoin")
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 

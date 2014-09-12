@@ -30,9 +30,9 @@ object PagerankConvert{
         System.exit(1)
       }
 
-      val input_path = args(0)  //"/HiBench/Pagerank/Input/edges"
+      val input_path  = args(0)  //"/HiBench/Pagerank/Input/edges"
       val output_name = args(1) // "/HiBench/Pagerank/Input/edges.txt"
-      val parallel = args(2).toInt  //256
+      val parallel    = args(2).toInt  //256
 
       val sparkConf = new SparkConf().setAppName("HiBench PageRank Converter")
       val sc = new SparkContext(sparkConf)

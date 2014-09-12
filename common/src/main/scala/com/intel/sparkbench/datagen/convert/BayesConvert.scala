@@ -34,7 +34,7 @@ object BayesConvert{
     }
 
     val input_path =   args(0)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
-    val parallel   = args(1).toInt
+    val parallel   =   args(1).toInt
     val output_vector_name = input_path + "/vectors.txt"
 
     val sparkConf = new SparkConf().setAppName("HiBench Bayes Converter")

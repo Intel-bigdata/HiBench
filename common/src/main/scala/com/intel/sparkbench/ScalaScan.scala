@@ -30,7 +30,7 @@ object ScalaScan{
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaScan")//.setMaster("local[2]")
+    val sparkConf = new SparkConf().setAppName("ScalaScan")
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
