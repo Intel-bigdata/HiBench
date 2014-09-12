@@ -1,18 +1,19 @@
-// Copyright (C) 2011-2012 the original author or authors.
-// See the LICENCE.txt file distributed with this work for additional
-// information regarding copyright ownership.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.intel.sparkbench.datagen
 
@@ -40,7 +41,8 @@ object RandomTextWriter {
   def main(args: Array[String]): Unit = {
     if ((args.length < 3) || ((args.length > 3) && (args.length < 7))){
       System.err.println(
-        s"Usage: $RandomTextWriter <Output_data_URL> <TOTAL_DATA_SIZE> <PARALLEL> [<MIN_WORDS_KEY> <MAX_WORDS_KEY> <MIN_WORDS_VALUE> <MAX_WORDS_VALUE>]"
+        s"Usage: $RandomTextWriter <Output_data_URL> <TOTAL_DATA_SIZE> <PARALLEL> " +
+          s"[<MIN_WORDS_KEY> <MAX_WORDS_KEY> <MIN_WORDS_VALUE> <MAX_WORDS_VALUE>]"
       )
       System.exit(1)
     }
@@ -59,8 +61,10 @@ object RandomTextWriter {
     val wordsInKeyRange = maxWordsInKey - minWordsInKey
     val wordsInValueRange = maxWordsInValue - minWordsInValue
 
-    val noWordsKey = minWordsInKey + (if (wordsInKeyRange != 0) util.Random.nextInt(wordsInKeyRange) else 0)
-    val noWordsValue = minWordsInValue + (if (wordsInValueRange!=0) util.Random.nextInt(wordsInValueRange) else 0)
+    val noWordsKey = minWordsInKey +
+      (if (wordsInKeyRange != 0) util.Random.nextInt(wordsInKeyRange) else 0)
+    val noWordsValue = minWordsInValue +
+      (if (wordsInValueRange!=0) util.Random.nextInt(wordsInValueRange) else 0)
 
     val sizePerTask = totalDataSize / numParallel.toLong
 
@@ -69,7 +73,8 @@ object RandomTextWriter {
       generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)
     ).mkString(" ").length() / 100
 
-    println(s"total:$totalDataSize, mean_size:$mean_size, numParallel:$numParallel, HDFS:" + args(0))
+    println(s"total:$totalDataSize, mean_size:$mean_size, " +
+            s"numParallel:$numParallel, HDFS:" + args(0))
 
     sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
       generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)

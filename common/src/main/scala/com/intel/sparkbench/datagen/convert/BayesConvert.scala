@@ -1,18 +1,19 @@
-// Copyright (C) 2011-2012 the original author or authors.
-// See the LICENCE.txt file distributed with this work for additional
-// information regarding copyright ownership.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 
 package com.intel.sparkbench.datagen.convert
@@ -49,7 +50,8 @@ object BayesConvert{
     val wordsum = wordcount.map(_._2).reduce(_ + _)
 
     val word_dict = wordcount.zipWithIndex()
-                             .map{case ((key, count), index)=> (key, (index, count.toDouble / wordsum))}
+                             .map{case ((key, count), index) =>
+                                  (key, (index, count.toDouble / wordsum))}
                              .collectAsMap()
     val shared_word_dict = sc.broadcast(word_dict)
 
@@ -65,7 +67,8 @@ object BayesConvert{
 
       // key := /classXXX
       // key.substring(6) := XXX
-      key.substring(6) + " " + sorted_doc_vector.mkString(" ") // label index1:value1 index2:value2 ...
+      // label index1:value1 index2:value2 ...
+      key.substring(6) + " " + sorted_doc_vector.mkString(" ")
     }
     vector.saveAsTextFile(output_vector_name)
     sc.stop()

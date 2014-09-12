@@ -18,7 +18,7 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== preparing sort data=========="
+echo "========== preparing tera sort data=========="
 # configure
 DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/sparkbench-config.sh"

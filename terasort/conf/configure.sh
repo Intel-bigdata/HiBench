@@ -13,25 +13,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
+set -u 
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+# paths
+INPUT_HDFS=${DATA_HDFS}/TeraSort/Input
+OUTPUT_HDFS=${DATA_HDFS}/TeraSort/Output
 
-echo "========== preparing sort data=========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
+# for preparation (per node) - 32G
+#DATASIZE=32000000000
+DATASIZE=3200000        # small scale
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
-
-# generate data
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.datagen.RandomTextWriter --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS ${DATASIZE} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Spark job failed to run successfully." 
-    exit $result
-fi
+# for genreport
+SIZE=$DATASIZE

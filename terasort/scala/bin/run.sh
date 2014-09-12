@@ -18,20 +18,22 @@ set -u
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
 
-echo "========== preparing sort data=========="
+echo "========== running scala tera sort bench =========="
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
+. "${DIR}/../../bin/sparkbench-config.sh"
+. "${DIR}/../conf/configure.sh"
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
+$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
 
-# generate data
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.datagen.RandomTextWriter --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS ${DATASIZE} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Spark job failed to run successfully." 
-    exit $result
-fi
+# pre-running
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
+
+# run bench
+$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.terasort.ScalaTeraSort --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
+
+# post-running
+END_TIME=`timestamp`
+gen_report "ScalaSort" ${START_TIME} ${END_TIME} ${SIZE}
