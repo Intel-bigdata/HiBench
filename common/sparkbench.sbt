@@ -20,3 +20,4 @@ resolvers ++= Seq("Apache Repository" at "https://repository.apache.org/content/
 )
 
 
+org.scalastyle.sbt.ScalastylePlugin.Settings
