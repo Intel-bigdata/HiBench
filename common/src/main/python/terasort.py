@@ -22,12 +22,12 @@ from pyspark import SparkContext
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
+        print >> sys.stderr, "Usage: terasort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
-    sc = SparkContext(appName="PythonSort")
+    sc = SparkContext(appName="PythonTeraSort")
     lines = sc.textFile(sys.argv[1], 1)
-    sortedCount = lines.flatMap(lambda x: x.split(' ')) \
-        .mapPartitions(lambda x: sorted(x) ,preservesPartitioning=True)
+    sortedCount = lines.map(lambda x: (x[:10], x[10:])) \
+        .sortByKey(lambda x: x).map(lambda x: x[0] + x[1])
 
     sortedCount.saveAsTextFile(sys.argv[2])
     sc.stop()

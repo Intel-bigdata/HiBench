@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-package com.intel.sparkbench.sort
+package com.intel.sparkbench.terasort
 
 import org.apache.spark.rdd._
 import org.apache.spark._
-import scala.reflect.ClassTag
+import org.apache.spark.SparkContext._
 
 
-object ScalaSort{
+object ScalaTeraSort{
 
   def main(args: Array[String]){
     if (args.length < 2){
       System.err.println(
-        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS>"
+        s"Usage: $ScalaTeraSort <INPUT_HDFS> <OUTPUT_HDFS>"
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaSort")
+    val sparkConf = new SparkConf().setAppName("ScalaTeraSort")
     val sc = new SparkContext(sparkConf)
 
     val file = sc.textFile(args(0))
-    val data = file.flatMap(line => line.split(" "))
-    val sorted = data.mapPartitions({words=>
-      words.toList.sorted.toIterator
-    }, preservesPartitioning = true)
+    val data = file.map(line => (line.substring(0, 10), line.substring(10)))
+                     .sortByKey().map{case(k, v) => k + v}
+    data.saveAsTextFile(args(1))
 
-    sorted.saveAsTextFile(args(1))
     sc.stop()
   }
 }

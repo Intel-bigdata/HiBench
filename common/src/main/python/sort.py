@@ -26,8 +26,8 @@ if __name__ == "__main__":
         exit(-1)
     sc = SparkContext(appName="PythonSort")
     lines = sc.textFile(sys.argv[1], 1)
-    sortedCount = lines.flatMap(lambda x: x.split(' ')) \
+    sortedWords = lines.flatMap(lambda x: x.split(' ')) \
         .mapPartitions(lambda x: sorted(x) ,preservesPartitioning=True)
 
-    sortedCount.saveAsTextFile(sys.argv[2])
+    sortedWords.saveAsTextFile(sys.argv[2])
     sc.stop()

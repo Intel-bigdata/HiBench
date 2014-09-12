@@ -27,11 +27,17 @@ DIR=`cd $bin/../; pwd`
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 
-# generate data
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.datagen.RandomTextWriter --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS ${DATASIZE} ${PARALLEL}
+# Generate the terasort data
+$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
+    -D mapred.map.tasks=$NUM_MAPS \
+    $DATASIZE $INPUT_HDFS
 result=$?
 if [ $result -ne 0 ]
 then
-    echo "ERROR: Spark job failed to run successfully." 
+    echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
+
+$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*
+
+
