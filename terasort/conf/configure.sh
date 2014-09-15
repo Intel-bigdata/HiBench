@@ -20,8 +20,8 @@ INPUT_HDFS=${DATA_HDFS}/TeraSort/Input
 OUTPUT_HDFS=${DATA_HDFS}/TeraSort/Output
 
 # for preparation (per node) - 32G
-#DATASIZE=32000000000
-DATASIZE=3200000        # small scale
+#DATASIZE=32000000000   # 320M records, 100Bytes each = 3.2TB
+DATASIZE=3200000        # small scale, 3.2M records * 100 = 320MB
 
 # for genreport
-SIZE=$DATASIZE
+SIZE=$(( $DATASIZE * 100 ))  
