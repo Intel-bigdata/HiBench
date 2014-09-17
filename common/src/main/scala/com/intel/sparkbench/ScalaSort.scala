@@ -20,7 +20,7 @@ package com.intel.sparkbench.sort
 import org.apache.spark.rdd._
 import org.apache.spark._
 import scala.reflect.ClassTag
-
+import org.apache.spark.storage.StorageLevel._
 
 object ScalaSort{
 

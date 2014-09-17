@@ -20,6 +20,7 @@ package com.intel.sparkbench.terasort
 import org.apache.spark.rdd._
 import org.apache.spark._
 import org.apache.spark.SparkContext._
+import org.apache.spark.storage.StorageLevel._
 
 
 object ScalaTeraSort{
@@ -35,6 +36,7 @@ object ScalaTeraSort{
     val sc = new SparkContext(sparkConf)
 
     val file = sc.textFile(args(0))
+    file.persist(MEMORY_AND_DISK)
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
                      .sortByKey().map{case(k, v) => k + v}
     data.saveAsTextFile(args(1))
