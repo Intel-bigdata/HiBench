@@ -24,4 +24,4 @@ OUTPUT_HDFS=${DATA_HDFS}/TeraSort/Output
 DATASIZE=6400000000        # 640G 
 
 # for genreport
-SIZE=$DATASIZE
+SIZE=$(( $DATASIZE * 100 ))  
