@@ -31,6 +31,22 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.2.0</version>
+        <executions>
+          <execution>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+                <url>http://archive.apache.org/dist/mahout/0.7/mahout-distribution-0.7.tar.gz</url>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
