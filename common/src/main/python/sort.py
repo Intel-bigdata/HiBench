@@ -16,9 +16,45 @@
 #
 
 import sys
+import bisect
 
 from pyspark import SparkContext
+from pyspark.rdd import portable_hash
 
+def sortByKeyWithHashedPartitioner(self, ascending=True, numPartitions=None, keyfunc=lambda x: x):
+    """
+    FIXME: update doc string
+    
+    Sorts this RDD, which is assumed to consist of (key, value) pairs.
+    # noqa
+
+    >>> tmp = [('a', 1), ('b', 2), ('1', 3), ('d', 4), ('2', 5)]
+    >>> sc.parallelize(tmp).sortByKey().first()
+    ('1', 3)
+    >>> sc.parallelize(tmp).sortByKey(True, 1).collect()
+    [('1', 3), ('2', 5), ('a', 1), ('b', 2), ('d', 4)]
+    >>> sc.parallelize(tmp).sortByKey(True, 2).collect()
+    [('1', 3), ('2', 5), ('a', 1), ('b', 2), ('d', 4)]
+    >>> tmp2 = [('Mary', 1), ('had', 2), ('a', 3), ('little', 4), ('lamb', 5)]
+    >>> tmp2.extend([('whose', 6), ('fleece', 7), ('was', 8), ('white', 9)])
+    >>> sc.parallelize(tmp2).sortByKey(True, 3, keyfunc=lambda k: k.lower()).collect()
+    [('a', 3), ('fleece', 7), ('had', 2), ('lamb', 5),...('white', 9), ('whose', 6)]
+    """
+    if numPartitions is None:
+        numPartitions = self._defaultReducePartitions()
+
+    def sortPartition(iterator):
+        return iter(sorted(iterator, key=lambda (k, v): keyfunc(k), reverse=not ascending))
+
+    if numPartitions == 1:
+        if self.getNumPartitions() > 1:
+            self = self.coalesce(1)
+        return self.mapPartitions(sortPartition)
+
+    def hashedPartitioner(k):
+        return portable_hash(keyfunc(k)) % numPartitions
+
+    return self.partitionBy(numPartitions, hashedPartitioner).mapPartitions(sortPartition, True)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -26,8 +62,8 @@ if __name__ == "__main__":
         exit(-1)
     sc = SparkContext(appName="PythonSort")
     lines = sc.textFile(sys.argv[1], 1)
-    sortedWords = lines.flatMap(lambda x: x.split(' ')) \
-        .mapPartitions(lambda x: sorted(x) ,preservesPartitioning=True)
+    words = lines.flatMap(lambda x: x.split(' ')).map(lambda x:(x,1))
+    sortedWords = sortByKeyWithHashedPartitioner(words).map(lambda x:x[0])
 
     sortedWords.saveAsTextFile(sys.argv[2])
     sc.stop()
