@@ -26,7 +26,7 @@ import org.apache.spark.storage.StorageLevel._
 object ScalaTeraSort{
 
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length != 2){
       System.err.println(
         s"Usage: $ScalaTeraSort <INPUT_HDFS> <OUTPUT_HDFS>"
       )
@@ -35,10 +35,10 @@ object ScalaTeraSort{
     val sparkConf = new SparkConf().setAppName("ScalaTeraSort")
     val sc = new SparkContext(sparkConf)
 
+
     val file = sc.textFile(args(0))
-    file.persist(MEMORY_AND_DISK)
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
-                     .sortByKey().map{case(k, v) => k + v}
+                     .sortByKey(numPartitions=128).map{case(k, v) => k + v}
     data.saveAsTextFile(args(1))
 
     sc.stop()

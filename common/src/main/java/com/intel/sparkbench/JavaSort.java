@@ -26,11 +26,17 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.function.Function;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import com.intel.sparkbench.sort.HashedRDDFunctions;
+import com.intel.sparkbench.sort.PatchedJavaPairRDD;
+import scala.reflect.ClassTag;
+import scala.reflect.ClassTag$;
 
 public final class JavaSort {
   private static final Pattern SPACE = Pattern.compile(" ");
@@ -53,16 +59,27 @@ public final class JavaSort {
       }
     });
 
-    JavaRDD<String> sorted_words = words.mapPartitions(new FlatMapFunction<java.util.Iterator<String>, String>() {
-        @Override
-        public Iterable<String> call(java.util.Iterator<String> i) {
-            List<String> lst = IteratorUtils.toList(i);
-            Collections.sort(lst);
-            return lst;
-        }
-    }, true);
+    JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
+      @Override
+      public Tuple2<String, Integer> call(String s) {
+        return new Tuple2<String, Integer>(s, 1);
+      }
+    });
 
-    sorted_words.saveAsTextFile(args[1]);
+
+    JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(ones.rdd(),
+            ClassTag$.MODULE$.apply(String.class),
+            ClassTag$.MODULE$.apply(Integer.class)
+            ).sortByKeyWithHashedPartitioner();
+
+    JavaRDD<String> result = counts.map(new Function<Tuple2<String, Integer>, String>() {
+        @Override
+        public String call(Tuple2<String, Integer> e) throws Exception {
+            return e._1();
+        }
+    });
+
+    result.saveAsTextFile(args[1]);
 
     ctx.stop();
   }
