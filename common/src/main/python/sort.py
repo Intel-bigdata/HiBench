@@ -23,22 +23,20 @@ from pyspark.rdd import portable_hash
 
 def sortByKeyWithHashedPartitioner(self, ascending=True, numPartitions=None, keyfunc=lambda x: x):
     """
-    FIXME: update doc string
-    
     Sorts this RDD, which is assumed to consist of (key, value) pairs.
-    # noqa
+    # adopted from spark/s rdd.py implementation
 
     >>> tmp = [('a', 1), ('b', 2), ('1', 3), ('d', 4), ('2', 5)]
-    >>> sc.parallelize(tmp).sortByKey().first()
-    ('1', 3)
-    >>> sc.parallelize(tmp).sortByKey(True, 1).collect()
+    >>> sortByKeyWithHashedPartitioner(sc.parallelize(tmp)).first()
+    ('d', 4)
+    >>> sortByKeyWithHashedPartitioner(sc.parallelize(tmp), True, 1).collect()
     [('1', 3), ('2', 5), ('a', 1), ('b', 2), ('d', 4)]
-    >>> sc.parallelize(tmp).sortByKey(True, 2).collect()
-    [('1', 3), ('2', 5), ('a', 1), ('b', 2), ('d', 4)]
+    >>> sortByKeyWithHashedPartitioner(sc.parallelize(tmp), True, 2).collect()
+    [('1', 3), ('a', 1), ('2', 5), ('b', 2), ('d', 4)]
     >>> tmp2 = [('Mary', 1), ('had', 2), ('a', 3), ('little', 4), ('lamb', 5)]
     >>> tmp2.extend([('whose', 6), ('fleece', 7), ('was', 8), ('white', 9)])
-    >>> sc.parallelize(tmp2).sortByKey(True, 3, keyfunc=lambda k: k.lower()).collect()
-    [('a', 3), ('fleece', 7), ('had', 2), ('lamb', 5),...('white', 9), ('whose', 6)]
+    >>> sortByKeyWithHashedPartitioner(sc.parallelize(tmp2),True, 3, keyfunc=lambda k: k.lower()).collect()
+    [('fleece', 7), ('had', 2), ('lamb', 5), ('white', 9),....('Mary', 1), ('was', 8), ('whose', 6)]
     """
     if numPartitions is None:
         numPartitions = self._defaultReducePartitions()
