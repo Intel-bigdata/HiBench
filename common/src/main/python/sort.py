@@ -25,6 +25,7 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
+    parallel = sc._conf.get("spark.default.parallelism")
     lines = sc.textFile(sys.argv[1], 1)
     sortedWords = lines.flatMap(lambda x: x.split(' ')) \
         .mapPartitions(lambda x: sorted(x) ,preservesPartitioning=True)

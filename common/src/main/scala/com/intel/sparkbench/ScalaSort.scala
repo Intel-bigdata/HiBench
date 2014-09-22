@@ -33,7 +33,7 @@ object ScalaSort{
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
-
+    val parallel = sc.getConf.getInt("spark.default.parallelism", 0)
     val file = sc.textFile(args(0))
     val data = file.flatMap(line => line.split(" "))
     val sorted = data.mapPartitions({words=>

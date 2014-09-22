@@ -70,3 +70,22 @@ function dir_size() {
     done
 }
 
+function run-spark-job() {
+    CLS=$1
+    shift
+    cat ${DIR}/../../conf/global_properties.conf ${DIR}/../conf/properties.conf > ${DIR}/../conf/._prop.conf
+    PROP_FILES="--properties-file ${DIR}/../conf/._prop.conf"
+
+    if [[ "$CLS" == *.py ]]; then 
+	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
+    else
+	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
+    fi
+    result=$?
+    rm -rf ${DIR}/../conf/._prop.conf 2> /dev/null || true
+    if [ $result -ne 0 ]
+    then
+	echo "ERROR: Spark job ${CLS} failed to run successfully."
+	exit $result
+    fi
+}
