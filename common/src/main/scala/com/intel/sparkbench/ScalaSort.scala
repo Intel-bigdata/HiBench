@@ -106,18 +106,19 @@ object ScalaSort{
          (rdd: RDD[(K, V)]) = new HashedRDDFunctions[K, V, (K, V)](rdd)
 
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length != 3){
       System.err.println(
-        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS>"
+        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS> <PARALLEL>"
       )
       System.exit(1)
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
+    val parallel = args(2).toInt
 
     val file = sc.textFile(args(0))
     val data = file.flatMap(line => line.split(" ")).map((_, 1))
-    val sorted = data.sortByKey(numPartitions = 128).map(_._1)
+    val sorted = data.sortByKey(numPartitions = parallel / 2).map(_._1)
 
     sorted.saveAsTextFile(args(1))
     sc.stop()

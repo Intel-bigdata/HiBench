@@ -43,12 +43,13 @@ public final class JavaSort {
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length < 2) {
-      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT");
+    if (args.length != 3) {
+      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>");
       System.exit(1);
     }
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
+    Integer parallel = Integer.parseInt(args[2]);
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
@@ -70,7 +71,7 @@ public final class JavaSort {
     JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(ones.rdd(),
             ClassTag$.MODULE$.apply(String.class),
             ClassTag$.MODULE$.apply(Integer.class)
-            ).sortByKeyWithHashedPartitioner();
+            ).sortByKeyWithHashedPartitioner( true, parallel / 2);
 
     JavaRDD<String> result = counts.map(new Function<Tuple2<String, Integer>, String>() {
         @Override
