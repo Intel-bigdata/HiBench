@@ -78,7 +78,7 @@ public class PagerankNaive extends Configured implements Tool
 				output.collect( new IntWritable( src_id ), new Text(line[2]) );
 
 				if( make_symmetric == 1 )
-					output.collect( new IntWritable( dst_id ), new Text(line[0]) );
+					output.collect( new IntWritable( dst_id ), new Text(line[1]) );
 			}
 		}
 	}
