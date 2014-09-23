@@ -42,7 +42,8 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.DenseKMeans --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
+run-spark-job org.apache.spark.examples.mllib.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS || exit 1
+#$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.DenseKMeans --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`

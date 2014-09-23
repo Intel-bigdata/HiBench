@@ -42,7 +42,8 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.join.JavaJoin --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job com.intel.sparkbench.join.JavaJoin $INPUT_HDFS $OUTPUT_HDFS || exit 1
+#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.join.JavaJoin --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`
