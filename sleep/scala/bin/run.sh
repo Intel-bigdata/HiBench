@@ -42,7 +42,8 @@ SIZE=0
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.sleep.ScalaSleep --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $PARALLEL $SLEEP
+run-spark-job com.intel.sparkbench.sleep.ScalaSleep $PARALLEL $SLEEP || exit 1
+#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.sleep.ScalaSleep --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $PARALLEL $SLEEP
 result=$?
 if [ $result -ne 0 ]
 then
