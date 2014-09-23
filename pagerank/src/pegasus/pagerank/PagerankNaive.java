@@ -73,9 +73,9 @@ public class PagerankNaive extends Configured implements Tool
 				// In other matrix-vector multiplication, we output (dst, src) here
 				// However, In PageRank, the matrix-vector computation formula is M^T * v.
 				// Therefore, we output (src,dst) here.
-				int src_id = Integer.parseInt(line[0]);
-				int dst_id = Integer.parseInt(line[1]);
-				output.collect( new IntWritable( src_id ), new Text(line[1]) );
+				int src_id = Integer.parseInt(line[1]);
+				int dst_id = Integer.parseInt(line[2]);
+				output.collect( new IntWritable( src_id ), new Text(line[2]) );
 
 				if( make_symmetric == 1 )
 					output.collect( new IntWritable( dst_id ), new Text(line[0]) );
