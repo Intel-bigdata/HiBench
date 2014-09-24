@@ -37,8 +37,9 @@ OPTION="-t pagerank \
 	-m ${NUM_MAPS} \
 	-r ${NUM_REDS} \
 	-p ${PAGES} \
+        -pbalance -pbalance \
 	-o text"
 
 #	-d ${DELIMITER} \
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} | tee ${DIR}/$TMPLOGFILE
+$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1 | tee ${DIR}/$TMPLOGFILE
 
