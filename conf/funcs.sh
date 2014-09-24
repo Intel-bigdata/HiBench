@@ -73,8 +73,17 @@ function dir_size() {
 function run-spark-job() {
     CLS=$1
     shift
-    cat ${DIR}/../../conf/global_properties.conf ${DIR}/../conf/properties.conf > ${DIR}/../conf/._prop.conf
-    PROP_FILES="--properties-file ${DIR}/../conf/._prop.conf"
+    
+    if [ -d $DIR/prepare ]; then
+	WORKLOAD_DIR=$DIR
+    elif [ -d $DIR/../prepare ]; then
+	WORKLOAD_DIR=$DIR/..
+    else
+	echo "Unknown workload path!"
+	exit 1
+    fi
+    cat ${WORKLOAD_DIR}/../conf/global_properties.conf ${WORKLOAD_DIR}/conf/properties.conf > ${WORKLOAD_DIR}/conf/._prop.conf
+    PROP_FILES="--properties-file ${WORKLOAD_DIR}/conf/._prop.conf"
 
     if [[ "$CLS" == *.py ]]; then 
 	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
@@ -82,7 +91,7 @@ function run-spark-job() {
 	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
     fi
     result=$?
-    rm -rf ${DIR}/../conf/._prop.conf 2> /dev/null || true
+    rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true
     if [ $result -ne 0 ]
     then
 	echo "ERROR: Spark job ${CLS} failed to run successfully."
