@@ -22,6 +22,10 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+if [ -n "$1" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+fi
+
 # path check
 $HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
 
