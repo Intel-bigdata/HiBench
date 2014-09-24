@@ -23,6 +23,11 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+OUTPUT_HDFS=$INPUT_HDFS/indexes
+if [ -n "$1" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+fi
+
 NUTCH_BIN_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target"
 export COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
 export NUTCHINDEXING_DEPENDENCY_DIR=$NUTCH_BIN_DIR"/dependency"
@@ -67,7 +72,7 @@ fi
 check_compress
 
 # path check
-$HADOOP_EXECUTABLE $RMDIR_CMD $INPUT_HDFS/indexes
+$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
 
 # pre-running
 SIZE=`dir_size $INPUT_HDFS`
@@ -76,7 +81,7 @@ export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME/conf
 START_TIME=`timestamp`
 
 # run bench
-$NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $INPUT_HDFS/indexes $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+$NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 # post-running
 END_TIME=`timestamp`
