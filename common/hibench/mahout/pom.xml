@@ -22,6 +22,7 @@
         <executions>
           <execution>
             <phase>process-sources</phase>
+            <id>get1</id>
             <goals>
               <goal>wget</goal>
             </goals>
@@ -29,15 +30,9 @@
                 <url>http://archive.cloudera.com/cdh5/cdh/5/mahout-0.9-cdh5.1.0.tar.gz</url>
             </configuration>
           </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.2.0</version>
-        <executions>
           <execution>
             <phase>process-sources</phase>
+            <id>get2</id>
             <goals>
               <goal>wget</goal>
             </goals>

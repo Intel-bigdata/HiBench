@@ -29,7 +29,7 @@ if [ -n "$1" ]; then
 fi
 
 NUTCH_BIN_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target"
-COMMON_DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/common/target/dependency"
+DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
 
 if [ ! -e $NUTCH_BIN_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
   echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
@@ -57,7 +57,7 @@ if [ $HADOOP_VERSION == "hadoop2" ]; then
   mkdir $NUTCH_HOME/temp
   unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
   rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
-  cp $COMMON_DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+  cp $DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
   rm $NUTCH_HOME/nutch-1.2.job
   cd $NUTCH_HOME/temp
   zip -qr $NUTCH_HOME/nutch-1.2.job *
