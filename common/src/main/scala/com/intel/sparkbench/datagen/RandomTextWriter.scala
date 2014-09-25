@@ -39,24 +39,23 @@ object RandomTextWriter {
   }
 
   def main(args: Array[String]): Unit = {
-    if ((args.length < 3) || ((args.length > 3) && (args.length < 7))){
+    if ((args.length < 2) || ((args.length > 2) && (args.length < 6))){
       System.err.println(
-        s"Usage: $RandomTextWriter <Output_data_URL> <TOTAL_DATA_SIZE> <PARALLEL> " +
+        s"Usage: $RandomTextWriter <Output_data_URL> <TOTAL_DATA_SIZE> " +
           s"[<MIN_WORDS_KEY> <MAX_WORDS_KEY> <MIN_WORDS_VALUE> <MAX_WORDS_VALUE>]"
       )
       System.exit(1)
     }
     val sparkConf = new SparkConf().setAppName("RandomTextWriter")
     val sc = new SparkContext(sparkConf)
-
+    val numParallel = sc.getConf.getInt("spark.default.parallelism", 0)
     val totalDataSize = args(1).toLong
-    val numParallel = args(2).toInt
 
-    if (args.length>3){
-      minWordsInKey =  args(3).toInt
-      maxWordsInKey =  args(4).toInt
-      minWordsInValue =  args(5).toInt
-      maxWordsInValue =  args(6).toInt
+    if (args.length>2){
+      minWordsInKey =  args(2).toInt
+      maxWordsInKey =  args(3).toInt
+      minWordsInValue =  args(4).toInt
+      maxWordsInValue =  args(5).toInt
     }
     val wordsInKeyRange = maxWordsInKey - minWordsInKey
     val wordsInValueRange = maxWordsInValue - minWordsInValue

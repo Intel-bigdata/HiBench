@@ -42,13 +42,8 @@ SIZE=`dir_size $INPUT_HDFS/uservisits`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.aggregation.ScalaAggregation --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Spark job failed to run successfully."
-    exit $result
-fi
+run-spark-job com.intel.sparkbench.aggregation.ScalaAggregation $INPUT_HDFS $OUTPUT_HDFS || exit 1
+#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.aggregation.ScalaAggregation --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`

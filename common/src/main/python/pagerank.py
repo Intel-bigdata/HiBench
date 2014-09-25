@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+#
+# Copied from spark's example
+#
+
 import re
 import sys
 from operator import add

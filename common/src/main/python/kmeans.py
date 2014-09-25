@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+#
+# Copied from spark's example
+#
+
 """
 A K-means clustering program using MLlib.
 

@@ -42,7 +42,8 @@ SIZE=`dir_size $INPUT_HDFS/vectors.txt`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
+run-spark-job org.apache.spark.examples.mllib.SparseNaiveBayes --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt || exit 1
+#$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
 
 # post-running
 END_TIME=`timestamp`

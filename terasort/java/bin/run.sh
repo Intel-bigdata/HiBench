@@ -32,7 +32,8 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.terasort.JavaTeraSort --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job com.intel.sparkbench.terasort.JavaTeraSort $INPUT_HDFS $OUTPUT_HDFS || exit 1
+#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.terasort.JavaTeraSort --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
 END_TIME=`timestamp`

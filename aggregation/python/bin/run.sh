@@ -35,15 +35,14 @@ else
 fi
 
 # path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
 
 # pre-running
 SIZE=`dir_size $INPUT_HDFS/uservisits`
 START_TIME=`timestamp`
 
 # run bench
-#echo $SPARK_HOME
-$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/aggregation.py $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/aggregation.py $INPUT_HDFS $OUTPUT_HDFS || exit 1
 
 # post-running
 END_TIME=`timestamp`
