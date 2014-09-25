@@ -17,26 +17,26 @@
 
 package com.intel.sparkbench.sort;
 
-import org.apache.commons.collections.IteratorUtils;
-import scala.Tuple2;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
-import org.apache.spark.api.java.function.Function;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.intel.sparkbench.sort.HashedRDDFunctions;
-import com.intel.sparkbench.sort.PatchedJavaPairRDD;
 import scala.reflect.ClassTag;
 import scala.reflect.ClassTag$;
+import scala.Tuple2;
+
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.spark.api.java.function.FlatMapFunction;
+import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.SparkConf;
+
+import com.intel.sparkbench.sort.PatchedJavaPairRDD;
 
 public final class JavaSort {
   private static final Pattern SPACE = Pattern.compile(" ");
@@ -67,11 +67,10 @@ public final class JavaSort {
       }
     });
 
-
     JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(ones.rdd(),
-            ClassTag$.MODULE$.apply(String.class),
-            ClassTag$.MODULE$.apply(Integer.class)
-            ).sortByKeyWithHashedPartitioner( true, parallel / 2);
+              ClassTag$.MODULE$.apply(String.class),
+              ClassTag$.MODULE$.apply(Integer.class)
+      ).sortByKeyWithHashedPartitioner( true, parallel / 2);
 
     JavaRDD<String> result = counts.map(new Function<Tuple2<String, Integer>, String>() {
         @Override

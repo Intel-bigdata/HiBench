@@ -35,7 +35,6 @@ object ScalaTeraSort{
     val sparkConf = new SparkConf().setAppName("ScalaTeraSort")
     val sc = new SparkContext(sparkConf)
 
-
     val file = sc.textFile(args(0))
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
                      .sortByKey(numPartitions=128).map{case(k, v) => k + v}
