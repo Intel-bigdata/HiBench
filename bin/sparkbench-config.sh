@@ -98,7 +98,7 @@ if [ -z "$SPARKBENCH_CONF" ]; then
 fi
 
 if [ -z "$SPARKBENCH_JAR" ]; then
-    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/sparkbench_*.jar
+    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar
 fi
 
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then

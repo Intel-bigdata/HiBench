@@ -19,7 +19,9 @@ import sys
 
 from pyspark import SparkContext
 
-
+#
+# Adopted from spark's example
+#
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
