@@ -67,9 +67,8 @@ public final class JavaSort {
       }
     });
 
-    JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(ones.rdd(),
-              ClassTag$.MODULE$.apply(String.class),
-              ClassTag$.MODULE$.apply(Integer.class)
+    JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(
+            ones.rdd(), String.class, Integer.class
       ).sortByKeyWithHashedPartitioner( true, parallel / 2);
 
     JavaRDD<String> result = counts.map(new Function<Tuple2<String, Integer>, String>() {

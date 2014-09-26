@@ -19,6 +19,7 @@ package com.intel.sparkbench.sort
 
 import java.util.Comparator
 
+import org.apache.spark.HashPartitioner
 import org.apache.spark.api.java.JavaPairRDD._
 import org.apache.spark.api.java.{JavaPairRDD, JavaRDDLike}
 import org.apache.spark.rdd._
@@ -41,9 +42,10 @@ class HashedRDDFunctions[K : Ordering : ClassTag,
   }
 }
 
-class PatchedJavaPairRDD[K, V](override val rdd: RDD[(K, V)])
-                       (implicit override val kClassTag: ClassTag[K], implicit override val vClassTag: ClassTag[V])
-  extends JavaPairRDD[K, V](rdd) {
+class PatchedJavaPairRDD[K, V](override val rdd: RDD[(K, V)], val kClass: Class[K], val vClass: Class[V])
+  extends JavaPairRDD[K, V](rdd)(ClassTag(kClass), ClassTag(vClass)) {
+  implicit val keyCmt: ClassTag[K] = ClassTag(kClass)
+  implicit val keyCmv: ClassTag[V] = ClassTag(vClass)
   def sortByKeyWithHashedPartitioner(): JavaPairRDD[K, V] = sortByKeyWithHashedPartitioner(true)
 
   /**
