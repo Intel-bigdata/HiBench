@@ -24,6 +24,7 @@ import org.apache.spark.api.java.JavaPairRDD._
 import org.apache.spark.api.java.{JavaPairRDD, JavaRDDLike}
 import org.apache.spark.rdd._
 import org.apache.spark._
+
 import scala.reflect.ClassTag
 
 class HashedRDDFunctions[K : Ordering : ClassTag,
