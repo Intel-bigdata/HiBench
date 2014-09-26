@@ -32,7 +32,13 @@ do
         echo "$benchmark is not supported"
       else
         echo "Running $benchmark in background"
-        $DIR/$benchmark/bin/run.sh $i > /dev/null 2>&1 &
+        if [ "$benchmark" = "hivebench" ]; then
+          $DIR/$benchmark/bin/run-aggregation.sh $i > /dev/null 2>&1 &
+          $DIR/$benchmark/bin/run-join.sh $i > /dev/null 2>&1 &
+          JOBS_NUM=$(( $JOBS_NUM + 1 ))
+        else
+          $DIR/$benchmark/bin/run.sh $i > /dev/null 2>&1 &
+        fi
       fi
     done
 done < $DIR/conf/benchmarks-concurrent.lst

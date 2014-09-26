@@ -37,39 +37,49 @@ fi
 
 HIVE_HOME=$HIVE_BIN_DIR"/hive-0.12.0-bin"
 cp ${DIR}/hive/bin/hive $HIVE_HOME/bin
+USERVISITS_AGGRE="uservisits_aggre"
+USERVISITS_AGGRE_FILE="uservisits_aggre.hive"
+
+if [ -n "$1" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+  USERVISITS_AGGRE=$USERVISITS_AGGRE"_"$1
+  USERVISITS_AGGRE_FILE=$USERVISITS_AGGRE_FILE"."$1
+fi
 
 # path check
-rm -rf ${DIR}/metastore_db
-rm -rf ${DIR}/TempStatsStore
-$HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/uservisits_aggre
-#$HADOOP_EXECUTABLE $RMDIR_CMD /tmp
+#rm -rf $HIVE_BIN_DIR/metastore_db
+#rm -rf $HIVE_BIN_DIR/TempStatsStore
+$HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/$USERVISITS_AGGRE
 
 # pre-running
-echo "USE DEFAULT;" > $DIR/hive-benchmark/uservisits_aggre.hive
-echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-echo "set hive.stats.autogather=false;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+echo "USE DEFAULT;" > $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set hive.stats.autogather=false;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 
 if [ $COMPRESS -eq 1 ]; then
-  echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+  echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
   if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-    echo "set mapred.output.compress=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapred.output.compression.type=BLOCK;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapred.output.compress=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapred.output.compression.type=BLOCK;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
   else
-    echo "set mapreduce.jobtracker.address=ignorethis" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set hive.exec.show.job.failure.debug.info=false" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapreduce.map.output.compress=true;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/uservisits_aggre.hive
-    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> $DIR/hive-benchmark/uservisits_aggre.hive
+    echo "set mapreduce.jobtracker.address=ignorethis" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set hive.exec.show.job.failure.debug.info=false" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.map.output.compress=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
   fi
 fi
 
-echo "DROP TABLE uservisits;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-echo "DROP TABLE uservisits_aggre;" >> $DIR/hive-benchmark/uservisits_aggre.hive
-echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';">> $DIR/hive-benchmark/uservisits_aggre.hive
-cat $DIR/hive-benchmark/uservisits_aggre.template >> $DIR/hive-benchmark/uservisits_aggre.hive
+echo "DROP TABLE uservisits;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "DROP TABLE uservisits_aggre;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';">> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+cat $DIR/hive-benchmark/uservisits_aggre.template >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+
+sed -i -e "s/uservisits\>/uservisits_${1}/1" $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+sed -i -e "s/uservisits_aggre/${USERVISITS_AGGRE}/g" $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
   SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
@@ -81,15 +91,13 @@ fi
 START_TIME=`timestamp`
 
 # run bench
-echo $HIVE_HOME/bin/hive -f $DIR/hive-benchmark/uservisits_aggre.hive
-$HIVE_HOME/bin/hive -f $DIR/hive-benchmark/uservisits_aggre.hive
+$HIVE_HOME/bin/hive -f $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 # post-running
 END_TIME=`timestamp`
 gen_report "HIVEAGGR" ${START_TIME} ${END_TIME} ${SIZE}
 
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
-$HADOOP_EXECUTABLE fs -mkdir $OUTPUT_HDFS
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
-$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/uservisits_aggre $OUTPUT_HDFS
+$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/$USERVISITS_AGGRE
+$HADOOP_EXECUTABLE fs -mkdir -p $OUTPUT_HDFS
+$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/$USERVISITS_AGGRE $OUTPUT_HDFS
 
