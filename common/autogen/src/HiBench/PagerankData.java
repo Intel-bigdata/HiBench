@@ -247,7 +247,7 @@ public class PagerankData {
 				long[] linkids = html.genPureLinkIds();
 				for (int j=0; j<linkids.length; j++) {
 					to = Long.toString(linkids[j]);
-					Text v = new Text(from + delim + to);
+					Text v = new Text(to);
 					output.collect(key, v);
 					reporter.incrCounter(HiBench.Counters.BYTES_DATA_GENERATED, 8+v.getLength());
 				}
