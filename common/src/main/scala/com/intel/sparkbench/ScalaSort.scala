@@ -17,28 +17,111 @@
 
 package com.intel.sparkbench.sort
 
+import java.util.Comparator
+
+import org.apache.spark.HashPartitioner
+import org.apache.spark.api.java.JavaPairRDD._
+import org.apache.spark.api.java.{JavaPairRDD, JavaRDDLike}
 import org.apache.spark.rdd._
 import org.apache.spark._
+
 import scala.reflect.ClassTag
-import org.apache.spark.storage.StorageLevel._
+
+class HashedRDDFunctions[K : Ordering : ClassTag,
+                         V: ClassTag,
+                         P <: Product2[K, V] : ClassTag]
+                        (self: RDD[P])
+  extends Logging with Serializable
+{
+  private val ordering = implicitly[Ordering[K]]
+
+  def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.size): RDD[(K, V)] =
+  {
+    val part = new HashPartitioner(numPartitions)
+    new ShuffledRDD[K, V, V](self, part)
+      .setKeyOrdering(if (ascending) ordering else ordering.reverse)
+  }
+}
+
+class PatchedJavaPairRDD[K, V](override val rdd: RDD[(K, V)], val kClass: Class[K], val vClass: Class[V])
+  extends JavaPairRDD[K, V](rdd)(ClassTag(kClass), ClassTag(vClass)) {
+  implicit val keyCmt: ClassTag[K] = ClassTag(kClass)
+  implicit val keyCmv: ClassTag[V] = ClassTag(vClass)
+  def sortByKeyWithHashedPartitioner(): JavaPairRDD[K, V] = sortByKeyWithHashedPartitioner(true)
+
+  /**
+   * Sort the RDD by key, so that each partition contains a sorted range of the elements. Calling
+   * `collect` or `save` on the resulting RDD will return or output an ordered list of records
+   * (in the `save` case, they will be written to multiple `part-X` files in the filesystem, in
+   * order of the keys).
+   */
+  def sortByKeyWithHashedPartitioner(ascending: Boolean): JavaPairRDD[K, V] = {
+    val comp = com.google.common.collect.Ordering.natural().asInstanceOf[Comparator[K]]
+    sortByKeyWithHashedPartitioner(comp, ascending)
+  }
+
+  /**
+   * Sort the RDD by key, so that each partition contains a sorted range of the elements. Calling
+   * `collect` or `save` on the resulting RDD will return or output an ordered list of records
+   * (in the `save` case, they will be written to multiple `part-X` files in the filesystem, in
+   * order of the keys).
+   */
+  def sortByKeyWithHashedPartitioner(ascending: Boolean, numPartitions: Int): JavaPairRDD[K, V] = {
+    val comp = com.google.common.collect.Ordering.natural().asInstanceOf[Comparator[K]]
+    sortByKeyWithHashedPartitioner(comp, ascending, numPartitions)
+  }
+
+  /**
+   * Sort the RDD by key, so that each partition contains a sorted range of the elements. Calling
+   * `collect` or `save` on the resulting RDD will return or output an ordered list of records
+   * (in the `save` case, they will be written to multiple `part-X` files in the filesystem, in
+   * order of the keys).
+   */
+  def sortByKeyWithHashedPartitioner(comp: Comparator[K]): JavaPairRDD[K, V] = sortByKeyWithHashedPartitioner(comp, true)
+
+  /**
+   * Sort the RDD by key, so that each partition contains a sorted range of the elements. Calling
+   * `collect` or `save` on the resulting RDD will return or output an ordered list of records
+   * (in the `save` case, they will be written to multiple `part-X` files in the filesystem, in
+   * order of the keys).
+   */
+  def sortByKeyWithHashedPartitioner(comp: Comparator[K], ascending: Boolean): JavaPairRDD[K, V] = {
+    implicit val ordering = comp // Allow implicit conversion of Comparator to Ordering.
+    fromRDD(new HashedRDDFunctions[K, V, (K, V)](rdd).sortByKey(ascending))
+  }
+
+  /**
+   * Sort the RDD by key, so that each partition contains a sorted range of the elements. Calling
+   * `collect` or `save` on the resulting RDD will return or output an ordered list of records
+   * (in the `save` case, they will be written to multiple `part-X` files in the filesystem, in
+   * order of the keys).
+   */
+  def sortByKeyWithHashedPartitioner(comp: Comparator[K], ascending: Boolean, numPartitions: Int): JavaPairRDD[K, V] = {
+    implicit val ordering = comp // Allow implicit conversion of Comparator to Ordering.
+    fromRDD(new HashedRDDFunctions[K, V, (K, V)](rdd).sortByKey(ascending, numPartitions))
+  }
+
+}
+
 
 object ScalaSort{
+  implicit def rddToHashedRDDFunctions[K : Ordering : ClassTag, V: ClassTag]
+         (rdd: RDD[(K, V)]) = new HashedRDDFunctions[K, V, (K, V)](rdd)
 
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length != 3){
       System.err.println(
-        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS>"
+        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS> <PARALLEL>"
       )
       System.exit(1)
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
+    val parallel = args(2).toInt
 
     val file = sc.textFile(args(0))
-    val data = file.flatMap(line => line.split(" "))
-    val sorted = data.mapPartitions({words=>
-      words.toList.sorted.toIterator
-    }, preservesPartitioning = true)
+    val data = file.flatMap(line => line.split(" ")).map((_, 1))
+    val sorted = data.sortByKey(numPartitions = parallel / 2).map(_._1)
 
     sorted.saveAsTextFile(args(1))
     sc.stop()

@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.10.4"
 
-val sparkVersion = "1.2.0-SNAPSHOT"
+val sparkVersion = "1.1.0"
 
 libraryDependencies ++= Seq("org.apache.mahout" % "mahout-core" % "0.9",
                             "org.apache.mahout" % "mahout-math" % "0.9",
