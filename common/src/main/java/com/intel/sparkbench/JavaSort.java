@@ -45,6 +45,7 @@ public final class JavaSort {
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
     Integer parallel = Integer.parseInt(args[2]);
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+    Integer parallel = sparkConf.getInt("spark.default.parallelism", 0);
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
     JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {

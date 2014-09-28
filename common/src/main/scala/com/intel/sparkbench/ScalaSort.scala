@@ -117,8 +117,7 @@ object ScalaSort{
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
-    val parallel = args(2).toInt
-
+    val parallel = sc.getConf.getInt("spark.default.parallelism", 0)
     val file = sc.textFile(args(0))
     val data = file.flatMap(line => line.split(" ")).map((_, 1))
     val sorted = data.sortByKey(numPartitions = parallel / 2).map(_._1)
