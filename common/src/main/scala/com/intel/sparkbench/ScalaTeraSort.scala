@@ -17,34 +17,14 @@
 
 package com.intel.sparkbench.terasort
 
+import com.intel.sparkbench.{ConfigurableRangePartitioner, ConfigurableOrderedRDDFunctions}
 import org.apache.spark.rdd._
 import org.apache.spark._
 import scala.reflect.ClassTag
 
-class SampleRangePartitioner [K : Ordering : ClassTag, V](
-         @transient partitions: Int,
-         @transient rdd: RDD[_ <: Product2[K,V]],
-         private var ascending: Boolean = true)
-  extends RangePartitioner[K, V](partitions, rdd, ascending) {
-
-
-  }
-class SampledOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag,
-                         P <: Product2[K, V] : ClassTag]
-                        (self: RDD[P]) extends Logging with Serializable {
-  private val ordering = implicitly[Ordering[K]]
-
-  def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.size): RDD[(K, V)] =
-  {
-    val part = new RangePartitioner(numPartitions, self, ascending)
-    new ShuffledRDD[K, V, V](self, part)
-      .setKeyOrdering(if (ascending) ordering else ordering.reverse)
-  }
-}
-
 object ScalaTeraSort{
   implicit def rddToSampledOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag]
-     (rdd: RDD[(K, V)]) = new SampledOrderedRDDFunctions[K, V, (K, V)](rdd)
+     (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
 
   def main(args: Array[String]){
     if (args.length != 2){
@@ -57,9 +37,11 @@ object ScalaTeraSort{
     val sc = new SparkContext(sparkConf)
 
     val file = sc.textFile(args(0))
-    val parallel = sc.getConf.getInt("spark.default.parallelism", 0)
+    val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
-      .sortByKey(numPartitions=parallel).map{case(k, v) => k + v}
+
+    val partitioner = new BaseRangePartitioner(partitions = parallel / 2, data);
+    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner).map{case(k, v) => k + v}
     data.saveAsTextFile(args(1))
 
     sc.stop()
