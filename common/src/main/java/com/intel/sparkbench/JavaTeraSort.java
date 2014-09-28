@@ -38,7 +38,7 @@ public final class JavaTeraSort {
   public static void main(String[] args) throws Exception {
 
     if (args.length < 2) {
-      System.err.println("Usage: JavaTeraSort <HDFS_INPUT> <HDFS_OUTPUT");
+      System.err.println("Usage: JavaTeraSort <HDFS_INPUT> <HDFS_OUTPUT>");
       System.exit(1);
     }
 

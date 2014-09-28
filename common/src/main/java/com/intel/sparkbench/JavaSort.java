@@ -37,13 +37,12 @@ public final class JavaSort {
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length != 3) {
-      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>");
+    if (args.length != 2) {
+      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT>");
       System.exit(1);
     }
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
-    Integer parallel = Integer.parseInt(args[2]);
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
