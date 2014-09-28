@@ -32,7 +32,11 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
+<<<<<<< HEAD
 $SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.sort.JavaSort --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS $PARALLEL
+=======
+run-spark-job com.intel.sparkbench.sort.JavaSort $INPUT_HDFS $OUTPUT_HDFS || exit 1
+>>>>>>> a2546a04c3dd4caf02d10ad3217ac8aca400b5b9
 
 # post-running
 END_TIME=`timestamp`

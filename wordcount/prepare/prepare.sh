@@ -27,10 +27,6 @@ DIR=`cd $bin/../; pwd`
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 
-$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.datagen.RandomTextWriter --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS ${DATASIZE} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Spark job failed to run successfully." 
-    exit $result
-fi
+run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
+#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.datagen.RandomTextWriter --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS ${DATASIZE} ${PARALLEL}
+

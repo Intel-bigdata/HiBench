@@ -24,14 +24,14 @@ export SPARKBENCH_VERSION="0.1"
 HADOOP_EXECUTABLE=
 HADOOP_CONF_DIR=
 HADOOP_EXAMPLES_JAR=
-SPARK_MASTER=spark://sr459:7077
-SPARK_HOME=/july_02/spark-hive-enabled
+SPARK_MASTER=spark://lv-dev:7077
+SPARK_HOME=/home/lv/intel/spark
 SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
-HADOOP_HOME=/july_02/hadoop
+HADOOP_HOME=/home/lv/intel/hadoop/hadoop-1.2.1
 SPARKBENCH_HOME=`printenv SPARKBENCH_HOME`
 SPARKBENCH_CONF=`printenv SPARKBENCH_CONF`
 SPARKBENCH_JAR=`printenv SPARKBENCH_JAR`
-HIBENCH_HOME=/root/HiBench
+HIBENCH_HOME=/home/lv/intel/HiBench
 HIBENCH_CONF=`printenv HIBENCH_CONF`
 HIVE_HOME=`printenv HIVE_HOME`
 MAHOUT_HOME=`printenv MAHOUT_HOME`
@@ -42,7 +42,7 @@ DATATOOLS=`printenv DATATOOLS`
 DICT_PATH=/usr/share/dict/words
 
 # base dir HDFS
-HDFS_MASTER=hdfs://sr459:54310
+HDFS_MASTER=hdfs://localhost:54310
 DATA_HDFS=$HDFS_MASTER/SparkBench
 
 if [ -z "$SPARKBENCH_HOME" ]; then
@@ -98,7 +98,7 @@ if [ -z "$SPARKBENCH_CONF" ]; then
 fi
 
 if [ -z "$SPARKBENCH_JAR" ]; then
-    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/sparkbench_*.jar
+    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar
 fi
 
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then

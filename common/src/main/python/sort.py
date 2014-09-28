@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+#
+# Adopted from spark's example
+#
+
 import sys
 import bisect
 
@@ -54,12 +58,14 @@ def sortByKeyWithHashedPartitioner(self, ascending=True, numPartitions=None, key
 
     return self.partitionBy(numPartitions, hashedPartitioner).mapPartitions(sortPartition, True)
 
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
-    parallel = int(sys.argv[3])
+    parallel = sc._conf.get("spark.default.parallelism", sc.defaultParallisim)
     lines = sc.textFile(sys.argv[1], 1)
     words = lines.flatMap(lambda x: x.split(' ')).map(lambda x:(x,1))
     sortedWords = sortByKeyWithHashedPartitioner(words, numPartitions=parallel/2).map(lambda x:x[0])
