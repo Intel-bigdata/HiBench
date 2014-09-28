@@ -28,7 +28,7 @@ function check_and_build {
 	echo "====================="
 	echo "Build ${module}..."
 	echo "====================="
-	( cd $folder && sbt package )
+	( cd $folder && sbt assembly )
 	result=$?
 	if [ $result -ne 0 ]; then
 	    echo "Build ${module} failed!"

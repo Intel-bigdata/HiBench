@@ -20,7 +20,9 @@ from operator import add
 
 from pyspark import SparkContext
 
-
+#
+# Adopted from spark's example
+#
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >> sys.stderr, "Usage: wordcount <HDFS_INPUT> <HDFS_OUTPUT>"

@@ -4,6 +4,7 @@ target/
 *.swp
 *~
 .emacs.desktop*
+*.pyc
 *.png
 *.report
 derby.log

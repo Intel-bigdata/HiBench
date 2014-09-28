@@ -32,7 +32,10 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     # clear hive metastore
     find . -name "metastore_db" -exec "rm -rf {}" \; 2> /dev/null || true
 
-    for target in java scala python ; do
+    for target in `cat $DIR/conf/languages.lst`; do
+	if [[ $target == \#* ]]; then 
+	    continue
+	fi
 	echo "====================="
 	echo "Run ${benchmark}/${target}"
 	echo "====================="
