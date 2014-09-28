@@ -73,6 +73,7 @@ function dir_size() {
 function run-spark-job() {
     CLS=$1
     shift
+<<<<<<< HEAD
     
     if [ -d $DIR/prepare ]; then
 	WORKLOAD_DIR=$DIR
@@ -91,7 +92,7 @@ function run-spark-job() {
 	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
     fi
     result=$?
-    rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true
+    rm -rf ${DIR}/../conf/._prop.conf 2> /dev/null || true
     if [ $result -ne 0 ]
     then
 	echo "ERROR: Spark job ${CLS} failed to run successfully."
