@@ -17,17 +17,17 @@
 
 package com.intel.sparkbench.terasort
 
-import com.intel.sparkbench.{ConfigurableRangePartitioner, ConfigurableOrderedRDDFunctions}
 import org.apache.spark.rdd._
 import org.apache.spark._
+
 import scala.reflect.ClassTag
 
-object ScalaTeraSort{
-  implicit def rddToSampledOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag]
-     (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
+object ScalaTeraSort {
+  implicit def rddToSampledOrderedRDDFunctions[K: Ordering : ClassTag, V: ClassTag]
+  (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
 
-  def main(args: Array[String]){
-    if (args.length != 2){
+  def main(args: Array[String]) {
+    if (args.length != 2) {
       System.err.println(
         s"Usage: $ScalaTeraSort <INPUT_HDFS> <OUTPUT_HDFS>"
       )
@@ -40,9 +40,9 @@ object ScalaTeraSort{
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
 
-    val partitioner = new BaseRangePartitioner(partitions = parallel / 2, data);
-    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner).map{case(k, v) => k + v}
-    data.saveAsTextFile(args(1))
+    val partitioner = new BaseRangePartitioner(partitions = parallel / 2, rdd = data)
+    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner).map { case (k, v) => k + v}
+    sorted_data.saveAsTextFile(args(1))
 
     sc.stop()
   }

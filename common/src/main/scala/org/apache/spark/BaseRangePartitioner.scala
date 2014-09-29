@@ -28,18 +28,18 @@ class BaseRangePartitioner [K : Ordering : ClassTag, V]
       Array.empty
     } else {
       val requiredPartitions = if (rdd.partitions.size > partitions) partitions else rdd.partitions.size
-      val samplePerPartition = math.min(partitions / requiredPartitions * 20, 1e3).toInt
+      val samplesPerPartition = math.min(partitions / requiredPartitions * 20, 1e3).toInt
+      val partitionStep = rdd.partitions.size / requiredPartitions
 
-      // first, sample over partitions averagely
-      rdd.map(_._1).repartition()
-
+      // pick sample over subpartitions averagely
+      val subSamples = PartitionPruningRDD.create(rdd.map(_._1), _ % partitionStep == 0)
 
       // randomly sample over all partitions
       // This is the sample size we need to have roughly balanced output partitions, capped at 1M.
       val sampleSize = math.min(20.0 * partitions, 1e6)
       // Assume the input partitions are roughly balanced and over-sample a little bit.
-      val sampleSizePerPartition = math.ceil(3.0 * sampleSize / rdd.partitions.size).toInt
-      val (numItems, sketched) = RangePartitioner.sketch(rdd.map(_._1), sampleSizePerPartition)
+      val sampleSizePerPartition = math.ceil(3.0 * sampleSize / subSamples.partitions.size).toInt
+      val (numItems, sketched) = RangePartitioner.sketch(subSamples, sampleSizePerPartition)
       if (numItems == 0L) {
         Array.empty
       } else {
