@@ -17,6 +17,7 @@
 
 package com.intel.sparkbench.terasort
 
+import com.intel.sparkbench.{ConfigurableRangePartitioner, ConfigurableOrderedRDDFunctions}
 import org.apache.spark.rdd._
 import org.apache.spark._
 
