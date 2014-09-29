@@ -42,7 +42,7 @@ object ScalaTeraSort {
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
 
     val partitioner = new BaseRangePartitioner(partitions = parallel / 2, rdd = data)
-    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner).map { case (k, v) => k + v}
+    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner).map { case (k, v) => k + v }
     sorted_data.saveAsTextFile(args(1))
 
     sc.stop()
