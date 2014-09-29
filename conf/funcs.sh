@@ -73,7 +73,6 @@ function dir_size() {
 function run-spark-job() {
     CLS=$1
     shift
-<<<<<<< HEAD
     
     if [ -d $DIR/prepare ]; then
 	WORKLOAD_DIR=$DIR
