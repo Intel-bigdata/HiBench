@@ -41,6 +41,10 @@ fi
 
 MAHOUT_HOME=$MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE
 
+if [ -n "$1" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+fi
+
 check_compress
 
 $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}

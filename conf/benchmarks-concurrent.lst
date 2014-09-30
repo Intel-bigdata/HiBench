@@ -1,11 +1,11 @@
 #This configuration is only used in concurrent running, you can change the numbers of each workload
 sort 0
-terasort 1
+terasort 0
 wordcount 0
 #dfsioe 0
 sleep 0
 pagerank 0
-#hivebench 2
-#bayes 0
-#kmeans 0
-#nutchindexing 2
+hivebench 0
+bayes 0
+kmeans 0
+nutchindexing 0

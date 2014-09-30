@@ -33,6 +33,10 @@ if [ ! -e $MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE".tar.gz" ]; then
   exit
 fi
 
+if [ -n "$1" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+fi
+
 check_compress
 
 # path check
