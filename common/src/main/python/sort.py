@@ -65,10 +65,10 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
-    parallel = sc._conf.get("spark.default.parallelism", sc.defaultParallisim)
+    reducer = int(SparkContext._jvm.java.lang.System.getProperty("sparkbench.reducer"))
     lines = sc.textFile(sys.argv[1], 1)
     words = lines.flatMap(lambda x: x.split(' ')).map(lambda x:(x,1))
-    sortedWords = sortByKeyWithHashedPartitioner(words, numPartitions=parallel/2).map(lambda x:x[0])
+    sortedWords = sortByKeyWithHashedPartitioner(words, numPartitions=reducer).map(lambda x:x[0])
 
     sortedWords.saveAsTextFile(sys.argv[2])
     sc.stop()
