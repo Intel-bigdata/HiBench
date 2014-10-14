@@ -52,12 +52,10 @@ fi
 # local report
 SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
 
-# Parallelism of your cluster
-PARALLEL=256
-
 # default Mappers and reducers
-NUM_MAPS=256
-NUM_REDS=128
+NUM_MAPS=`grep spark.default.parallelism $SPARKBENCH_HOME/conf/global_properties.conf | tr -s ' ' |cut -d ' ' -f 2`
+NUM_MAPS=${NUM_MAPS:-16}  # default parallelism is 16 if not defined in "global_properties.conf"
+NUM_REDS=$(( $NUM_MAPS/2 ))
 
 ################### Configuration done ##########3
 
