@@ -29,17 +29,17 @@ import org.apache.spark.{SparkConf, SparkContext}
 object BayesConvert{
   val conf = new Configuration()
   def main(args: Array[String]){
-    if (args.length!=2){
-      System.err.println("Usage: Convert <input_path> <PARALLEL>")
+    if (args.length!=1){
+      System.err.println("Usage: Convert <input_path>")
       System.exit(1)
     }
 
-    val input_path =   args(0)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
-    val parallel   =   args(1).toInt
-    val output_vector_name = input_path + "/vectors.txt"
-
     val sparkConf = new SparkConf().setAppName("HiBench Bayes Converter")
     val sc = new SparkContext(sparkConf)
+
+    val input_path =   args(0)  //"hdfs://localhost:54310/HiBench/Bayes/Input"
+    val output_vector_name = input_path + "/vectors.txt"
+    val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
 
     val data = sc.sequenceFile[Text, Text](input_path).map{case(k, v) => (k.toString, v.toString)}
 

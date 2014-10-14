@@ -47,11 +47,6 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class com.intel.sparkbench.datagen.convert.KmeansConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_SAMPLE} ${INPUT_HDFS} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: covert job failed to run successfully." 
-    exit $result
-fi
+run-spark-job --jars MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar com.intel.sparkbench.datagen.convert.KmeansConvert ${INPUT_SAMPLE} ${INPUT_HDFS}
+#${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class com.intel.sparkbench.datagen.convert.KmeansConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_SAMPLE} ${INPUT_HDFS}
 

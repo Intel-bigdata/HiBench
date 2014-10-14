@@ -21,12 +21,12 @@ from pyspark import SparkContext
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: sleep <parallel> <seconds>"
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: sleep <seconds>"
         exit(-1)
     sc = SparkContext(appName="PythonSleep")
-    parallel = int(sys.argv[1])
-    seconds  = int(sys.argv[2])
+    parallel = int(sc._conf.get("spark.default.parallelism", sc.defaultParallelism))
+    seconds  = int(sys.argv[1])
     workload = sc.parallelize(range(parallel), parallel)
     workload.map(lambda x: time.sleep(seconds)).collect()
     sc.stop()

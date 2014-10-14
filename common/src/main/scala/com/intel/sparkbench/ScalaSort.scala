@@ -31,9 +31,9 @@ object ScalaSort{
          (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
 
   def main(args: Array[String]){
-    if (args.length != 3){
+    if (args.length != 2){
       System.err.println(
-        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS> <PARALLEL>"
+        s"Usage: $ScalaSort <INPUT_HDFS> <OUTPUT_HDFS>"
       )
       System.exit(1)
     }

@@ -53,10 +53,6 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.PagerankConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS_DIR}/edges ${INPUT_HDFS} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: covert job failed to run successfully." 
-    exit $result
-fi
+
+run-spark-job com.intel.sparkbench.datagen.convert.PagerankConvert ${INPUT_HDFS_DIR}/edges ${INPUT_HDFS}
+#${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.PagerankConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS_DIR}/edges ${INPUT_HDFS}

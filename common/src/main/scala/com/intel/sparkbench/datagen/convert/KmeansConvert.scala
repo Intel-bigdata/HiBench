@@ -29,8 +29,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 object KmeansConvert{
   val conf = new Configuration()
   def main(args: Array[String]) {
-    if ( args.length != 3 ) {
-      System.err.println("Usage: Convert <input_directory> <output_file_path> <PARALLEL>")
+    if ( args.length != 2 ) {
+      System.err.println("Usage: Convert <input_directory> <output_file_path>")
       System.exit(1)
     }
 
@@ -39,7 +39,7 @@ object KmeansConvert{
 
     val input_path  = args(0) //"hdfs://localhost:54310/SparkBench/KMeans/Input/samples/"
     val output_name = args(1) //"/HiBench/KMeans/Input/samples.txt"
-    val parallel    = args(2).toInt  //256
+    val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](input_path)
     data.repartition(parallel)

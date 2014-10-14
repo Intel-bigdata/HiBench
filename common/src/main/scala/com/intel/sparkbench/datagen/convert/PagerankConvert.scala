@@ -24,27 +24,27 @@ import org.apache.spark.{SparkConf, SparkContext}
  * Created by lv on 14-9-12.
  */
 object PagerankConvert{
-    val conf = new Configuration()
-    def main(args: Array[String]){
-      if (args.length != 3){
-        System.err.println("Usage: Convert <input_directory> <output_file_path> <PARALLEL>")
-        System.exit(1)
-      }
-
-      val input_path  = args(0)  //"/HiBench/Pagerank/Input/edges"
-      val output_name = args(1) // "/HiBench/Pagerank/Input/edges.txt"
-      val parallel    = args(2).toInt  //256
-
-      val sparkConf = new SparkConf().setAppName("HiBench PageRank Converter")
-      val sc = new SparkContext(sparkConf)
-
-      val data = sc.textFile(input_path).map{case(line)=>
-          val elements = line.split('\t')
-          "%s  %s".format(elements(1), elements(2))
-      }
-
-      data.repartition(parallel)
-      data.saveAsTextFile(output_name)
-      sc.stop()
+  val conf = new Configuration()
+  def main(args: Array[String]){
+    if (args.length != 2){
+      System.err.println("Usage: Convert <input_directory> <output_file_path>")
+      System.exit(1)
     }
+
+    val sparkConf = new SparkConf().setAppName("HiBench PageRank Converter")
+    val sc = new SparkContext(sparkConf)
+
+    val input_path  = args(0)  //"/HiBench/Pagerank/Input/edges"
+    val output_name = args(1) // "/HiBench/Pagerank/Input/edges.txt"
+    val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
+
+    val data = sc.textFile(input_path).map{case(line)=>
+        val elements = line.split('\t')
+        "%s  %s".format(elements(1), elements(2))
+    }
+
+    data.repartition(parallel)
+    data.saveAsTextFile(output_name)
+    sc.stop()
   }
+}
