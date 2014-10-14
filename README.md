@@ -41,6 +41,7 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
     Enhanced DFSIO tests the HDFS throughput of the Hadoop cluster by generating a large number of tasks performing writes and reads simultaneously. It measures the average I/O rate of each map task, the average throughput of each map task, and the aggregated throughput of HDFS cluster.
 
 5. Sleep (sleep)
+
     This workload just sleep for the time you set.
 
   **Web Search Benchmarks:**
@@ -76,13 +77,15 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 
   1. Setup HiBench
 
+      Make sure these things are installed: maven. Then, locate into `HiBench/common/hibench` and run `mvn process-sources` to get dependencies.
+
   2. Setup Hadoop
 
       Before you run any workload in the package, please verify the Hadoop framework is running correctly. All the workloads have been tested with Cloudera Distribution of Hadoop 5(cdh5.1.0) and Hadoop version 1.0.4 and 2.2.0
 
   3. Setup Hive (for hivebench)
     
-      Please make sure you have properly set up Hive in your cluster if you want to test hivebench. Or the benchmark willuse the default Hive-0.9 release which is included in package.
+      Please make sure you have properly set up Hive in your cluster if you want to test hivebench. Or the benchmark willuse the default release fetched by maven.
 
 2. Configure for the all workloads
 
@@ -104,16 +107,15 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 ---
 ### Running ###
 
-First, make sure these things are installed: maven.
-
-Then, locate into `HiBench/common/hibench` and run `mvn process-sources` to get dependencies.
-
 - Run several workloads together
 
   The `conf/benchmarks.lst` file under the package folder defines the workloads to run when you execute the `bin/run-all.sh` script under the package folder. Each line in the list file specifies one workload. You can use `#` at the beginning of each line to skip the corresponding bench if necessary. 
 
 - Run workloads in concurrency mode
+
   The `conf/benchmarks-concurrent.list` file under the package folder defines the workloads to run when you execute the `bin/run-concurrent.sh` script under the package folder. The number at the end of each line indicates the number of each workload you want to run concurrently. Before running, execute the script `bin/prepare-concurrent.sh`.
+
+  For the workload hivebench, please run the metastore as a service first to support concurrency: `hive --service metastore`.
 
 - Run each workload separately
 
