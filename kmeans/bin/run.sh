@@ -25,7 +25,7 @@ DIR=`cd $bin/../; pwd`
 
 MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
 MAHOUT_RELEASE="mahout-0.9-cdh5.1.0"
-if [ $HADOOP_VERSION == "hadoop1" ]; then
+if [ $HADOOP_VERSION == "hadoop1" -a $HADOOP_RELEASE != "cdh5" ]; then
   MAHOUT_RELEASE="mahout-distribution-0.7"
 fi
 
