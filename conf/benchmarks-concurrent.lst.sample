@@ -1,0 +1,7 @@
+# This is a sample configuration file for workloads concurrent running
+# Any line began with '#' will be ignored as a comment
+# The first column declares the workload name, and the second column sets its number
+# Follow this configuration, 2 sort workloads, 2 teraworkloads and 1 wordcount workload will be uploaded to hadoop cluster concurrently
+sort 2
+terasort 2
+wordcount 1

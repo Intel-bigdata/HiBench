@@ -22,13 +22,7 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
-MAHOUT_RELEASE="mahout-0.9-cdh5.1.0"
-if [ $HADOOP_VERSION == "hadoop1" -a $HADOOP_RELEASE != "cdh5" ]; then
-  MAHOUT_RELEASE="mahout-distribution-0.7"
-fi
-
-if [ ! -e $MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE".tar.gz" ]; then
+if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
   echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
   exit
 fi
@@ -50,12 +44,10 @@ else
   SIZE=${SIZE//,/}
 fi
 
-cd $MAHOUT_BIN_DIR
-if [ ! -d $MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE ]; then
+cd $DEPENDENCY_DIR"/mahout/target"
+if [ ! -d $MAHOUT_HOME ]; then
   tar zxf $MAHOUT_RELEASE".tar.gz"
 fi
-
-MAHOUT_HOME=$MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE
 
 # pre-running
 START_TIME=`timestamp`

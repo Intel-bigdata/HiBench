@@ -24,21 +24,20 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # reset mahout home
-MAHOUT_BIN_DIR=$HIBENCH_HOME"/common/hibench/mahout/target"
 MAHOUT_RELEASE="mahout-distribution-0.7"
 MAHOUT_EXAMPLE_JOB="mahout-examples-0.7-job.jar"
 
-if [ ! -e $MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE".tar.gz" ]; then
+if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
   echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
   exit
 fi
 
-cd $MAHOUT_BIN_DIR
-if [ ! -d $MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE ]; then
+cd $DEPENDENCY_DIR"/mahout/target/"
+if [ ! -d $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE ]; then
   tar zxf $MAHOUT_RELEASE".tar.gz"
 fi
 
-MAHOUT_HOME=$MAHOUT_BIN_DIR"/"$MAHOUT_RELEASE
+MAHOUT_HOME=$DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE
 
 # compress check
 if [ $COMPRESS -eq 1 ]; then

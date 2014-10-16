@@ -75,16 +75,26 @@ if [ -f "${HIBENCH_CONF}/funcs.sh" ]; then
     . "${HIBENCH_CONF}/funcs.sh"
 fi
 
+if [ -z "$DEPENDENCY_DIR" ]; then
+    export DEPENDENCY_DIR=${HIBENCH_HOME}/common/hibench
+fi
+
 if [ -z "$HIVE_HOME" ]; then
-    export HIVE_HOME=${HIBENCH_HOME}/common/hibench/hivebench/target/hive-0.12.0-bin
+    HIVE_RELEASE=hive-0.12.0-bin
+    export HIVE_HOME=${DEPENDENCY_DIR}/hivebench/target/${HIVE_RELEASE}
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    export MAHOUT_HOME=${HIBENCH_HOME}/common/hibench/mahout/target/mahout-0.9-cdh5.1.0
+    MAHOUT_RELEASE=mahout-0.9-cdh5.1.0
+    if [ $HADOOP_VERSION == "hadoop1" -a $HADOOP_RELEASE != "cdh5" ]; then
+        MAHOUT_RELEASE=mahout-distribution-0.7
+    fi
+    export MAHOUT_HOME=${DEPENDENCY_DIR}/mahout/target/${MAHOUT_RELEASE}
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
-    export NUTCH_HOME=${HIBENCH_HOME}/common/hibench/nutchindexing/target/nutch-1.2
+    NUTCH_RELEASE=nutch-1.2
+    export NUTCH_HOME=${DEPENDENCY_DIR}/nutchindexing/target/${NUTCH_RELEASE}
 fi
 
 if [ -z "$DATATOOLS" ]; then

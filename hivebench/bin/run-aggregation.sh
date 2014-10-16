@@ -23,19 +23,16 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-HIVE_BIN_DIR=$HIBENCH_HOME"/common/hibench/hivebench/target"
-
-if [ ! -e $HIVE_BIN_DIR"/hive-0.12.0-bin.tar.gz" ]; then
+if [ ! -e $DEPENDENCY_DIR"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
   echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
   exit
 fi
 
-cd $HIVE_BIN_DIR
-if [ ! -d $HIVE_BIN_DIR"/hive-0.12.0-bin" ]; then
-  tar zxf hive-0.12.0-bin.tar.gz
+cd $DEPENDENCY_DIR"/hivebench/target"
+if [ ! -d $HIVE_HOME ]; then
+  tar zxf $HIVE_RELEASE".tar.gz"
 fi
 
-HIVE_HOME=$HIVE_BIN_DIR"/hive-0.12.0-bin"
 cp ${DIR}/hive/bin/hive $HIVE_HOME/bin
 USERVISITS_AGGRE="uservisits_aggre"
 USERVISITS_AGGRE_FILE="uservisits_aggre.hive"
@@ -47,8 +44,6 @@ if [ -n "$1" ]; then
 fi
 
 # path check
-#rm -rf $HIVE_BIN_DIR/metastore_db
-#rm -rf $HIVE_BIN_DIR/TempStatsStore
 $HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/$USERVISITS_AGGRE
 
 # pre-running

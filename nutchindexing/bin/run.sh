@@ -28,10 +28,9 @@ if [ -n "$1" ]; then
   OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
 fi
 
-NUTCH_BIN_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target"
-DEPENDENCY_DIR=$HIBENCH_HOME"/common/hibench/nutchindexing/target/dependency"
+NUTCH_DEPENDENCY_DIR=$DEPENDENCY_DIR"/nutchindexing/target/dependency"
 
-if [ ! -e $NUTCH_BIN_DIR"/apache-nutch-1.2-bin.tar.gz" ]; then
+if [ ! -e $DEPENDENCY_DIR"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
   echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
   exit
 fi
@@ -42,12 +41,11 @@ elif [ $HADOOP_VERSION == "hadoop2" ]; then
   cp $DIR/nutch/conf/nutch-site-mr2.xml $DIR/nutch/conf/nutch-site.xml
 fi
 
-cd $NUTCH_BIN_DIR
-if [ ! -d $NUTCH_BIN_DIR"/nutch-1.2" ]; then
+cd $DEPENDENCY_DIR"/nutchindexing/target"
+if [ ! -d $NUTCH_HOME ]; then
   tar zxf apache-nutch-1.2-bin.tar.gz
 fi
 
-NUTCH_HOME=$NUTCH_BIN_DIR/nutch-1.2
 find $NUTCH_HOME/lib ! -name "lucene-*" -type f -exec rm -rf {} \;
 cp $DIR/nutch/conf/nutch-site.xml $NUTCH_HOME/conf
 cp $DIR/nutch/bin/nutch $NUTCH_HOME/bin
@@ -57,7 +55,7 @@ if [ $HADOOP_VERSION == "hadoop2" ]; then
   mkdir $NUTCH_HOME/temp
   unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
   rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
-  cp $DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+  cp $NUTCH_DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
   rm $NUTCH_HOME/nutch-1.2.job
   cd $NUTCH_HOME/temp
   zip -qr $NUTCH_HOME/nutch-1.2.job *
