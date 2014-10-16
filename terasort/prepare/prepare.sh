@@ -26,7 +26,6 @@ DIR=`cd $bin/../; pwd`
 
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
-
 # Generate the terasort data
 $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
     -D mapred.map.tasks=$NUM_MAPS \
