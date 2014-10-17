@@ -85,10 +85,8 @@ if [ -z "$HIVE_HOME" ]; then
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    MAHOUT_RELEASE=mahout-0.9-cdh5.1.0
-    if [ $HADOOP_VERSION == "hadoop1" -a $HADOOP_RELEASE != "cdh5" ]; then
-        MAHOUT_RELEASE=mahout-distribution-0.7
-    fi
+    MAHOUT_RELEASE=mahout-distribution-0.7
+    MAHOUT_EXAMPLE_JOB="mahout-examples-0.7-job.jar"
     export MAHOUT_HOME=${DEPENDENCY_DIR}/mahout/target/${MAHOUT_RELEASE}
 fi
 
