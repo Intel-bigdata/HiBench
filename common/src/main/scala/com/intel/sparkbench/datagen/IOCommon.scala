@@ -12,7 +12,7 @@ import scala.reflect.runtime.{universe => ru}
  */
 class IOCommon(val sc:SparkContext) {
   def load(filename:String) = {
-    val input_format = sc.getConf.get("sparkbench.inputformat", "Text")
+    val input_format = System.getProperty("sparkbench.inputformat", "Text")
     input_format match {
       case "Text" => sc.textFile(filename)
       case "Object" => sc.objectFile(filename)
@@ -21,8 +21,8 @@ class IOCommon(val sc:SparkContext) {
   }
 
   def save[T](filename:String, data:RDD[T], prefix:String = "sparkbench.outputformat") = {
-    val output_format = sc.getConf.get(prefix, "Text")
-    val output_format_codec = sc.getConf.get(prefix + ".codec",
+    val output_format = System.getProperty(prefix, "Text")
+    val output_format_codec = System.getProperty(prefix + ".codec",
       "org.apache.hadoop.io.compress.SnappyCodec")
     output_format match {
       case "Text" => {
