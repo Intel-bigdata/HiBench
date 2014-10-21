@@ -52,4 +52,5 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.BayesConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS} ${PARALLEL}
+run-spark-job com.intel.sparkbench.datagen.convert.BayesConvert ${INPUT_HDFS} 
+#${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.BayesConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS} 

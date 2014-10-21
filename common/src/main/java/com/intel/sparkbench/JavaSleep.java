@@ -35,15 +35,15 @@ public final class JavaSleep{
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length < 2) {
-      System.err.println("Usage: JavaSleep <Parallel> <seconds>");
+    if (args.length != 1) {
+      System.err.println("Usage: JavaSleep <seconds>");
       System.exit(1);
     }
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaSleep");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    Integer parallel = Integer.parseInt(args[0]);
-    Integer seconds = Integer.parseInt(args[1]);
+    Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
+    Integer seconds = Integer.parseInt(args[0]);
 
     Integer[] init_val = new Integer[parallel];
     Arrays.fill(init_val, seconds);
