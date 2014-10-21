@@ -17,14 +17,15 @@
 
 package com.intel.sparkbench.sort
 
-import java.util.Comparator
-
-import org.apache.spark._
-import org.apache.spark.api.java.JavaPairRDD._
-import org.apache.spark.api.java.{JavaPairRDD, JavaRDDLike}
+import org.apache.hadoop.io.{Text, LongWritable}
+import org.apache.hadoop.mapred.TextInputFormat
+import org.apache.spark.SparkBench.IOCommon
 import org.apache.spark.rdd._
+import org.apache.spark._
+import org.apache.spark.storage.StorageLevel._
 
-import scala.reflect.ClassTag
+import scala.reflect.runtime.universe
+
 
 object ScalaSort{
   implicit def rddToHashedRDDFunctions[K : Ordering : ClassTag, V: ClassTag]
@@ -39,12 +40,24 @@ object ScalaSort{
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
-    val reducer  = System.getProperties.getProperty("sparkbench.reducer").toInt
-    val file = sc.textFile(args(0))
-    val data = file.flatMap(line => line.split(" ")).map((_, 1))
-    val sorted = data.sortByKeyWithPartitioner(partitioner = new HashPartitioner(reducer)).map(_._1)
+    val parallel = sc.getConf.getInt("spark.default.parallelism", 0)
+    val input_format = sc.getConf.get("sparkbench.inputformat", "TextInputFormat")
+    val output_format = sc.getConf.get("sparkbench.outputformat", "TextOutputFormat")
+    val input_format_codec = sc.getConf.get("sparkbench.inputformat.codec",
+                                            "org.apache.hadoop.io.compress.SnappyCodec")
+    val output_format_codec = sc.getConf.get("sparkbench.outputformat.codec",
+                                             "org.apache.hadoop.io.compress.SnappyCodec")
 
-    sorted.saveAsTextFile(args(1))
+
+    val io = new IOCommon(sc)
+    val data = io.load(args(0))
+    val sorted = data
+      .flatMap(_.split(" "))
+      .mapPartitions(_.toList.sorted.toIterator,
+                     preservesPartitioning = true)
+
+    io.save(args(1), sorted)
+
     sc.stop()
   }
 }

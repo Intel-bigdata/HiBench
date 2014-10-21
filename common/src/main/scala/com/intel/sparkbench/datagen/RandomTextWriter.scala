@@ -50,6 +50,7 @@ object RandomTextWriter {
     val sc = new SparkContext(sparkConf)
     val numParallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val totalDataSize = args(1).toLong
+    val input_format = sc.getConf.get("sparkbench.inputformat", "TextInputFormat")
 
     if (args.length>2){
       minWordsInKey =  args(2).toInt
@@ -75,9 +76,14 @@ object RandomTextWriter {
     println(s"total:$totalDataSize, mean_size:$mean_size, " +
             s"numParallel:$numParallel, HDFS:" + args(0))
 
-    sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
+    val data = sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
       generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)
-    }.saveAsTextFile(args(0))
+    }
+    input_format match {    // use input_foramt for data generator as output format
+      case "TextInputFormat" => data.saveAsTextFile(args(0))
+      case "ObjectInputFormat" => data.saveAsObjectFile(args(0))
+      case _ => throw new UnsupportedOperationException(s"Unknown input format: $input_format")
+    }
     sc.stop()
   }
 
