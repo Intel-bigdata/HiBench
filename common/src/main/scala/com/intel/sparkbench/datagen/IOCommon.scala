@@ -12,25 +12,27 @@ import scala.reflect.runtime.{universe => ru}
  */
 class IOCommon(val sc:SparkContext) {
   def load(filename:String) = {
-    val input_format = sc.getConf.get("sparkbench.inputformat", "TextInputFormat")
+    val input_format = sc.getConf.get("sparkbench.inputformat", "Text")
     input_format match {
-      case "TextInputFormat" => sc.textFile(filename)
-      case "ObjectInputFormat" => sc.objectFile(filename)
+      case "Text" => sc.textFile(filename)
+      case "Object" => sc.objectFile(filename)
       case _ => throw new UnsupportedOperationException(s"Unknown inpout format: $input_format")
     }
   }
 
-  def save[T](filename:String, data:RDD[T]) = {
-    val output_format = sc.getConf.get("sparkbench.outputformat", "TextOutputFormat")
-    val output_format_codec = sc.getConf.get("sparkbench.outputformat.codec",
+  def save[T](filename:String, data:RDD[T], prefix:String = "sparkbench.outputformat") = {
+    val output_format = sc.getConf.get(prefix, "Text")
+    val output_format_codec = sc.getConf.get(prefix + ".codec",
       "org.apache.hadoop.io.compress.SnappyCodec")
     output_format match {
-      case "TextOutputFormat" => data.saveAsTextFile(filename)
-      case "ObjectOutputFormat" => data.saveAsObjectFile(filename)
-      case "CompressedTextOutputFormat" => {
-        val cls = Class.forName(output_format_codec).newInstance().asInstanceOf[CompressionCodec]
-        data.saveAsTextFile(filename, cls.getClass)
+      case "Text" => {
+        if (output_format_codec == "None") data.saveAsTextFile(filename)
+        else {
+          val cls = Class.forName(output_format_codec).newInstance().asInstanceOf[CompressionCodec]
+          data.saveAsTextFile(filename, cls.getClass)
+        }
       }
+      case "Object" => data.saveAsObjectFile(filename)
       case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
     }
   }
