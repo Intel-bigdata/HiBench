@@ -24,7 +24,7 @@ import org.apache.spark.rdd._
 import org.apache.spark._
 import org.apache.spark.storage.StorageLevel._
 
-import scala.reflect.runtime.universe
+import scala.reflect.ClassTag
 
 
 object ScalaSort{
