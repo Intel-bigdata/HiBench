@@ -18,42 +18,37 @@ function getenv_or_default(){
     local v=`printenv $1`
     shift 
     if [ -z $v ]; then
-	return $*
+	echo $*
     else
-	return $v
+	echo $v
     fi
 }
 
 ###################### Global Configurations ##################
-HADOOP_EXECUTABLE=getenv_or_default HADOOP_EXECUTABLE
-HADOOP_CONF_DIR=getenv_or_default HADOOP_CONF_DIR
-HADOOP_EXAMPLES_JAR=getenv_or_default HADOOP_EXAMPLES_JAR
-HADOOP_HOME=getenv_or_default HADOOP_HOME 
-SPARK_MASTER=getenv_or_default SPARK_MASTER 
-#spark://lv-dev:7077
-SPARK_HOME=getenv_or_default SPARK_HOME 
-#/home/lv/intel/spark
-SPARK_EXAMPLES_JAR=getenv_or_default SPARK_EXAMPLES_JAR 
-#${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
-#/home/lv/intel/hadoop/hadoop-1.2.1
-HIBENCH_HOME=getenv_or_default HIBENCH_HOME `dirname "$this"`/..
-#/home/lv/intel/HiBench
-HIBENCH_CONF=getenv_or_default HIBENCH_CONF 
-HIVE_HOME=getenv_or_default HIVE_HOME 
-MAHOUT_HOME=getenv_or_default MAHOUT_HOME 
-NUTCH_HOME=getenv_or_default NUTCH_HOME 
-SPARKBENCH_HOME=getenv_or_default SPARKBENCH_HOME `dirname ${this}`/..
-SPARKBENCH_CONF=getenv_or_default SPARKBENCH_CONF ${SPARKBENCH_HOME}/conf
-SPARKBENCH_JAR=getenv_or_default SPARKBENCH_JAR ${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar
-SPARKBENCH_REPORT=getenv_or_default SPARKBENCH_REPORT ${SPARKBENCH_HOME}/sparkbench.report
-DATATOOLS=getenv_or_default DATATOOLS 
+HADOOP_EXECUTABLE=$(getenv_or_default HADOOP_EXECUTABLE)
+HADOOP_CONF_DIR=$(getenv_or_default HADOOP_CONF_DIR)
+HADOOP_EXAMPLES_JAR=$(getenv_or_default HADOOP_EXAMPLES_JAR)
+HADOOP_HOME=$(getenv_or_default HADOOP_HOME)
+SPARK_MASTER=$(getenv_or_default SPARK_MASTER)
+SPARK_HOME=$(getenv_or_default SPARK_HOME)
+SPARK_EXAMPLES_JAR=$(getenv_or_default SPARK_EXAMPLES_JAR)
+HIBENCH_HOME=$(getenv_or_default HIBENCH_HOME)
+HIBENCH_CONF=$(getenv_or_default HIBENCH_CONF)
+HIVE_HOME=$(getenv_or_default HIVE_HOME)
+MAHOUT_HOME=$(getenv_or_default MAHOUT_HOME)
+NUTCH_HOME=$(getenv_or_default NUTCH_HOME)
+SPARKBENCH_HOME=$(getenv_or_default SPARKBENCH_HOME `dirname ${this}`/..)
+SPARKBENCH_CONF=$(getenv_or_default SPARKBENCH_CONF ${SPARKBENCH_HOME}/conf)
+SPARKBENCH_JAR=$(getenv_or_default SPARKBENCH_JAR ${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar)
+SPARKBENCH_REPORT=$(getenv_or_default SPARKBENCH_REPORT ${SPARKBENCH_HOME}/sparkbench.report)
+DATATOOLS=$(getenv_or_default DATATOOLS)
 
 # base dir HDFS
-HDFS_MASTER=getenv_or_default HDFS_MASTER hdfs://localhost:54310 
-DATA_HDFS=getenv_or_default HDFS_MASTER $HDFS_MASTER/SparkBench 
+HDFS_MASTER=$(getenv_or_default HDFS_MASTER hdfs://localhost:54310) 
+DATA_HDFS=$(getenv_or_default HDFS_MASTER $HDFS_MASTER/SparkBench)
 
 # dict path
-DICT_PATH=getenv_or_default DICT_PATH /usr/share/dict/words 
+DICT_PATH=$(getenv_or_default DICT_PATH /usr/share/dict/words)
 
 # default Mappers and reducers
 NUM_MAPS=256

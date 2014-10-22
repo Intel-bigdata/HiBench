@@ -19,13 +19,13 @@ script="$(basename -- "$this")"
 this="$bin/$script"
 
 export SPARKBENCH_VERSION="0.1"
-
-if [[ ! -e "sparkbench-config.sh" ]]; then
-    echo "ERROR: sparkbench-config.sh does not exist, please create one according to sparkbench-config.sh.template!"
+SPARKBENCH_CONF=$bin/../conf/sparkbench-config.sh
+if [[ ! -e "$SPARKBENCH_CONF" ]]; then
+    echo "ERROR: $SPARKBENCH_CONF does not exist, please create one according to sparkbench-config.sh.template!"
 exit
 fi
 
-. sparkbench-config.sh
+. $SPARKBENCH_CONF
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
