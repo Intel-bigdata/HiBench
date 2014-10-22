@@ -21,7 +21,7 @@ bin=`cd "$bin"; pwd`
 echo "========== preparing wordcount data=========="
 # configure
 DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/sparkbench-config.sh"
+. "${DIR}/../bin/load-sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
 # path check

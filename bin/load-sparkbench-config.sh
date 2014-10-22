@@ -20,46 +20,12 @@ this="$bin/$script"
 
 export SPARKBENCH_VERSION="0.1"
 
-###################### Global Configurations ##################
-HADOOP_EXECUTABLE=
-HADOOP_CONF_DIR=
-HADOOP_EXAMPLES_JAR=
-SPARK_MASTER=spark://lv-dev:7077
-SPARK_HOME=/home/lv/intel/spark
-SPARK_EXAMPLES_JAR=${SPARK_HOME}/examples/target/scala-*/spark-examples-*hadoop*.jar
-HADOOP_HOME=/home/lv/intel/hadoop/hadoop-1.2.1
-SPARKBENCH_HOME=`printenv SPARKBENCH_HOME`
-SPARKBENCH_CONF=`printenv SPARKBENCH_CONF`
-SPARKBENCH_JAR=`printenv SPARKBENCH_JAR`
-HIBENCH_HOME=/home/lv/intel/HiBench
-HIBENCH_CONF=`printenv HIBENCH_CONF`
-HIVE_HOME=`printenv HIVE_HOME`
-MAHOUT_HOME=`printenv MAHOUT_HOME`
-NUTCH_HOME=`printenv NUTCH_HOME`
-DATATOOLS=`printenv DATATOOLS`
-
-# dict path
-DICT_PATH=/usr/share/dict/words
-
-# base dir HDFS
-HDFS_MASTER=hdfs://localhost:54310
-DATA_HDFS=$HDFS_MASTER/SparkBench
-
-if [ -z "$SPARKBENCH_HOME" ]; then
-    export SPARKBENCH_HOME=`dirname ${this}`/..
+if [[ ! -e "sparkbench-config.sh" ]]; then
+    echo "ERROR: sparkbench-config.sh does not exist, please create one according to sparkbench-config.sh.template!"
+exit
 fi
 
-# local report
-SPARKBENCH_REPORT=${SPARKBENCH_HOME}/sparkbench.report
-
-# Parallelism of your cluster
-PARALLEL=256
-
-# default Mappers and reducers
-NUM_MAPS=256
-NUM_REDS=128
-
-################### Configuration done ##########3
+. sparkbench-config.sh
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
@@ -88,25 +54,8 @@ echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this b
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
 
-
-if [ -z "$HIBENCH_HOME" ]; then
-    export HIBENCH_HOME=`dirname "$this"`/..
-fi
-
-if [ -z "$SPARKBENCH_CONF" ]; then
-    export SPARKBENCH_CONF=${SPARKBENCH_HOME}/conf
-fi
-
-if [ -z "$SPARKBENCH_JAR" ]; then
-    export SPARKBENCH_JAR=${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar
-fi
-
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
     . "${SPARKBENCH_CONF}/funcs.sh"
-fi
-
-if [ -z "$HIVE_HOME" ]; then
-    export HIVE_HOME=${HIBENCH_HOME}/common/hive-0.9.0-bin
 fi
 
 if $HADOOP_EXECUTABLE version|grep -i -q cdh4; then
@@ -125,11 +74,6 @@ fi
 
 if [ -z "$DATATOOLS" ]; then
     export DATATOOLS=${HIBENCH_HOME}/common/autogen/dist/datatools.jar
-fi
-
-# check dict path and dict file
-if [ -z "$DICT_PATH" ]; then
-    DICT_PATH=/usr/share/dict/words
 fi
 
 if [[ ! -e "$DICT_PATH" ]]; then
