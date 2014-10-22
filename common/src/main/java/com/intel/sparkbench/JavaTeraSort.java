@@ -17,19 +17,16 @@
 
 package com.intel.sparkbench.terasort;
 
-import org.apache.commons.collections.IteratorUtils;
+import org.apache.spark.BaseRangePartitioner;
+import org.apache.spark.ConfigurableJavaPairRDD;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public final class JavaTeraSort {
@@ -38,14 +35,15 @@ public final class JavaTeraSort {
   public static void main(String[] args) throws Exception {
 
     if (args.length < 2) {
-      System.err.println("Usage: JavaTeraSort <HDFS_INPUT> <HDFS_OUTPUT");
+      System.err.println("Usage: JavaTeraSort <HDFS_INPUT> <HDFS_OUTPUT>");
       System.exit(1);
     }
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaTeraSort");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
-
+    Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
+    Integer reducer  = Integer.parseInt(System.getProperty("sparkbench.reducer"));
     JavaPairRDD<String, String> words = lines.mapToPair(new PairFunction<String, String, String>() {
         @Override
         public Tuple2<String, String> call(String s) throws Exception {
@@ -53,7 +51,8 @@ public final class JavaTeraSort {
         }
     });
 
-    JavaPairRDD<String, String> sorted = words.sortByKey(true);
+
+    JavaPairRDD<String, String> sorted = words.sortByKey(true, reducer);
 
     JavaRDD<String> result = sorted.map(new Function<Tuple2<String, String>, String>() {
         @Override

@@ -42,8 +42,7 @@ SIZE=0
 START_TIME=`timestamp`
 
 # run bench
-run-spark-job com.intel.sparkbench.sleep.JavaSleep $PARALLEL $SLEEP || exit 1
-#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.sleep.JavaSleep --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $PARALLEL $SLEEP 
+run-spark-job com.intel.sparkbench.sleep.JavaSleep $SLEEP || exit 1
 
 # post-running
 END_TIME=`timestamp`

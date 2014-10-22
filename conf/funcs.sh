@@ -71,6 +71,16 @@ function dir_size() {
 }
 
 function run-spark-job() {
+    LIB_JARS=
+    while (($#)); do
+      if [ "$1" = "--jars" ]; then
+        LIB_JARS="--jars $2"
+        shift 2
+        continue
+      fi
+      break
+    done
+
     CLS=$1
     shift
     
@@ -86,9 +96,9 @@ function run-spark-job() {
     PROP_FILES="--properties-file ${WORKLOAD_DIR}/conf/._prop.conf"
 
     if [[ "$CLS" == *.py ]]; then 
-	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
     else
-	${SPARK_HOME}/bin/spark-submit ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
     fi
     result=$?
     rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true

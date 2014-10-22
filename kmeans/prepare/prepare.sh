@@ -23,7 +23,6 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-
 # compress check
 if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-compress true \
@@ -38,8 +37,7 @@ $HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS_DIR} || true
 
 # generate data
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
-export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
-echo "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7-job.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION} 
+export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath`
 "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7-job.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION} 
 result=$?
 if [ $result -ne 0 ]
@@ -47,11 +45,6 @@ then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class com.intel.sparkbench.datagen.convert.KmeansConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_SAMPLE} ${INPUT_HDFS} ${PARALLEL}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: covert job failed to run successfully." 
-    exit $result
-fi
+run-spark-job --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar com.intel.sparkbench.datagen.convert.KmeansConvert ${INPUT_SAMPLE} ${INPUT_HDFS}
+#${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class com.intel.sparkbench.datagen.convert.KmeansConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_SAMPLE} ${INPUT_HDFS}
 

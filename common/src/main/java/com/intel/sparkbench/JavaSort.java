@@ -20,6 +20,7 @@ package com.intel.sparkbench.sort;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.apache.spark.HashPartitioner;
 import scala.Tuple2;
 
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -30,21 +31,22 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.SparkConf;
 
-import com.intel.sparkbench.sort.PatchedJavaPairRDD;
+import org.apache.spark.ConfigurableJavaPairRDD;
 
 public final class JavaSort {
   private static final Pattern SPACE = Pattern.compile(" ");
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length != 3) {
-      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>");
+    if (args.length != 2) {
+      System.err.println("Usage: JavaSort <HDFS_INPUT> <HDFS_OUTPUT>");
       System.exit(1);
     }
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
-    Integer parallel = Integer.parseInt(args[2]);
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+    Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
+    Integer reducer = Integer.parseInt(System.getProperty("sparkbench.reducer"));
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
     JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
@@ -61,9 +63,9 @@ public final class JavaSort {
       }
     });
 
-    JavaPairRDD<String, Integer> counts = new PatchedJavaPairRDD(
+    JavaPairRDD<String, Integer> counts = new ConfigurableJavaPairRDD(
             ones.rdd(), String.class, Integer.class
-      ).sortByKeyWithHashedPartitioner( true, parallel / 2);
+      ).sortByKeyWithPartitioner(new HashPartitioner(reducer), true);
 
     JavaRDD<String> result = counts.map(new Function<Tuple2<String, Integer>, String>() {
         @Override
