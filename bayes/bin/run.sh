@@ -27,8 +27,9 @@ if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
   exit
 fi
 
-if [ -n "$1" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
 fi
 
 check_compress

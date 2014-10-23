@@ -24,8 +24,9 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 OUTPUT_HDFS=$INPUT_HDFS/indexes
-if [ -n "$1" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
 fi
 
 NUTCH_DEPENDENCY_DIR=$DEPENDENCY_DIR"/nutchindexing/target/dependency"

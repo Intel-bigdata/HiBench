@@ -111,9 +111,9 @@ Note: Since HiBench-2.2, the input data of benchmarks are all automatically gene
 
   The `conf/benchmarks.lst` file under the package folder defines the workloads to run when you execute the `bin/run-all.sh` script under the package folder. Each line in the list file specifies one workload. You can use `#` at the beginning of each line to skip the corresponding bench if necessary. 
 
-- Run workloads in concurrency mode
+- Run workload in throughput test mode
 
-  The `conf/benchmarks-concurrent.list` file under the package folder defines the workloads to run when you execute the `bin/run-concurrent.sh` script under the package folder. The number at the end of each line indicates the number of each workload you want to run concurrently. Before running, execute the script `bin/prepare-concurrent.sh`.
+  The `conf/benchmarks-concurrent.lst` file under the package folder defines the workloads to run when you execute the `bin/run-concurrent.sh` script under the package folder. The number at the end of each line indicates the number of each workload you want to submit simultaneously. Before running, execute the script `bin/prepare-concurrent.sh`.
 
   For the workload hivebench, please run the metastore as a service first to support concurrency: `hive --service metastore`.
 

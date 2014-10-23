@@ -80,18 +80,18 @@ if [ -z "$DEPENDENCY_DIR" ]; then
 fi
 
 if [ -z "$HIVE_HOME" ]; then
-    HIVE_RELEASE=hive-0.12.0-bin
+    export HIVE_RELEASE=hive-0.12.0-bin
     export HIVE_HOME=${DEPENDENCY_DIR}/hivebench/target/${HIVE_RELEASE}
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    MAHOUT_RELEASE=mahout-distribution-0.7
-    MAHOUT_EXAMPLE_JOB="mahout-examples-0.7-job.jar"
+    export MAHOUT_RELEASE=mahout-distribution-0.7
+    export MAHOUT_EXAMPLE_JOB="mahout-examples-0.7-job.jar"
     export MAHOUT_HOME=${DEPENDENCY_DIR}/mahout/target/${MAHOUT_RELEASE}
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
-    NUTCH_RELEASE=nutch-1.2
+    export NUTCH_RELEASE=nutch-1.2
     export NUTCH_HOME=${DEPENDENCY_DIR}/nutchindexing/target/${NUTCH_RELEASE}
 fi
 

@@ -33,8 +33,9 @@ if [ ! -d $MAHOUT_HOME ]; then
   tar zxf $MAHOUT_RELEASE".tar.gz"
 fi
 
-if [ -n "$1" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
 fi
 
 check_compress

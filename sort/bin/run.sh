@@ -23,9 +23,10 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
-if [ -n "$1" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$1
-  TMPLOGFILE=$TMPLOGFILE$1
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
+  TMPLOGFILE=$TMPLOGFILE$SUBDIR
 fi
 
 check_compress
