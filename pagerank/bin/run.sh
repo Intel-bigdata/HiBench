@@ -23,6 +23,11 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
+fi
+
 check_compress
 
 # path check

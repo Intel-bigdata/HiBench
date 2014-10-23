@@ -24,6 +24,18 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 
+if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+  echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
+cd $DEPENDENCY_DIR"/mahout/target/"
+if [ ! -d $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE ]; then
+  tar zxf $MAHOUT_RELEASE".tar.gz"
+fi
+
+MAHOUT_HOME=$DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE
+
 # compress check
 if [ $COMPRESS -eq 1 ]; then
     COMPRESS_OPT="-compress true \
@@ -42,5 +54,5 @@ export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath | tail -1`
 
 rm -rf ${DIR}/$TMPLOGFILE
 
-exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar ${COMPRESS_OPT} ${OPTION} 2>&1 | tee ${DIR}/$TMPLOGFILE
+exec "$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/$MAHOUT_EXAMPLE_JOB ${COMPRESS_OPT} ${OPTION} 2>&1 | tee ${DIR}/$TMPLOGFILE
 

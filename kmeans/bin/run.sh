@@ -23,6 +23,21 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/hibench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+  echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+  exit
+fi
+
+cd $DEPENDENCY_DIR"/mahout/target"
+if [ ! -d $MAHOUT_HOME ]; then
+  tar zxf $MAHOUT_RELEASE".tar.gz"
+fi
+
+SUBDIR=$1
+if [ -n "$SUBDIR" ]; then
+  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
+fi
+
 check_compress
 
 $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}

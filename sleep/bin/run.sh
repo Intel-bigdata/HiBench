@@ -25,7 +25,7 @@ DIR=`cd $bin/../; pwd`
 START_TIME=`timestamp`
 
 #run bench
-if [ $HADOOP_VERSION == "hadoop1" ]; then
+if [ $HADOOP_RELEASE == "hadoop1" ]; then
   $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sleep \
       -m $NUM_MAPS \
       -r $NUM_REDS \
