@@ -33,7 +33,7 @@
         <jar destfile="dist/datatools.jar" basedir="build/classes">
         	<manifest>
         		<attribute name="Built-By" value="lan.yi@intel.com"/>
-        		<attribute name="Implementation-Version" value="3.0"/>
+        		<attribute name="Implementation-Version" value="4.0"/>
         	</manifest>
         </jar>
     </target>

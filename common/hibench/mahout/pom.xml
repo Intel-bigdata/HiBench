@@ -5,12 +5,12 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hibench</artifactId>
-    <version>3.0-RELEASE</version>
+    <version>4.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench</groupId>
   <artifactId>mahout</artifactId>
-  <version>3.0-RELEASE</version>
+  <version>4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
