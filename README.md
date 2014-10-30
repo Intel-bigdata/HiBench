@@ -2,16 +2,15 @@
 ## HiBench - the Hadoop Benchmark Suite ##
 
 ---
-- Release version: 2.2
-- Release date: 2012/10/23
-- Contact: [Lan Yi](mailto:lan.yi@intel.com), [Kai Wei](mailto:kai.wei@intel.com), [Shengsheng Huang](mailto:shengsheng.huang@intel.com), [Jason Dai](mailto:jason.dai@intel.com) 
+- Release version: 3.0
+- Release date: 2014/10/31
+- Contact: [Daoyuan Wang](mailto:daoyuan.wang@intel.com), [Mingfei Shi](mailto:mingfei.shi@intel.com), [Grace Huang](mailto:jie.huang@intel.com), [Jiangang Duan](mailto:jiangang.duan@intel.com) 
 - Homepage: https://github.com/intel-hadoop/Hibench
 
 - Contents:
     1. Overview
     2. Getting Started
     3. Running
-    4. For Yarn
 
 ---
 ### OVERVIEW ###

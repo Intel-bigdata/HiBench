@@ -20,7 +20,7 @@ bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 script="$(basename -- "$this")"
 this="$bin/$script"
 
-export HIBENCH_VERSION="2.2"
+export HIBENCH_VERSION="3.0"
 
 ###################### Global Paths ##################
 
