@@ -40,17 +40,9 @@ object ScalaSort{
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
-    val parallel = sc.getConf.getInt("spark.default.parallelism", 0)
-    val input_format = sc.getConf.get("sparkbench.inputformat", "TextInputFormat")
-    val output_format = sc.getConf.get("sparkbench.outputformat", "TextOutputFormat")
-    val input_format_codec = sc.getConf.get("sparkbench.inputformat.codec",
-                                            "org.apache.hadoop.io.compress.SnappyCodec")
-    val output_format_codec = sc.getConf.get("sparkbench.outputformat.codec",
-                                             "org.apache.hadoop.io.compress.SnappyCodec")
-
 
     val io = new IOCommon(sc)
-    val data = io.load(args(0))
+    val data = io.load[String](args(0))
     val sorted = data
       .flatMap(_.split(" "))
       .mapPartitions(_.toList.sorted.toIterator,
