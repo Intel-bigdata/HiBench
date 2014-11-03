@@ -22,11 +22,11 @@ class IOCommon(val sc:SparkContext) {
       case "Sequence" => {
         val input_key_cls = loadClassByName[Writable](System.getProperty("sparkbench.inputformat.key_class",
               "org.apache.hadoop.io.LongWritable"))
-        val input_value_cls = loadClassByName[T](System.getProperty("sparkbench.inputformat.value_class",
+        val input_value_cls = loadClassByName[Writable](System.getProperty("sparkbench.inputformat.value_class",
               "org.apache.hadoop.io.LongWritable"))
         val input_value_cls_method = System.getProperty("sparkbench.inputformat.value_class_method", "get")
-        val data = sc.sequenceFile(filename, input_key_cls.getClass, input_value_cls.getClass).map(_._2)
-        data.map(x=>callMethod[Writable, T](x, input_value_cls_method))
+        sc.sequenceFile(filename, input_key_cls.getClass, input_value_cls.getClass)
+               .map(x=>callMethod[Writable, T](x._2, input_value_cls_method))
       }
       case _ => throw new UnsupportedOperationException(s"Unknown inpout format: $input_format")
     }
