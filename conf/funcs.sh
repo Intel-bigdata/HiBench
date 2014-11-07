@@ -39,7 +39,9 @@ function gen_report() {
     fi
     local duration=$(echo "scale=3;($end-$start)/1000"|bc)
     local tput=`echo "$size/$duration"|bc`
-    local nodes=`cat ${SPARK_HOME}/conf/slaves | grep -v '^\s*$' | sed "/^#/ d" | wc -l` 
+    local nodes=`cat ${SPARK_HOME}/conf/slaves 2>/dev/null | grep -v '^\s*$' | sed "/^#/ d" | wc -l`
+    nodes=${nodes:-1}
+    if [ $nodes -eq 0 ]; then nodes=1; fi
     local tput_node=`echo "$tput/$nodes"|bc`
 
     if [ ! -f $SPARKBENCH_REPORT ] ; then
@@ -93,12 +95,13 @@ function run-spark-job() {
 	exit 1
     fi
     cat ${WORKLOAD_DIR}/../conf/global_properties.conf ${WORKLOAD_DIR}/conf/properties.conf > ${WORKLOAD_DIR}/conf/._prop.conf
-    PROP_FILES="--properties-file ${WORKLOAD_DIR}/conf/._prop.conf"
+    PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
+    export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
 
     if [[ "$CLS" == *.py ]]; then 
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
     else
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
     fi
     result=$?
     rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true

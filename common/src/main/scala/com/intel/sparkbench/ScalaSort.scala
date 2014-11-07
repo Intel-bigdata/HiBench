@@ -17,14 +17,15 @@
 
 package com.intel.sparkbench.sort
 
-import java.util.Comparator
-
-import org.apache.spark._
-import org.apache.spark.api.java.JavaPairRDD._
-import org.apache.spark.api.java.{JavaPairRDD, JavaRDDLike}
+import org.apache.hadoop.io.{Text, LongWritable}
+import org.apache.hadoop.mapred.TextInputFormat
+import org.apache.spark.SparkBench.IOCommon
 import org.apache.spark.rdd._
+import org.apache.spark._
+import org.apache.spark.storage.StorageLevel._
 
 import scala.reflect.ClassTag
+
 
 object ScalaSort{
   implicit def rddToHashedRDDFunctions[K : Ordering : ClassTag, V: ClassTag]
@@ -39,12 +40,14 @@ object ScalaSort{
     }
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
-    val reducer  = System.getProperties.getProperty("sparkbench.reducer").toInt
-    val file = sc.textFile(args(0))
-    val data = file.flatMap(line => line.split(" ")).map((_, 1))
-    val sorted = data.sortByKeyWithPartitioner(partitioner = new HashPartitioner(reducer)).map(_._1)
 
-    sorted.saveAsTextFile(args(1))
+    val io = new IOCommon(sc)
+    val data = io.load[String](args(0))
+    val sorted = data
+      .flatMap(_.split(" "))
+      .mapPartitions(_.toList.sorted.toIterator,
+                     preservesPartitioning = true)
+    io.save(args(1), sorted)
     sc.stop()
   }
 }

@@ -17,6 +17,7 @@
 
 package com.intel.sparkbench.wordcount
 
+import org.apache.spark.SparkBench.IOCommon
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
@@ -32,11 +33,12 @@ object ScalaWordCount{
     val sparkConf = new SparkConf().setAppName("ScalaWordCount")
     val sc = new SparkContext(sparkConf)
 
-    val file = sc.textFile(args(0))
-    val counts = file.flatMap(line => line.split(" "))
+    val io = new IOCommon(sc)
+    val data = io.load[String](args(0))
+    val counts = data.flatMap(line => line.split(" "))
                      .map(word => (word, 1))
                      .reduceByKey(_ + _)
-    counts.saveAsTextFile(args(1))
+    io.save(args(1), counts)
     sc.stop()
   }
 }
