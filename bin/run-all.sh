@@ -18,7 +18,7 @@ set -u
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-. $DIR/bin/sparkbench-config.sh
+. $DIR/bin/load-sparkbench-config.sh
 
 if [ -f $SPARKBENCH_REPORT ]; then
     rm $SPARKBENCH_REPORT

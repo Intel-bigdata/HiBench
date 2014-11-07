@@ -9,3 +9,4 @@ target/
 *.report
 derby.log
 metastore_db/
+report/
