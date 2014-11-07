@@ -41,6 +41,7 @@ DATA_HDFS=${HDFS_MASTER:-$HDFS_MASTER/SparkBench}
 DICT_PATH=${DICT_PATH:-/usr/share/dict/words}
 
 # default Mappers and reducers
+# if unspecfied, will be set according to global_properties.conf's default_parallelism value
 NUM_MAPS=256
 NUM_REDS=128
 
