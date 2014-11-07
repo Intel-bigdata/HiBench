@@ -47,9 +47,7 @@ object ScalaSort{
       .flatMap(_.split(" "))
       .mapPartitions(_.toList.sorted.toIterator,
                      preservesPartitioning = true)
-
     io.save(args(1), sorted)
-
     sc.stop()
   }
 }
