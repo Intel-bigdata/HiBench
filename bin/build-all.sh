@@ -18,7 +18,7 @@ set -u
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-. $DIR/bin/sparkbench-config.sh
+. $DIR/bin/load-sparkbench-config.sh
 
 function check_and_build {
     local folder=$1
