@@ -40,7 +40,7 @@ object ScalaTeraSort {
 
     val file = io.load[String](args(0))
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
-    val reducer  = System.getProperties.getProperty("sparkbench.reducer").toInt
+    val reducer  = IOCommon.getProperty("sparkbench.reducer").getOrElse((parallel / 2).toString).toInt
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
 
     val partitioner = new BaseRangePartitioner(partitions = reducer, rdd = data)
