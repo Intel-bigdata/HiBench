@@ -17,6 +17,8 @@
 
 package com.intel.sparkbench.datagen
 
+import org.apache.spark.SparkBench.IOCommon
+
 import scala.collection.mutable.ListBuffer
 import org.apache.spark.rdd._
 import org.apache.spark.SparkContext
@@ -49,6 +51,7 @@ object RandomTextWriter {
     val sparkConf = new SparkConf().setAppName("RandomTextWriter")
     val sc = new SparkContext(sparkConf)
     val numParallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
+    val io = new IOCommon(sc)
     val totalDataSize = args(1).toLong
 
     if (args.length>2){
@@ -75,9 +78,11 @@ object RandomTextWriter {
     println(s"total:$totalDataSize, mean_size:$mean_size, " +
             s"numParallel:$numParallel, HDFS:" + args(0))
 
-    sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
+    val data = sc.parallelize(1L to (totalDataSize / mean_size.toLong), numParallel).map{x =>
       generateSentence(minWordsInKey) + " " + generateSentence(minWordsInValue)
-    }.saveAsTextFile(args(0))
+    }
+
+    io.save(args(0), data, "sparkbench.inputformat")
     sc.stop()
   }
 

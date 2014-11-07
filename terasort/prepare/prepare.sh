@@ -24,6 +24,15 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/../bin/load-sparkbench-config.sh"
 . "${DIR}/conf/configure.sh"
 
+# compress check
+if [ $COMPRESS -eq 1 ]; then
+    COMPRESS_OPT="-compress true \
+        -compressCodec $COMPRESS_CODEC \
+        -compressType BLOCK"
+else
+    COMPRESS_OPT="-compress false"
+fi
+
 # path check
 $HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
 # Generate the terasort data

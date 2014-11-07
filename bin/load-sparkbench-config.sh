@@ -19,6 +19,7 @@ script="$(basename -- "$this")"
 this="$bin/$script"
 
 export SPARKBENCH_VERSION="0.1"
+
 SPARKBENCH_CONF=$bin/../conf
 if [[ ! -e "$SPARKBENCH_CONF" ]]; then
     echo "ERROR: $SPARKBENCH_CONF does not exist, please create one according to sparkbench-config.sh.template!"
@@ -57,8 +58,6 @@ else
 	done
 	unset IFS
 fi
-
-
 
 echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
