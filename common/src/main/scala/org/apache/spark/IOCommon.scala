@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.spark.SparkBench
 
 import java.io.{InputStreamReader, IOException, FileInputStream, File}
@@ -18,8 +35,10 @@ import org.apache.spark.SparkContext._
 import scala.collection.mutable.HashMap
 
 class IOCommon(val sc:SparkContext) {
-  def load[T:ClassTag:TypeTag](filename:String) = {
-    val input_format:String = IOCommon.getProperty("sparkbench.inputformat").getOrElse("Text")
+  def load[T:ClassTag:TypeTag](filename:String, force_format:Option[String]=None) = {
+    val input_format = force_format.getOrElse(
+      IOCommon.getProperty("sparkbench.inputformat").getOrElse("Text"))
+
     input_format match {
       case "Text" =>
         sc.textFile(filename)
@@ -35,7 +54,8 @@ class IOCommon(val sc:SparkContext) {
 
   def save(filename:String, data:RDD[_], prefix:String = "sparkbench.outputformat") = {
     val output_format = IOCommon.getProperty(prefix).getOrElse("Text")
-    val output_format_codec = loadClassByName[CompressionCodec](IOCommon.getProperty(prefix + ".codec"))
+    val output_format_codec =
+      loadClassByName[CompressionCodec](IOCommon.getProperty(prefix + ".codec"))
 
 //    IOCommon.dumpProperties()
 //    println(s"Using codec:$output_format_codec, key:${prefix}.codec")
@@ -47,11 +67,12 @@ class IOCommon(val sc:SparkContext) {
 
       case "Sequence" =>
         val sequence_data = data.map(x => (NullWritable.get(), new Text(x.toString)))
-        if (output_format_codec.isEmpty)
+        if (output_format_codec.isEmpty) {
           sequence_data.saveAsHadoopFile[SequenceFileOutputFormat[NullWritable, Text]](filename)
-        else
+        }else{
           sequence_data.saveAsHadoopFile[SequenceFileOutputFormat[NullWritable, Text]](filename,
             output_format_codec.get)
+        }
 
       case "Object" => data.saveAsObjectFile(filename)
       case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
@@ -68,11 +89,14 @@ class IOCommon(val sc:SparkContext) {
   //      case "Object" => sc.objectFile[T](filename)
   //
   //      case "Sequence" =>
-  //        val input_key_cls = loadClassByName[Writable](System.getProperty("sparkbench.inputformat.key_class",
-  //              "org.apache.hadoop.io.LongWritable"))
-  //        val input_value_cls = loadClassByName[Writable](System.getProperty("sparkbench.inputformat.value_class",
-  //              "org.apache.hadoop.io.LongWritable"))
-  //        val input_value_cls_method = System.getProperty("sparkbench.inputformat.value_class_method", "get")
+  //        val input_key_cls = loadClassByName[Writable](
+  //      System.getProperty("sparkbench.inputformat.key_class",
+  //        "org.apache.hadoop.io.LongWritable"))
+  //        val input_value_cls = loadClassByName[Writable](
+  //      System.getProperty("sparkbench.inputformat.value_class",
+  //        "org.apache.hadoop.io.LongWritable"))
+  //        val input_value_cls_method = System.getProperty(
+  //         "sparkbench.inputformat.value_class_method", "get")
   //        sc.sequenceFile(filename, input_key_cls.getClass, input_value_cls.getClass)
   //               .map(x=>callMethod[Writable, T](x._2, input_value_cls_method))
   //
@@ -80,7 +104,8 @@ class IOCommon(val sc:SparkContext) {
   //    }
   //  }
   //
-  //  def save_depracted[T](filename:String, data:RDD[T], prefix:String = "sparkbench.outputformat") = {
+  //  def save_depracted[T](filename:String, data:RDD[T],
+  //                        prefix:String = "sparkbench.outputformat") = {
   //    val output_format = System.getProperty(prefix, "Text")
   //    val output_format_codec = System.getProperty(prefix + ".codec",
   //      "org.apache.hadoop.io.compress.SnappyCodec")
@@ -96,12 +121,14 @@ class IOCommon(val sc:SparkContext) {
   //        data.map(x=> (NullWritable.get(), new BytesWritable(Utils.serialize(x))))
   //        .saveAsSequenceFile(filename)
   //      case "Object" => data.saveAsObjectFile(filename)
-  //      case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
+  //      case _ => throw new UnsupportedOperationException(
+  //         s"Unknown output format: $output_format")
   //    }
   //  }
 
   private def loadClassByName[T](name:Option[String]) = {
-    if (!name.isEmpty) Some(Class.forName(name.get).newInstance.asInstanceOf[T].getClass) else None
+    if (!name.isEmpty) Some(Class.forName(name.get)
+      .newInstance.asInstanceOf[T].getClass) else None
   }
 
   private def callMethod[T, R](obj:T, method_name:String) =
@@ -123,7 +150,8 @@ object IOCommon{
       try {
         val properties = new Properties()
         properties.load(inReader)
-        result ++= properties.stringPropertyNames().map(k => (k, properties(k).trim)).toMap
+        result ++= properties.stringPropertyNames()
+          .map(k => (k, properties(k).trim)).toMap
       } catch {
         case e: IOException =>
           val message = s"Failed when loading Sparkbench properties file $file"
@@ -137,5 +165,6 @@ object IOCommon{
 
   def getProperty(key:String):Option[String] = sparkbench_conf.get(key)
 
-  def dumpProperties(): Unit = sparkbench_conf.foreach{case (key, value)=> println(s"$key\t\t$value")}
+  def dumpProperties(): Unit = sparkbench_conf
+      .foreach{case (key, value)=> println(s"$key\t\t$value")}
 }
