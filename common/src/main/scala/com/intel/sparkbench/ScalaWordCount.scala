@@ -18,9 +18,8 @@
 package com.intel.sparkbench.wordcount
 
 import com.intel.sparkbench.IOCommon
-import org.apache.spark.SparkContext
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
 
 /*
  * Adopted from spark's example: https://spark.apache.org/examples.html

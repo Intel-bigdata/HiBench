@@ -17,10 +17,7 @@
 
 package com.intel.sparkbench.scan
 
-import org.apache.spark.rdd._
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
 
 /*

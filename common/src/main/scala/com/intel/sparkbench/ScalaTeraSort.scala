@@ -18,8 +18,8 @@
 package com.intel.sparkbench.terasort
 
 import com.intel.sparkbench.IOCommon
-import org.apache.spark.rdd._
 import org.apache.spark._
+import org.apache.spark.rdd._
 
 import scala.reflect.ClassTag
 
@@ -46,7 +46,7 @@ object ScalaTeraSort {
 
     val partitioner = new BaseRangePartitioner(partitions = reducer, rdd = data)
     val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner)
-                          .map { case (k, v) => k + v}
+                          .map{case (k, v) => k + v}
     io.save(args(1), sorted_data)
 
     sc.stop()
