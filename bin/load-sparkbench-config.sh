@@ -34,8 +34,7 @@ fi
 NUM_MAPS_default_parallelism=`grep spark.default.parallelism $SPARKBENCH_HOME/conf/global_properties.conf | tr -s ' ' |cut -d ' ' -f 2`
 NUM_MAPS=${NUM_MAPS:-$NUM_MAPS_default_parallelism}
 NUM_MAPS=${NUM_MAPS:-16}  # default parallelism is 16 if not defined in "global_properties.conf" and "sparkbench-config.sh"
-NUM_REDS=${NUM_REDS:$(( $NUM_MAPS/2 ))}
-
+NUM_REDS=${NUM_REDS:-$(( $NUM_MAPS/2 ))}
 
 if [ -n "$HADOOP_HOME" ]; then
 	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
