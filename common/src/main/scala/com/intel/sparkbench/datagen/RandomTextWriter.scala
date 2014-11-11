@@ -17,7 +17,7 @@
 
 package com.intel.sparkbench.datagen
 
-import org.apache.spark.SparkBench.IOCommon
+import com.intel.sparkbench.IOCommon
 
 import scala.collection.mutable.ListBuffer
 import org.apache.spark.rdd._

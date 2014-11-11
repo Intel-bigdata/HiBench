@@ -20,6 +20,9 @@ import sys
 from pyspark import SparkContext
 from pyspark.sql import SQLContext, HiveContext
 
+#
+# ported from HiBench's hive bench
+#
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >> sys.stderr, "Usage: join <hdfs_in_file> <hdfs_out_file>"

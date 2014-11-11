@@ -25,6 +25,9 @@ import org.apache.spark.rdd.{RDD, ShuffledRDD}
 
 import scala.reflect.ClassTag
 
+/*
+ * Adopted from spark's JavaPairRDD implementation
+ */
 
 class ConfigurableOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag,
                                       P <: Product2[K, V] : ClassTag]

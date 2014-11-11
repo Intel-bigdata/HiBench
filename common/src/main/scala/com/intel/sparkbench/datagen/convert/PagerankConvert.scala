@@ -20,9 +20,6 @@ package com.intel.sparkbench.datagen.convert
 import org.apache.hadoop.conf.Configuration
 import org.apache.spark.{SparkConf, SparkContext}
 
-/**
- * Created by lv on 14-9-12.
- */
 object PagerankConvert{
   val conf = new Configuration()
   def main(args: Array[String]){

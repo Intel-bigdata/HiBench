@@ -30,6 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/*
+ * ported from HiBench's hive bench
+ */
 public final class JavaScan {
   private static final Pattern SPACE = Pattern.compile(" ");
 

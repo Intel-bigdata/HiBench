@@ -17,9 +17,9 @@
 
 package com.intel.sparkbench.sort
 
+import com.intel.sparkbench.IOCommon
 import org.apache.hadoop.io.{Text, LongWritable}
 import org.apache.hadoop.mapred.TextInputFormat
-import org.apache.spark.SparkBench.IOCommon
 import org.apache.spark.rdd._
 import org.apache.spark._
 import org.apache.spark.storage.StorageLevel._

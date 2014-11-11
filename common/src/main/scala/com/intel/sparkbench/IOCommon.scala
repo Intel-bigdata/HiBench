@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.spark.SparkBench
+package com.intel.sparkbench
 
-import java.io.{InputStreamReader, IOException, FileInputStream, File}
+import java.io.{File, FileInputStream, IOException, InputStreamReader}
 import java.util.Properties
 
-import org.apache.hadoop.io.NullWritable
-import org.apache.hadoop.io.Text
 import org.apache.hadoop.io.compress.CompressionCodec
+import org.apache.hadoop.io.{NullWritable, Text}
 import org.apache.hadoop.mapred.SequenceFileOutputFormat
-import org.apache.spark.{SparkException, SparkContext}
-import org.apache.spark.rdd.RDD
-
-import scala.reflect.ClassTag
-import scala.collection.JavaConversions._
-import scala.reflect.runtime.universe.TypeTag
-
 import org.apache.spark.SparkContext._
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkContext, SparkException}
+
+import scala.collection.JavaConversions._
 import scala.collection.mutable.HashMap
+import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.TypeTag
 
 class IOCommon(val sc:SparkContext) {
   def load[T:ClassTag:TypeTag](filename:String, force_format:Option[String]=None) = {
@@ -74,7 +72,7 @@ class IOCommon(val sc:SparkContext) {
             output_format_codec.get)
         }
 
-      case "Object" => data.saveAsObjectFile(filename)
+//      case "Object" => data.saveAsObjectFile(filename)
       case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
     }
   }

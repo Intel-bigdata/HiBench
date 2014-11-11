@@ -28,6 +28,10 @@ import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
 import scala.util.hashing._
 
+/*
+ * Adopted from sparks' RangePartitioner implementation
+ */
+
 class BaseRangePartitioner [K : Ordering : ClassTag, V]
       (@transient partitions: Int,
        @transient rdd: RDD[_ <: Product2[K,V]],

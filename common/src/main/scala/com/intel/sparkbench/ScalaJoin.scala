@@ -23,6 +23,9 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.hive.HiveContext
 
+/*
+ * ported from HiBench's hive bench
+ */
 object ScalaJoin{
   def main(args: Array[String]){
     if (args.length < 2){

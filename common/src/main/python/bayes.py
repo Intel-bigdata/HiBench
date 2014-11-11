@@ -27,6 +27,9 @@ from pyspark import SparkContext
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.classification import NaiveBayes
 
+#
+# Adopted from spark's doc: http://spark.apache.org/docs/latest/mllib-naive-bayes.html
+#
 def parseVector(line):
     return np.array([float(x) for x in line.split(' ')])
 

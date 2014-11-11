@@ -18,6 +18,7 @@
 /*
  * Copied from spark's example
  */
+
 package org.apache.spark.examples.mllib
 
 import org.apache.log4j.{Level, Logger}
