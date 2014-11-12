@@ -19,9 +19,10 @@
  * Copied from spark's example
  */
 
+/*
+ * Copied from org.apache.spark.examples.JavaPageRank
+ */
 package org.apache.spark.examples;
-
-
 
 import scala.Tuple2;
 

@@ -16,9 +16,8 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.mllib.JavaKMeans
  */
-
 package org.apache.spark.examples.mllib;
 
 import java.util.regex.Pattern;

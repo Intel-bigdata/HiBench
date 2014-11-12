@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+/*
+ * Adopted from org.apache.spark.examples.JavaWordCount
+ */
 package org.apache.spark.examples;
 
 import scala.Tuple2;
@@ -35,8 +38,8 @@ public final class JavaWordCount {
 
   public static void main(String[] args) throws Exception {
 
-    if (args.length < 1) {
-      System.err.println("Usage: JavaWordCount <file>");
+    if (args.length != 2) {
+      System.err.println("Usage: JavaWordCount <input_file> <output_file>");
       System.exit(1);
     }
 
@@ -65,10 +68,13 @@ public final class JavaWordCount {
       }
     });
 
+    counts.saveAsTextFile(args[1]);
+    /*
     List<Tuple2<String, Integer>> output = counts.collect();
     for (Tuple2<?,?> tuple : output) {
       System.out.println(tuple._1() + ": " + tuple._2());
     }
+    */
     ctx.stop();
   }
 }

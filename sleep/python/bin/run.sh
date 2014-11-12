@@ -42,8 +42,8 @@ SIZE=0
 START_TIME=`timestamp`
 
 # run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/sleep.py $SLEEP || exit 1
-#$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/sleep.py $PARALLEL $SLEEP
+#run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/sleep.py $SLEEP || exit 1
+$SPARK_HOME/bin/spark-submit --master local ${SPARKBENCH_HOME}/common/src/main/python/sleep.py $SLEEP
 
 # post-running
 END_TIME=`timestamp`

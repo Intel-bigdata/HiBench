@@ -16,7 +16,7 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.mllib.DenseKMeans
  */
 
 package org.apache.spark.examples.mllib

@@ -25,7 +25,7 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: sleep <seconds>"
         exit(-1)
     sc = SparkContext(appName="PythonSleep")
-    parallel = int(sc._conf.get("spark.default.parallelism", sc.defaultParallelism))
+    parallel = int(sc._conf.get("spark.default.parallelism", str(sc.defaultParallelism)))
     seconds  = int(sys.argv[1])
     workload = sc.parallelize(range(parallel), parallel)
     workload.map(lambda x: time.sleep(seconds)).collect()

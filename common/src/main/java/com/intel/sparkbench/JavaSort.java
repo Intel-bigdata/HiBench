@@ -20,6 +20,7 @@ package com.intel.sparkbench.sort;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import com.intel.sparkbench.IOCommon;
 import org.apache.spark.HashPartitioner;
 import scala.Tuple2;
 
@@ -46,7 +47,13 @@ public final class JavaSort {
     SparkConf sparkConf = new SparkConf().setAppName("JavaSort");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
-    Integer reducer = Integer.parseInt(System.getProperty("sparkbench.reducer"));
+    Integer reducer;
+    try {
+         reducer = Integer.parseInt(IOCommon.getProperty("sparkbench.reducer").get());
+    } catch (NumberFormatException e){
+         reducer = parallel / 2;
+    }
+
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
     JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {

@@ -16,9 +16,8 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.mllib.SparkNaiveBayes
  */
-
 package org.apache.spark.examples.mllib
 
 import org.apache.log4j.{Level, Logger}

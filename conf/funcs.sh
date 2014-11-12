@@ -99,6 +99,7 @@ function run-spark-job() {
     export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
 
     if [[ "$CLS" == *.py ]]; then 
+	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
 	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
     else
 	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@

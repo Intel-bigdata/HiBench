@@ -16,7 +16,7 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.SparkPageRank
  */
 
 package org.apache.spark.examples

@@ -114,10 +114,8 @@ This benchmark suite contains 9 typical micro workloads:
 
   3. Setup Spark
 
-      `SPARK_HIVE=true sbt/sbt assembly`
+      `sbt/sbt -Phive assembly`
       
-        Note: SPARK_HIVE is deprecated, please use `-Phive` flag in future.
-
       Please refer to `Possible Issues` to set
       `conf/spark-default.conf` properly.
 
