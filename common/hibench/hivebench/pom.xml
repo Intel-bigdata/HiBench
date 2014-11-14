@@ -15,8 +15,8 @@
 
   <properties>
     <!-- You can rewrite these properties to identify different repo and file. -->
-    <repo>http://mirrors.ibiblio.org</repo>
-    <file>apache/hive/hive-0.12.0/hive-0.12.0-bin.tar.gz</file>
+    <repo>http://archive.apache.org</repo>
+    <file>dist/hive/hive-0.12.0/hive-0.12.0-bin.tar.gz</file>
   </properties>
 
   <build>
