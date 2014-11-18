@@ -104,6 +104,10 @@ This benchmark suite contains 9 typical micro workloads:
 
       Download/Checkout HiBench-2.2 benchmark suite from
       [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). 
+      Download packages depended by hibench:
+
+            cd HiBench/common/hibench
+            mvn process-sources
 
   2. Setup Hadoop
 
