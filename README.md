@@ -102,9 +102,8 @@ This benchmark suite contains 9 typical micro workloads:
 
   1. Setup HiBench-2.2
 
-      Download/checkout HiBench-2.2 benchmark suite from
-      [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). Use
-      etl-comm branch.
+      Download/Checkout HiBench-2.2 benchmark suite from
+      [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). 
 
   2. Setup Hadoop
 
@@ -113,6 +112,9 @@ This benchmark suite contains 9 typical micro workloads:
       been tested.
 
   3. Setup Spark
+
+      Download/Checkout spark from [https://github.com/apache/spark](https://github.com/apache/spark).
+      Use spark 1.1 or later version.
 
       `sbt/sbt -Phive assembly`
       
