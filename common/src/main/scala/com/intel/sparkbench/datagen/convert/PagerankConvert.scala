@@ -37,7 +37,8 @@ object PagerankConvert{
 
     val data = sc.textFile(input_path).map{case(line)=>
         val elements = line.split('\t')
-        "%s  %s".format(elements(1), elements(2))
+        val elements_tuple = elements.slice(elements.length-2, elements.length)
+        "%s  %s".format(elements_tuple(0), elements_tuple(1))
     }
 
     data.repartition(parallel)
