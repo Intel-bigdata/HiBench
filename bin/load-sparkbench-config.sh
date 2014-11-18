@@ -72,7 +72,7 @@ else
 fi
 
 if [ -z "$MAHOUT_HOME" ]; then
-    export MAHOUT_HOME=${HIBENCH_HOME}/common/mahout-distribution-0.7-$HADOOP_VERSION
+    export MAHOUT_HOME=${HIBENCH_HOME}/common/hibench/mahout/target/mahout-distribution-0.7
 fi
 
 if [ -z "$NUTCH_HOME" ]; then
