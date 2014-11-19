@@ -100,6 +100,10 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Prerequisites
 
+  0. Setup JDK-1.8
+
+      Download Oracle-JDK-1.8 from ....
+
   1. Setup HiBench-2.2
 
       Download/Checkout HiBench-2.2 benchmark suite from
@@ -239,3 +243,9 @@ This benchmark suite contains 9 typical micro workloads:
        `conf/spark-defaults.conf`:
 
        `spark.closure.serializer  org.apache.spark.serializer.JavaSerializer`
+
+   3. org.apache.hadoop.security.AccessControlException: org.apache.hadoop.security.AccessControlException: Permission denied: user=root, access=EXECUTE, inode="system":XXX:supergroup:rwxrwx---
+
+      Currently a simple workaround for this issue:
+
+       hadoop fs -chmod -R 777 /tmp/hadoop-XXX/mapred/system
