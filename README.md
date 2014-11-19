@@ -130,7 +130,7 @@ This benchmark suite contains 9 typical micro workloads:
       Download/checkout SparkBench benchmark suite from
       [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
 
-  5. Setup `numpy` in all nodes for Python related MLLib workloads.
+  5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
 2. Configure for the all workloads
 
