@@ -255,15 +255,15 @@ This benchmark suite contains 9 typical micro workloads:
       jstack -F <pid of "CoarseGrainedExecutorBackend" process>, you will see lots of threads BLOCKED at epollWait, something like this:
 
       ```
-         - sun.nio.ch.EPollArrayWrapper.epollWait(long, int, long, int) @bci=0 (Compiled frame; information may be imprecise)
-         - sun.nio.ch.EPollArrayWrapper.poll(long) @bci=18, line=269 (Compiled frame)
-         - sun.nio.ch.EPollSelectorImpl.doSelect(long) @bci=28, line=79 (Compiled frame)
-         - sun.nio.ch.SelectorImpl.lockAndDoSelect(long) @bci=37, line=86 (Compiled frame)
-         - sun.nio.ch.SelectorImpl.select(long) @bci=30, line=97 (Compiled frame)
-         - io.netty.channel.nio.NioEventLoop.select(boolean) @bci=62, line=622 (Compiled frame)
-         - io.netty.channel.nio.NioEventLoop.run() @bci=25, line=310 (Interpreted frame)
-         - io.netty.util.concurrent.SingleThreadEventExecutor$2.run() @bci=13, line=116 (Interpreted frame)
-         - java.lang.Thread.run() @bci=11, line=745 (Interpreted frame)
+- sun.nio.ch.EPollArrayWrapper.epollWait(long, int, long, int) @bci=0 (Compiled frame; information may be imprecise)
+- sun.nio.ch.EPollArrayWrapper.poll(long) @bci=18, line=269 (Compiled frame)
+- sun.nio.ch.EPollSelectorImpl.doSelect(long) @bci=28, line=79 (Compiled frame)
+- sun.nio.ch.SelectorImpl.lockAndDoSelect(long) @bci=37, line=86 (Compiled frame)
+- sun.nio.ch.SelectorImpl.select(long) @bci=30, line=97 (Compiled frame)
+- io.netty.channel.nio.NioEventLoop.select(boolean) @bci=62, line=622 (Compiled frame)
+- io.netty.channel.nio.NioEventLoop.run() @bci=25, line=310 (Interpreted frame)
+- io.netty.util.concurrent.SingleThreadEventExecutor$2.run() @bci=13, line=116 (Interpreted frame)
+- java.lang.Thread.run() @bci=11, line=745 (Interpreted frame)
       ```
 
       This issue appears randomly (however, more easily appear in larger scale), and seems to be the commonly known JDK bug: [JDK-6403933](http://bugs.java.com/view_bug.do?bug_id=6403933)
