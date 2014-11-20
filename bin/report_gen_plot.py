@@ -96,6 +96,6 @@ if __name__ == "__main__":
     try:
         default_report_fn = sys.argv[1]
     except:
-        default_report_fn = "sparkbench.report"
+        default_report_fn = os.path.join(os.path.dirname(__file__), "..", "sparkbench.report")
         
-    report_plot(os.path.join(os.path.dirname(__file__), "..", default_report_fn))
+    report_plot(default_report_fn)
