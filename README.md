@@ -124,7 +124,7 @@ This benchmark suite contains 9 typical micro workloads:
       Download/Checkout spark from [https://github.com/apache/spark](https://github.com/apache/spark).
       Use spark 1.1 or later version.
 
-      `sbt/sbt -Phive assembly`
+      `sbts/bt -Phive assembly`
       
       Please refer to `Possible Issues` to set
       `conf/spark-default.conf` properly.
@@ -265,3 +265,16 @@ This benchmark suite contains 9 typical micro workloads:
        - java.lang.Thread.run() @bci=11, line=745 (Interpreted frame)
 
       This issue appears randomly (however, more easily appear in larger scale), and seems to be the commonly known JDK bug: [JDK-6403933](http://bugs.java.com/view_bug.do?bug_id=6403933)
+
+   5. java.lang.NoClassDefFoundError: org/apache/spark/sql/hive/api/java/JavaHiveContext:
+
+      Sometimes, build spark with:
+
+          sbt -Phive assembly
+
+      will not include hive magically (Found this issue in spark's github version with tag:v1.2.0-snapshot1). 
+      Try to rebuild spark in old fashioned way:
+
+          SPARK_HIVE=true sbt assembly
+	 
+      and try again.
