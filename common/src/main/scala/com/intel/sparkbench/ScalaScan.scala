@@ -35,11 +35,11 @@ object ScalaScan{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.hql("DROP TABLE IF EXISTS rankings")
-    hc.hql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
+    hc.sql("DROP TABLE IF EXISTS rankings")
+    hc.sql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
            ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
            STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(0)))
-    hc.hql("FROM rankings SELECT *").saveAsTextFile("%s/rankings".format(args(1)))
+    hc.sql("FROM rankings SELECT *").saveAsTextFile("%s/rankings".format(args(1)))
     sc.stop()
   }
 }
