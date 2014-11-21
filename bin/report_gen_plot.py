@@ -3,6 +3,8 @@
 
 import sys, os, re
 from collections import defaultdict, namedtuple
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 RecordRaw=namedtuple("RecordRaw", "type durtation data_size throughput_total throughput_per_node")
