@@ -32,6 +32,5 @@ if __name__ == "__main__":
     counts = lines.flatMap(lambda x: x.split(' ')) \
                   .map(lambda x: (x, 1)) \
                   .reduceByKey(add)
-    output = counts.collect()
     counts.saveAsTextFile(sys.argv[2])
     sc.stop()

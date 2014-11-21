@@ -16,7 +16,7 @@
 #
 
 #
-# Copied from spark's example
+# Copied & adopted from spark's example
 #
 
 import re
@@ -40,8 +40,8 @@ def parseNeighbors(urls):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: pagerank <file> <iterations>"
+    if len(sys.argv) != 4:
+        print >> sys.stderr, "Usage: pagerank <input_file> <output_file> <iterations>"
         exit(-1)
 
     # Initialize the spark context.
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     ranks = links.map(lambda (url, neighbors): (url, 1.0))
 
     # Calculates and updates URL ranks continuously using PageRank algorithm.
-    for iteration in xrange(int(sys.argv[2])):
+    for iteration in xrange(int(sys.argv[3])):
         # Calculates URL contributions to the rank of other URLs.
         contribs = links.join(ranks).flatMap(
             lambda (url, (urls, rank)): computeContribs(urls, rank))
@@ -70,5 +70,6 @@ if __name__ == "__main__":
         ranks = contribs.reduceByKey(add).mapValues(lambda rank: rank * 0.85 + 0.15)
 
     # Collects all URL ranks and dump them to console.
-    for (link, rank) in ranks.collect():
-        print "%s has rank: %s." % (link, rank)
+    # for (link, rank) in ranks.collect():
+    #     print "%s has rank: %s." % (link, rank)
+    ranks.saveAsTextFile(sys.argv[2])
