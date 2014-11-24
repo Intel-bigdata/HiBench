@@ -136,6 +136,10 @@ This benchmark suite contains 9 typical micro workloads:
 
   5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
+  6. Setup for SparkBench/report_gen_plot.py (Optional)
+  
+     Install your python-matplotlib with verion of 0.9+
+
 2. Configure for the all workloads
 
     You need to set some global environment variables in the

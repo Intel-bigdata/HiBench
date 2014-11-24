@@ -62,7 +62,9 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
     rects = []
 
 
-    fig, ax = plt.subplots()
+#    fig, ax = plt.subplots()
+    fig = plt.figure()
+    ax = plt.axes()
     colors='rgb'
     for idx, lang in enumerate(languages):
         rects.append(ax.bar([x + width * (idx+1) for x in range(len(keys))], # x index
