@@ -16,11 +16,10 @@
  */
 
 /*
- * Copied & adopted from spark's example
- */
-
-/*
  * Copied from org.apache.spark.examples.JavaPageRank
+ * Modification from origin:
+ *    Use saveAsText instead of print to present the result. See the commented
+ * code at the tail of the code.
  */
 package org.apache.spark.examples;
 
@@ -39,7 +38,6 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 
 /**

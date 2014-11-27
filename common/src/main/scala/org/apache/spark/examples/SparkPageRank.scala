@@ -16,7 +16,10 @@
  */
 
 /*
- * Copied & adopted from org.apache.spark.examples.SparkPageRank
+ * Copied from org.apache.spark.examples.JavaPageRank
+ * Modification from origin:
+ *    Use saveAsText instead of print to present the result. See the commented
+ * code at the tail of the code.
  */
 
 package org.apache.spark.examples
@@ -59,7 +62,6 @@ object SparkPageRank {
 
 //    val output = ranks.collect()
 //    output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
-
     ranks.saveAsTextFile(args(1))
 
     ctx.stop()

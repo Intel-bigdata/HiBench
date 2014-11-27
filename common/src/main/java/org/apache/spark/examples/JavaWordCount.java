@@ -17,6 +17,9 @@
 
 /*
  * Adopted from org.apache.spark.examples.JavaWordCount
+ * Modification from origin:
+ *   Use saveAsText instead of print to present the result. See the commented
+ * code at the tail of the code.
  */
 package org.apache.spark.examples;
 
@@ -68,13 +71,13 @@ public final class JavaWordCount {
       }
     });
 
-    counts.saveAsTextFile(args[1]);
     /*
     List<Tuple2<String, Integer>> output = counts.collect();
     for (Tuple2<?,?> tuple : output) {
       System.out.println(tuple._1() + ": " + tuple._2());
     }
     */
+    counts.saveAsTextFile(args[1]);
     ctx.stop();
   }
 }

@@ -17,6 +17,9 @@
 
 #
 # Copied & adopted from spark's example
+# Modification from origin:
+#   Use saveAsText instead of print to present the result. See the commented
+# code at the tail of the code.
 #
 
 import re

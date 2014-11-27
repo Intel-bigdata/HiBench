@@ -41,8 +41,6 @@ class IOCommon(val sc:SparkContext) {
       case "Text" =>
         sc.textFile(filename)
 
-      //      case "Object" => sc.objectFile[T](filename)
-
       case "Sequence" =>
         sc.sequenceFile[NullWritable, Text](filename).map(_._2.toString)
 
@@ -55,9 +53,6 @@ class IOCommon(val sc:SparkContext) {
     val output_format_codec =
       loadClassByName[CompressionCodec](IOCommon.getProperty(prefix + ".codec"))
 
-//    IOCommon.dumpProperties()
-//    println(s"Using codec:$output_format_codec, key:${prefix}.codec")
-
     output_format match {
       case "Text" =>
         if (output_format_codec.isEmpty)  data.saveAsTextFile(filename)
@@ -67,62 +62,14 @@ class IOCommon(val sc:SparkContext) {
         val sequence_data = data.map(x => (NullWritable.get(), new Text(x.toString)))
         if (output_format_codec.isEmpty) {
           sequence_data.saveAsHadoopFile[SequenceFileOutputFormat[NullWritable, Text]](filename)
-        }else{
+        } else {
           sequence_data.saveAsHadoopFile[SequenceFileOutputFormat[NullWritable, Text]](filename,
             output_format_codec.get)
         }
 
-//      case "Object" => data.saveAsObjectFile(filename)
       case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
     }
   }
-
-  //  def load_depracted[T:ClassTag:TypeTag](filename:String) = {
-  //    val input_format = System.getProperty("sparkbench.inputformat", "Text")
-  //    input_format match {
-  //      case "Text" =>
-  //        require(typeOf[T] <:< typeOf[String])
-  //        sc.textFile(filename).asInstanceOf[RDD[T]]
-  //
-  //      case "Object" => sc.objectFile[T](filename)
-  //
-  //      case "Sequence" =>
-  //        val input_key_cls = loadClassByName[Writable](
-  //      System.getProperty("sparkbench.inputformat.key_class",
-  //        "org.apache.hadoop.io.LongWritable"))
-  //        val input_value_cls = loadClassByName[Writable](
-  //      System.getProperty("sparkbench.inputformat.value_class",
-  //        "org.apache.hadoop.io.LongWritable"))
-  //        val input_value_cls_method = System.getProperty(
-  //         "sparkbench.inputformat.value_class_method", "get")
-  //        sc.sequenceFile(filename, input_key_cls.getClass, input_value_cls.getClass)
-  //               .map(x=>callMethod[Writable, T](x._2, input_value_cls_method))
-  //
-  //      case _ => throw new UnsupportedOperationException(s"Unknown inpout format: $input_format")
-  //    }
-  //  }
-  //
-  //  def save_depracted[T](filename:String, data:RDD[T],
-  //                        prefix:String = "sparkbench.outputformat") = {
-  //    val output_format = System.getProperty(prefix, "Text")
-  //    val output_format_codec = System.getProperty(prefix + ".codec",
-  //      "org.apache.hadoop.io.compress.SnappyCodec")
-  //    println(s"codec:$output_format_codec")
-  //    output_format match {
-  //      case "Text" =>
-  //        if (output_format_codec == "None") data.saveAsTextFile(filename)
-  //        else {
-  //          data.saveAsTextFile(filename,
-  //            loadClassByName[CompressionCodec](output_format_codec))
-  //        }
-  //      case "Sequence" =>
-  //        data.map(x=> (NullWritable.get(), new BytesWritable(Utils.serialize(x))))
-  //        .saveAsSequenceFile(filename)
-  //      case "Object" => data.saveAsObjectFile(filename)
-  //      case _ => throw new UnsupportedOperationException(
-  //         s"Unknown output format: $output_format")
-  //    }
-  //  }
 
   private def loadClassByName[T](name:Option[String]) = {
     if (!name.isEmpty) Some(Class.forName(name.get)
