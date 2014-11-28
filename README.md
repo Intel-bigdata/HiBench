@@ -104,10 +104,10 @@ This benchmark suite contains 9 typical micro workloads:
 
       Download Oracle-JDK-1.8 from ....
 
-  1. Setup HiBench-2.2
+  1. Setup HiBench-3.0
 
       Download/Checkout HiBench-2.2 benchmark suite from
-      [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). 
+      [https://github.com/intel-hadoop/HiBench](https://github.com/intel-hadoop/HiBench). 
       Download packages depended by hibench:
 
             cd HiBench/common/hibench
@@ -117,7 +117,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       Before you run any workload in the package, please verify the
       Hadoop framework is running correctly. Currently Hadoop 1.x has
-      been tested.
+      been supported & tested only.
 
   3. Setup Spark
 
@@ -126,7 +126,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       `sbts/bt -Phive assembly`
       
-      Please refer to `Possible Issues` to set
+      Please refer to `Known Issues` to set
       `conf/spark-default.conf` properly.
 
   4. Setup SparkBench
@@ -182,7 +182,7 @@ This benchmark suite contains 9 typical micro workloads:
 ---
 ### Running ###
 
-- Run several workloads together
+- Run several workloads sequentially
 
   The `conf/benchmarks.lst` file under the package folder defines the
   workloads to run when you execute the `bin/run-all.sh` script under
@@ -228,7 +228,7 @@ This benchmark suite contains 9 typical micro workloads:
         `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
 
 ---
-### Possible issues ###
+### Known issues ###
 
    1. com.esotericsoftware.kryo.KryoException: Buffer overflow....
 
@@ -248,39 +248,3 @@ This benchmark suite contains 9 typical micro workloads:
 
        `spark.closure.serializer  org.apache.spark.serializer.JavaSerializer`
 
-   3. org.apache.hadoop.security.AccessControlException: org.apache.hadoop.security.AccessControlException: Permission denied: user=root, access=EXECUTE, inode="system":XXX:supergroup:rwxrwx---
-
-      Currently a simple workaround for this issue:
-
-       hadoop fs -chmod -R 777 /tmp/hadoop-XXX/mapred/system
-
-   4. Some executor may blocked with high system loads during benchmarking.
-
-      jstack -F <pid of "CoarseGrainedExecutorBackend" process>, you will see lots of threads BLOCKED at epollWait, something like this:
-
-      ```
-- sun.nio.ch.EPollArrayWrapper.epollWait(long, int, long, int) @bci=0 (Compiled frame; information may be imprecise)
-- sun.nio.ch.EPollArrayWrapper.poll(long) @bci=18, line=269 (Compiled frame)
-- sun.nio.ch.EPollSelectorImpl.doSelect(long) @bci=28, line=79 (Compiled frame)
-- sun.nio.ch.SelectorImpl.lockAndDoSelect(long) @bci=37, line=86 (Compiled frame)
-- sun.nio.ch.SelectorImpl.select(long) @bci=30, line=97 (Compiled frame)
-- io.netty.channel.nio.NioEventLoop.select(boolean) @bci=62, line=622 (Compiled frame)
-- io.netty.channel.nio.NioEventLoop.run() @bci=25, line=310 (Interpreted frame)
-- io.netty.util.concurrent.SingleThreadEventExecutor$2.run() @bci=13, line=116 (Interpreted frame)
-- java.lang.Thread.run() @bci=11, line=745 (Interpreted frame)
-      ```
-
-      This issue appears randomly (however, more easily appear in larger scale), and seems to be the commonly known JDK bug: [JDK-6403933](http://bugs.java.com/view_bug.do?bug_id=6403933)
-
-   5. java.lang.NoClassDefFoundError: org/apache/spark/sql/hivea/pi/java/JavaHiveContext:
-
-      Sometimes, build spark with:
-
-          sbt -Phive assembly
-
-      will not include hive magically (Found this issue in spark's github version with tag:v1.2.0-snapshot1). 
-      Try to rebuild spark in old fashioned way:
-
-          SPARK_HIVE=true sbt assembly
-	 
-      and try again.
