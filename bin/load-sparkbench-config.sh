@@ -37,9 +37,9 @@ NUM_MAPS=${NUM_MAPS:-16}  # default parallelism is 16 if not defined in "global_
 NUM_REDS=${NUM_REDS:-$(( $NUM_MAPS/2 ))}
 
 if [ -n "$HADOOP_HOME" ]; then
-	HADOOP_EXECUTABLE=$HADOOP_HOME/bin/hadoop
-	HADOOP_CONF_DIR=$HADOOP_HOME/conf
-	HADOOP_EXAMPLES_JAR=$HADOOP_HOME/hadoop-examples*.jar
+	HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:-$HADOOP_HOME/bin/hadoop}
+	HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-$HADOOP_HOME/conf}
+	HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:-$HADOOP_HOME/hadoop-examples*.jar}
 else 					
 ##make some guess if none of these variables are set
 	if [ -z $HADOOP_EXECUTABLE ]; then
@@ -60,6 +60,8 @@ fi
 echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
+
+export HADOOP_CONF_DIR
 
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
     . "${SPARKBENCH_CONF}/funcs.sh"
