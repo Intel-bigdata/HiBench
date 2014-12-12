@@ -15,11 +15,17 @@
 # limitations under the License.
 
 ###################### Global Configurations ##################
+#------ Basic Configurations -------
 HADOOP_HOME=${HADOOP_HOME:-}
 SPARK_HOME=${SPARK_HOME:-}
 HIBENCH_HOME=${HIBENCH_HOME:-}
-SPARK_MASTER=${SPARK_MASTER:-}
 HDFS_MASTER=${HDFS_MASTER:-hdfs://localhost:54310}
+#------ Spark mode configurations -------
+# Available modes:
+#  - spark standalone  : spark://ip:port  
+#  - yarn cluster mode : yarn-cluster
+#  - yarn client mode  : yarn-client
+SPARK_MASTER=${SPARK_MASTER:-}
 
 ###################### Global Configurations (optional) ##################
 HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:-}
@@ -34,6 +40,9 @@ SPARKBENCH_HOME=${SPARKBENCH_HOME:-`dirname ${this}`/..}
 SPARKBENCH_CONF=${SPARKBENCH_CONF:-${SPARKBENCH_HOME}/conf}
 SPARKBENCH_JAR=${SPARKBENCH_JAR:-${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar}
 SPARKBENCH_REPORT=${SPARKBENCH_REPORT:-${SPARKBENCH_HOME}/sparkbench.report}
+YARN_NUM_EXECTORS=${YARN_NUM_EXECTORS:-} # num executors in yarn mode
+YARN_EXECUTOR_CORES=${YARN_EXECUTOR_CORES:-} # num executor cores in yarn mode
+YARN_EXECUTOR_MEMORY=${YARN_EXECUTOR_MEMORY:-} # num of executor memory in yarn mode
 DATATOOLS=${DATATOOLS:-}
 
 # base dir HDFS

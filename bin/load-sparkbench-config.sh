@@ -57,11 +57,13 @@ else
 	unset IFS
 fi
 
+echo HADOOP_HOME=${HADOOP_HOME:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_CONF_DIR=${HADOOP_CONF_DIR:? "ERROR: Please set paths in $this before using HiBench."}
 echo HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:? "ERROR: Please set paths in $this before using HiBench."}
 
 export HADOOP_CONF_DIR
+export HADOOP_HOME
 
 if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
     . "${SPARKBENCH_CONF}/funcs.sh"

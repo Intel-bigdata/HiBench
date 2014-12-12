@@ -98,11 +98,16 @@ function run-spark-job() {
     PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
     export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
 
+    if [[ "$SPARK_MASTER" == "yarn-*" ]]; then
+       YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS} --executor-cores ${YARN_EXECUTOR_CORES} --executor-memory ${YARN_EXECUTOR_MEMORY:-10G}"
+    else
+       YARN_OPTS=""
+    fi
     if [[ "$CLS" == *.py ]]; then 
 	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --master ${SPARK_MASTER} ${CLS} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@
     else
-	echo ${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
+	echo ${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
 	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
     fi
     result=$?
