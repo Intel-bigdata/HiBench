@@ -99,9 +99,9 @@ function run-spark-job() {
     export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
 
     YARN_OPTS=""
-    if [[ "$SPARK_MASTER" == "yarn-*" ]]; then
+    if [[ "$SPARK_MASTER" == yarn-* ]]; then
        YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS:-1}"
-       if [[ -n "${YARN_NUM_EXECTORS:-}" ]]; then
+       if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
 	   YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
        if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
