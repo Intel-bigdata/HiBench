@@ -98,10 +98,15 @@ function run-spark-job() {
     PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
     export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
 
+    YARN_OPTS=""
     if [[ "$SPARK_MASTER" == "yarn-*" ]]; then
-       YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS} --executor-cores ${YARN_EXECUTOR_CORES} --executor-memory ${YARN_EXECUTOR_MEMORY:-10G}"
-    else
-       YARN_OPTS=""
+       YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS:-1}"
+       if [[ -n "${YARN_NUM_EXECTORS:-}" ]]; then
+	   YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
+       fi
+       if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
+	   YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
+       fi
     fi
     if [[ "$CLS" == *.py ]]; then 
 	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
