@@ -69,7 +69,7 @@ if [ -f "${SPARKBENCH_CONF}/funcs.sh" ]; then
     . "${SPARKBENCH_CONF}/funcs.sh"
 fi
 
-if [ -z "$DEPENDENCY_DIR" ]; then
+if [ -z "${DEPENDENCY_DIR:-}" ]; then
     export DEPENDENCY_DIR=${HIBENCH_HOME}/common/hibench
 fi
 
