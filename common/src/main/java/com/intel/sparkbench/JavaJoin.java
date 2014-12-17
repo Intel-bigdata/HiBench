@@ -30,6 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/*
+ * ported from HiBench's hive bench
+ */
 public final class JavaJoin {
   private static final Pattern SPACE = Pattern.compile(" ");
 
@@ -44,13 +47,13 @@ public final class JavaJoin {
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaHiveContext hc = new JavaHiveContext(ctx);
 
-    hc.hql("DROP TABLE IF EXISTS rankings");
-    hc.hql("DROP TABLE IF EXISTS uservisits");
-    hc.hql("DROP TABLE IF EXISTS rankings_uservisits_join");
-    hc.hql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
-    hc.hql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));
-    hc.hql(String.format("CREATE TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '%s/rankings_uservisits_join'", args[1]));
-    hc.hql("INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, sum(adRevenue) as totalRevenue, avg(pageRank) FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC limit 1");
+    hc.sql("DROP TABLE IF EXISTS rankings");
+    hc.sql("DROP TABLE IF EXISTS uservisits");
+    hc.sql("DROP TABLE IF EXISTS rankings_uservisits_join");
+    hc.sql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
+    hc.sql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));
+    hc.sql(String.format("CREATE TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '%s/rankings_uservisits_join'", args[1]));
+    hc.sql("INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, sum(adRevenue) as totalRevenue, avg(pageRank) FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC limit 1");
 
     ctx.stop();
   }

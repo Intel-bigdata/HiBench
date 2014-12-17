@@ -21,7 +21,7 @@ from operator import add
 from pyspark import SparkContext
 
 #
-# Adopted from spark's example
+# Adopted from spark's example: https://spark.apache.org/examples.html
 #
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -32,6 +32,5 @@ if __name__ == "__main__":
     counts = lines.flatMap(lambda x: x.split(' ')) \
                   .map(lambda x: (x, 1)) \
                   .reduceByKey(add)
-    output = counts.collect()
     counts.saveAsTextFile(sys.argv[2])
     sc.stop()

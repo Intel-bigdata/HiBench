@@ -1,8 +1,10 @@
-#!env python
+#!/usr/bin/env python
 #coding: utf-8
 
 import sys, os, re
 from collections import defaultdict, namedtuple
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 RecordRaw=namedtuple("RecordRaw", "type durtation data_size throughput_total throughput_per_node")
@@ -56,19 +58,21 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
     # plot it
     keys = groups.keys()
     languages = reduce(lambda x,y: x.union(y), [set([groups[x][y].language for y in groups[x]]) for x in groups])
-    width = 0.2
+    width = 0.15
     rects = []
 
-
-    fig, ax = plt.subplots()
-    colors='rgb'
+    fig = plt.figure()
+    ax = plt.axes()
+    colors='rgbcym'
     for idx, lang in enumerate(languages):
-        rects.append(ax.bar([x + width * (idx+1) for x in range(len(keys))], # x index
-                            [getattr(groups[x][lang], value_field) if x in groups else 0 for x in keys], # value
+        rects.append(ax.bar([x + width * (idx + 1) for x in range(len(keys))], # x index
+                            [getattr(groups[x][lang], value_field) if x in groups and groups[x].has_key(lang) else 0 for x in keys], # value
                             width,
                             color = colors[idx]
                             )  # width
-        )
+                     
+                     )
+
     ax.set_ylabel(ylabel)
     ax.set_title(title)
 
@@ -96,6 +100,6 @@ if __name__ == "__main__":
     try:
         default_report_fn = sys.argv[1]
     except:
-        default_report_fn = "sparkbench.report"
+        default_report_fn = os.path.join(os.path.dirname(__file__), "..", "sparkbench.report")
         
-    report_plot(os.path.join(os.path.dirname(__file__), "..", default_report_fn))
+    report_plot(default_report_fn)

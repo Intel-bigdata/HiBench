@@ -1,9 +1,9 @@
-#aggregation
-#join
-#kmeans
-#pagerank
-#scan
-#sleep
-#sort
+aggregation
+join
+kmeans
+pagerank
+scan
+sleep
+sort
 wordcount
 bayes

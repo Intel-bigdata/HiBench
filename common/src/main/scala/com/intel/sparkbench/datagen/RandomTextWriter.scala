@@ -17,13 +17,10 @@
 
 package com.intel.sparkbench.datagen
 
-import org.apache.spark.SparkBench.IOCommon
+import com.intel.sparkbench.IOCommon
+import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.mutable.ListBuffer
-import org.apache.spark.rdd._
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
 
 object RandomTextWriter {
   var minWordsInKey:Int = 5

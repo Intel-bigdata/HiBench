@@ -16,12 +16,12 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.JavaPageRank
+ * Modification from origin:
+ *    Use saveAsText instead of print to present the result. See the commented
+ * code at the tail of the code.
  */
-
 package org.apache.spark.examples;
-
-
 
 import scala.Tuple2;
 
@@ -38,7 +38,6 @@ import org.apache.spark.api.java.function.PairFunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
 import java.util.regex.Pattern;
 
 /**
@@ -61,8 +60,8 @@ public final class JavaPageRank {
   }
 
   public static void main(String[] args) throws Exception {
-    if (args.length < 2) {
-      System.err.println("Usage: JavaPageRank <file> <number_of_iterations>");
+    if (args.length < 3) {
+      System.err.println("Usage: JavaPageRank <input_file> <output_file> <number_of_iterations>");
       System.exit(1);
     }
 
@@ -94,7 +93,7 @@ public final class JavaPageRank {
     });
 
     // Calculates and updates URL ranks continuously using PageRank algorithm.
-    for (int current = 0; current < Integer.parseInt(args[1]); current++) {
+    for (int current = 0; current < Integer.parseInt(args[2]); current++) {
       // Calculates URL contributions to the rank of other URLs.
       JavaPairRDD<String, Double> contribs = links.join(ranks).values()
         .flatMapToPair(new PairFlatMapFunction<Tuple2<Iterable<String>, Double>, String, Double>() {
@@ -119,10 +118,11 @@ public final class JavaPageRank {
     }
 
     // Collects all URL ranks and dump them to console.
-    List<Tuple2<String, Double>> output = ranks.collect();
-    for (Tuple2<?,?> tuple : output) {
-        System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
-    }
+//    List<Tuple2<String, Double>> output = ranks.collect();
+//    for (Tuple2<?,?> tuple : output) {
+//        System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
+//    }
+    ranks.saveAsTextFile(args[1]);
 
     ctx.stop();
   }

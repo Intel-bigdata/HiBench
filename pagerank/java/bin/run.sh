@@ -42,7 +42,7 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-run-spark-job org.apache.spark.examples.JavaPageRank $INPUT_HDFS $NUM_ITERATIONS || exit 1
+run-spark-job org.apache.spark.examples.JavaPageRank $INPUT_HDFS $OUTPUT_HDFS $NUM_ITERATIONS || exit 1
 #$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.JavaPageRank --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} $INPUT_HDFS $NUM_ITERATIONS
 
 # post-running

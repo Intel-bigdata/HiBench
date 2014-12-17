@@ -26,9 +26,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.Function2;
-import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.apache.spark.mllib.classification.NaiveBayes;
@@ -39,10 +36,11 @@ import java.util.Random;
 import java.util.regex.Pattern;
 
 
-
+/*
+ * Adopted from spark's doc: http://spark.apache.org/docs/latest/mllib-naive-bayes.html
+ */
 public final class JavaBayes {
   private static final Pattern SPACE = Pattern.compile(" ");
-
 
   public static void main(String[] args) throws Exception {
 

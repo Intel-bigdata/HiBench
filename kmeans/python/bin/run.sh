@@ -34,7 +34,7 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/kmeans.py $INPUT_HDFS $MAX_ITERATION || exit 1
+run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/kmeans.py $INPUT_HDFS $K $MAX_ITERATION || exit 1
 #$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/kmeans.py $INPUT_HDFS $K $MAX_ITERATION 
 
 # post-running

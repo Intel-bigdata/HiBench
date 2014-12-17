@@ -17,10 +17,7 @@
 
 package com.intel.sparkbench.sleep
 
-import org.apache.spark.rdd._
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkContext}
 
 object ScalaSleep{
   def main(args: Array[String]){

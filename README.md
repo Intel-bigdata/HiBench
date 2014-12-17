@@ -100,25 +100,33 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Prerequisites
 
-  1. Setup HiBench-2.2
+  0. Setup JDK-1.8
 
-      Download/checkout HiBench-2.2 benchmark suite from
-      [https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2](https://github.com/intel-hadoop/HiBench/zipball/HiBench-2.2). Use
-      etl-comm branch.
+      Download Oracle-JDK-1.8 from ....
+
+  1. Setup HiBench-3.0
+
+      Download/Checkout HiBench-2.2 benchmark suite from
+      [https://github.com/intel-hadoop/HiBench](https://github.com/intel-hadoop/HiBench). 
+      Download packages depended by hibench:
+
+            cd HiBench/common/hibench
+            mvn process-sources
 
   2. Setup Hadoop
 
       Before you run any workload in the package, please verify the
       Hadoop framework is running correctly. Currently Hadoop 1.x has
-      been tested.
+      been supported & tested only.
 
   3. Setup Spark
 
-      `SPARK_HIVE=true sbt/sbt assembly`
-      
-        Note: SPARK_HIVE is deprecated, please use `-Phive` flag in future.
+      Download/Checkout spark from [https://github.com/apache/spark](https://github.com/apache/spark).
+      Use spark 1.1 or later version.
 
-      Please refer to `Possible Issues` to set
+      `sbts/bt -Phive assembly`
+      
+      Please refer to `Known Issues` to set
       `conf/spark-default.conf` properly.
 
   4. Setup SparkBench
@@ -126,7 +134,11 @@ This benchmark suite contains 9 typical micro workloads:
       Download/checkout SparkBench benchmark suite from
       [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
 
-  5. Setup `numpy` in all nodes for Python related MLLib workloads.
+  5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
+
+  6. Setup for SparkBench/report_gen_plot.py (Optional)
+  
+     Install your python-matplotlib with verion of 0.9+
 
 2. Configure for the all workloads
 
@@ -170,7 +182,7 @@ This benchmark suite contains 9 typical micro workloads:
 ---
 ### Running ###
 
-- Run several workloads together
+- Run several workloads sequentially
 
   The `conf/benchmarks.lst` file under the package folder defines the
   workloads to run when you execute the `bin/run-all.sh` script under
@@ -216,7 +228,7 @@ This benchmark suite contains 9 typical micro workloads:
         `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
 
 ---
-### Possible issues ###
+### Known issues ###
 
    1. com.esotericsoftware.kryo.KryoException: Buffer overflow....
 
@@ -235,3 +247,4 @@ This benchmark suite contains 9 typical micro workloads:
        `conf/spark-defaults.conf`:
 
        `spark.closure.serializer  org.apache.spark.serializer.JavaSerializer`
+

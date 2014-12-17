@@ -24,6 +24,17 @@ if [ -f $SPARKBENCH_REPORT ]; then
     rm $SPARKBENCH_REPORT
 fi
 
+# prepare for unpack of hibench's dependency
+if [ ! -d $MAHOUT_HOME ]; then
+    if [ ! -e $MAHOUT_HOME".tar.gz" ]; then
+        echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+        exit
+    fi
+    PARENT_DIR=`dirname $MAHOUT_HOME`
+    mkdir -p $PARENT_DIR
+    tar zxf $MAHOUT_HOME".tar.gz" -C $PARENT_DIR
+fi
+
 for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     if [[ $benchmark == \#* ]]; then
         continue

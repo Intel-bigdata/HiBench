@@ -17,12 +17,12 @@
 
 package com.intel.sparkbench.join
 
-import org.apache.spark.rdd._
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
 
+/*
+ * ported from HiBench's hive bench
+ */
 object ScalaJoin{
   def main(args: Array[String]){
     if (args.length < 2){
@@ -35,25 +35,25 @@ object ScalaJoin{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.hql("DROP TABLE IF EXISTS rankings")
-    hc.hql("DROP TABLE IF EXISTS uservisits")
-    hc.hql("DROP TABLE IF EXISTS rankings_uservisits_join")
-    hc.hql(
+    hc.sql("DROP TABLE IF EXISTS rankings")
+    hc.sql("DROP TABLE IF EXISTS uservisits")
+    hc.sql("DROP TABLE IF EXISTS rankings_uservisits_join")
+    hc.sql(
       """CREATE EXTERNAL TABLE rankings
         (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT
         DELIMITED FIELDS TERMINATED BY ','
         STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".stripMargin.format(args(0)))
-    hc.hql(
+    hc.sql(
       """CREATE EXTERNAL TABLE uservisits
          (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,
           userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT)
           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
           STORED AS SEQUENCEFILE LOCATION '%s/uservisits'""".stripMargin.format(args(0)))
-    hc.hql(
+    hc.sql(
       """CREATE TABLE rankings_uservisits_join
          ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE
           LOCATION '%s/rankings_uservisits_join'""".stripMargin.format(args(1)))
-    hc.hql(
+    hc.sql(
       """INSERT OVERWRITE TABLE rankings_uservisits_join
           SELECT sourceIP, sum(adRevenue) as totalRevenue, avg(pageRank)
           FROM rankings R JOIN

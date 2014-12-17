@@ -61,11 +61,13 @@ def sortByKeyWithHashedPartitioner(self, ascending=True, numPartitions=None, key
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT> <PARALLELISM>"
+    if len(sys.argv) != 3:
+        print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
-    reducer = int(SparkContext._jvm.java.lang.System.getProperty("sparkbench.reducer"))
+
+#    reducer = int(SparkContext._jvm.com.intel.sparkbench.IOCommonWrap.getProperty("sparkbench.reducer"))
+    reducer = int(sc._conf.get("spark.default.parallelism", str(sc.defaultParallelism / 2))) # FIXME: use IOCommonWrap!
     lines = sc.textFile(sys.argv[1], 1)
     words = lines.flatMap(lambda x: x.split(' ')).map(lambda x:(x,1))
     sortedWords = sortByKeyWithHashedPartitioner(words, numPartitions=reducer).map(lambda x:x[0])

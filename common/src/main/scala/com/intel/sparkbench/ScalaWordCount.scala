@@ -17,11 +17,13 @@
 
 package com.intel.sparkbench.wordcount
 
-import org.apache.spark.SparkBench.IOCommon
-import org.apache.spark.SparkContext
+import com.intel.sparkbench.IOCommon
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.SparkContext._
-import org.apache.spark.SparkConf
 
+/*
+ * Adopted from spark's example: https://spark.apache.org/examples.html
+ */
 object ScalaWordCount{
   def main(args: Array[String]){
     if (args.length < 2){

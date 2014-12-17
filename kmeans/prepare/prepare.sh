@@ -38,13 +38,13 @@ $HADOOP_EXECUTABLE dfs -rmr ${INPUT_HDFS_DIR} || true
 # generate data
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
 export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath`
-"$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar $MAHOUT_HOME/examples/target/mahout-examples-0.7.jar org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/core/target/mahout-core-0.7-job.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION} 
+"$HADOOP_EXECUTABLE" --config $HADOOP_CONF_DIR jar ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/mahout-core-0.7-job.jar,$MAHOUT_HOME/mahout-examples-0.7-job.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${COMPRESS_OPT} ${OPTION} 
 result=$?
 if [ $result -ne 0 ]
 then
     echo "ERROR: Hadoop job failed to run successfully." 
     exit $result
 fi
-run-spark-job --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar com.intel.sparkbench.datagen.convert.KmeansConvert ${INPUT_SAMPLE} ${INPUT_HDFS}
+run-spark-job --jars $MAHOUT_HOME/mahout-core-0.7.jar,$MAHOUT_HOME/mahout-examples-0.7-job.jar com.intel.sparkbench.datagen.convert.KmeansConvert ${INPUT_SAMPLE} ${INPUT_HDFS}
 #${SPARK_HOME}/bin/spark-submit --jars $MAHOUT_HOME/core/target/mahout-core-0.7.jar,$MAHOUT_HOME/examples/target/mahout-examples-0.7-job.jar --class com.intel.sparkbench.datagen.convert.KmeansConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_SAMPLE} ${INPUT_HDFS}
 

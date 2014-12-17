@@ -20,6 +20,9 @@ import sys
 from pyspark import SparkContext
 from pyspark.sql import SQLContext, HiveContext
 
+#
+# ported from HiBench's hive bench
+#
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print >> sys.stderr, "Usage: scan <hdfs_in_file> <hdfs_out_file>"
@@ -27,7 +30,7 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonScan")
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
-    hc.hql("DROP TABLE if exists rankings")
-    hc.hql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
-    hc.hql("FROM rankings SELECT *").saveAsTextFile("%s/rankings" % sys.argv[2])
+    hc.sql("DROP TABLE if exists rankings")
+    hc.sql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
+    hc.sql("FROM rankings SELECT *").saveAsTextFile("%s/rankings" % sys.argv[2])
     sc.stop()

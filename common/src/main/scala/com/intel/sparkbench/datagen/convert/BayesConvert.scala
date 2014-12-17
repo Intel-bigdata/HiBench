@@ -23,9 +23,6 @@ import org.apache.hadoop.io.Text
 import org.apache.spark.SparkContext._
 import org.apache.spark.{SparkConf, SparkContext}
 
-/**
- * Created by lv on 14-9-12.
- */
 object BayesConvert{
   val conf = new Configuration()
   def main(args: Array[String]){

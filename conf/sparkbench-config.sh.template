@@ -35,7 +35,7 @@ DATATOOLS=${DATATOOLS:-}
 
 # base dir HDFS
 HDFS_MASTER=${HDFS_MASTER:-hdfs://localhost:54310}
-DATA_HDFS=${HDFS_MASTER:-$HDFS_MASTER/SparkBench}
+DATA_HDFS=${DATA_HDFS:-$HDFS_MASTER/SparkBench}
 
 # dict path
 DICT_PATH=${DICT_PATH:-/usr/share/dict/words}

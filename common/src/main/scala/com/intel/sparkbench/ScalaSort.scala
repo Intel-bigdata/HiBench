@@ -17,12 +17,9 @@
 
 package com.intel.sparkbench.sort
 
-import org.apache.hadoop.io.{Text, LongWritable}
-import org.apache.hadoop.mapred.TextInputFormat
-import org.apache.spark.SparkBench.IOCommon
-import org.apache.spark.rdd._
+import com.intel.sparkbench.IOCommon
 import org.apache.spark._
-import org.apache.spark.storage.StorageLevel._
+import org.apache.spark.rdd._
 
 import scala.reflect.ClassTag
 
@@ -41,12 +38,15 @@ object ScalaSort{
     val sparkConf = new SparkConf().setAppName("ScalaSort")
     val sc = new SparkContext(sparkConf)
 
+    val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
+    val reducer  = IOCommon.getProperty("sparkbench.reducer")
+      .getOrElse((parallel / 2).toString).toInt
+
     val io = new IOCommon(sc)
-    val data = io.load[String](args(0))
-    val sorted = data
-      .flatMap(_.split(" "))
-      .mapPartitions(_.toList.sorted.toIterator,
-                     preservesPartitioning = true)
+    val data = io.load[String](args(0)).flatMap(_.split(" ").map((_, 1)))
+    val partitioner = new HashPartitioner(partitions = reducer)
+    val sorted = data.sortByKeyWithPartitioner(partitioner = partitioner).map(_._1)
+
     io.save(args(1), sorted)
     sc.stop()
   }

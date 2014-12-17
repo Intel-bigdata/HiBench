@@ -16,7 +16,10 @@
  */
 
 /*
- * Copied from spark's example
+ * Copied from org.apache.spark.examples.JavaPageRank
+ * Modification from origin:
+ *    Use saveAsText instead of print to present the result. See the commented
+ * code at the tail of the code.
  */
 
 package org.apache.spark.examples
@@ -35,12 +38,12 @@ import org.apache.spark.{SparkConf, SparkContext}
  */
 object SparkPageRank {
   def main(args: Array[String]) {
-    if (args.length < 1) {
-      System.err.println("Usage: SparkPageRank <file> <iter>")
+    if (args.length < 2) {
+      System.err.println("Usage: SparkPageRank <input_file> <output_filename> <iter>")
       System.exit(1)
     }
     val sparkConf = new SparkConf().setAppName("PageRank")
-    val iters = if (args.length > 0) args(1).toInt else 10
+    val iters = if (args.length > 0) args(2).toInt else 10
     val ctx = new SparkContext(sparkConf)
     val lines = ctx.textFile(args(0), 1)
     val links = lines.map{ s =>
@@ -57,8 +60,9 @@ object SparkPageRank {
       ranks = contribs.reduceByKey(_ + _).mapValues(0.15 + 0.85 * _)
     }
 
-    val output = ranks.collect()
-    output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
+//    val output = ranks.collect()
+//    output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
+    ranks.saveAsTextFile(args(1))
 
     ctx.stop()
   }
