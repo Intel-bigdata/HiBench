@@ -65,12 +65,12 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: sort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
     sc = SparkContext(appName="PythonSort")
+    hdfs_input, hdfs_output = sys.argv[1], sys.argv[2]
 
 #    reducer = int(SparkContext._jvm.com.intel.sparkbench.IOCommonWrap.getProperty("sparkbench.reducer"))
     reducer = int(sc._conf.get("spark.default.parallelism", str(sc.defaultParallelism / 2))) # FIXME: use IOCommonWrap!
-    lines = sc.textFile(sys.argv[1], 1)
-    words = lines.flatMap(lambda x: x.split(' ')).map(lambda x:(x,1))
-    sortedWords = sortByKeyWithHashedPartitioner(words, numPartitions=reducer).map(lambda x:x[0])
+    lines = sc.textFile(hdfs_input, 1).map(lambda x:(x,1))
+    sortedWords = sortByKeyWithHashedPartitioner(lines, numPartitions=reducer).map(lambda x:x[0])
 
-    sortedWords.saveAsTextFile(sys.argv[2])
+    sortedWords.saveAsTextFile(hdfs_output)
     sc.stop()

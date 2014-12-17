@@ -56,14 +56,7 @@ public final class JavaSort {
 
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
 
-    JavaRDD<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
-      @Override
-      public Iterable<String> call(String s) {
-        return Arrays.asList(SPACE.split(s));
-      }
-    });
-
-    JavaPairRDD<String, Integer> ones = words.mapToPair(new PairFunction<String, String, Integer>() {
+    JavaPairRDD<String, Integer> ones = lines.mapToPair(new PairFunction<String, String, Integer>() {
       @Override
       public Tuple2<String, Integer> call(String s) {
         return new Tuple2<String, Integer>(s, 1);
