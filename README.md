@@ -102,8 +102,7 @@ This benchmark suite contains 9 typical micro workloads:
 
   1. Setup JDK-1.6
 
-      Download Oracle-JDK-1.6 from
-      [http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html)
+      Download Oracle-JDK-1.6 and setup properly.
 
       Note: Due to
       [SPARK-1703](https://issues.apache.org/jira/browse/SPARK-1703)
