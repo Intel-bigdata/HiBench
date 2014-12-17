@@ -1,0 +1,12 @@
+# This configuration is only used in concurrent running, you can change the numbers of each workload
+# Any line began with '#' will be ignored as a comment
+# The first column declares the workload name, and the second column sets its number
+sort 0
+terasort 0
+wordcount 0
+sleep 0
+pagerank 0
+hivebench 0
+bayes 0
+kmeans 0
+nutchindexing 0

@@ -10,3 +10,7 @@ target/
 derby.log
 metastore_db/
 report/
+tmplog.log
+hibench.report
+target/
+build/

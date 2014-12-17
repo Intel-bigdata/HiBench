@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+
+<property>
+  <name>hive.metastore.local</name>
+  <value>false</value>
+</property>
+
+<property>
+  <name>hive.metastore.uris</name>
+  <value>thrift://127.0.0.1:9083</value>
+  <description>Thrift uri for the remote metastore. Used by metastore client to connect to remote metastore.</description>
+</property>
+
+</configuration>
