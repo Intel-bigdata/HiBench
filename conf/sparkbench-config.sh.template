@@ -15,14 +15,23 @@
 # limitations under the License.
 
 ###################### Global Configurations ##################
+#------ Basic Configurations -------
+HADOOP_HOME=${HADOOP_HOME:-}
+SPARK_HOME=${SPARK_HOME:-}
+HIBENCH_HOME=${HIBENCH_HOME:-}
+HDFS_MASTER=${HDFS_MASTER:-hdfs://localhost:54310}
+#------ Spark mode configurations -------
+# Available modes:
+#  - spark standalone  : spark://ip:port  
+#  - yarn cluster mode : yarn-cluster
+#  - yarn client mode  : yarn-client
+SPARK_MASTER=${SPARK_MASTER:-}
+
+###################### Global Configurations (optional) ##################
 HADOOP_EXECUTABLE=${HADOOP_EXECUTABLE:-}
 HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-}
 HADOOP_EXAMPLES_JAR=${HADOOP_EXAMPLES_JAR:-}
-HADOOP_HOME=${HADOOP_HOME:-}
-SPARK_MASTER=${SPARK_MASTER:-}
-SPARK_HOME=${SPARK_HOME:-}
 SPARK_EXAMPLES_JAR=${SPARK_EXAMPLES_JAR:-}
-HIBENCH_HOME=${HIBENCH_HOME:-}
 HIBENCH_CONF=${HIBENCH_CONF:-}
 HIVE_HOME=${HIVE_HOME:-}
 MAHOUT_HOME=${MAHOUT_HOME:-}
@@ -31,10 +40,13 @@ SPARKBENCH_HOME=${SPARKBENCH_HOME:-`dirname ${this}`/..}
 SPARKBENCH_CONF=${SPARKBENCH_CONF:-${SPARKBENCH_HOME}/conf}
 SPARKBENCH_JAR=${SPARKBENCH_JAR:-${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar}
 SPARKBENCH_REPORT=${SPARKBENCH_REPORT:-${SPARKBENCH_HOME}/sparkbench.report}
+YARN_NUM_EXECTORS=${YARN_NUM_EXECTORS:-} # num executors in yarn mode
+YARN_EXECUTOR_CORES=${YARN_EXECUTOR_CORES:-} # num executor cores in yarn mode
+YARN_EXECUTOR_MEMORY=${YARN_EXECUTOR_MEMORY:-} # num of executor memory in yarn mode
 DATATOOLS=${DATATOOLS:-}
+HADOOP_VERSION=hadoop2 # set it to hadoop1 to enable MR1, hadoop2 to enable MR2
 
 # base dir HDFS
-HDFS_MASTER=${HDFS_MASTER:-hdfs://localhost:54310}
 DATA_HDFS=${DATA_HDFS:-$HDFS_MASTER/SparkBench}
 
 # dict path

@@ -100,61 +100,96 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Prerequisites
 
-  0. Setup JDK-1.8
+  1. Setup JDK-1.6
 
-      Download Oracle-JDK-1.8 from ....
+      Download Oracle-JDK-1.6 and setup properly.
 
-  1. Setup HiBench-3.0
+      Note: Due to
+      [SPARK-1703](https://issues.apache.org/jira/browse/SPARK-1703)
+      and
+      [SPARK-1911](https://issues.apache.org/jira/browse/SPARK-1911),
+      Oracle-JDK-1.6 is the only one option.
 
-      Download/Checkout HiBench-2.2 benchmark suite from
-      [https://github.com/intel-hadoop/HiBench](https://github.com/intel-hadoop/HiBench). 
+  2. Setup HiBench-3.0
+
+      Download/Checkout HiBench-3.0 benchmark suite from
+      [https://github.com/intel-hadoop/HiBench](https://github.com/intel-hadoop/HiBench).
       Download packages depended by hibench:
 
             cd HiBench/common/hibench
             mvn process-sources
 
-  2. Setup Hadoop
+  3. Setup Hadoop
 
       Before you run any workload in the package, please verify the
-      Hadoop framework is running correctly. Currently Hadoop 1.x has
-      been supported & tested only.
+      Hadoop framework is running correctly. Both Hadoop 1.x and
+      Hadoop-YARN are supported & tested. Currently, the suggested
+      version is Hadoop 1.0.4 which is heavily tested.
 
-  3. Setup Spark
+  4. Setup Spark
 
-      Download/Checkout spark from [https://github.com/apache/spark](https://github.com/apache/spark).
-      Use spark 1.1 or later version.
+      Download/Checkout spark from
+      [https://github.com/apache/spark](https://github.com/apache/spark).
+      Use spark 1.1.1 or later versions.
 
-      `sbts/bt -Phive assembly`
+      For hadoop 1.0.4, standalone mode only:
       
-      Please refer to `Known Issues` to set
-      `conf/spark-default.conf` properly.
+      `./make-distribution.sh --name spark --tgz -Phive`
 
-  4. Setup SparkBench
+      For hadoop with yarn support:
+
+      `./make-distribution.sh --name spark-yarn --tgz -Phive -Pyarn -Dhadoop.version=2.x.x -Dyarn.version=2.x.x`
+      
+      Please refer to `Known Issues` to set `conf/spark-default.conf`
+      properly.
+
+  5. Setup SparkBench
 
       Download/checkout SparkBench benchmark suite from
       [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
 
-  5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
+  6. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
-  6. Setup for SparkBench/report_gen_plot.py (Optional)
+     For CentOS(6.2+):
+     
+     `yum inlstall numpy`
+
+     For Ubuntu/Debian:
+
+     `aptitude install python-numpy`
+
+  7. Setup for SparkBench/report_gen_plot.py (Optional)
   
-     Install your python-matplotlib with verion of 0.9+
+     Install python-matplotlib with verion of 0.9+
+
+     For CentOS(6.2+):
+     
+     `yum inlstall python-matplotlib`
+
+     For Ubuntu/Debian:
+
+     `aptitude install python-matplotlib`
 
 2. Configure for the all workloads
 
     You need to set some global environment variables in the
-    `bin/sparkbench-config.sh` file located in the root dir.
+    `conf/sparkbench-config.sh` file located in the root dir. 
 
           HADOOP_HOME            < The Hadoop installation location >
+          SPARK_HOME             < The Spark installation location >
+          HADOOP_HOME            < The HiBench installation location >
+	  HDFS_MASTER            < HDFS master >
+	  SPARK_MASTER           < SPARK master >
           HADOOP_CONF_DIR        < The hadoop configuration DIR >
           HADOOP_EXAMPLES_JAR    < The path to hadoop-examples-xxx.jar >
-          SPARK_HOME             < The Spark installation location >
           SPARK_CONF_DIR         < The Spark config DIR >
           SPARK_EXAMPLES_JAR     < The path to spark-examples-xxx.jar >
           DICT_PATH              < The dict location >
           DATA_PATH              < The base HDFS path to hold HiBench data >
           SPARKBENCH_REPORT      < The path to SparkBench reports >
-          PARALLEL               < The Parallelism of the executions >
+	  YARN_NUM_EXECTORS      < num executors in yarn mode >
+	  YARN_EXECUTOR_CORES    < num executor cores in yarn mode >
+	  YARN_EXECUTOR_MEMORY   < num of executor memory in yarn mode >
 
     Note:
 
