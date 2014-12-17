@@ -178,8 +178,8 @@ This benchmark suite contains 9 typical micro workloads:
           HADOOP_HOME            < The Hadoop installation location >
           SPARK_HOME             < The Spark installation location >
           HADOOP_HOME            < The HiBench installation location >
-	  HDFS_MASTER            < HDFS master >
-	  SPARK_MASTER           < SPARK master >
+          HDFS_MASTER            < HDFS master >
+          SPARK_MASTER           < SPARK master >
           HADOOP_CONF_DIR        < The hadoop configuration DIR >
           HADOOP_EXAMPLES_JAR    < The path to hadoop-examples-xxx.jar >
           SPARK_CONF_DIR         < The Spark config DIR >
@@ -187,9 +187,9 @@ This benchmark suite contains 9 typical micro workloads:
           DICT_PATH              < The dict location >
           DATA_PATH              < The base HDFS path to hold HiBench data >
           SPARKBENCH_REPORT      < The path to SparkBench reports >
-	  YARN_NUM_EXECTORS      < num executors in yarn mode >
-	  YARN_EXECUTOR_CORES    < num executor cores in yarn mode >
-	  YARN_EXECUTOR_MEMORY   < num of executor memory in yarn mode >
+          YARN_NUM_EXECTORS      < num executors in yarn mode >
+          YARN_EXECUTOR_CORES    < num executor cores in yarn mode >
+          YARN_EXECUTOR_MEMORY   < num of executor memory in yarn mode >
 
     Note:
 

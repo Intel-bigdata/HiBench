@@ -43,7 +43,7 @@ object ScalaSort{
       .getOrElse((parallel / 2).toString).toInt
 
     val io = new IOCommon(sc)
-    val data = io.load[String](args(0)).flatMap(_.split(" ").map((_, 1)))
+    val data = io.load[String](args(0)).map((_, 1))
     val partitioner = new HashPartitioner(partitions = reducer)
     val sorted = data.sortByKeyWithPartitioner(partitioner = partitioner).map(_._1)
 
