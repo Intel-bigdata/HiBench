@@ -44,6 +44,7 @@ YARN_NUM_EXECTORS=${YARN_NUM_EXECTORS:-} # num executors in yarn mode
 YARN_EXECUTOR_CORES=${YARN_EXECUTOR_CORES:-} # num executor cores in yarn mode
 YARN_EXECUTOR_MEMORY=${YARN_EXECUTOR_MEMORY:-} # num of executor memory in yarn mode
 DATATOOLS=${DATATOOLS:-}
+HADOOP_VERSION=hadoop2 # set it to hadoop1 to enable MR1, hadoop2 to enable MR2
 
 # base dir HDFS
 DATA_HDFS=${DATA_HDFS:-$HDFS_MASTER/SparkBench}
