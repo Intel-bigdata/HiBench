@@ -113,7 +113,7 @@ function run-spark-job() {
 	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@
     else
 	echo ${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $@
+	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
     fi
     result=$?
     rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true
