@@ -100,7 +100,7 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Prerequisites
 
-  1. Setup JDK-1.6
+  1. Setup JDK-1.6(suggested)
 
       Download Oracle-JDK-1.6 and setup properly.
 
@@ -108,7 +108,10 @@ This benchmark suite contains 9 typical micro workloads:
       [SPARK-1703](https://issues.apache.org/jira/browse/SPARK-1703)
       and
       [SPARK-1911](https://issues.apache.org/jira/browse/SPARK-1911),
-      Oracle-JDK-1.6 is the only one option.
+      Oracle-JDK-1.6 is the suggested option which passes all tests.
+
+      Other JDK versions such as Oracle-JDK-1.7 and Oracle-JDK-1.8 are
+      also supported if python related workloads can be discarded. 
 
   2. Setup HiBench-3.0
 
