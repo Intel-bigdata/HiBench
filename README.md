@@ -119,6 +119,11 @@ This benchmark suite contains 9 typical micro workloads:
             cd HiBench/common/hibench
             mvn process-sources
 
+      Recompile DataTools for HiBench with JDK1.6:
+
+            cd HiBench/common/autogen
+            ant package
+
   3. Setup Hadoop
 
       Before you run any workload in the package, please verify the
