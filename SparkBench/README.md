@@ -110,8 +110,8 @@ This benchmark suite contains 9 typical micro workloads:
       [SPARK-1911](https://issues.apache.org/jira/browse/SPARK-1911),
       Oracle-JDK-1.6 is the suggested option which passes all tests.
 
-      Other JDK versions such as Oracle-JDK-1.7 and Oracle-JDK-1.8 are
-      also supported if python related workloads can be discarded. 
+      For Phython API, only 1.6 is workable. 
+      For the others, either 1.7 or 1.8 are also supported. 
 
   2. Setup HiBench-3.0
 
