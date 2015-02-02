@@ -2,18 +2,20 @@ Requirements
 ============
 
 # verification
-1. configuration self verification & environment check
+1. configuration self verification & environment check: check to ensure each node is prepared for benchmarking.
 
 # function enhancement
-2. concurrent mode
-3. workload migration for hadoop & spark. 
+2. concurrent mode: execute several workload one time
+3. workload migration for hadoop & spark: hadoop, spark, what ever. Just a blackbox.
+4. share datasets: for large scale benchmark, dataset will consume significant disk space and generation time
+5. dataset dump & restore: sometime dataset generation is too time consuming, rather backup and restore it from local disk.
 
 # automation
-4. configuration migration
-5. regression test utilites: run-all, reset-all
+5. configuration migration: only one place for tuning.
+6. regression test utilites: run-all, reset-all
 
 # output
-6. log collection: ulimit, env, workload config, hadoop parameters, spark parameters, all logs in worker, master
+7. log collection: ulimit, env, workload config, hadoop parameters, spark parameters, all logs in worker, master
 
 Design
 ======
@@ -22,3 +24,9 @@ Design
 3. All configuration parameters must be explicitly defined. 
 4. Remove folders for each workloads, all configuration goes into conf/ folder, all bin goes into bin/ folder
    
+
+Modules
+=======
+1. parser for conf of hadoop1&2, spark 
+2. utilites to manage node sync, privileges check, folder clean, ... 
+3. 
