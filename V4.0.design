@@ -22,11 +22,12 @@ Design
 1. Remove env based configuration like hibench-config.sh, sparkbench-config.sh, etc
 2. All configurations goes into one file, or one folder, which can be backup / restore / replace easily.
 3. All configuration parameters must be explicitly defined. 
-4. Remove folders for each workloads, all configuration goes into conf/ folder, all bin goes into bin/ folder
+4. all configuration goes into conf/ folder, leave all workloads a bin folder with a run.sh only
    
 
 Modules
 =======
 1. parser for conf of hadoop1&2, spark 
 2. utilites to manage node sync, privileges check, folder clean, ... 
-3. 
+3. entrance for workload execution
+4. code merge for hibench's autogen and sparkbench
