@@ -31,3 +31,9 @@ Modules
 2. utilites to manage node sync, privileges check, folder clean, ... 
 3. entrance for workload execution
 4. code merge for hibench's autogen and sparkbench
+
+TODO List
+=========
+1. Merge hibench and sparkbench's codes, rewrite POMs.                   DONE
+2. Refine funcs.sh
+3. 
