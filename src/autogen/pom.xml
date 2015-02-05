@@ -9,34 +9,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hibench-autogen</artifactId>
+    <parent>
+        <groupId>com.intel.hibench</groupId>
+        <artifactId>hibench</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>autogen</artifactId>
     <packaging>jar</packaging>
-    <groupId>com.intel.sparkbench</groupId>
+    <groupId>com.intel.autogen</groupId>
     <version>4.0-SNAPSHOT</version>
     <name>HiBench data generation tools</name>
     <url>https://github.com/intel-hadoop/HiBench</url>
-
-    <properties>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <encoding>UTF-8</encoding>
-    </properties>
-
-
-    <repositories>
-        <repository>
-            <id>central</id>
-            <!-- This should be at top, it makes maven try the central repo first and then others and hence faster dep resolution -->
-            <name>Maven Repository</name>
-            <url>https://repo1.maven.org/maven2</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
@@ -60,42 +44,5 @@
             <version>1.2.2a</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>net.alchim31.maven</groupId>
-                    <artifactId>scala-maven-plugin</artifactId>
-                    <version>3.2.5</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.2</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-               <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
