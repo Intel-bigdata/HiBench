@@ -13,35 +13,39 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 bin=`dirname "$0"`
 bin=`cd "$bin"; pwd`
+. "${bin}/../../../../bin/functions/load-bench-config.sh"
 
-echo "========== running sleep bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopSleep
+show_bannar start
 
 START_TIME=`timestamp`
-
-#run bench
-if [ $HADOOP_RELEASE == "hadoop1" ]; then
-  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sleep \
-      -m $NUM_MAPS \
-      -r $NUM_REDS \
-      -mt $MAP_SLEEP_TIME \
-      -mr $RED_SLEEP_TIME
-else
-  $HADOOP_EXECUTABLE jar $HADOOP_JOBCLIENT_TESTS_JAR sleep \
-      -m $NUM_MAPS \
-      -r $NUM_REDS \
-      -mt $MAP_SLEEP_TIME \
-      -mr $RED_SLEEP_TIME
-fi
-
-#post-running
+run_hadoop $HADOOP_EXAMPLES_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
 END_TIME=`timestamp`
-
 SIZE="0"
 
-gen_report "SLEEP" ${START_TIME} ${END_TIME} ${SIZE}
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+
+#if [ $HADOOP_RELEASE == "hadoop1" ]; then
+#  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sleep \
+#      -m $NUM_MAPS \
+#      -r $NUM_REDS \
+#      -mt $MAP_SLEEP_TIME \
+#      -mr $RED_SLEEP_TIME
+#else
+#  $HADOOP_EXECUTABLE jar $HADOOP_JOBCLIENT_TESTS_JAR sleep \
+#      -m $NUM_MAPS \
+#      -r $NUM_REDS \
+#      -mt $MAP_SLEEP_TIME \
+#      -mr $RED_SLEEP_TIME
+#fi
+
+#post-running
+
+
+
+
