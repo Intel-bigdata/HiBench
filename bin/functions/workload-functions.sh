@@ -16,18 +16,16 @@
 
 set -u
 
-function assert(){		# assertion help function
-    if [ "$1" ]; then 
-	:
-    else 
-	echo "ASSERT!", $2
-	exit 1
-    fi;
-}
+this="${BASH_SOURCE-$0}"
+workload_func_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
+. ${workload_func_bin}/assert.sh
+. ${workload_func_bin}/config-parser.sh
 
 function enter_bench(){		# declare the entrance of a workload
     assert $1 "Workload name not specified."
+    assert $2 "Workload folder not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
+    load_config ${HIBENCH_CONF_FOLDER}/global_properties.conf $2
 }
 
 function leave_bench(){		# declare the workload is finished
@@ -50,7 +48,7 @@ function timestamp(){		# get current timestamp
 }
 
 function print_field_name() {	# print report column header
-    printf "$REPORT_COLUMN_FORMATS" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > $SPARKBENCH_REPORT
+    printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > ${HIBENCH_REPORT}
 }
 
 function gen_report() {		# dump the result to report file
@@ -70,11 +68,11 @@ function gen_report() {		# dump the result to report file
     if [ $nodes -eq 0 ]; then nodes=1; fi
     local tput_node=`echo "$tput/$nodes"|bc`
 
-    if [ ! -f $SPARKBENCH_REPORT ] ; then
+    if [ ! -f ${HIBENCH_REPORT} ] ; then
         print_field_name
     fi
 
-    printf "$FORMATS" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> $SPARKBENCH_REPORT
+    printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> ${HIBENCH_REPORT}
 }
 
 function rmr_hdfs(){		# rm -r for hdfs
@@ -106,7 +104,7 @@ function check_dir() {		# ensure dir is created
         exit 1
     fi
     touch "$dir"/touchtest
-    if [ $? -ne 0 ];
+    if [ $? -ne 0 ]; then
 	echo "ERROR: directory unwritable."
 	exit 1
     else
@@ -200,4 +198,15 @@ function run-spark-job() {
 	echo "ERROR: Spark job ${CLS} failed to run successfully."
 	exit $result
     fi
+}
+
+function run-hadoop-job(){
+    local job_jar=$1
+    shift
+    local job_name=$1
+    shift
+    local tail_arguments=$@
+    local CMD="${HADOOP_EXECUTABLE} jar $job_jar $job_name $tail_arguments"
+    echo "$CMD"
+    $CMD
 }

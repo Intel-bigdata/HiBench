@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
-. "${bin}/../../../../bin/functions/load-bench-config.sh"
+workload_bin=`dirname "$0"`
+workload_bin=`cd "$workload_bin"; pwd`
+. "${workload_bin}/../../../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopSleep
+enter_bench HadoopSleep ${workload_bin}
 show_bannar start
 
 START_TIME=`timestamp`
-run_hadoop $HADOOP_EXAMPLES_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
+run-hadoop-job $HADOOP_EXAMPLES_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
 END_TIME=`timestamp`
 SIZE="0"
 

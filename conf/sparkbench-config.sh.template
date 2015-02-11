@@ -18,7 +18,6 @@
 #------ Basic Configurations -------
 HADOOP_HOME=${HADOOP_HOME:-}
 SPARK_HOME=${SPARK_HOME:-}
-HIBENCH_HOME=${HIBENCH_HOME:-}
 HDFS_MASTER=${HDFS_MASTER:-hdfs://localhost:54310}
 #------ Spark mode configurations -------
 # Available modes:

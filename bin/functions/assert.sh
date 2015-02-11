@@ -14,19 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workload_bin=`dirname "$0"`
-workload_bin=`cd "$workload_bin"; pwd`
-. "${workload_bin}/../../../../../bin/functions/load-bench-config.sh"
-
-enter_bench ScalaSparkSleep ${workload_bin}
-show_bannar start
-
-START_TIME=`timestamp`
-run-spark-job com.intel.sparkbench.sleep.ScalaSleep $MAP_SLEEP_TIME
-END_TIME=`timestamp`
-SIZE="0"
-
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
-show_bannar finish
-leave_bench
-
+function assert(){		# assertion help function
+    if [ -z "$1" ]; then 
+	echo "ASSERT! $2" > /dev/stderr
+	exit 1
+    fi;
+}

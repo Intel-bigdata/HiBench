@@ -22,7 +22,7 @@ Design
 1. Remove env based configuration like hibench-config.sh, sparkbench-config.sh, etc
 2. All configurations goes into one file, or one folder, which can be backup / restore / replace easily.
 3. All configuration parameters must be explicitly defined. 
-4. all configuration goes into conf/ folder, leave all workloads a bin folder with a run.sh only
+4. All configuration goes into conf/ folder, leave all workloads a bin folder with a run.sh only
    
 
 Modules
