@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workload_bin=`dirname "$0"`
-workload_bin=`cd "$workload_bin"; pwd`
-. "${workload_bin}/../../../../bin/functions/load-bench-config.sh"
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopSleep ${workload_bin}
+enter_bench HadoopSleep ${workload_root} ${workload_folder}
 show_bannar start
 
 START_TIME=`timestamp`

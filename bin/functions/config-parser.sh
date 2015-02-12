@@ -21,7 +21,16 @@ config_parser_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 set -u
 
 export HIBENCH_CONF_FOLDER=${config_parser_bin}/../../conf
-declare -A HIBENCH_CONF_CONTAINER
+
+# store configurations for hibench
+declare -A HIBENCH_CONF_CONTAINER 
+# store where the configurations comes
+declare -A HIBENCH_CONF_REF_CONTAINER
+
+function abspath(){
+    assert "$1" "unspecfied path"
+    readlink -m $1		# FIXME, will add dependency to "readlink"
+}
 
 function get_prop(){
     assert "$1" "unspecfied key in get_prop"
@@ -40,18 +49,30 @@ function get_prop_weak(){
 }
 
 function load_config(){
-    assert $1 "unspecfied conf folder path"
-    assert $2 "unspecfied workload folder path"
-    local conf_path=$1
-    local workload_conf_path=$2/../../conf
+    assert $1 "unspecfied conf root path"
+    assert $2 "unspecfied workload root path"
+    assert $3 "unspecfied workload folder path"
+    local conf_path=$(abspath "$1")
+    local workload_root=$(abspath "$2")
+    local workload_folder=$(abspath "$3")
+
+    local workload_tail=`dirname ${workload_folder:${#workload_root}:${#workload_folder}}`
+    workload_tail=${workload_tail:1}
+    local conf_globals=${conf_path}/*.conf
+    local conf_workload=${conf_path}/workloads/`basename ${workload_root}`/*.conf
+    local conf_workload_api=${conf_path}/workloads/`basename ${workload_root}`/$workload_tail/*.conf
     
     local old_IFS=$IFS
-    IFS=$'\n'
-    for line in `cat ${conf_path} ${workload_conf_path}/*.conf | grep -v -e '^[[:space:]]*$' | sed "/^#/ d" | sed -re 's/^([a-zA-Z\.]*)\s+(.*)/\1|\2/g'`;  do
-	local key=`echo $line | cut -d '|' -f 1`
-	local value=`echo $line | cut -d '|' -f 2`
-	HIBENCH_CONF_CONTAINER[$key]=$value
-	echo "$key -> ${HIBENCH_CONF_CONTAINER[$key]} "
+    for file in ${conf_globals} ${conf_workload} ${conf_workload_api}; do
+	echo "Parsing conf: $file"
+	IFS=$'\n'
+	for line in `cat ${file} | grep -v -e '^[[:space:]]*$' | sed "/^#/ d" | sed -re 's/^([a-zA-Z\.]*)\s+(.*)/\1|\2/g'`;  do
+	    local key=`echo $line | cut -d '|' -f 1`
+	    local value=`echo $line | cut -d '|' -f 2`
+	    HIBENCH_CONF_CONTAINER[$key]=$value
+	    HIBENCH_CONF_REF_CONTAINER[$key]=$file
+#	echo "$key -> ${HIBENCH_CONF_CONTAINER[$key]}  @ ${HIBENCH_CONF_REF_CONTAINER[$key]}"
+	done
     done
     IFS=$old_IFS
     mapping_config

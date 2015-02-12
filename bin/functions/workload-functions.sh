@@ -23,9 +23,10 @@ workload_func_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 
 function enter_bench(){		# declare the entrance of a workload
     assert $1 "Workload name not specified."
-    assert $2 "Workload folder not specified."
+    assert $2 "Workload root not specified."
+    assert $3 "Workload folder not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
-    load_config ${HIBENCH_CONF_FOLDER}/global_properties.conf $2
+    load_config ${HIBENCH_CONF_FOLDER} $2 $3
 }
 
 function leave_bench(){		# declare the workload is finished
@@ -162,14 +163,6 @@ function run-spark-job() {
     CLS=$1
     shift
     
-    if [ -d $DIR/prepare ]; then
-	WORKLOAD_DIR=$DIR
-    elif [ -d $DIR/../prepare ]; then
-	WORKLOAD_DIR=$DIR/..
-    else
-	echo "Unknown workload path!"
-	exit 1
-    fi
     cat ${WORKLOAD_DIR}/../conf/global_properties.conf ${WORKLOAD_DIR}/conf/properties.conf > ${WORKLOAD_DIR}/conf/._prop.conf
     PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
     export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
