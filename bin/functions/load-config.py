@@ -27,7 +27,7 @@ def log(s):
 def shell(cmd):
     return os.popen(cmd).read()
 
-def OneAndOnlyOne(filename_pattern):
+def OneAndOnlyOneFile(filename_pattern):
     files = glob.glob(filename_pattern)
     if len(files)==1: return files[0]
     else:
@@ -116,28 +116,36 @@ def generate_optional_value():  # get values from environment or make a guess
         if not version:
             version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
         HibenchConf["hibench.hadoop.version"] = "hadoop"+version[0]
-        HibenchConfRef["hibench.hadoop.version"]="Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     if not HibenchConf.get("hibench.hadoop.release", ""):
         if not version:
             version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
-        HibenchConf["hibench.hadoop.release"]= \
+        HibenchConf["hibench.hadoop.release"] = \
             "cdh4" if "cdh4" in version else \
             "cdh5" if "cdh5" in version else \
             HibenchConf["hibench.hadoop.version"]
-        HibenchConfRef["hibench.hadoop.version"]="Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOne(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
+            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
             HibenchConfRef["hibench.hadoop.examples.jar"]= "Probed by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
         else:
             raise Exception("FIXME! for hadoop2, use a HADOOP_JOBCLIENT_TESTS_JAR as hadoop.example.jar")
 
 def export_config(workload_name, workload_tail):
+    join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']
-    conf_dir = os.path.join(report_dir, workload_name, workload_tail, 'conf')
-    conf_filename= os.path.join(conf_dir, "%s.conf" % workload_name)
-    if not os.path.exists(conf_dir):
-        os.makedirs(conf_dir)
+    conf_dir = join(report_dir, workload_name, workload_tail, 'conf')
+    conf_filename= join(conf_dir, "%s.conf" % workload_name)
+
+    spark_conf_dir = join(conf_dir, "sparkbench")
+    spark_prop_conf_filename = join(spark_conf_dir, "spark.conf")
+    sparkbench_prop_conf_filename = join(spark_conf_dir, "sparkbench.conf")
+
+    if not os.path.exists(spark_conf_dir):      os.makedirs(spark_conf_dir)
+    if not os.path.exists(conf_dir):      os.makedirs(conf_dir)
+
+    # generate configure for hibench
     sources=defaultdict(list)
     for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
         source = HibenchConfRef.get(prop_name, 'None')
@@ -148,7 +156,32 @@ def export_config(workload_name, workload_tail):
             f.write("# Source: %s\n" % source)
             f.write("\n".join(sorted(sources[source])))
             f.write("\n\n")
-        
+        f.write("#Source: add for internal usage\n")
+        f.write("SPARKBENCH_PROPERTIES_FILES=%s\n" % sparkbench_prop_conf_filename)
+        f.write("SPARK_PROP_CONF=%s\n" % spark_prop_conf_filename)
+
+    # generate properties for spark & sparkbench
+    sources=defaultdict(list)
+    for prop_name, prop_value in HibenchConf.items():
+        source = HibenchConfRef.get(prop_name, 'None')
+        sources[source].append('%s\t%s' % (prop_name, prop_value))
+    # generate configure for sparkbench
+    with open(spark_prop_conf_filename, 'w') as f:
+        for source in sorted(sources.keys()):
+            items = [x for x in sources[source] if x.startswith("spark.")]
+            if items:
+                f.write("# Source: %s\n" % source)
+                f.write("\n".join(sorted(items)))
+                f.write("\n\n")
+    # generate configure for spark
+    with open(sparkbench_prop_conf_filename, 'w') as f:
+        for source in sorted(sources.keys()):
+            items = [x for x in sources[source] if x.startswith("sparkbench.")]
+            if items:
+                f.write("# Source: %s\n" % source)
+                f.write("\n".join(sorted(items)))
+                f.write("\n\n")
+
     return conf_filename
 
 if __name__=="__main__":
