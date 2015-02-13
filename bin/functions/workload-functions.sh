@@ -19,14 +19,16 @@ set -u
 this="${BASH_SOURCE-$0}"
 workload_func_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 . ${workload_func_bin}/assert.sh
-. ${workload_func_bin}/config-parser.sh
+
+HIBENCH_CONF_FOLDER=${HIBENCH_CONF_FOLDER:-${workload_func_bin}/../../conf}
 
 function enter_bench(){		# declare the entrance of a workload
     assert $1 "Workload name not specified."
     assert $2 "Workload root not specified."
     assert $3 "Workload folder not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
-    load_config ${HIBENCH_CONF_FOLDER} $2 $3
+    local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $2 $3`
+    . $CONF_FILE
 }
 
 function leave_bench(){		# declare the workload is finished
@@ -163,9 +165,11 @@ function run-spark-job() {
     CLS=$1
     shift
     
-    cat ${WORKLOAD_DIR}/../conf/global_properties.conf ${WORKLOAD_DIR}/conf/properties.conf > ${WORKLOAD_DIR}/conf/._prop.conf
-    PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
-    export SPARKBENCH_PROPERTIES_FILES=${PROP_FILES}
+    PROP_FILES=$(generate_spark_prop_files)
+    export SPARKBENCH_PROPERTIES_FILES=$(generate_sparkbench_prop_files)
+    
+#    cat ${WORKLOAD_DIR}/../conf/global_properties.conf ${WORKLOAD_DIR}/conf/properties.conf > ${WORKLOAD_DIR}/conf/._prop.conf
+#    PROP_FILES="${WORKLOAD_DIR}/conf/._prop.conf"
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then

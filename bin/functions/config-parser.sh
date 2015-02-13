@@ -17,6 +17,7 @@
 this="${BASH_SOURCE-$0}"
 config_parser_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 . ${config_parser_bin}/assert.sh
+. ${config_parser_bin}/hibench-prop-env-mapping.sh
 
 set -u
 
@@ -76,42 +77,28 @@ function load_config(){
     done
     IFS=$old_IFS
     mapping_config
+    waterfall_config
     generate_value_for_optional_config
+    waterfall_config
 }
 
 function mapping_config(){  	# mapping properties to environment
-    HADOOP_HOME=$(get_prop "hibench.hadoop.home")
-    SPARK_HOME=$(get_prop "hibench.spark.home")
-    HDFS_MASTER=$(get_prop "hibench.hdfs.master")
-
-    HADOOP_EXECUTABLE=$(get_prop_weak "hibench.hadoop.executable")
-    HADOOP_CONF_DIR=$(get_prop_weak "hibench.hadoop.configure.dir")
-    HADOOP_EXAMPLES_JAR=$(get_prop_weak "hibench.hadoop.examples.jar")
-    HADOOP_VERSION=$(get_prop_weak "hibench.hadoop.version")
-    HADOOP_RELEASE=$(get_prop_weak "hibench.hadoop.release")
-    
-    SPARK_EXAMPLES_JAR=$(get_prop_weak "hibench.spark.examples.jar")
-    HIBENCH_CONF=$(get_prop_weak "hibench.configure.dir")
-    HIVE_HOME=$(get_prop_weak "hibench.hive.home")
-    MAHOUT_HOME=$(get_prop_weak "hibench.mahout.home")
-    NUTCH_HOME=$(get_prop_weak "hibench.nutch.home")
-    
-    SPARKBENCH_JAR=$(get_prop_weak "hibench.sparkbench.jar")
-    HIBENCH_REPORT=$(get_prop_weak "hibench.report.dir")
-    REPORT_COLUMN_FORMATS=$(get_prop "hibench.report.formats")
-
-    YARN_NUM_EXECUTORS=$(get_prop_weak "hibench.yarn.exectors.num")
-    YARN_EXECUTOR_CORES=$(get_prop_weak "hibench.yarn.exectors.cores")
-    YARN_EXECUTOR_MEMORY=$(get_prop_weak "hibench.yarn.exectors.memory")
-
-    DATA_HDFS=$(get_prop_weak "hibench.hdfs.data.dir")
-    NUM_MAPS=$(get_prop "hibench.default.map.parallelism")
-    NUM_REDS=$(get_prop "hibench.default.shuffle.parallelism")
-
-    #workload specified mapping
-    #sleep
-    MAP_SLEEP_TIME=$(get_prop_weak "sparkbench.sleep.mapper.seconds")
-    RED_SLEEP_TIME=$(get_prop_weak "sparkbench.sleep.reducer.seconds")
+    for key in ${!HIBENCH_PROP_ENV_MAPPING_MANDATORY[@]}; do
+	value=${HIBENCH_PROP_ENV_MAPPING_MANDATORY["$key"]}
+	prop=$(get_prop $value)
+	if [[ ${prop} == *\$\{* ]]; then
+	    prop=`echo $prop | sed -re 's/[$][{]/\\\\${/g'`
+	fi
+	eval "${key}=${prop}"
+    done
+    for key in ${!HIBENCH_PROP_ENV_MAPPING[@]}; do
+	value=${HIBENCH_PROP_ENV_MAPPING["$key"]}
+	prop=$(get_prop_weak $value)
+	if [[ ${prop} == *\$\{* ]]; then
+	    prop=`echo $prop | sed -re 's/[$][{]/\\\\${/g'`
+	fi
+	eval "${key}=${prop}"
+    done
 }
 
 function generate_value_for_optional_config(){
@@ -137,4 +124,27 @@ function generate_value_for_optional_config(){
 	    HADOOP_EXAMPLES_JAR=${HADOOP_HOME}/hadoop-examples*.jar; # FIXME: should be $HADOOP_JOBCLIENT_TESTS_JAR
 	fi
     fi
+}
+
+function waterfall_config(){
+    while true; do
+	for key in ${!HIBENCH_PROP_ENV_MAPPING[@]}; do
+	    value=${!key}
+	    if [[ $value == *\$\{* ]]; then
+		echo $value
+		value=`echo $value | sed -re 's/[$][{][}]`
+		eval "$value"
+		echo $value
+	    fi
+	done
+	break
+    done
+}
+
+function generate_sparkbench_prop_files() {
+    :    
+}
+
+function generate_spark_prop_files() {
+    :   
 }
