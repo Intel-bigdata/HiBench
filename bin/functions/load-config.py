@@ -108,6 +108,7 @@ def waterfall_config():         # replace "${xxx}" to its values
 
 def generate_optional_value():  # get values from environment or make a guess
     d = os.path.dirname
+    join = os.path.join
     HibenchConf['hibench.home']=d(d(d(os.path.abspath(__file__))))
     del d
     HibenchConfRef['hibench.home']="Inferred from %s" % __file__
@@ -124,13 +125,18 @@ def generate_optional_value():  # get values from environment or make a guess
             "cdh4" if "cdh4" in version else \
             "cdh5" if "cdh5" in version else \
             HibenchConf["hibench.hadoop.version"]
-        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.version"] = "Inferred by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
             HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"]= "Probed by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
+            HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
         else:
             raise Exception("FIXME! for hadoop2, use a HADOOP_JOBCLIENT_TESTS_JAR as hadoop.example.jar")
+    if not HibenchConf.get("hibench.hadoop.configure.dir", ""):
+        HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
+            else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
+        HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version'"
+
 
 def export_config(workload_name, workload_tail):
     join = os.path.join
