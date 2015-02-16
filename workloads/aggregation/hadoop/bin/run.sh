@@ -14,26 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running hive-aggregate bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopAggregate ${workload_root} ${workload_folder}
+show_bannar start
 
-if [ ! -e $DEPENDENCY_DIR"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
-  echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
-  exit
-fi
+ensure-hivebench-release
 
-cd $DEPENDENCY_DIR"/hivebench/target"
-if [ ! -d $HIVE_HOME ]; then
-  tar zxf $HIVE_RELEASE".tar.gz"
-fi
-
-cp ${DIR}/hive/bin/hive $HIVE_HOME/bin
+cp ${WORKLOAD_FOLDER}/hive/bin/hive $HIVE_HOME/bin
 USERVISITS_AGGRE="uservisits_aggre"
 USERVISITS_AGGRE_FILE="uservisits_aggre.hive"
 
@@ -45,37 +36,37 @@ if [ -n "$SUBDIR" ]; then
 fi
 
 # path check
-$HADOOP_EXECUTABLE $RMDIR_CMD /user/hive/warehouse/$USERVISITS_AGGRE
+rmr-hdfs /user/hive/warehouse/$USERVISITS_AGGRE
 
 # pre-running
-echo "USE DEFAULT;" > $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-echo "set hive.stats.autogather=false;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "USE DEFAULT;" > ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "set hive.stats.autogather=false;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 
 if [ $COMPRESS -eq 1 ]; then
-  echo "set hive.exec.compress.output=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+  echo "set hive.exec.compress.output=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
   if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-    echo "set mapred.output.compress=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set mapred.output.compression.type=BLOCK;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapred.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapred.output.compression.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
   else
-    echo "set mapreduce.jobtracker.address=ignorethis" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set hive.exec.show.job.failure.debug.info=false" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set mapreduce.map.output.compress=true;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.jobtracker.address=ignorethis" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set hive.exec.show.job.failure.debug.info=false" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.map.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
   fi
 fi
 
-echo "DROP TABLE uservisits;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-echo "DROP TABLE uservisits_aggre;" >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';">> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-cat $DIR/hive-benchmark/uservisits_aggre.template >> $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "DROP TABLE uservisits;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "DROP TABLE uservisits_aggre;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+echo "CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';">> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+cat ${WORKLOAD_FOLDER}/hive-benchmark/uservisits_aggre.template >> ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
 
-sed -i -e "s/uservisits\>/uservisits_${1}/1" $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-sed -i -e "s/uservisits_aggre/${USERVISITS_AGGRE}/g" $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
+sed -i -e "s/uservisits\>/uservisits_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
+sed -i -e "s/uservisits_aggre/${USERVISITS_AGGRE}/g" ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
   SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
@@ -87,13 +78,15 @@ fi
 START_TIME=`timestamp`
 
 # run bench
-$HIVE_HOME/bin/hive -f $DIR/hive-benchmark/$USERVISITS_AGGRE_FILE
-
-# post-running
+$HIVE_HOME/bin/hive -f ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
 END_TIME=`timestamp`
-gen_report "HIVEAGGR" ${START_TIME} ${END_TIME} ${SIZE}
 
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/$USERVISITS_AGGRE
-$HADOOP_EXECUTABLE fs -mkdir -p $OUTPUT_HDFS
-$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/$USERVISITS_AGGRE $OUTPUT_HDFS
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+
+
+#$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/$USERVISITS_AGGRE
+#$HADOOP_EXECUTABLE fs -mkdir -p $OUTPUT_HDFS
+#$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/$USERVISITS_AGGRE $OUTPUT_HDFS
 

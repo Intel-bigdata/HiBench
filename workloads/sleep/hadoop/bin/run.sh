@@ -31,22 +31,3 @@ gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-#if [ $HADOOP_RELEASE == "hadoop1" ]; then
-#  $HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sleep \
-#      -m $NUM_MAPS \
-#      -r $NUM_REDS \
-#      -mt $MAP_SLEEP_TIME \
-#      -mr $RED_SLEEP_TIME
-#else
-#  $HADOOP_EXECUTABLE jar $HADOOP_JOBCLIENT_TESTS_JAR sleep \
-#      -m $NUM_MAPS \
-#      -r $NUM_REDS \
-#      -mt $MAP_SLEEP_TIME \
-#      -mr $RED_SLEEP_TIME
-#fi
-
-#post-running
-
-
-
-

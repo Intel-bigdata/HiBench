@@ -21,8 +21,15 @@ from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvP
 HibenchConf={}
 HibenchConfRef={}
 
-def log(s):
-    sys.stderr.write(s+'\n')
+#FIXME: use log helper later
+def log(*s):
+    if len(s)==1: s=s[0]
+    else: s= " ".join([str(x) for x in s])
+    sys.stderr.write( str(s) +'\n')
+
+def log_debug(*s): 
+    #log(*s)
+    pass
 
 def shell(cmd):
     return os.popen(cmd).read()
@@ -92,8 +99,9 @@ def waterfall_config():         # replace "${xxx}" to its values
     def process_replace(m):
         raw_key = m.groups()[0]
         key = raw_key[2:-1].strip()
+        log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key))
         return HibenchConf.get(key, raw_key)
-    p = re.compile("(\$\{\s*[^\s\$]+\s*\})")
+    p = re.compile("(\$\{\s*[^\s^\$^\}]+\s*\})")
 
     finish = False
     while not finish:

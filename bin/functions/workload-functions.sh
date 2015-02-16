@@ -79,7 +79,7 @@ function gen_report() {		# dump the result to report file
     printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> ${HIBENCH_REPORT}
 }
 
-function rmr_hdfs(){		# rm -r for hdfs
+function rmr-hdfs(){		# rm -r for hdfs
     if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
 	RMDIR_CMD="fs -rm -r -skipTrash"
     else
@@ -87,7 +87,7 @@ function rmr_hdfs(){		# rm -r for hdfs
     fi
 }
 
-function dus_hdfs(){		# du -s for hdfs
+function dus-hdfs(){		# du -s for hdfs
     if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
 	DUS_CMD="fs -du -s"
     else
@@ -202,4 +202,16 @@ function run-hadoop-job(){
     local CMD="${HADOOP_EXECUTABLE} jar $job_jar $job_name $tail_arguments"
     echo "$CMD"
     $CMD
+}
+
+function ensure-hivebench-release(){
+    if [ ! -e $DEPENDENCY_DIR"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
+	echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
+	exit
+    fi
+
+    cd $DEPENDENCY_DIR"/hivebench/target"
+    if [ ! -d $HIVE_HOME ]; then
+	tar zxf $HIVE_RELEASE".tar.gz"
+    fi
 }
