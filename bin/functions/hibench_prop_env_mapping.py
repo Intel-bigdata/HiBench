@@ -24,6 +24,8 @@ HiBenchEnvPropMappingMandatory=dict(
     HIBENCH_PYTHON_PATH="hibench.sparkbenc.python.dir",
     NUM_MAPS="hibench.default.map.parallelism",
     NUM_REDS="hibench.default.shuffle.parallelism",
+    INPUT_HDFS="hibench.workload.input",
+    OUTPUT_HDFS="hibench.workload.output",
     )
 
 HiBenchEnvPropMapping=dict(
@@ -45,8 +47,6 @@ HiBenchEnvPropMapping=dict(
     DATA_HDFS="hibench.hdfs.data.dir",
     MAP_SLEEP_TIME="sparkbench.sleep.mapper.seconds", # set in sleep workload
     RED_SLEEP_TIME="sparkbench.sleep.reducer.seconds", # set in sleep workload
-    INPUT_HDFS="hibench.workload.input",
-    OUTPUT_HDFS="hibench.workload.output",
     )
 
 HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}

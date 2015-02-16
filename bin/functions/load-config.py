@@ -47,9 +47,9 @@ def load_config(conf_root, workload_root, workload_folder):
     workload_name = os.path.basename(workload_root)
 
     conf_files = sorted(glob.glob(conf_root+"/*.conf")) + \
-        sorted(glob.glob("%s/workloads/%s/*.conf" % (conf_root, workload_name))) + \
-        sorted(glob.glob("%s/workloads/%s/%s/*.conf" % (conf_root, workload_name, workload_tail)))
-    
+        sorted(glob.glob("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))) + \
+        sorted(glob.glob("%s/workloads/%s/conf/%s/*.conf" % (conf_root, workload_name, workload_tail)))
+
     # load values from conf files
     for filename in conf_files:
         log("Parsing conf: %s" % filename)
@@ -93,7 +93,7 @@ def waterfall_config():         # replace "${xxx}" to its values
         raw_key = m.groups()[0]
         key = raw_key[2:-1].strip()
         return HibenchConf.get(key, raw_key)
-    p = re.compile("(\$\{\s*[^\s]+\s*\})")
+    p = re.compile("(\$\{\s*[^\s\$]+\s*\})")
 
     finish = False
     while not finish:
@@ -125,7 +125,7 @@ def generate_optional_value():  # get values from environment or make a guess
             "cdh4" if "cdh4" in version else \
             "cdh5" if "cdh5" in version else \
             HibenchConf["hibench.hadoop.version"]
-        HibenchConfRef["hibench.hadoop.version"] = "Inferred by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
             HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")

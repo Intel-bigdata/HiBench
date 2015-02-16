@@ -28,6 +28,7 @@ function enter_bench(){		# declare the entrance of a workload
     assert $3 "Workload folder not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
     local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $2 $3`
+#    ${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $2 $3
     . $CONF_FILE
 }
 
