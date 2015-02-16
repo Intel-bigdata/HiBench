@@ -13,31 +13,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== preparing scan data=========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/load-sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopPrepareAggregation ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress check
-# compress
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
-else
-    COMPRESS_OPT=""
-fi
-
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
-
+rmr-hdfs $INPUT_HDFS || true
 echo "Pages:${PAGES}, USERVISITS:${USERVISITS}"
-# generate data
-#DELIMITER=\t
+
 OPTION="-t hive \
         -b ${HIVE_BASE_HDFS} \
         -n ${HIVE_INPUT} \
@@ -47,18 +34,12 @@ OPTION="-t hive \
         -v ${USERVISITS} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Hadoop job failed to run successfully." 
-    exit $result
-fi
-#( cd `dirname $0` && sbt "run `dirname ${DATA_HDFS}` ${INPUT_HDFS_DIR}/edges/ ${INPUT_HDFS}" )
-#result=$?
-#if [ $result -ne 0 ]
-#then
-#    echo "ERROR: covert job failed to run successfully." 
-#    exit $result
-#fi
+START_TIME=`timestamp`
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
+END_TIME=`timestamp`
+SIZE="0"
+
+show_bannar finish
+leave_bench
+
 

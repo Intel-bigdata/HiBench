@@ -69,7 +69,7 @@ sed -i -e "s/uservisits\>/uservisits_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$
 sed -i -e "s/uservisits_aggre/${USERVISITS_AGGRE}/g" ${WORKLOAD_FOLDER}/hive-benchmark/$USERVISITS_AGGRE_FILE
 
 if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
+  SIZE=`grep "BYTES_DATA_GENERATED=" ${WORKLOAD_FOLDER}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
 else
   SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
   SIZE=${SIZE##*|}
