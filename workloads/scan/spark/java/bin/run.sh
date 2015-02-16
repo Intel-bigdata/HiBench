@@ -13,38 +13,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/../../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running java scan bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/load-sparkbench-config.sh"
-. "${DIR}/../conf/configure.sh"
+enter_bench ScalaSparkScan ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress
-if [ $COMPRESS -eq 1 ]
-then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.type=BLOCK \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC"
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
-
-# path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
-
-# pre-running
-SIZE=`dir_size $INPUT_HDFS/rankings`
 START_TIME=`timestamp`
-
-# run bench
-run-spark-job com.intel.sparkbench.scan.JavaScan $INPUT_HDFS $OUTPUT_HDFS || exit 1
-#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.scan.JavaScan  --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
-
-# post-running
+SIZE=`dir_size $INPUT_HDFS/ranking`
+rmr-hdfs $OUTPUT_HDFS
+run-spark-job com.intel.sparkbench.scan.JavaScan $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
-gen_report "JavaScan" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench

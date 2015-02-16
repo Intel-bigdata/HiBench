@@ -32,14 +32,3 @@ gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-
-# pre-running
-SIZE=`dir_size $INPUT_HDFS/uservisits`
-START_TIME=`timestamp`
-
-# run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/aggregation.py $INPUT_HDFS $OUTPUT_HDFS || exit 1
-
-# post-running
-END_TIME=`timestamp`
-gen_report "PythonAggregation" ${START_TIME} ${END_TIME} ${SIZE}
