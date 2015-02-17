@@ -13,20 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+enter_bench HadoopPrepareSort ${workload_root} ${workload_folder}
+show_bannar start
 
-echo "========== preparing sort data=========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/load-sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
-
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
-
-# generate data
+rmr-hdfs $INPUT_HDFS || true
+START_TIME=`timestamp`
+#run-hadoop-job ${DATATOOLS} HiBench.DataGen ${INPUT_HDFS} ${DATASIZE}
 run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
+END_TIME=`timestamp`
+
+show_bannar finish
+leave_bench
+
+#un-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
 

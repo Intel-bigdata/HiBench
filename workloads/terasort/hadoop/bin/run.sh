@@ -13,30 +13,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
 
-echo "========== running terasort bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-fi
+enter_bench HadoopTerasort ${workload_root} ${workload_folder}
+show_bannar start
 
-# path check
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
+rmr-hdfs $OUTPUT_HDFS || true
 
-# pre-running
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -D${CONFIG_REDUCER_NUMBER}=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
 
 # run bench
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D $CONFIG_REDUCER_NUMBER=$NUM_REDS $INPUT_HDFS $OUTPUT_HDFS
-
-# post-running
-END_TIME=`timestamp`
-gen_report "TERASORT" ${START_TIME} ${END_TIME} ${SIZE}
+#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR terasort -D $CONFIG_REDUCER_NUMBER=$NUM_REDS $INPUT_HDFS $OUTPUT_HDFS

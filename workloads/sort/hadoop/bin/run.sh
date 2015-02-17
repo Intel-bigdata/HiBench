@@ -14,51 +14,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running sort bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopSort ${workload_root} ${workload_folder}
+show_bannar start
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-  TMPLOGFILE=$TMPLOGFILE$SUBDIR
-fi
+rmr-hdfs $OUTPUT_HDFS || true
 
-check_compress
-
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
-
-echo "== start MR job =="
-# pre-running
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-# run bench
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
-    $COMPRESS_OPT \
-    -outKey org.apache.hadoop.io.Text \
-    -outValue org.apache.hadoop.io.Text \
-    -r ${NUM_REDS} \
-    $INPUT_HDFS $OUTPUT_HDFS \
-    2>&1 | tee ${DIR}/$TMPLOGFILE
-
-# post-running
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} sort -outKey org.apache.hadoop.io.Text -outValue org.apache.hadoop.io.Text -r ${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 
-echo "== MR job done=="
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
 
-if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-  SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-  SIZE=${SIZE##*|}
-  SIZE=${SIZE//,/}
-else
-  SIZE=`grep "Bytes Read" ${DIR}/$TMPLOGFILE | sed 's/Bytes Read=//'`
-fi
+#check_compress
 
-rm -rf ${DIR}/$TMPLOGFILE
-gen_report "SORT" ${START_TIME} ${END_TIME} ${SIZE}
+#echo "== start MR job =="
+# pre-running
+#START_TIME=`timestamp`
+
+# run bench
+#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
+#    $COMPRESS_OPT \
+#    -outKey org.apache.hadoop.io.Text \
+#    -outValue org.apache.hadoop.io.Text \
+#    -r ${NUM_REDS} \
+#    $INPUT_HDFS $OUTPUT_HDFS \
+#    2>&1 | tee ${DIR}/$TMPLOGFILE
+
+# post-running
+#END_TIME=`timestamp`
+
 

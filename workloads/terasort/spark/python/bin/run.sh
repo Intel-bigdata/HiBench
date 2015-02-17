@@ -13,28 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running python tera sort bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/load-sparkbench-config.sh"
-. "${DIR}/../conf/configure.sh"
+enter_bench PythonSparkTerasort ${workload_root} ${workload_folder}
+show_bannar start
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+rmr-hdfs $OUTPUT_HDFS || true
 
-# pre-running
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-# run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/terasort.py $INPUT_HDFS $OUTPUT_HDFS || exit 1
-#$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/terasort.py $INPUT_HDFS $OUTPUT_HDFS
-
-# post-running
+run-spark-job ${HIBENCH_PYTHON_PATH}/terasort.py com.intel.sparkbench.sort.ScalaSort $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
-gen_report "PythonSort" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+

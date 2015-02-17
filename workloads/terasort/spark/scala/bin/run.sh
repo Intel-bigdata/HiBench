@@ -13,28 +13,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
 
-echo "========== running scala tera sort bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/load-sparkbench-config.sh"
-. "${DIR}/../conf/configure.sh"
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
+enter_bench ScalaSparkTerasort ${workload_root} ${workload_folder}
+show_bannar start
 
-# pre-running
+rmr-hdfs $OUTPUT_HDFS || true
+
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-# run bench
-run-spark-job com.intel.sparkbench.terasort.ScalaTeraSort $INPUT_HDFS $OUTPUT_HDFS || exit 1
-#$SPARK_HOME/bin/spark-submit --class com.intel.sparkbench.terasort.ScalaTeraSort --master ${SPARK_MASTER} ${SPARKBENCH_JAR} $INPUT_HDFS $OUTPUT_HDFS
-
-# post-running
+run-spark-job com.intel.sparkbench.terasort.ScalaTeraSort $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
-gen_report "ScalaSort" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+

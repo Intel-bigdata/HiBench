@@ -13,51 +13,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
 
-echo "========== running wordcount bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-  TMPLOGFILE=$TMPLOGFILE$SUBDIR
-fi
+enter_bench HadoopWordcount ${workload_root} ${workload_folder}
+show_bannar start
 
-check_compress
+rmr-hdfs $OUTPUT_HDFS || true
 
-# path check
-$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS
-
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-# run bench
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
-    $COMPRESS_OPT \
-    -D $CONFIG_REDUCER_NUMBER=${NUM_REDS} \
-    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-    -D mapreduce.job.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
-    -D mapreduce.job.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
-    $INPUT_HDFS $OUTPUT_HDFS \
-    2>&1 | tee ${DIR}/$TMPLOGFILE
-
-# post-running
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} wordcount  ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 
-if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-  SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'org.apache.hadoop.examples.RandomTextWriter$Counters.*|BYTES_WRITTEN')
-  SIZE=${SIZE##*|}
-  SIZE=${SIZE//,/}
-else
-  SIZE=`grep "Bytes Read" ${DIR}/$TMPLOGFILE | sed 's/Bytes Read=//'`
-fi
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
 
-rm -rf ${DIR}/$TMPLOGFILE
+# run bench
+#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR wordcount \
+#    $COMPRESS_OPT \
+#    -D $CONFIG_REDUCER_NUMBER=${NUM_REDS} \
+#    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
+#    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
+#    -D mapreduce.job.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
+#    -D mapreduce.job.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
+#    $INPUT_HDFS $OUTPUT_HDFS \
+#    2>&1 | tee ${DIR}/$TMPLOGFILE
 
-gen_report "WORDCOUNT" ${START_TIME} ${END_TIME} ${SIZE}
 

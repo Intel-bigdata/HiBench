@@ -215,3 +215,16 @@ function ensure-hivebench-release(){
 	tar zxf $HIVE_RELEASE".tar.gz"
     fi
 }
+
+function ensure-mahout-release (){
+    if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+	echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+	exit
+    fi
+
+    cd $DEPENDENCY_DIR"/mahout/target"
+    if [ ! -d $MAHOUT_HOME ]; then
+	tar zxf $MAHOUT_RELEASE".tar.gz"
+    fi
+
+}

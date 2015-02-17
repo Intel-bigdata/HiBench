@@ -46,7 +46,7 @@ HiBenchEnvPropMapping=dict(
     YARN_EXECUTOR_MEMORY="hibench.yarn.exectors.memory",
     DATA_HDFS="hibench.hdfs.data.dir",
     # Sleep workload
-    MAP_SLEEP_TIME="sparkbench.sleep.mapper.seconds", 
+    MAP_SLEEP_TIME="sparkbench.sleep.mapper.seconds",
     RED_SLEEP_TIME="sparkbench.sleep.reducer.seconds",
     # Aggregation workload, data scale
     PAGES="hibench.aggregation.pages",
@@ -54,6 +54,8 @@ HiBenchEnvPropMapping=dict(
     HIVE_BASE_HDFS="hibench.hive.base.hdfs",
     HIVE_INPUT="hibench.hive.dir.name.input",
     DATATOOLS="hibench.hibench.datatool.dir",
+    # Sort
+    DATASIZE="hibench.sort.datasize",
     )
 
 HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}
