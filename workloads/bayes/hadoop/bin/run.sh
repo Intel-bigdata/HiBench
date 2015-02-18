@@ -13,56 +13,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
 
-echo "========== running bayes bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
-  echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
-  exit
-fi
+enter_bench HadoopBayes ${workload_root} ${workload_folder}
+show_bannar start
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-fi
+ensure-mahout-release
+rmr-hdfs $OUTPUT_HDFS || true
 
-check_compress
-
-# path check
-${HADOOP_EXECUTABLE} $RMDIR_CMD ${OUTPUT_HDFS}
-
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//'`
-else
-  SIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-  SIZE=${SIZE##*|}
-  SIZE=${SIZE//,/}
-fi
-
-cd $DEPENDENCY_DIR"/mahout/target"
-if [ ! -d $MAHOUT_HOME ]; then
-  tar zxf $MAHOUT_RELEASE".tar.gz"
-fi
-
-# pre-running
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-# run bench
-# Note that we borrow the numReducers parameter from the environment.  It must be set or else you will only run
-# one reducer.
 $MAHOUT_HOME/bin/mahout seq2sparse \
         $COMPRESS_OPT -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS
 
 $MAHOUT_HOME/bin/mahout trainnb \
         $COMPRESS_OPT -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp
 
-# post-running
 END_TIME=`timestamp`
-gen_report "BAYES" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+
+
+#$MAHOUT_HOME/bin/mahout seq2sparse \
+#        $COMPRESS_OPT -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS
+
+#$MAHOUT_HOME/bin/mahout trainnb \
+#        $COMPRESS_OPT -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp
+
 

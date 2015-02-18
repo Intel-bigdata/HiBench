@@ -13,39 +13,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== preparing tera sort data=========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/load-sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopPrepareTerasort ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-compress true \
-        -compressCodec $COMPRESS_CODEC \
-        -compressType BLOCK"
-else
-    COMPRESS_OPT="-compress false"
-fi
+rmr-hdfs $INPUT_HDFS || true
+START_TIME=`timestamp`
+#run-hadoop-job ${DATATOOLS} HiBench.DataGen ${INPUT_HDFS} ${DATASIZE}
+run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
+END_TIME=`timestamp`
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
-# Generate the terasort data
-$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR teragen \
-    -D mapred.map.tasks=$NUM_MAPS \
-    $DATASIZE $INPUT_HDFS
-result=$?
-if [ $result -ne 0 ]
-then
-    echo "ERROR: Hadoop job failed to run successfully." 
-    exit $result
-fi
+show_bannar finish
+leave_bench
 
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS/_*
+
 
 

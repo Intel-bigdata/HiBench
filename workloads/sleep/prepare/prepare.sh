@@ -13,27 +13,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== preparing sleep =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/load-sparkbench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench PrepareSleep ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress check
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-D mapred.output.compress=true \
-    -D mapred.output.compression.codec=$COMPRESS_CODEC \
-    -D mapred.output.compression.type=BLOCK "
-else
-    COMPRESS_OPT="-D mapred.output.compress=false"
-fi
+echo "Prepare sleep: nothing to do"
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $INPUT_HDFS || true
+show_bannar finish
+leave_bench
 
-# generate data
+
+

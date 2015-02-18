@@ -26,7 +26,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job ${HIBENCH_PYTHON_PATH}/terasort.py com.intel.sparkbench.sort.ScalaSort $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job ${HIBENCH_PYTHON_PATH}/terasort.py $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

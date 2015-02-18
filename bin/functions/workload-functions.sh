@@ -226,5 +226,35 @@ function ensure-mahout-release (){
     if [ ! -d $MAHOUT_HOME ]; then
 	tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
+}
+
+function ensure-nutchindexing-release () {
+    if [ ! -e $DEPENDENCY_DIR"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+	echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
+	exit
+    fi
+    if [ $HADOOP_VERSION == "hadoop1" ]; then
+	cp $DIR/nutch/conf/nutch-site-mr1.xml $DIR/nutch/conf/nutch-site.xml
+    elif [ $HADOOP_VERSION == "hadoop2" ]; then
+	cp $DIR/nutch/conf/nutch-site-mr2.xml $DIR/nutch/conf/nutch-site.xml
+    fi
+    
+    cd $DEPENDENCY_DIR"/nutchindexing/target"
+    if [ ! -d $NUTCH_HOME ]; then
+	tar zxf apache-nutch-1.2-bin.tar.gz
+    fi
+    find $NUTCH_HOME/lib ! -name "lucene-*" -type f -exec rm -rf {} \;
+    cp $DIR/nutch/conf/nutch-site.xml $NUTCH_HOME/conf
+    cp $DIR/nutch/bin/nutch $NUTCH_HOME/bin
+    if [ $HADOOP_VERSION == "hadoop2" ]; then
+	mkdir $NUTCH_HOME/temp
+	unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
+	rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
+	cp $NUTCH_DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+	rm $NUTCH_HOME/nutch-1.2.job
+	cd $NUTCH_HOME/temp
+	zip -qr $NUTCH_HOME/nutch-1.2.job *
+	rm -rf $NUTCH_HOME/temp
+    fi
 
 }

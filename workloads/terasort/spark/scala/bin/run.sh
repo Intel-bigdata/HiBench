@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/..

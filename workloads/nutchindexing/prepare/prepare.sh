@@ -14,21 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== preparing nutchindex data =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopPrepareNutchindexing ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress
-if [ $COMPRESS -eq 1 ]; then
-    COMPRESS_OPT="-c ${COMPRESS_CODEC}"
-fi
+rmr-hdfs $INPUT_HDFS || true
 
-rm -rf $TMPLOGFILE
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
 
 # generate data
 OPTION="-t nutch \
@@ -39,4 +36,12 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-$HADOOP_EXECUTABLE jar ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT} 2>&1
+
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+
+

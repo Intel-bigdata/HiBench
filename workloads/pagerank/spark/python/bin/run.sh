@@ -13,30 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running python pagerank bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../../bin/load-sparkbench-config.sh"
-. "${DIR}/../conf/configure.sh"
+enter_bench PythonSparkPagerank ${workload_root} ${workload_folder}
+show_bannar start
 
-# compress
+rmr-hdfs $OUTPUT_HDFS || true
 
-# path check
-$HADOOP_EXECUTABLE dfs -rmr  $OUTPUT_HDFS
-
-# pre-running
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-# run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/pagerank.py $INPUT_HDFS $OUTPUT_HDFS $NUM_ITERATIONS || exit 1
-#$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${DIR}/pagerank.py $INPUT_HDFS $NUM_ITERATIONS
-
-# post-running
+run-spark-job ${HIBENCH_PYTHON_PATH}/pagerank.py $INPUT_HDFS $OUTPUT_HDFS $NUM_ITERATIONS
 END_TIME=`timestamp`
-gen_report "PythonPageRank" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+

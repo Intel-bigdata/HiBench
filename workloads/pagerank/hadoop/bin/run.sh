@@ -14,39 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin=`dirname "$0"`
-bin=`cd "$bin"; pwd`
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-echo "========== running pagerank bench =========="
-# configure
-DIR=`cd $bin/../; pwd`
-. "${DIR}/../bin/hibench-config.sh"
-. "${DIR}/conf/configure.sh"
+enter_bench HadoopPagerank ${workload_root} ${workload_folder}
+show_bannar start
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-fi
+rmr-hdfs $OUTPUT_HDFS || true
 
-check_compress
-
-# path check
-$HADOOP_EXECUTABLE dfs -rmr $OUTPUT_HDFS
-
-# pre-running
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-    SIZE=`grep "BYTES_DATA_GENERATED=" ${DIR}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
-else
-    VSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/vertices | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-    VSIZE=${VSIZE##*|}
-    VSIZE=${VSIZE//,/}
-
-    ESIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/edges | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-    ESIZE=${ESIZE##*|}
-    ESIZE=${ESIZE//,/}
-
-    SIZE=$((VSIZE+ESIZE))
-fi
+SIZE=`dir_size $INPUT_HDFS`
 
 if [ $BLOCK -eq 0 ]
 then
@@ -60,25 +38,28 @@ START_TIME=`timestamp`
 # run bench
 if [ $BLOCK -eq 0 ]
 then
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
 else
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_input
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
+    rmr-hdfs ${OUTPUT_HDFS}/pr_input
 
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_iv_block
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_initvector
+    rmr-hdfs ${OUTPUT_HDFS}/pr_iv_block
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
+    rmr-hdfs ${OUTPUT_HDFS}/pr_initvector
 
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_colnorm
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
+    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
 
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_block
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
-    $HADOOP_EXECUTABLE $RMDIR_CMD ${OUTPUT_HDFS}/pr_edge_colnorm
+    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_block
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
+    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
 
-    $HADOOP_EXECUTABLE jar ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
+    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
 fi
 
-# post-running
 END_TIME=`timestamp`
-gen_report "PAGERANK" ${START_TIME} ${END_TIME} ${SIZE}
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
+
