@@ -22,7 +22,7 @@ workload_root=${workload_folder}/..
 enter_bench HadoopPrepareSort ${workload_root} ${workload_folder}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr-hdfs ${INPUT_HDFS} || true
 START_TIME=`timestamp`
 OPTION="-t bayes \
         -b ${BAYES_BASE_HDFS} \
@@ -38,7 +38,6 @@ END_TIME=`timestamp`
 
 show_bannar finish
 leave_bench
-
 
 #run-spark-job com.intel.sparkbench.datagen.convert.BayesConvert ${INPUT_HDFS} 
 #${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.BayesConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS} 
