@@ -40,7 +40,7 @@ object ScalaTeraSort {
 
     val file = io.load[String](args(0), Some("Text"))
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
-    val reducer  = IOCommon.getProperty("sparkbench.reducer")
+    val reducer  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
                                         .getOrElse((parallel / 2).toString).toInt
     val data = file.map(line => (line.substring(0, 10), line.substring(10)))
 

@@ -16,7 +16,7 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench ScalaSparkTerasort ${workload_root} ${workload_folder}

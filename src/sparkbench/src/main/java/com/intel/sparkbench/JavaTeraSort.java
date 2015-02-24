@@ -17,6 +17,7 @@
 
 package com.intel.sparkbench.terasort;
 
+import com.intel.sparkbench.IOCommon;
 import org.apache.spark.BaseRangePartitioner;
 import org.apache.spark.ConfigurableJavaPairRDD;
 import scala.Tuple2;
@@ -43,7 +44,7 @@ public final class JavaTeraSort {
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaRDD<String> lines = ctx.textFile(args[0], 1);
     Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
-    Integer reducer  = Integer.parseInt(System.getProperty("sparkbench.reducer"));
+    Integer reducer  = Integer.parseInt(IOCommon.getProperty("hibench.default.shuffle.parallelism").get());
     JavaPairRDD<String, String> words = lines.mapToPair(new PairFunction<String, String, String>() {
         @Override
         public Tuple2<String, String> call(String s) throws Exception {

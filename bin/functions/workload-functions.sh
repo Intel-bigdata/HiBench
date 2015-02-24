@@ -52,7 +52,7 @@ function timestamp(){		# get current timestamp
 }
 
 function print_field_name() {	# print report column header
-    printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > ${HIBENCH_REPORT}
+    printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
 }
 
 function gen_report() {		# dump the result to report file
@@ -76,15 +76,18 @@ function gen_report() {		# dump the result to report file
         print_field_name
     fi
 
-    printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> ${HIBENCH_REPORT}
+    printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
 }
 
 function rmr-hdfs(){		# rm -r for hdfs
+    assert $1 "dir parameter missing"
     if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
 	RMDIR_CMD="fs -rm -r -skipTrash"
     else
 	RMDIR_CMD="fs -rmr -skipTrash"
     fi
+    echo $HADOOP_EXECUTABLE $RMDIR_CMD $1
+    $HADOOP_EXECUTABLE $RMDIR_CMD $1
 }
 
 function dus-hdfs(){		# du -s for hdfs
@@ -92,7 +95,8 @@ function dus-hdfs(){		# du -s for hdfs
 	DUS_CMD="fs -du -s"
     else
 	DUS_CMD="fs -dus"
-    fi 
+    fi
+    $HADOOP_EXECUTABLE $DUS_CMD $1
 }
 
 

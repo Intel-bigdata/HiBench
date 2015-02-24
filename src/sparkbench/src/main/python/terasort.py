@@ -25,7 +25,7 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: terasort <HDFS_INPUT> <HDFS_OUTPUT>"
         exit(-1)
     sc = SparkContext(appName="PythonTeraSort")
-    reducer = int(SparkContext._jvm.java.lang.System.getProperty("sparkbench.reducer"))
+    reducer = int(SparkContext._jvm.java.lang.System.getProperty("hibench.default.shuffle.parallelism"))
     lines = sc.textFile(sys.argv[1], 1)
     sortedCount = lines.map(lambda x: (x[:10], x[10:])) \
         .sortByKey(lambda x: x, numPartitions = reducer).map(lambda x: x[0] + x[1])

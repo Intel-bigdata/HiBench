@@ -16,7 +16,7 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench HadoopTerasort ${workload_root} ${workload_folder}
@@ -26,7 +26,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -D${CONFIG_REDUCER_NUMBER}=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -Dmapred.reduce.tasks=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

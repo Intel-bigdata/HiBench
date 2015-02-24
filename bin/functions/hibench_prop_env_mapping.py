@@ -41,13 +41,14 @@ HiBenchEnvPropMapping=dict(
     MAHOUT_HOME="hibench.mahout.home",
     NUTCH_HOME="hibench.nutch.home",
     HIBENCH_REPORT="hibench.report.dir", # set in default
+    HIBENCH_REPORT_NAME="hibench.report.name", # set in default
     YARN_NUM_EXECUTORS="hibench.yarn.exectors.num",
     YARN_EXECUTOR_CORES="hibench.yarn.exectors.cores",
     YARN_EXECUTOR_MEMORY="hibench.yarn.exectors.memory",
     DATA_HDFS="hibench.hdfs.data.dir",
     # Sleep workload
-    MAP_SLEEP_TIME="sparkbench.sleep.mapper.seconds",
-    RED_SLEEP_TIME="sparkbench.sleep.reducer.seconds",
+    MAP_SLEEP_TIME="hibench.sleep.mapper.seconds",
+    RED_SLEEP_TIME="hibench.sleep.reducer.seconds",
     # Aggregation workload, data scale
     PAGES="hibench.aggregation.pages",
     USERVISITS="hibench.aggregation.uservisits",
@@ -55,7 +56,11 @@ HiBenchEnvPropMapping=dict(
     HIVE_INPUT="hibench.hive.dir.name.input",
     DATATOOLS="hibench.hibench.datatool.dir",
     # Sort
-    DATASIZE="hibench.sort.datasize",
+    SORT_DATASIZE="hibench.sort.datasize",
+    # Terasort
+    TERASORT_DATASIZE="hibench.terasort.datasize",
+    # Wordcount
+    WORDCOUNT_DATASIZE="hibench.wordcount.datasize",
     )
 
 HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}

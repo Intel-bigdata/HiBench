@@ -16,7 +16,7 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench PythonSparkSort ${workload_root} ${workload_folder}
@@ -31,4 +31,4 @@ END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
-leave_ben
+leave_bench

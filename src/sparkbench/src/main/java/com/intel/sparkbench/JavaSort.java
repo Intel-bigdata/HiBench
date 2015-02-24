@@ -49,7 +49,7 @@ public final class JavaSort {
     Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
     Integer reducer;
     try {
-         reducer = Integer.parseInt(IOCommon.getProperty("sparkbench.reducer").get());
+         reducer = Integer.parseInt(IOCommon.getProperty("hibench.default.shuffle.parallelism").get());
     } catch (NumberFormatException e){
          reducer = parallel / 2;
     }

@@ -67,7 +67,7 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonSort")
     hdfs_input, hdfs_output = sys.argv[1], sys.argv[2]
 
-#    reducer = int(SparkContext._jvm.com.intel.sparkbench.IOCommonWrap.getProperty("sparkbench.reducer"))
+#    reducer = int(SparkContext._jvm.com.intel.sparkbench.IOCommonWrap.getProperty("hibench.default.shuffle.parallelism"))
     reducer = int(sc._conf.get("spark.default.parallelism", str(sc.defaultParallelism / 2))) # FIXME: use IOCommonWrap!
     lines = sc.textFile(hdfs_input, 1).map(lambda x:(x,1))
     sortedWords = sortByKeyWithHashedPartitioner(lines, numPartitions=reducer).map(lambda x:x[0])

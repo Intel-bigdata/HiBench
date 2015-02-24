@@ -16,7 +16,7 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench JavaSparkWordcount ${workload_root} ${workload_folder}
@@ -26,7 +26,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job com.intel.spark.examples.JavaWordCount $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job org.apache.spark.examples.JavaWordCount $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

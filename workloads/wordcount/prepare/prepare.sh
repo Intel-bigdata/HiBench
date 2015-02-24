@@ -24,7 +24,10 @@ show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
-#run-hadoop-job ${DATATOOLS} HiBench.DataGen ${INPUT_HDFS} ${DATASIZE}
-run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
+    -D test.randomtextwrite.bytes_per_map=$((${WORDCOUNT_DATASIZE} / ${NUM_MAPS})) \
+    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+    ${INPUT_HDFS}
+#run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
 END_TIME=`timestamp`
 

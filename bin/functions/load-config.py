@@ -27,7 +27,7 @@ def log(*s):
     else: s= " ".join([str(x) for x in s])
     sys.stderr.write( str(s) +'\n')
 
-def log_debug(*s): 
+def log_debug(*s):
     #log(*s)
     pass
 
@@ -53,6 +53,8 @@ def load_config(conf_root, workload_root, workload_folder):
     workload_tail = os.path.dirname(workload_folder[len(workload_root):])[1:]
     workload_name = os.path.basename(workload_root)
 
+    log("Workload name: %s" % workload_name)
+    log("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))
     conf_files = sorted(glob.glob(conf_root+"/*.conf")) + \
         sorted(glob.glob("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))) + \
         sorted(glob.glob("%s/workloads/%s/conf/%s/*.conf" % (conf_root, workload_name, workload_tail)))
@@ -190,7 +192,7 @@ def export_config(workload_name, workload_tail):
     # generate configure for spark
     with open(sparkbench_prop_conf_filename, 'w') as f:
         for source in sorted(sources.keys()):
-            items = [x for x in sources[source] if x.startswith("sparkbench.")]
+            items = [x for x in sources[source] if x.startswith("sparkbench.") or x.startswith("hibench.")]
             if items:
                 f.write("# Source: %s\n" % source)
                 f.write("\n".join(sorted(items)))
