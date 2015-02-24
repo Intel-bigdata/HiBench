@@ -209,31 +209,31 @@ function run-hadoop-job(){
 }
 
 function ensure-hivebench-release(){
-    if [ ! -e $DEPENDENCY_DIR"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
+    if [ ! -e ${DEPENDENCY_DIR}"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
 	echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
 
-    cd $DEPENDENCY_DIR"/hivebench/target"
+    cd ${DEPENDENCY_DIR}"/hivebench/target"
     if [ ! -d $HIVE_HOME ]; then
 	tar zxf $HIVE_RELEASE".tar.gz"
     fi
 }
 
 function ensure-mahout-release (){
-    if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+    if [ ! -e ${DEPENDENCY_DIR}"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
 	echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
 
-    cd $DEPENDENCY_DIR"/mahout/target"
+    cd ${DEPENDENCY_DIR}"/mahout/target"
     if [ ! -d $MAHOUT_HOME ]; then
 	tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
 }
 
 function ensure-nutchindexing-release () {
-    if [ ! -e $DEPENDENCY_DIR"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+    if [ ! -e ${DEPENDENCY_DIR}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
 	echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
@@ -243,7 +243,7 @@ function ensure-nutchindexing-release () {
 	cp $DIR/nutch/conf/nutch-site-mr2.xml $DIR/nutch/conf/nutch-site.xml
     fi
     
-    cd $DEPENDENCY_DIR"/nutchindexing/target"
+    cd ${DEPENDENCY_DIR}"/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
 	tar zxf apache-nutch-1.2-bin.tar.gz
     fi
@@ -254,7 +254,7 @@ function ensure-nutchindexing-release () {
 	mkdir $NUTCH_HOME/temp
 	unzip -q $NUTCH_HOME/nutch-1.2.job -d $NUTCH_HOME/temp
 	rm $NUTCH_HOME/temp/lib/jcl-over-slf4j-*.jar
-	cp $NUTCH_DEPENDENCY_DIR/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
+	cp ${NUTCH_DEPENDENCY_DIR}/jcl-over-slf4j-*.jar $NUTCH_HOME/temp/lib
 	rm $NUTCH_HOME/nutch-1.2.job
 	cd $NUTCH_HOME/temp
 	zip -qr $NUTCH_HOME/nutch-1.2.job *
