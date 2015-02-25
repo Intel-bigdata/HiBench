@@ -24,77 +24,58 @@ show_bannar start
 
 ensure-hivebench-release
 
-cp ${WORKLOAD_FOLDER}/hive/bin/hive $HIVE_HOME/bin
-RANKINGS_USERVISITS_SCAN="rankings_uservisits_scan"
+cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 RANKINGS_USERVISITS_SCAN_FILE="rankings_uservisits_scan.hive"
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-  RANKINGS_USERVISITS_SCAN=$RANKINGS_USERVISITS_SCAN"_"$SUBDIR
-  RANKINGS_USERVISITS_SCAN_FILE=$RANKINGS_USERVISITS_SCAN_FILE"."$SUBDIR
-fi
-
 # path check
-rmr-hdfs /user/hive/warehouse/$RANKINGS_USERVISITS_SCAN
+rmr-hdfs $OUTPUT_HDFS
 
-# pre-running
-echo "USE DEFAULT;" > ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "set hive.stats.autogather=false;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+# prepare SQL
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_SCAN_FILE
 
-if [ $COMPRESS -eq 1 ]; then
-  echo "set hive.exec.compress.output=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-    echo "set mapred.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set mapred.output.compression.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-  else
-    echo "set mapreduce.jobtracker.address=ignorethis" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set hive.exec.show.job.failure.debug.info=false" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set mapreduce.map.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-  fi
-fi
+cat <<EOF > ${HIVEBENCH_SQL_FILE}
+USE DEFAULT;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+set ${MAP_CONFIG_NAME}=$NUM_MAPS;
+set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
+set hive.stats.autogather=false;
+EOF
 
-echo "DROP TABLE rankings;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "DROP TABLE uservisits_copy;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "DROP TABLE rankings_uservisits_join;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-echo "CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-cat ${WORKLOAD_FOLDER}/hive-benchmark/rankings_uservisits_join.template >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#if [ $COMPRESS -eq 1 ]; then
+#  echo "set hive.exec.compress.output=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
+#    echo "set mapred.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set mapred.output.compression.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#  else
+#    echo "set mapreduce.jobtracker.address=ignorethis" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set hive.exec.show.job.failure.debug.info=false" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set mapreduce.map.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
+#  fi
+#fi
 
-sed -i -e "s/rankings\>/rankings_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-sed -i -e "s/uservisits_copy\>/uservisits_copy_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-sed -i -e "s/rankings_uservisits_join/${RANKINGS_USERVISITS_SCAN}/g" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "BYTES_DATA_GENERATED=" ${WORKLOAD_FOLDER}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
-else
-  USIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-  USIZE=${USIZE##*|}
-  USIZE=${USIZE//,/}
-
-  RSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/rankings | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-  RSIZE=${RSIZE##*|}
-  RSIZE=${RSIZE//,/}
-
-  SIZE=$((USIZE+RSIZE))
-fi
+cat <<EOF >> ${HIVEBENCH_SQL_FILE}
+DROP TABLE rankings;
+DROP TABLE rankings_copy;
+CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${INPUT_HDFS}/rankings';
+CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${OUTPUT_HDFS}/rankings';
+INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings;
+EOF
 
 START_TIME=`timestamp`
 
 # run bench
-$HIVE_HOME/bin/hive -f ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_SCAN_FILE
-
-# post-running
+# run bench
+START_TIME=`timestamp`
+$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
+
+sleep 3
+SIZE=`dir_size $OUTPUT_HDFS`
+
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-#$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/$RANKINGS_USERVISITS_SCAN
-#$HADOOP_EXECUTABLE fs -mkdir -p $OUTPUT_HDFS
-#$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/$RANKINGS_USERVISITS_SCAN $OUTPUT_HDFS

@@ -33,7 +33,7 @@ OPTION="-t pagerank \
         -p ${PAGES} \
         -o text"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
 
 END_TIME=`timestamp`
 

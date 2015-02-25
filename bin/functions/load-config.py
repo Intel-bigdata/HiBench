@@ -128,6 +128,7 @@ def generate_optional_value():  # get values from environment or make a guess
             version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
         HibenchConf["hibench.hadoop.version"] = "hadoop"+version[0]
         HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+
     if not HibenchConf.get("hibench.hadoop.release", ""):
         if not version:
             version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
@@ -136,16 +137,25 @@ def generate_optional_value():  # get values from environment or make a guess
             "cdh5" if "cdh5" in version else \
             HibenchConf["hibench.hadoop.version"]
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
             HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
             HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
         else:
             raise Exception("FIXME! for hadoop2, use a HADOOP_JOBCLIENT_TESTS_JAR as hadoop.example.jar")
+
     if not HibenchConf.get("hibench.hadoop.configure.dir", ""):
         HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
             else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
         HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version'"
+
+    if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
+        HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"
+        HibenchConfRef["hibench.hadoop.mapper.name"] = "Inferred by: 'hibench.hadoop.version'"
+    if not HibenchConf.get("hibench.hadoop.reducer.name", ""):
+        HibenchConf["hibench.hadoop.reducer.name"] = "mapred.reduce.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.reduces"
+        HibenchConfRef["hibench.hadoop.reducer.name"] = "Inferred by: 'hibench.hadoop.version'"
 
 
 def export_config(workload_name, workload_tail):
@@ -175,6 +185,7 @@ def export_config(workload_name, workload_tail):
         f.write("#Source: add for internal usage\n")
         f.write("SPARKBENCH_PROPERTIES_FILES=%s\n" % sparkbench_prop_conf_filename)
         f.write("SPARK_PROP_CONF=%s\n" % spark_prop_conf_filename)
+        f.write("WORKLOAD_RESULT_FOLDER=%s\n" % join(conf_dir, ".."))
 
     # generate properties for spark & sparkbench
     sources=defaultdict(list)

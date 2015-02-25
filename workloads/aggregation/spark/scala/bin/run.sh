@@ -23,11 +23,12 @@ enter_bench ScalaSparkAggregation ${workload_root} ${workload_folder}
 show_bannar start
 
 START_TIME=`timestamp`
-SIZE=`dir_size $INPUT_HDFS/uservisits`
 rmr-hdfs $OUTPUT_HDFS
 run-spark-job com.intel.sparkbench.aggregation.ScalaAggregation $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
 
+sleep 3
+SIZE=`dir_size $OUTPUT_HDFS`
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench

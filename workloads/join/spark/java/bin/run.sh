@@ -26,6 +26,8 @@ START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS/uservisits`
 rmr-hdfs $OUTPUT_HDFS
 run-spark-job com.intel.sparkbench.join.JavaJoin $INPUT_HDFS $OUTPUT_HDFS
+
+sleep 3
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

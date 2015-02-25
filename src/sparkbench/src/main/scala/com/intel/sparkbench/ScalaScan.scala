@@ -36,10 +36,14 @@ object ScalaScan{
     val hc = new HiveContext(sc)
 
     hc.sql("DROP TABLE IF EXISTS rankings")
+    hc.sql("DROP TABLE IF EXISTS rankings_copy")
     hc.sql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
            ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
            STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(0)))
-    hc.sql("FROM rankings SELECT *").saveAsTextFile("%s/rankings".format(args(1)))
+    hc.sql("""CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT)
+           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+           STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(1)))
+    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings").collect()
     sc.stop()
   }
 }

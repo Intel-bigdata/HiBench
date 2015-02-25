@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Mapping from properties to environment variable names
+"""
 HiBenchEnvPropMappingMandatory=dict(
     HADOOP_HOME="hibench.hadoop.home",
     SPARK_HOME="hibench.spark.home",
@@ -27,6 +30,9 @@ HiBenchEnvPropMappingMandatory=dict(
     NUM_REDS="hibench.default.shuffle.parallelism",
     INPUT_HDFS="hibench.workload.input",
     OUTPUT_HDFS="hibench.workload.output",
+
+    REDUCER_CONFIG_NAME="hibench.hadoop.reducer.name",
+    MAP_CONFIG_NAME="hibench.hadoop.mapper.name",
     )
 
 HiBenchEnvPropMapping=dict(
@@ -40,7 +46,9 @@ HiBenchEnvPropMapping=dict(
     HIBENCH_CONF="hibench.configure.dir", # set in default
     HIVE_HOME="hibench.hive.home",
     HIVE_RELEASE="hibench.hive.release",
+    HIVEBENCH_TEMPLATE="hibench.hivebench.template.dir",
     MAHOUT_HOME="hibench.mahout.home",
+    MAHOUT_RELEASE="hibench.mahout.release",
     NUTCH_HOME="hibench.nutch.home",
     HIBENCH_REPORT="hibench.report.dir", # set in default
     HIBENCH_REPORT_NAME="hibench.report.name", # set in default
@@ -48,21 +56,35 @@ HiBenchEnvPropMapping=dict(
     YARN_EXECUTOR_CORES="hibench.yarn.exectors.cores",
     YARN_EXECUTOR_MEMORY="hibench.yarn.exectors.memory",
     DATA_HDFS="hibench.hdfs.data.dir",
-    # Sleep workload
+    # For Sleep workload
     MAP_SLEEP_TIME="hibench.sleep.mapper.seconds",
     RED_SLEEP_TIME="hibench.sleep.reducer.seconds",
-    # Aggregation workload, data scale
-    PAGES="hibench.aggregation.pages",
-    USERVISITS="hibench.aggregation.uservisits",
-    HIVE_BASE_HDFS="hibench.hive.base.hdfs",
+    # For Sort, Terasort, Wordcount
+    DATASIZE="hibench.workload.datasize",
+    # For hive related workload, data scale
+    PAGES="hibench.workload.pages",
+    USERVISITS="hibench.workload.uservisits",
     HIVE_INPUT="hibench.hive.dir.name.input",
+    HIVE_BASE_HDFS="hibench.hive.base.hdfs",
+    # For bayes
+    CLASSES="hibench.workload.classes",
+    BAYES_INPUT="hibench.bayes.dir.name.input",
     DATATOOLS="hibench.hibench.datatool.dir",
-    # Sort
-    SORT_DATASIZE="hibench.sort.datasize",
-    # Terasort
-    TERASORT_DATASIZE="hibench.terasort.datasize",
-    # Wordcount
-    WORDCOUNT_DATASIZE="hibench.wordcount.datasize",
+    BAYES_BASE_HDFS="hibench.bayes.base.hdfs",
+    NGRAMS="hibench.bayes.ngrams",
+    # For kmeans
+    INPUT_SAMPLE="hibench.kmeans.input.sample",
+    INPUT_CLUSTER="hibench.kmeans.input.cluster",
+    NUM_OF_CLUSTERS="hibench.kmeans.num_of_clusters",
+    NUM_OF_SAMPLES="hibench.kmeans.num_of_samples",
+    SAMPLES_PER_INPUTFILE="hibench.kmeans.samples_per_inputfile",
+    DIMENSIONS="hibench.kmeans.dimensions",
+    MAX_ITERATION="hibench.kmeans.max_iteration",
+    # For Pagerank
+    PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
+    PAGERANK_INPUT="hibench.pagerank.dir.name.input",
+    BLOCK="hibench.pagerank.block",
+    NUM_ITERATIONS="hibench.pagerank.num_iterations",
     )
 
 HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}

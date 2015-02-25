@@ -23,11 +23,12 @@ enter_bench PythonSparkScan ${workload_root} ${workload_folder}
 show_bannar start
 
 START_TIME=`timestamp`
-SIZE=`dir_size $INPUT_HDFS/rankings`
 rmr-hdfs $OUTPUT_HDFS
 run-spark-job ${HIBENCH_PYTHON_PATH}/scan.py $INPUT_HDFS $OUTPUT_HDFS
 END_TIME=`timestamp`
 
+sleep 3
+SIZE=`dir_size $OUTPUT_HDFS`
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench

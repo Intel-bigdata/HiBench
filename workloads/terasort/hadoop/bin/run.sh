@@ -26,7 +26,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -Dmapred.reduce.tasks=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} terasort -D${REDUCER_CONFIG_NAME}=${NUM_REDS} ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

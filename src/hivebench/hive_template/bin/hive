@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+cygwin=false
+case "`uname`" in
+   CYGWIN*) cygwin=true;;
+esac
+
+bin=`dirname "$0"`
+bin=`cd "$bin"; pwd`
+
+. "$bin"/hive-config.sh
+
+SERVICE=""
+HELP=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --service)
+      shift
+      SERVICE=$1
+      shift
+      ;;
+    --rcfilecat)
+      SERVICE=rcfilecat
+      shift
+      ;;
+    --orcfiledump)
+      SERVICE=orcfiledump
+      shift
+      ;;
+    --help)
+      HELP=_help
+      shift
+      ;;
+    --debug*)
+      DEBUG=$1
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [ "$SERVICE" = "" ] ; then
+  if [ "$HELP" = "_help" ] ; then
+    SERVICE="help"
+  else
+    SERVICE="cli"
+  fi
+fi
+
+if [ -f "${HIVE_CONF_DIR}/hive-env.sh" ]; then
+  . "${HIVE_CONF_DIR}/hive-env.sh"
+fi
+
+CLASSPATH="${HIVE_CONF_DIR}"
+
+HIVE_LIB=${HIVE_HOME}/lib
+
+# needed for execution
+if [ ! -f ${HIVE_LIB}/hive-exec-*.jar ]; then
+  echo "Missing Hive Execution Jar: ${HIVE_LIB}/hive-exec-*.jar"
+  exit 1;
+fi
+
+if [ ! -f ${HIVE_LIB}/hive-metastore-*.jar ]; then
+  echo "Missing Hive MetaStore Jar"
+  exit 2;
+fi
+
+# cli specific code
+if [ ! -f ${HIVE_LIB}/hive-cli-*.jar ]; then
+  echo "Missing Hive CLI Jar"
+  exit 3;
+fi
+
+for f in ${HIVE_LIB}/*.jar; do
+  CLASSPATH=${CLASSPATH}:$f;
+done
+
+# add the auxillary jars such as serdes
+if [ -d "${HIVE_AUX_JARS_PATH}" ]; then
+  for f in ${HIVE_AUX_JARS_PATH}/*.jar; do
+    if [[ ! -f $f ]]; then
+        continue;
+    fi
+    if $cygwin; then
+	f=`cygpath -w "$f"`
+    fi
+    AUX_CLASSPATH=${AUX_CLASSPATH}:$f
+    if [ "${AUX_PARAM}" == "" ]; then
+        AUX_PARAM=file://$f
+    else
+        AUX_PARAM=${AUX_PARAM},file://$f;
+    fi
+  done
+elif [ "${HIVE_AUX_JARS_PATH}" != "" ]; then 
+  HIVE_AUX_JARS_PATH=`echo $HIVE_AUX_JARS_PATH | sed 's/,/:/g'`
+  if $cygwin; then
+      HIVE_AUX_JARS_PATH=`cygpath -p -w "$HIVE_AUX_JARS_PATH"`
+      HIVE_AUX_JARS_PATH=`echo $HIVE_AUX_JARS_PATH | sed 's/;/,/g'`
+  fi
+  AUX_CLASSPATH=${HIVE_AUX_JARS_PATH}
+  AUX_PARAM="file://$(echo ${HIVE_AUX_JARS_PATH} | sed 's/:/,file:\/\//g')"
+fi
+
+# adding jars from auxlib directory
+for f in ${HIVE_HOME}/auxlib/*.jar; do
+  if [[ ! -f $f ]]; then
+      continue;
+  fi
+  if $cygwin; then
+      f=`cygpath -w "$f"`
+  fi
+  AUX_CLASSPATH=${AUX_CLASSPATH}:$f
+  if [ "${AUX_PARAM}" == "" ]; then
+    AUX_PARAM=file://$f
+  else
+    AUX_PARAM=${AUX_PARAM},file://$f;
+  fi
+done
+if $cygwin; then
+    CLASSPATH=`cygpath -p -w "$CLASSPATH"`
+    CLASSPATH=${CLASSPATH};${AUX_CLASSPATH}
+else
+    CLASSPATH=${CLASSPATH}:${AUX_CLASSPATH}
+fi
+
+# supress the HADOOP_HOME warnings in 1.x.x
+export HADOOP_HOME_WARN_SUPPRESS=true 
+
+# pass classpath to hadoop
+export HADOOP_CLASSPATH="${HADOOP_CLASSPATH}:${CLASSPATH}"
+
+# check for hadoop in the path
+HADOOP_IN_PATH=`which hadoop 2>/dev/null`
+if [ -f ${HADOOP_IN_PATH} ]; then
+  HADOOP_DIR=`dirname "$HADOOP_IN_PATH"`/..
+fi
+# HADOOP_HOME env variable overrides hadoop in the path
+HADOOP_HOME=${HADOOP_HOME:-${HADOOP_PREFIX:-$HADOOP_DIR}}
+if [ "$HADOOP_HOME" == "" ]; then
+  echo "Cannot find hadoop installation: \$HADOOP_HOME or \$HADOOP_PREFIX must be set or hadoop must be in the path";
+  exit 4;
+fi
+
+#HADOOP=$HADOOP_HOME/bin/hadoop
+HADOOP=${HADOOP_EXECUTABLE:-$HADOOP_IN_PATH}
+if [ ! -f ${HADOOP} ]; then
+  echo "Cannot find hadoop installation: \$HADOOP_HOME or \$HADOOP_PREFIX must be set or hadoop must be in the path";
+  exit 4;
+fi
+
+# Make sure we're using a compatible version of Hadoop
+if [ "x$HADOOP_VERSION_REL" == "x" ]; then
+    HADOOP_VERSION_REL=$($HADOOP version | awk '{if (NR == 1) {print $2;}}');
+fi
+
+# Save the regex to a var to workaround quoting incompatabilities
+# between Bash 3.1 and 3.2
+hadoop_version_re="^([[:digit:]]+)\.([[:digit:]]+)(\.([[:digit:]]+))?.*$"
+
+if [[ "$HADOOP_VERSION_REL" =~ $hadoop_version_re ]]; then
+    hadoop_major_ver=${BASH_REMATCH[1]}
+    hadoop_minor_ver=${BASH_REMATCH[2]}
+    hadoop_patch_ver=${BASH_REMATCH[4]}
+else
+    echo "Unable to determine Hadoop version information."
+    echo "'hadoop version' returned:"
+    echo `$HADOOP version`
+#    exit 5
+fi
+
+if [ "$hadoop_major_ver" -lt "1" -a  "$hadoop_minor_ver$hadoop_patch_ver" -lt "201" ]; then
+    echo "Hive requires Hadoop 0.20.x (x >= 1)."
+    echo "'hadoop version' returned:"
+    echo `$HADOOP version`
+#    exit 6
+fi
+
+if [ "${AUX_PARAM}" != "" ]; then
+  HIVE_OPTS="$HIVE_OPTS -hiveconf hive.aux.jars.path=${AUX_PARAM}"
+  AUX_JARS_CMD_LINE="-libjars ${AUX_PARAM}"
+fi
+
+SERVICE_LIST=""
+
+for i in "$bin"/ext/*.sh ; do
+  . $i
+done
+
+for i in "$bin"/ext/util/*.sh ; do
+  . $i
+done
+
+if [ "$DEBUG" ]; then
+  if [ "$HELP" ]; then
+    debug_help
+    exit 0
+  else
+    get_debug_params "$DEBUG"
+    export HADOOP_CLIENT_OPTS="$HADOOP_CLIENT_OPTS $HIVE_MAIN_CLIENT_DEBUG_OPTS"
+    export HADOOP_OPTS="$HADOOP_OPTS $HADOOP_CLIENT_OPTS"
+  fi
+fi
+
+TORUN=""
+for j in $SERVICE_LIST ; do
+  if [ "$j" = "$SERVICE" ] ; then
+    TORUN=${j}$HELP
+  fi
+done
+
+if [ "$TORUN" = "" ] ; then
+  echo "Service $SERVICE not found"
+  echo "Available Services: $SERVICE_LIST"
+  exit 7
+else
+  $TORUN "$@"
+fi

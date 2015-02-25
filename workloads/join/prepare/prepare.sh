@@ -19,7 +19,7 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareAggregation ${workload_root} ${workload_folder}
+enter_bench HadoopPrepareJoin ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true

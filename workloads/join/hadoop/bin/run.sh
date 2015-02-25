@@ -24,77 +24,57 @@ show_bannar start
 
 ensure-hivebench-release
 
-cp ${WORKLOAD_FOLDER}/hive/bin/hive $HIVE_HOME/bin
-RANKINGS_USERVISITS_JOIN="rankings_uservisits_join"
+cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 RANKINGS_USERVISITS_JOIN_FILE="rankings_uservisits_join.hive"
 
-SUBDIR=$1
-if [ -n "$SUBDIR" ]; then
-  OUTPUT_HDFS=$OUTPUT_HDFS"/"$SUBDIR
-  RANKINGS_USERVISITS_JOIN=$RANKINGS_USERVISITS_JOIN"_"$SUBDIR
-  RANKINGS_USERVISITS_JOIN_FILE=$RANKINGS_USERVISITS_JOIN_FILE"."$SUBDIR
-fi
-
 # path check
-rmr-hdfs /user/hive/warehouse/$RANKINGS_USERVISITS_JOIN
+rmr-hdfs $OUTPUT_HDFS
 
-# pre-running
-echo "USE DEFAULT;" > ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "set $CONFIG_MAP_NUMBER=$NUM_MAPS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "set $CONFIG_REDUCER_NUMBER=$NUM_REDS;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "set hive.stats.autogather=false;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+# prepare SQL
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_JOIN_FILE
 
-if [ $COMPRESS -eq 1 ]; then
-  echo "set hive.exec.compress.output=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
-    echo "set mapred.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set mapred.output.compression.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-  else
-    echo "set mapreduce.jobtracker.address=ignorethis" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set hive.exec.show.job.failure.debug.info=false" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set mapreduce.map.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-  fi
-fi
+cat <<EOF > ${HIVEBENCH_SQL_FILE}
+USE DEFAULT;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+set ${MAP_CONFIG_NAME}=$NUM_MAPS;
+set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
+set hive.stats.autogather=false;
+EOF
 
-echo "DROP TABLE rankings;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "DROP TABLE uservisits_copy;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "DROP TABLE rankings_uservisits_join;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-echo "CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-cat ${WORKLOAD_FOLDER}/hive-benchmark/rankings_uservisits_join.template >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#if [ $COMPRESS -eq 1 ]; then
+#  echo "set hive.exec.compress.output=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#  if [ "x"$HADOOP_VERSION == "xhadoop1" ]; then
+#    echo "set mapred.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set mapred.output.compression.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set mapred.output.compression.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#  else
+#    echo "set mapreduce.jobtracker.address=ignorethis" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set hive.exec.show.job.failure.debug.info=false" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set mapreduce.map.output.compress=true;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set mapreduce.map.output.compress.codec=${COMPRESS_CODEC};" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#    echo "set mapreduce.fileoutputformat.compress.type=BLOCK;" >> ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
+#  fi
+#fi
 
-sed -i -e "s/rankings\>/rankings_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-sed -i -e "s/uservisits_copy\>/uservisits_copy_${1}/1" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-sed -i -e "s/rankings_uservisits_join/${RANKINGS_USERVISITS_JOIN}/g" ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-
-if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-  SIZE=`grep "BYTES_DATA_GENERATED=" ${WORKLOAD_FOLDER}/$TMPLOGFILE | sed 's/BYTES_DATA_GENERATED=//' | awk '{sum += $1} END {print sum}'`
-else
-  USIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/uservisits | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-  USIZE=${USIZE##*|}
-  USIZE=${USIZE//,/}
-
-  RSIZE=$($HADOOP_EXECUTABLE job -history $INPUT_HDFS/rankings | grep 'HiBench.Counters.*|BYTES_DATA_GENERATED')
-  RSIZE=${RSIZE##*|}
-  RSIZE=${RSIZE//,/}
-
-  SIZE=$((USIZE+RSIZE))
-fi
-
-START_TIME=`timestamp`
+cat <<EOF >> ${HIVEBENCH_SQL_FILE}
+DROP TABLE rankings;
+DROP TABLE uservisits_copy;
+DROP TABLE rankings_uservisits_join;
+CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
+CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
+INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC limit 1;
+EOF
 
 # run bench
-$HIVE_HOME/bin/hive -f ${WORKLOAD_FOLDER}/hive-benchmark/$RANKINGS_USERVISITS_JOIN_FILE
-
-# post-running
+START_TIME=`timestamp`
+$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
+
+sleep 3
+SIZE=`dir_size $OUTPUT_HDFS`
+
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-#$HADOOP_EXECUTABLE $RMDIR_CMD $OUTPUT_HDFS/$RANKINGS_USERVISITS_JOIN
-#$HADOOP_EXECUTABLE fs -mkdir -p $OUTPUT_HDFS
-#$HADOOP_EXECUTABLE fs -cp /user/hive/warehouse/$RANKINGS_USERVISITS_JOIN $OUTPUT_HDFS

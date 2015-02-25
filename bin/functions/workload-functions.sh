@@ -218,6 +218,7 @@ function ensure-hivebench-release(){
     if [ ! -d $HIVE_HOME ]; then
 	tar zxf $HIVE_RELEASE".tar.gz"
     fi
+    export HADOOP_EXECUTABLE
 }
 
 function ensure-mahout-release (){
@@ -230,6 +231,9 @@ function ensure-mahout-release (){
     if [ ! -d $MAHOUT_HOME ]; then
 	tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
+    export HADOOP_EXECUTABLE
+    export HADOOP_HOME
+    export HADOOP_CONF_DIR
 }
 
 function ensure-nutchindexing-release () {
