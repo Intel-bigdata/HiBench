@@ -21,11 +21,14 @@
 
 package org.apache.spark.examples.mllib
 
+import org.apache.hadoop.io.LongWritable
 import org.apache.log4j.{Level, Logger}
+import org.apache.mahout.math.VectorWritable
 import org.apache.spark.mllib.clustering.KMeans
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.{SparkConf, SparkContext}
 import scopt.OptionParser
+import org.apache.spark.SparkContext._
 
 /**
  * An example k-means app. Run with
@@ -84,9 +87,18 @@ object DenseKMeans {
 
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    val examples = sc.textFile(params.input).map { line =>
-      Vectors.dense(line.split(' ').map(_.toDouble))
+
+    val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
+
+    val examples = data.map { case (k, v) =>
+      var vector: Array[Double] = new Array[Double](v.get().size)
+      for (i <- 0 until v.get().size) vector(i) = v.get().get(i)
+      Vectors.dense(vector)
     }.cache()
+
+//    val examples = sc.textFile(params.input).map { line =>
+//      Vectors.dense(line.split(' ').map(_.toDouble))
+//    }.cache()
 
     val numExamples = examples.count()
 

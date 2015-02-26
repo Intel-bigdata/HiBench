@@ -16,7 +16,7 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench ScalaSparkKmeans ${workload_root} ${workload_folder}
@@ -26,8 +26,8 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-echo "FIXME, convert?"
-run-spark-job org.apache.spark.examples.mllib.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS 
+
+run-spark-job org.apache.spark.examples.mllib.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

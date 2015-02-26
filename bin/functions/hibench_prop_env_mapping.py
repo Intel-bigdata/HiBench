@@ -80,6 +80,7 @@ HiBenchEnvPropMapping=dict(
     SAMPLES_PER_INPUTFILE="hibench.kmeans.samples_per_inputfile",
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
+    K="hibench.kmeans.k",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
