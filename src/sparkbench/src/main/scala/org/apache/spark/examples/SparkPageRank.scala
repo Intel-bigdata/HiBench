@@ -39,15 +39,20 @@ import org.apache.spark.{SparkConf, SparkContext}
 object SparkPageRank {
   def main(args: Array[String]) {
     if (args.length < 2) {
-      System.err.println("Usage: SparkPageRank <input_file> <output_filename> <iter>")
+      System.err.println("Usage: SparkPageRank <input_file> <output_filename> [<iter>]")
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("PageRank")
-    val iters = if (args.length > 0) args(2).toInt else 10
+    val sparkConf = new SparkConf().setAppName("ScalaPageRank")
+    val input_path = args(0)
+    val output_path = args(1)
+    val iters = if (args.length > 2) args(2).toInt else 10
     val ctx = new SparkContext(sparkConf)
-    val lines = ctx.textFile(args(0), 1)
+
+//  Modified by Lv: accept last two values from HiBench generated PageRank data format
+    val lines = ctx.textFile(input_path, 1)
     val links = lines.map{ s =>
-      val parts = s.split("\\s+")
+      val elements = s.split("\\s+")
+      val parts = elements.slice(elements.length - 2, elements.length)
       (parts(0), parts(1))
     }.distinct().groupByKey().cache()
     var ranks = links.mapValues(v => 1.0)
@@ -62,7 +67,7 @@ object SparkPageRank {
 
 //    val output = ranks.collect()
 //    output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
-    ranks.saveAsTextFile(args(1))
+    ranks.saveAsTextFile(output_path)
 
     ctx.stop()
   }

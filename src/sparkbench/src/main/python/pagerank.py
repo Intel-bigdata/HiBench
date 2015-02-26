@@ -39,7 +39,8 @@ def computeContribs(urls, rank):
 def parseNeighbors(urls):
     """Parses a urls pair string into urls pair."""
     parts = re.split(r'\s+', urls)
-    return parts[0], parts[1]
+    # Modified by Lv: accept last two values from HiBench generated PageRank data format.
+    return parts[-2], parts[-1]
 
 
 if __name__ == "__main__":

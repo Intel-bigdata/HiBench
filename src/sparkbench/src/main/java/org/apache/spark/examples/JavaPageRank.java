@@ -80,7 +80,8 @@ public final class JavaPageRank {
       @Override
       public Tuple2<String, String> call(String s) {
         String[] parts = SPACES.split(s);
-        return new Tuple2<String, String>(parts[0], parts[1]);
+        // Modified by Lv: accept last two values from HiBench generated PageRank data format
+        return new Tuple2<String, String>(parts[parts.length-2], parts[parts.length-1]);
       }
     }).distinct().groupByKey().cache();
 
