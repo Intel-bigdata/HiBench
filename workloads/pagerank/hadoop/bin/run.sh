@@ -38,23 +38,23 @@ START_TIME=`timestamp`
 # run bench
 if [ $BLOCK -eq 0 ]
 then
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankNaive $OPTION
+    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankNaive $OPTION
 else
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
+    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankInitVector ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
     rmr-hdfs ${OUTPUT_HDFS}/pr_input
 
     rmr-hdfs ${OUTPUT_HDFS}/pr_iv_block
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
+    run-hadoop-job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
     rmr-hdfs ${OUTPUT_HDFS}/pr_initvector
 
     rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
+    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankPrep ${COMPRESS_OPT} ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
 
     rmr-hdfs ${OUTPUT_HDFS}/pr_edge_block
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
+    run-hadoop-job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep ${COMPRESS_OPT} ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
     rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
 
-    run-hadoop-job ${DIR}/pegasus-2.0.jar pegasus.PagerankBlock ${OPTION}
+    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankBlock ${OPTION}
 fi
 
 END_TIME=`timestamp`

@@ -85,6 +85,7 @@ HiBenchEnvPropMapping=dict(
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
     BLOCK="hibench.pagerank.block",
     NUM_ITERATIONS="hibench.pagerank.num_iterations",
+    PEGASUS_JAR="hibench.pagerank.pegasus.dir",
     )
 
 HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}
