@@ -33,7 +33,8 @@ from pyspark.mllib.clustering import KMeans
 
 
 def parseVector(line):
-    return np.array([float(x) for x in line.split(' ')])
+    vector = eval(line[1])
+    return np.array([vector.get(x,0.0) for x in range(max(vector)+1)])
 
 
 if __name__ == "__main__":
@@ -41,7 +42,8 @@ if __name__ == "__main__":
         print >> sys.stderr, "Usage: kmeans <file> <k> <max_iteration>"
         exit(-1)
     sc = SparkContext(appName="PythonKMeans")
-    lines = sc.textFile(sys.argv[1])
+    lines = sc.sequenceFile(sys.argv[1], "org.apache.hadoop.io.LongWritable", "org.apache.mahout.math.VectorWritable",
+                            valueConverter="com.intel.sparkbench.datagen.pythonconverter.MahoutVectorToStringConverter")
     data = lines.map(parseVector)
     k = int(sys.argv[2])
     max_iterations = int(sys.argv[3])
