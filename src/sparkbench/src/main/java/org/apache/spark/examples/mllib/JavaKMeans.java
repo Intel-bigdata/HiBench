@@ -22,7 +22,10 @@ package org.apache.spark.examples.mllib;
 
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.io.LongWritable;
+import org.apache.mahout.math.VectorWritable;
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
@@ -31,6 +34,7 @@ import org.apache.spark.mllib.clustering.KMeans;
 import org.apache.spark.mllib.clustering.KMeansModel;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
+import scala.Tuple2;
 
 /**
  * Example using MLLib KMeans from Java.
@@ -67,9 +71,21 @@ public final class JavaKMeans {
     }
     SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans");
     JavaSparkContext sc = new JavaSparkContext(sparkConf);
-    JavaRDD<String> lines = sc.textFile(inputFile);
 
-    JavaRDD<Vector> points = lines.map(new ParsePoint());
+    JavaPairRDD<LongWritable, VectorWritable> data = sc.sequenceFile(inputFile,
+                LongWritable.class, VectorWritable.class);
+
+    JavaRDD<Vector> points = data.map(new Function<Tuple2<LongWritable, VectorWritable>, Vector>() {
+        @Override
+        public Vector call(Tuple2<LongWritable, VectorWritable> e) {
+            VectorWritable val = e._2();
+            double[] v = new double[val.get().size()];
+            for (int i = 0; i < val.get().size(); ++i) {
+                v[i] = val.get().get(i);
+            }
+            return Vectors.dense(v);
+        }
+    });
 
     KMeansModel model = KMeans.train(points.rdd(), k, iterations, runs, KMeans.K_MEANS_PARALLEL());
 

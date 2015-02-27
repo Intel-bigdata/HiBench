@@ -87,7 +87,6 @@ object DenseKMeans {
 
     Logger.getRootLogger.setLevel(Level.WARN)
 
-
     val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
 
     val examples = data.map { case (k, v) =>

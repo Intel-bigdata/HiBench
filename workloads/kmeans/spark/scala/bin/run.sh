@@ -27,7 +27,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-run-spark-job org.apache.spark.examples.mllib.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS
+run-spark-job org.apache.spark.examples.mllib.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS/samples
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
