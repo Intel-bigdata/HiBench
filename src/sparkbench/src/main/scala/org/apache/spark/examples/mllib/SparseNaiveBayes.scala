@@ -21,11 +21,15 @@
 package org.apache.spark.examples.mllib
 
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.storage.StorageLevel
 import scopt.OptionParser
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.classification.NaiveBayes
-import org.apache.spark.mllib.util.MLUtils
+import org.apache.hadoop.io.Text
+import org.apache.spark.SparkContext._
 
 /**
  * An example naive Bayes app. Run with
@@ -78,8 +82,42 @@ object SparseNaiveBayes {
     val minPartitions =
       if (params.minPartitions > 0) params.minPartitions else sc.defaultMinPartitions
 
-    val examples =
-      MLUtils.loadLibSVMFile(sc, params.input, params.numFeatures, minPartitions)
+    // Generate vectors according to input documents
+    val data = sc.sequenceFile[Text, Text](params.input).map{case (k, v) => (k.toString, v.toString)}
+    val wordCount = data
+      .flatMap{ case (key, doc) => doc.split(" ")}
+      .map((_, 1))
+      .reduceByKey(_ + _)
+    val wordSum = wordCount.map(_._2).reduce(_ + _)
+    val wordDict = wordCount.zipWithIndex()
+      .map{case ((key, count), index) => (key, (index.toInt, count.toDouble / wordSum)) }
+      .collectAsMap()
+    val sharedWordDict = sc.broadcast(wordDict)
+
+    // for each document, generate vector based on word freq
+    val vector = data.map { case (dockey, doc) =>
+      val docVector = doc.split(" ").map(x => sharedWordDict.value(x)) //map to word index: freq
+        .groupBy(_._1) // combine freq with same word
+        .map { case (k, v) => (k, v.map(_._2).sum)}
+
+      val (indices, values) = docVector.toList.sortBy(_._1).unzip
+      val label = dockey.substring(6).head.toDouble
+      (label, indices.toArray, values.toArray)
+    }
+
+    val d = if (params.numFeatures > 0){
+      params.numFeatures
+    } else {
+      vector.persist(StorageLevel.MEMORY_ONLY)
+      vector.map { case (label, indices, values) =>
+        indices.lastOption.getOrElse(0)
+      }.reduce(math.max) + 1
+    }
+
+    val examples = vector.map{ case (label, indices, values) =>
+      LabeledPoint(label, Vectors.sparse(d, indices, values))
+    }
+
     // Cache examples because it will be used in both training and evaluation.
     examples.cache()
 
