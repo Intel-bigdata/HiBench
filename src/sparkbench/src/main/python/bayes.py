@@ -27,6 +27,7 @@ from pyspark import SparkContext
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.classification import NaiveBayes
 from pyspark.mllib.regression import LabeledPoint
+from pyspark.mllib.linalg import Vectors
 from pyspark.storagelevel import StorageLevel
 from operator import add
 from itertools import groupby
@@ -52,7 +53,7 @@ if __name__ == "__main__":
 
     wordSum = wordCount.map(lambda x:x[1]).reduce(lambda x,y:x+y)
     wordDict = wordCount.zipWithIndex()             \
-        .map(lambda ((key, count),index): (key, (index, count*1.0 / wordSum)) )             \
+        .map(lambda ((key, count), index): (key, (index, count*1.0 / wordSum)) )             \
         .collectAsMap()
     sharedWordDict = sc.broadcast(wordDict)
 
@@ -61,9 +62,11 @@ if __name__ == "__main__":
         # map to word index: freq
         # combine freq with same word
         docVector = [(key, sum((z[1] for z in values))) for key, values in
-                     groupby([sharedWordDict.value[x] for x in doc.split(" ")], key=lambda x:x[0])]
+                     groupby(sorted([sharedWordDict.value[x] for x in doc.split(" ")],
+                                    key=lambda x:x[0]),
+                             key=lambda x:x[0])]
 
-        (indices, values) = docVector.toList.sortBy(_._1).unzip
+        (indices, values) = zip(*docVector)      # unzip
         label = float(dockey[6:])
         return label, indices, values
 
@@ -76,7 +79,7 @@ if __name__ == "__main__":
 
 #    print "###### Load svm file", filename
     #examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
-    example = vector.map( lambda (label, indices, values) : LabeledPoint(label, Vectors.sparse(d, indices, values)))
+    examples = vector.map( lambda (label, indices, values) : LabeledPoint(label, Vectors.sparse(d, indices, values)))
 
     examples.cache()
 

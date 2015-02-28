@@ -62,7 +62,7 @@ def report_plot(fn):
 def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="durtation", fig_fn = "foo.png"):
     # plot it
     keys = groups.keys()
-    languages = reduce(lambda x,y: x.union(y), [set([groups[x][y].language for y in groups[x]]) for x in groups])
+    languages = sorted(reduce(lambda x,y: x.union(y), [set([groups[x][y].language for y in groups[x]]) for x in groups]))
     width = 0.15
     rects = []
 
