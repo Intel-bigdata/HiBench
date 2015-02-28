@@ -26,7 +26,10 @@ import sys
 from pyspark import SparkContext
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.classification import NaiveBayes
-
+from pyspark.mllib.regression import LabeledPoint
+from pyspark.storagelevel import StorageLevel
+from operator import add
+from itertools import groupby
 #
 # Adopted from spark's doc: http://spark.apache.org/docs/latest/mllib-naive-bayes.html
 #
@@ -34,14 +37,47 @@ def parseVector(line):
     return np.array([float(x) for x in line.split(' ')])
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: bayes <file> <numFeatures>"
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: bayes <file>"
         exit(-1)
     sc = SparkContext(appName="PythonNaiveBayes")
     filename = sys.argv[1]
-    numFeatures = int(sys.argv[2])
+
+
+    data = sc.sequenceFile(filename, "org.apache.hadoop.io.Text", "org.apache.hadoop.io.Text")
+    wordCount = data                                \
+        .flatMap(lambda (key, doc):doc.split(" "))    \
+        .map(lambda x:(x, 1))                                \
+        .reduceByKey(add)
+
+    wordSum = wordCount.map(lambda x:x[1]).reduce(lambda x,y:x+y)
+    wordDict = wordCount.zipWithIndex()             \
+        .map(lambda ((key, count),index): (key, (index, count*1.0 / wordSum)) )             \
+        .collectAsMap()
+    sharedWordDict = sc.broadcast(wordDict)
+
+    # for each document, generate vector based on word freq
+    def doc2vector(dockey, doc):
+        # map to word index: freq
+        # combine freq with same word
+        docVector = [(key, sum((z[1] for z in values))) for key, values in
+                     groupby([sharedWordDict.value[x] for x in doc.split(" ")], key=lambda x:x[0])]
+
+        (indices, values) = docVector.toList.sortBy(_._1).unzip
+        label = float(dockey[6:])
+        return label, indices, values
+
+    vector = data.map( lambda (dockey, doc) : doc2vector(dockey, doc))
+
+    vector.persist(StorageLevel.MEMORY_ONLY)
+    d = vector.map( lambda (label, indices, values) : indices[-1] if indices else 0)\
+              .reduce(lambda a,b:max(a,b)) + 1
+
+
 #    print "###### Load svm file", filename
-    examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
+    #examples = MLUtils.loadLibSVMFile(sc, filename, numFeatures = numFeatures)
+    example = vector.map( lambda (label, indices, values) : LabeledPoint(label, Vectors.sparse(d, indices, values)))
+
     examples.cache()
 
     # FIXME: need randomSplit!
@@ -53,7 +89,7 @@ if __name__ == "__main__":
     print " numTraining = %d, numTest = %d." % (numTraining, numTest)
     model = NaiveBayes.train(training, 1.0)
 
-    model_share=sc.broadcast(model)
+    model_share = sc.broadcast(model)
     predictionAndLabel = test.map( lambda x: (x.label, model_share.value.predict(x.features)))
 #    prediction = model.predict(test.map( lambda x: x.features ))
 #    predictionAndLabel = prediction.zip(test.map( lambda x:x.label ))
