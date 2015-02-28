@@ -77,7 +77,7 @@ object SparseNaiveBayes {
     val conf = new SparkConf().setAppName(s"SparseNaiveBayes with $params")
     val sc = new SparkContext(conf)
 
-    Logger.getRootLogger.setLevel(Level.WARN)
+//    Logger.getRootLogger.setLevel(Level.WARN)
 
     val minPartitions =
       if (params.minPartitions > 0) params.minPartitions else sc.defaultMinPartitions
