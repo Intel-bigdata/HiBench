@@ -13,7 +13,7 @@
 #
 DIR=`dirname "$0"`
 
-. $DIR/../../../../../../bin/hibench-config.sh
+. $HIBENCH_WORKLOAD_CONF
 
 cygwin=false
 case "`uname`" in
@@ -255,4 +255,5 @@ fi
 
 # run it
 exec "$JAVA" $JAVA_HEAP_MAX $NUTCH_OPTS -classpath "$CLASSPATH" $CLASS "$@"
+
 

@@ -16,21 +16,24 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench HadoopNutchindexing ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $OUTPUT_HDFS || true
-ensure-nutchindexing-release
+
+NUTCH_HOME_WORKLOAD=`ensure-nutchindexing-release`
 NUTCH_DEPENDENCY_DIR=$DEPENDENCY_DIR"/nutchindexing/target/dependency"
-cd $NUTCH_HOME
+cd $NUTCH_HOME_WORKLOAD
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-$NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+export HIBENCH_WORKLOAD_CONF
+export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME_WORKLOAD/conf
+$NUTCH_HOME_WORKLOAD/bin/nutch index $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 END_TIME=`timestamp`
 
@@ -39,10 +42,9 @@ show_bannar finish
 leave_bench
 
 
-
 # pre-running
 #SIZE=`dir_size $INPUT_HDFS`
 #SIZE=`$HADOOP_EXECUTABLE fs -dus $INPUT_HDFS |  grep -o [0-9]* `
 #export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME/conf
 
-
+#$NUTCH_HOME/bin/nutch index $COMPRESS_OPTS $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*

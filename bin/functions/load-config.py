@@ -186,6 +186,7 @@ def export_config(workload_name, workload_tail):
         f.write("SPARKBENCH_PROPERTIES_FILES=%s\n" % sparkbench_prop_conf_filename)
         f.write("SPARK_PROP_CONF=%s\n" % spark_prop_conf_filename)
         f.write("WORKLOAD_RESULT_FOLDER=%s\n" % join(conf_dir, ".."))
+        f.write("HIBENCH_WORKLOAD_CONF=%s\n" % conf_filename)
 
     # generate properties for spark & sparkbench
     sources=defaultdict(list)
