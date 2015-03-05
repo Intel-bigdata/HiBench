@@ -35,4 +35,4 @@ END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
-leave_ben
+leave_bench

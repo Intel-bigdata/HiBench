@@ -81,7 +81,7 @@ function gen_report() {		# dump the result to report file
 
 function rmr-hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
-    if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+    if [ "x"$HADOOP_VERSION == "xhadoop2" ] || [ "$HADOOP_RELEASE" == "cdh?" ]; then
 	RMDIR_CMD="fs -rm -r -skipTrash"
     else
 	RMDIR_CMD="fs -rmr -skipTrash"
@@ -91,7 +91,8 @@ function rmr-hdfs(){		# rm -r for hdfs
 }
 
 function dus-hdfs(){		# du -s for hdfs
-    if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
+    assert $1 "dir parameter missing"
+    if [ "x"$HADOOP_VERSION == "xhadoop2" ] || ["$HADOOP_RELEASE" == "chd?"]; then
 	DUS_CMD="fs -du -s"
     else
 	DUS_CMD="fs -dus"
@@ -121,7 +122,7 @@ function check_dir() {		# ensure dir is created
 }
 
 function dir_size() {		
-    for item in $($HADOOP_EXECUTABLE fs -dus $1); do
+    for item in $(dus-hdfs $1); do
         if [[ $item =~ ^[0-9]+$ ]]; then
             echo $item
         fi
