@@ -35,7 +35,7 @@ OPTION="-t hive \
         -o sequence"
 
 START_TIME=`timestamp`
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${COMPRESS_OPT}
 END_TIME=`timestamp`
 SIZE="0"
 
