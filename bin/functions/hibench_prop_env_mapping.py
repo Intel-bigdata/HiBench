@@ -33,6 +33,7 @@ HiBenchEnvPropMappingMandatory=dict(
 
     REDUCER_CONFIG_NAME="hibench.hadoop.reducer.name",
     MAP_CONFIG_NAME="hibench.hadoop.mapper.name",
+    COMPRESS_OPT="hibench.workload.compress.options",
     )
 
 HiBenchEnvPropMapping=dict(

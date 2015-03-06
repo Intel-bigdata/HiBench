@@ -95,7 +95,9 @@ def check_config():             # check configures
         assert HibenchConf.get(prop_name, ""), "Mandatory configure missing: %s" % prop_name
     # Ensure all ref values in configure has been expanded
     for _, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
-        assert "${" not in HibenchConf.get(prop_name, ""), "Unsolved ref key: %s. defined at %s" % (prop_name, HibenchConfRef.get(prop_name, "unknown"))
+        assert "${" not in HibenchConf.get(prop_name, ""), "Unsolved ref key: %s. \n    Defined at %s:\n    Unsolved value:%s\n" % (prop_name,
+                                                                                                                              HibenchConfRef.get(prop_name, "unknown"),
+                                                                                                                              HibenchConf.get(prop_name, "unknown"))
 
 def waterfall_config():         # replace "${xxx}" to its values
     def process_replace(m):
@@ -122,26 +124,25 @@ def generate_optional_value():  # get values from environment or make a guess
     HibenchConf['hibench.home']=d(d(d(os.path.abspath(__file__))))
     del d
     HibenchConfRef['hibench.home']="Inferred from %s" % __file__
-    version=""
+    version = ""
+    def get_hadoop_version_cmd(): return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+    def get_hadoop_version(): return shell(get_hadoop_version_cmd()).strip()
     if not HibenchConf.get("hibench.hadoop.version", ""):
         if not version:
-            version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
-        log("version1", version, "exec:", HibenchConf['hibench.hadoop.executable'])
-
+            version = get_hadoop_version()
         HibenchConf["hibench.hadoop.version"] = "hadoop"+version[0]
-        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + get_hadoop_version_cmd()
 
     if not HibenchConf.get("hibench.hadoop.release", ""):
         if not version:
-            version = shell(HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2')
+            version = get_hadoop_version()
         HibenchConf["hibench.hadoop.release"] = \
             "cdh4" if "cdh4" in version else \
             "cdh5" if "cdh5" in version else \
             HibenchConf["hibench.hadoop.version"]
-        HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
 
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
-        log("version,", version)
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
             HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
             HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
