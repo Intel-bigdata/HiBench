@@ -25,8 +25,8 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D test.randomtextwrite.bytes_per_map=$((${DATASIZE} / ${NUM_MAPS})) \
-    -D test.randomtextwrite.maps_per_host=${NUM_MAPS} \
+    -D ${BYTES_PER_MAP_NAME}=$((${DATASIZE} / ${NUM_MAPS})) \
+    -D ${MAPS_PER_HOST_NAME}=${NUM_MAPS} \
     ${INPUT_HDFS}
 #run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
 END_TIME=`timestamp`
