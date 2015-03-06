@@ -25,9 +25,9 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} teragen \
-    -D mapred.map.tasks=${NUM_MAPS} \
+    -D${MAP_CONFIG_NAME}=${NUM_MAPS} \
+    -D${REDUCER_CONFIG_NAME}=${NUM_REDS} \
     ${DATASIZE} ${INPUT_HDFS}
-#run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
 END_TIME=`timestamp`
 
 show_bannar finish
