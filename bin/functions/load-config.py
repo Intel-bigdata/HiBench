@@ -50,14 +50,15 @@ def load_config(conf_root, workload_root, workload_folder):
     conf_root = abspath(conf_root)
     workload_root = abspath(workload_root)
     workload_folder = abspath(workload_folder)
-    workload_tail = os.path.dirname(workload_folder[len(workload_root):])[1:]
+    workload_tail = workload_folder[len(workload_root):][1:]
+    workload_api = os.path.dirname(workload_tail) if os.path.dirname(workload_tail) else workload_tail
     workload_name = os.path.basename(workload_root)
 
     log("Workload name: %s" % workload_name)
     log("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))
     conf_files = sorted(glob.glob(conf_root+"/*.conf")) + \
-        sorted(glob.glob("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))) + \
-        sorted(glob.glob("%s/workloads/%s/conf/%s/*.conf" % (conf_root, workload_name, workload_tail)))
+        sorted(glob.glob("%s/conf/*.conf" % (workload_root,))) + \
+        sorted(glob.glob("%s/%s/*.conf" % (workload_root, workload_api)))
 
     # load values from conf files
     for filename in conf_files:
@@ -87,7 +88,7 @@ def load_config(conf_root, workload_root, workload_folder):
     # check
     check_config()
     # Export config to file, let bash script to import as local variables.
-    print export_config(workload_name, workload_tail)
+    print export_config(workload_name, workload_api)
 
 def check_config():             # check configures
     # Ensure mandatory configures are available
@@ -139,7 +140,8 @@ def generate_optional_value():  # get values from environment or make a guess
         HibenchConf["hibench.hadoop.release"] = \
             "cdh4" if "cdh4" in version else \
             "cdh5" if "cdh5" in version else \
-            HibenchConf["hibench.hadoop.version"]
+            "apache" if "hadoop" in HibenchConf["hibench.hadoop.version"] else \
+            "UNKNOWN"
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
 
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):

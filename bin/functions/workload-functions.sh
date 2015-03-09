@@ -51,8 +51,8 @@ function timestamp(){		# get current timestamp
     echo `expr $tmp + $msec`
 }
 
-function print_field_name() {	# print report column header
-    printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node > ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
+function get_field_name() {	# print report column header
+    printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node 
 }
 
 function gen_report() {		# dump the result to report file
@@ -72,11 +72,15 @@ function gen_report() {		# dump the result to report file
     if [ $nodes -eq 0 ]; then nodes=1; fi
     local tput_node=`echo "$tput/$nodes"|bc`
 
-    if [ ! -f ${HIBENCH_REPORT} ] ; then
-        print_field_name
+    REPORT_TITLE=`get_field_name`
+    if [ ! -f ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME} ] ; then
+        echo "${REPORT_TITLE}" > ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
     fi
 
-    printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node >> ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
+    REPORT_LINE=$(printf "${REPORT_COLUMN_FORMATS}" ${HIBENCH_CUR_WORKLOAD_NAME} $(date +%F) $(date +%T) $size $duration $tput $tput_node)
+    echo "${REPORT_LINE}" >> ${HIBENCH_REPORT}/${HIBENCH_REPORT_NAME}
+    echo "# ${REPORT_TITLE}" >> ${HIBENCH_WORKLOAD_CONF}
+    echo "# ${REPORT_LINE}" >> ${HIBENCH_WORKLOAD_CONF}
 }
 
 function rmr-hdfs(){		# rm -r for hdfs
@@ -92,7 +96,7 @@ function rmr-hdfs(){		# rm -r for hdfs
 
 function dus-hdfs(){		# du -s for hdfs
     assert $1 "dir parameter missing"
-    if [ "x"$HADOOP_VERSION == "xhadoop2" ] || ["$HADOOP_RELEASE" == "chd?"]; then
+    if [ "x"$HADOOP_VERSION == "xhadoop2" ] || [ "$HADOOP_RELEASE" == "cdh?" ]; then
 	DUS_CMD="fs -du -s"
     else
 	DUS_CMD="fs -dus"
