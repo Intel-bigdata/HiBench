@@ -25,13 +25,12 @@ show_bannar start
 ensure-hivebench-release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-RANKINGS_USERVISITS_SCAN_FILE="rankings_uservisits_scan.hive"
 
 # path check
 rmr-hdfs $OUTPUT_HDFS
 
 # prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_SCAN_FILE
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`

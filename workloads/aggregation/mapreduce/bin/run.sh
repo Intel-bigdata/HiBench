@@ -25,13 +25,12 @@ show_bannar start
 ensure-hivebench-release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-USERVISITS_AGGRE_FILE="uservisits_aggre.hive"
 
 # path check
 rmr-hdfs $OUTPUT_HDFS
 
 # prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$USERVISITS_AGGRE_FILE
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 # run bench

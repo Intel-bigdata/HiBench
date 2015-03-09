@@ -23,7 +23,7 @@ enter_bench PythonSparkScan ${workload_root} ${workload_folder}
 show_bannar start
 
 # prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_SCAN_FILE
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`

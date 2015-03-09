@@ -36,7 +36,10 @@ object ScalaAggregation{
     val hc = new HiveContext(sc)
 
     val _sql = scala.io.Source.fromFile(args(0)).mkString
-    hc.sql(_sql)
+    _sql.split(';').foreach { x =>
+      if (x.trim.nonEmpty)
+        hc.sql(x)
+    }
 
     sc.stop()
   }

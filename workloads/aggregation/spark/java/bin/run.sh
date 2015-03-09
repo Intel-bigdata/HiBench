@@ -23,7 +23,7 @@ enter_bench JavaSparkAggregation ${workload_root} ${workload_folder}
 show_bannar start
 
 # prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$USERVISITS_AGGRE_FILE
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`

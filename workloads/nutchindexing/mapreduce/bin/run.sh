@@ -33,7 +33,7 @@ START_TIME=`timestamp`
 
 export HIBENCH_WORKLOAD_CONF
 export NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME_WORKLOAD/conf
-$NUTCH_HOME_WORKLOAD/bin/nutch index $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
+$NUTCH_HOME_WORKLOAD/bin/nutch index ${COMPRESS_OPT} $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*
 
 END_TIME=`timestamp`
 

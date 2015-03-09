@@ -26,6 +26,8 @@ import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -34,27 +36,33 @@ import java.util.regex.Pattern;
  * ported from HiBench's hive bench
  */
 public final class JavaAggregation {
-  private static final Pattern SPACE = Pattern.compile(" ");
+    public static void main(String[] args) throws Exception {
 
-  public static void main(String[] args) throws Exception {
+        if (args.length < 1) {
+            System.err.println("Usage: JavaAggregation <SQL script file>");
+            System.exit(1);
+        }
 
-    if (args.length < 1) {
-      System.err.println("Usage: JavaAggregation <hdfs_url>");
-      System.exit(1);
+        SparkConf sparkConf = new SparkConf().setAppName("JavaAggregation");
+        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+        JavaHiveContext hc = new JavaHiveContext(ctx);
+
+        FileReader in = new FileReader(args[0]);
+        StringBuilder contents = new StringBuilder();
+        char[] buffer = new char[40960];
+        int read = 0;
+        do {
+            contents.append(buffer, 0, read);
+            read = in.read(buffer);
+        } while (read >= 0);
+
+        for (String s : contents.toString().split(";")) {
+            if (!s.trim().isEmpty()) {
+                hc.sql(s);
+            }
+        }
+
+        ctx.stop();
     }
-
-    SparkConf sparkConf = new SparkConf().setAppName("JavaAggregation");
-    JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaHiveContext hc = new JavaHiveContext(ctx);
-
-
-    hc.sql("DROP TABLE IF EXISTS uservisits");
-    hc.sql("DROP TABLE IF EXISTS uservisits_aggre");
-    hc.sql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));
-    hc.sql(String.format("CREATE TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '%s/uservisits_aggre'", args[1]));
-    hc.sql("INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP");
-    
-    ctx.stop();
-  }
 }
 

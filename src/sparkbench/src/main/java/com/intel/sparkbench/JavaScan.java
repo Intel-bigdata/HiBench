@@ -26,6 +26,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.PairFunction;
 
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -34,27 +35,35 @@ import java.util.regex.Pattern;
  * ported from HiBench's hive bench
  */
 public final class JavaScan {
-  private static final Pattern SPACE = Pattern.compile(" ");
+    private static final Pattern SPACE = Pattern.compile(" ");
 
-  public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
-    if (args.length < 1) {
-      System.err.println("Usage: JavaScan <hdfs_url>");
-      System.exit(1);
+        if (args.length < 1) {
+            System.err.println("Usage: JavaScan <SQL script file>");
+            System.exit(1);
+        }
+
+        SparkConf sparkConf = new SparkConf().setAppName("JavaScan");
+        JavaSparkContext ctx = new JavaSparkContext(sparkConf);
+        JavaHiveContext hc = new JavaHiveContext(ctx);
+
+        FileReader in = new FileReader(args[0]);
+        StringBuilder contents = new StringBuilder();
+        char[] buffer = new char[40960];
+        int read = 0;
+        do {
+            contents.append(buffer, 0, read);
+            read = in.read(buffer);
+        } while (read >= 0);
+
+        for (String s : contents.toString().split(";")) {
+            if (!s.trim().isEmpty()) {
+                hc.sql(s);
+            }
+        }
+
+        ctx.stop();
     }
-
-    SparkConf sparkConf = new SparkConf().setAppName("JavaScan");
-    JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaHiveContext hc = new JavaHiveContext(ctx);
-
-
-    hc.sql("DROP TABLE if exists rankings");
-    hc.sql("DROP TABLE if exists rankings_copy");
-    hc.sql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
-    hc.sql(String.format("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[1]));
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings").collect();
-
-    ctx.stop();
-  }
 }
 

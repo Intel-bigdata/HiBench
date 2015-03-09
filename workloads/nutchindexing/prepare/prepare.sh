@@ -36,7 +36,7 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1 # ${COMPRESS_OPT} 2>&1
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1  ${DATATOOLS_COMPRESS_OPT} 2>&1
 
 END_TIME=`timestamp`
 

@@ -31,7 +31,7 @@ if __name__ == "__main__":
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
     with open(sys.argv[1]) as f:
-        for line in f.readlines():
+        for line in f.read().split(';'):
             line = line.strip()
             if line:
                 hc.sql(line)
