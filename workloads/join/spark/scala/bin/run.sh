@@ -22,15 +22,19 @@ workload_root=${workload_folder}/../../..
 enter_bench ScalaSparkJoin ${workload_root} ${workload_folder}
 show_bannar start
 
+# prepare SQL
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_JOIN_FILE
+prepare-sql-join ${HIVEBENCH_SQL_FILE}
+
 START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.join.ScalaJoin $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job com.intel.sparkbench.join.ScalaJoin ${HIVEBENCH_SQL_FILE}
 
-sleep 3
+sleep 5
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
+gen_report ${START_TIME} ${END_TIME} ${SIZE:-0}
 show_bannar finish
 leave_bench
 

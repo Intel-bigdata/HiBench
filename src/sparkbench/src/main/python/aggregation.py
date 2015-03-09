@@ -24,15 +24,15 @@ from pyspark.sql import SQLContext, HiveContext
 # ported from HiBench's hive bench
 #
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: aggregation.py <hdfs_in_file> <hdfs_out_file>"
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: aggregation.py <SQL script file>"
         exit(-1)
     sc = SparkContext(appName="PythonAggregation")
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
-    hc.sql("DROP TABLE IF EXISTS uservisits")
-    hc.sql("DROP TABLE IF EXISTS uservisits_aggre")
-    hc.sql("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'" % sys.argv[1])
-    hc.sql("CREATE TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '%s/uservisits_aggre'" % sys.argv[1])
-    hc.sql("INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP")
+    with open(sys.argv[1]) as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line:
+                hc.sql(line)
     sc.stop()

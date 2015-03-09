@@ -48,7 +48,7 @@ class IOCommon(val sc:SparkContext) {
     }
   }
 
-  def save(filename:String, data:RDD[_], prefix:String = "sparkbench.outputformat") = {
+  def save(filename:String, data:RDD[_], prefix:String) = {
     val output_format = IOCommon.getProperty(prefix).getOrElse("Text")
     val output_format_codec =
       loadClassByName[CompressionCodec](IOCommon.getProperty(prefix + ".codec"))
@@ -70,6 +70,8 @@ class IOCommon(val sc:SparkContext) {
       case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
     }
   }
+
+  def save(filename:String, data:RDD[_]):Unit = save(filename, data, "sparkbench.outputformat")
 
   private def loadClassByName[T](name:Option[String]) = {
     if (!name.isEmpty) Some(Class.forName(name.get)

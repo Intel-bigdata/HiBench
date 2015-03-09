@@ -279,3 +279,70 @@ function ensure-nutchindexing-release () {
 
     echo $NUTCH_HOME_WORKLOAD
 }
+
+function prepare-sql-aggregation () {
+    assert $1 "SQL file path not exist"
+    HIVEBENCH_SQL_FILE=$1
+
+#USE DEFAULT;
+#set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+#set ${MAP_CONFIG_NAME}=$NUM_MAPS;
+#set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
+#set hive.stats.autogather=false;
+#${HIVE_SQL_COMPRESS_OPTS}
+
+    cat <<EOF > ${HIVEBENCH_SQL_FILE}
+
+
+DROP TABLE uservisits;
+DROP TABLE uservisits_aggre;
+CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
+INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP;
+EOF
+}
+
+function prepare-sql-join () {
+    assert $1 "SQL file path not exist"
+    HIVEBENCH_SQL_FILE=$1
+
+    cat <<EOF > ${HIVEBENCH_SQL_FILE}
+USE DEFAULT;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+set ${MAP_CONFIG_NAME}=$NUM_MAPS;
+set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
+set hive.stats.autogather=false;
+
+${HIVE_SQL_COMPRESS_OPTS}
+
+DROP TABLE rankings;
+DROP TABLE uservisits_copy;
+DROP TABLE rankings_uservisits_join;
+CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
+CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
+INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC limit 1;
+EOF
+}
+
+function prepare-sql-scan () {
+    assert $1 "SQL file path not exist"
+    HIVEBENCH_SQL_FILE=$1
+
+    cat <<EOF > ${HIVEBENCH_SQL_FILE}
+USE DEFAULT;
+set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+set ${MAP_CONFIG_NAME}=$NUM_MAPS;
+set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
+set hive.stats.autogather=false;
+
+${HIVE_SQL_COMPRESS_OPTS}
+
+DROP TABLE rankings;
+DROP TABLE rankings_copy;
+CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${INPUT_HDFS}/rankings';
+CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${OUTPUT_HDFS}/rankings';
+INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings;
+EOF
+
+}

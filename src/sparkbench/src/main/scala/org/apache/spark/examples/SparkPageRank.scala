@@ -24,6 +24,7 @@
 
 package org.apache.spark.examples
 
+import com.intel.sparkbench.IOCommon
 import org.apache.spark.SparkContext._
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -67,7 +68,9 @@ object SparkPageRank {
 
 //    val output = ranks.collect()
 //    output.foreach(tup => println(tup._1 + " has rank: " + tup._2 + "."))
-    ranks.saveAsTextFile(output_path)
+    val io = new IOCommon(ctx)
+    io.save(output_path, ranks)
+//    ranks.saveAsTextFile(output_path)
 
     ctx.stop()
   }

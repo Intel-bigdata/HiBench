@@ -19,21 +19,24 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopAggregate ${workload_root} ${workload_folder}
+enter_bench HadoopScan ${workload_root} ${workload_folder}
 show_bannar start
 
 ensure-hivebench-release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-USERVISITS_AGGRE_FILE="uservisits_aggre.hive"
+RANKINGS_USERVISITS_SCAN_FILE="rankings_uservisits_scan.hive"
 
 # path check
 rmr-hdfs $OUTPUT_HDFS
 
 # prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$USERVISITS_AGGRE_FILE
-prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_SCAN_FILE
+prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
+START_TIME=`timestamp`
+
+# run bench
 # run bench
 START_TIME=`timestamp`
 $HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}
@@ -42,7 +45,7 @@ END_TIME=`timestamp`
 sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE:-}
-
+gen_report ${START_TIME} ${END_TIME} ${SIZE:-0}
 show_bannar finish
 leave_bench
+

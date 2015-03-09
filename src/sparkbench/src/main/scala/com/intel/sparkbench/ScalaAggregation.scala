@@ -25,9 +25,9 @@ import org.apache.spark.sql.hive.HiveContext
  */
 object ScalaAggregation{
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length < 1){
       System.err.println(
-        s"Usage: $ScalaAggregation <INPUT_DATA_URL> <OUTPUT_DATA_URL>"
+        s"Usage: $ScalaAggregation <SQL sciprt file>"
       )
       System.exit(1)
     }
@@ -35,20 +35,9 @@ object ScalaAggregation{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.sql("DROP TABLE IF EXISTS uservisits")
-    hc.sql("DROP TABLE IF EXISTS uservisits_aggre")
-    hc.sql(
-      """CREATE EXTERNAL TABLE uservisits
-          (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,
-          countryCode STRING,languageCode STRING,searchWord STRING,duration INT )
-         ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-         STORED AS SEQUENCEFILE LOCATION '%s/uservisits'""".stripMargin.format(args(0)))
-    hc.sql(
-      """CREATE TABLE uservisits_aggre
-          ( sourceIP STRING, sumAdRevenue DOUBLE)
-         STORED AS SEQUENCEFILE LOCATION '%s/uservisits_aggre'""".stripMargin.format(args(1)))
-    hc.sql("INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) " +
-           "FROM uservisits GROUP BY sourceIP")
+    val _sql = scala.io.Source.fromFile(args(0)).mkString
+    hc.sql(_sql)
+
     sc.stop()
   }
 }

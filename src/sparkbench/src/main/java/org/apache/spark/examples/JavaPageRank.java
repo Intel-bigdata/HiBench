@@ -23,6 +23,7 @@
  */
 package org.apache.spark.examples;
 
+import com.intel.sparkbench.IOCommon;
 import scala.Tuple2;
 
 import com.google.common.collect.Iterables;
@@ -123,7 +124,10 @@ public final class JavaPageRank {
 //    for (Tuple2<?,?> tuple : output) {
 //        System.out.println(tuple._1() + " has rank: " + tuple._2() + ".");
 //    }
-    ranks.saveAsTextFile(args[1]);
+
+    IOCommon io = new IOCommon(JavaSparkContext.toSparkContext(ctx));
+    io.save(args[1], ranks.rdd());
+    //ranks.saveAsTextFile(args[1]);
 
     ctx.stop();
   }

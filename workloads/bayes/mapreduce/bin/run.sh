@@ -29,11 +29,14 @@ SIZE=`dir_size $INPUT_HDFS`
 
 START_TIME=`timestamp`
 
+# strip spaces after "-D"
+COMPRESS_OPT=`echo $COMPRESS_OPT | sed -r 's/-D /-D/g'`
+
 $MAHOUT_HOME/bin/mahout seq2sparse \
-        -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS
+        ${COMPRESS_OPT} -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS
 
 $MAHOUT_HOME/bin/mahout trainnb \
-        -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp
+        ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp
 
 END_TIME=`timestamp`
 

@@ -25,9 +25,9 @@ import org.apache.spark.sql.hive.HiveContext
  */
 object ScalaScan{
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length < 1){
       System.err.println(
-        s"Usage: $ScalaScan <INPUT_DATA_URL> <OUTPUT_DATA_URL>"
+        s"Usage: $ScalaScan <SQL script file>"
       )
       System.exit(1)
     }
@@ -35,15 +35,9 @@ object ScalaScan{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.sql("DROP TABLE IF EXISTS rankings")
-    hc.sql("DROP TABLE IF EXISTS rankings_copy")
-    hc.sql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
-           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-           STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(0)))
-    hc.sql("""CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT)
-           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-           STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(1)))
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings").collect()
+    val _sql = scala.io.Source.fromFile(args(0)).mkString
+    hc.sql(_sql)
+
     sc.stop()
   }
 }

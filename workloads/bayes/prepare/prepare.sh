@@ -33,11 +33,8 @@ OPTION="-t bayes \
         -class ${CLASSES} \
         -o sequence"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION}
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${DATATOOLS_COMPRESS_OPT}
 END_TIME=`timestamp`
 
 show_bannar finish
 leave_bench
-
-#run-spark-job com.intel.sparkbench.datagen.convert.BayesConvert ${INPUT_HDFS} 
-#${SPARK_HOME}/bin/spark-submit --class com.intel.sparkbench.datagen.convert.BayesConvert --master ${SPARK_MASTER} ${SPARKBENCH_JAR} ${INPUT_HDFS} 

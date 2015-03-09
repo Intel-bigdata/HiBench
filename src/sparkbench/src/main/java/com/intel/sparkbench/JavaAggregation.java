@@ -47,6 +47,7 @@ public final class JavaAggregation {
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
     JavaHiveContext hc = new JavaHiveContext(ctx);
 
+
     hc.sql("DROP TABLE IF EXISTS uservisits");
     hc.sql("DROP TABLE IF EXISTS uservisits_aggre");
     hc.sql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));

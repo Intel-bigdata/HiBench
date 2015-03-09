@@ -26,8 +26,11 @@ ensure-mahout-release
 
 rmr-hdfs $OUTPUT_HDFS || true
 
+# strip spaces after "-D"
+COMPRESS_OPT=`echo $COMPRESS_OPT | sed -r 's/-D /-D/g'`
+
 SIZE=`dir_size $INPUT_HDFS`
-OPTION=" -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
+OPTION="${COMPRESS_OPT} -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
 echo ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
 ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}

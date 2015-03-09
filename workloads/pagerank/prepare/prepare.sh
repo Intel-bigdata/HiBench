@@ -31,9 +31,10 @@ OPTION="-t pagerank \
         -m ${NUM_MAPS} \
         -r ${NUM_REDS} \
         -p ${PAGES} \
+        -pbalance -pbalance \
         -o text"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} #${COMPRESS_OPT}
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${DATATOOLS_COMPRESS_OPT}
 
 END_TIME=`timestamp`
 

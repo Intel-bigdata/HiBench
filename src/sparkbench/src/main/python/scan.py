@@ -24,15 +24,12 @@ from pyspark.sql import SQLContext, HiveContext
 # ported from HiBench's hive bench
 #
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print >> sys.stderr, "Usage: scan <hdfs_in_file> <hdfs_out_file>"
+    if len(sys.argv) != 2:
+        print >> sys.stderr, "Usage: scan <SQL script file>"
         exit(-1)
     sc = SparkContext(appName="PythonScan")
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
-    hc.sql("DROP TABLE if exists rankings")
-    hc.sql("DROP TABLE if exists rankings_copy")
-    hc.sql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
-    hc.sql("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[2])
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings").collect()
+    with open(sys.argv[1]) as f:
+        hc.sql(f.read())
     sc.stop()

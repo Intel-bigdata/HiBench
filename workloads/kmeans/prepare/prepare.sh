@@ -30,7 +30,7 @@ START_TIME=`timestamp`
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
 export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath`
 #run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -libjars $MAHOUT_HOME/mahout-core-0.7-job.jar,$MAHOUT_HOME/mahout-examples-0.7-job.jar -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${OPTION} 
-run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${OPTION} 
+run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${KMEANS_COMPRESS_OPT} ${OPTION} 
 END_TIME=`timestamp`
 
 show_bannar finish

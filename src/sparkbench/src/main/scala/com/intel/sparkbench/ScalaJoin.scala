@@ -25,9 +25,9 @@ import org.apache.spark.sql.hive.HiveContext
  */
 object ScalaJoin{
   def main(args: Array[String]){
-    if (args.length < 2){
+    if (args.length < 1){
       System.err.println(
-        s"Usage: $ScalaJoin <INPUT_DATA_URL> <OUTPUT_DATA_URL>"
+        s"Usage: $ScalaJoin <SQL script file>"
       )
       System.exit(1)
     }
@@ -35,34 +35,8 @@ object ScalaJoin{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.sql("DROP TABLE IF EXISTS rankings")
-    hc.sql("DROP TABLE IF EXISTS uservisits")
-    hc.sql("DROP TABLE IF EXISTS rankings_uservisits_join")
-    hc.sql(
-      """CREATE EXTERNAL TABLE rankings
-        (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT
-        DELIMITED FIELDS TERMINATED BY ','
-        STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".stripMargin.format(args(0)))
-    hc.sql(
-      """CREATE EXTERNAL TABLE uservisits
-         (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,
-          userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT)
-          ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-          STORED AS SEQUENCEFILE LOCATION '%s/uservisits'""".stripMargin.format(args(0)))
-    hc.sql(
-      """CREATE TABLE rankings_uservisits_join
-         ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE
-          LOCATION '%s/rankings_uservisits_join'""".stripMargin.format(args(1)))
-    hc.sql(
-      """INSERT OVERWRITE TABLE rankings_uservisits_join
-          SELECT sourceIP, sum(adRevenue) as totalRevenue, avg(pageRank)
-          FROM rankings R JOIN
-            (SELECT sourceIP, destURL, adRevenue
-             FROM uservisits UV
-             WHERE (datediff(UV.visitDate, '1999-01-01')>=0
-                AND datediff(UV.visitDate, '2000-01-01')<=0))
-          NUV ON (R.pageURL = NUV.destURL)
-          group by sourceIP order by totalRevenue DESC limit 1""".stripMargin)
+    val _sql = scala.io.Source.fromFile(args(0)).mkString
+    hc.sql(_sql)
 
     sc.stop()
   }

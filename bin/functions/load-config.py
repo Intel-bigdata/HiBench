@@ -68,7 +68,11 @@ def load_config(conf_root, workload_root, workload_folder):
                 line = line.strip()
                 if not line: continue     # skip empty lines
                 if line[0]=='#': continue # skip comments
-                key, value = re.split("\s", line, 1)
+                try:
+                    key, value = re.split("\s", line, 1)
+                except ValueError:
+                    key = line.strip()
+                    value = ""
                 HibenchConf[key] = value.strip()
                 HibenchConfRef[key] = filename
 
@@ -115,7 +119,7 @@ def waterfall_config():         # replace "${xxx}" to its values
             old_value = value
             value = p.sub(process_replace, value)
             if value != old_value: # we have updated value, try again
-                log("Waterfall conf: %s: %s -> %s" % (key, old_value, value))
+#                log("Waterfall conf: %s: %s -> %s" % (key, old_value, value))
                 HibenchConf[key] = value
                 finish = False
 

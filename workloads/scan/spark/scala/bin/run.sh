@@ -22,14 +22,18 @@ workload_root=${workload_folder}/../../..
 enter_bench ScalaSparkScan ${workload_root} ${workload_folder}
 show_bannar start
 
+# prepare SQL
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/$RANKINGS_USERVISITS_SCAN_FILE
+prepare-sql-scan ${HIVEBENCH_SQL_FILE}
+
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.scan.ScalaScan $INPUT_HDFS $OUTPUT_HDFS
+run-spark-job com.intel.sparkbench.scan.ScalaScan ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
-sleep 3
+sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
+gen_report ${START_TIME} ${END_TIME} ${SIZE:-0}
 show_bannar finish
 leave_bench
 
