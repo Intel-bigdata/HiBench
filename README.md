@@ -248,7 +248,7 @@ This benchmark suite contains 9 typical micro workloads:
 
     Run `mvn clean package` in `src` folder:
 
-          cd <HiBench-4.0 root>/src
+          cd <HiBench root>/src
           mvn clean package
           
 ---
