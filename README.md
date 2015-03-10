@@ -184,30 +184,32 @@ This benchmark suite contains 9 typical micro workloads:
      `conf/99-user_defined_properties.conf`, make sure below
      properties has been set:
 
-          hibench.hadoop.home    The Hadoop installation location
-	  hibench.spark.home	 The Spark installation location
-	  hibench.hdfs.master	 HDFS master
-	  hibench.spark.master	 SPARK master
+  	  hibench.hadoop.home      The Hadoop installation location
+	  hibench.spark.home       The Spark installation location
+	  hibench.hdfs.master      HDFS master
+	  hibench.spark.master     SPARK master
 	  
      Note: For YARN mode, set `hibench.spark.master` to `yarn-client`.
 
      Parallelism, memory, exector number tuning:
      
-          hibench.default.map.parallelism	Mapper numbers in MR, partition numbers in Spark
-          hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle partition numbers in Spark
-	  hibench.yarn.exectors.num		Number executors in YARN mode
-	  hibench.yarn.exectors.cores		Number executor cores in YARN mode 
-	  hibench.yarn.exectors.memory		Number of executor memory in YARN mode
+          hibench.default.map.parallelism	Mapper numbers in MR, 
+	  				        partition numbers in Spark
+          hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle 
+	  					partition numbers in Spark
+          hibench.yarn.exectors.num		Number executors in YARN mode
+          hibench.yarn.exectors.cores		Number executor cores in YARN mode 
+          hibench.yarn.exectors.memory		Number of executor memory in YARN mode
           spark.executor.memory			Spark executor memory
 	  
      Compress options:
 
           hibench.compress.profile		Compression option `enable` or `disable`
-	  hibench.compress.codec.profile	Compression codec, `snappy`, `lzo` or `default`
+          hibench.compress.codec.profile	Compression codec, `snappy`, `lzo` or `default`
      
      Data scale profile selection:
 
-     	  hibench.scale.profile			Data scale profile, `tiny`, `small`, `large`
+          hibench.scale.profile			Data scale profile, `tiny`, `small`, `large`
 	  					
      You can add more data scale profiles in
      `conf/10-data-scale-profile.conf`. And please don't change
@@ -217,9 +219,9 @@ This benchmark suite contains 9 typical micro workloads:
 
      1. All configurations will be loaded in a nested folder structure:
 
-	 - conf/*.conf						=> Configure globally
-	 - workloads/<workload>/conf/*.conf    			=> Configure for each workload
-         - workloads/<workload>/<language APIs>/.../*.conf	=> Configure for various languages
+           - conf/*.conf						=> Configure globally
+           - workloads/<workload>/conf/*.conf    			=> Configure for each workload
+           - workloads/<workload>/<language APIs>/.../*.conf	=> Configure for various languages
 
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
