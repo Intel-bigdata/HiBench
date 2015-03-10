@@ -193,7 +193,7 @@ This benchmark suite contains 9 typical micro workloads:
 
      Parallelism, memory, exector number tuning:
      
-          hibench.default.map.parallelism	Mapper numbers in MR, 
+          hibench.default.map.parallelism       Mapper numbers in MR, 
                                                 partition numbers in Spark
           hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle 
                                                 partition numbers in Spark
@@ -219,9 +219,9 @@ This benchmark suite contains 9 typical micro workloads:
 
      1. All configurations will be loaded in a nested folder structure:
 
-           - conf/*.conf                                         => Configure globally
-           - workloads/<workload>/conf/*.conf                    => Configure for each workload
-           - workloads/<workload>/<language APIs>/.../*.conf     => Configure for various languages
+          conf/*.conf                                         => Configure globally
+          workloads/<workload>/conf/*.conf                    => Configure for each workload
+          workloads/<workload>/<language APIs>/.../*.conf     => Configure for various languages
 
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
