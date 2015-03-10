@@ -194,23 +194,23 @@ This benchmark suite contains 9 typical micro workloads:
      Parallelism, memory, exector number tuning:
      
           hibench.default.map.parallelism	Mapper numbers in MR, 
-	  				        partition numbers in Spark
+                                                partition numbers in Spark
           hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle 
-	  					partition numbers in Spark
-          hibench.yarn.exectors.num		Number executors in YARN mode
-          hibench.yarn.exectors.cores		Number executor cores in YARN mode 
-          hibench.yarn.exectors.memory		Number of executor memory in YARN mode
-          spark.executor.memory			Spark executor memory
-	  
+                                                  partition numbers in Spark
+          hibench.yarn.exectors.num                Number executors in YARN mode
+          hibench.yarn.exectors.cores                Number executor cores in YARN mode 
+          hibench.yarn.exectors.memory                Number of executor memory in YARN mode
+          spark.executor.memory                        Spark executor memory
+          
      Compress options:
 
-          hibench.compress.profile		Compression option `enable` or `disable`
-          hibench.compress.codec.profile	Compression codec, `snappy`, `lzo` or `default`
+          hibench.compress.profile                Compression option `enable` or `disable`
+          hibench.compress.codec.profile        Compression codec, `snappy`, `lzo` or `default`
      
      Data scale profile selection:
 
-          hibench.scale.profile			Data scale profile, `tiny`, `small`, `large`
-	  					
+          hibench.scale.profile                        Data scale profile, `tiny`, `small`, `large`
+                                                  
      You can add more data scale profiles in
      `conf/10-data-scale-profile.conf`. And please don't change
      `conf/00-default-properties.conf` if you have no confidence.
@@ -219,9 +219,9 @@ This benchmark suite contains 9 typical micro workloads:
 
      1. All configurations will be loaded in a nested folder structure:
 
-           - conf/*.conf						=> Configure globally
-           - workloads/<workload>/conf/*.conf    			=> Configure for each workload
-           - workloads/<workload>/<language APIs>/.../*.conf	=> Configure for various languages
+           - conf/*.conf                                                => Configure globally
+           - workloads/<workload>/conf/*.conf                            => Configure for each workload
+           - workloads/<workload>/<language APIs>/.../*.conf        => Configure for various languages
 
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
@@ -249,12 +249,12 @@ This benchmark suite contains 9 typical micro workloads:
     Run `mvn clean package` in `src` folder:
 
           cd <HiBench-4.0 root>/src
-	  mvn clean package
-	  
+          mvn clean package
+          
 ---
 ### Running ###
 
-- Run several workloads sequentially    (FIXME: not working)
+- Run several workloads sequentially    (FIXME: not working currently)
 
   The `conf/benchmarks.lst` file under the package folder defines the
   workloads to run when you execute the `bin/run-all.sh` script under
@@ -269,7 +269,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       prepare/prepare.sh            Generate or copy the job input 
                                     data into HDFS.
-      mapreduce/bin/run.sh    	    run MapReduce language API
+      mapreduce/bin/run.sh          run MapReduce language API
       spark/java/bin/run.sh         run Spark/java language API
       spark/scala/bin/run.sh        run Spark/scala language API
       spark.python/bin/run.sh       run Spark/python language API
