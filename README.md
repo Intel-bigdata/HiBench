@@ -3,7 +3,7 @@
 
 ---
 
-- Current version: 0.1
+- Current version: 0.4
 - Release data: TBD
 - Contact: [Lv Qi](mailto:qi.lv@intel.com), [Grace Huang](mailto:jie.huang@intel.com)
 - Homepage: https://github.com/intel-bigdata/Sparkbench
@@ -151,10 +151,10 @@ This benchmark suite contains 9 typical micro workloads:
       Please refer to `Known Issues` to set `conf/spark-default.conf`
       properly.
 
-  5. Setup SparkBench
+  5. Setup HiBench
 
-      Download/checkout SparkBench benchmark suite from
-      [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
+      Download/checkout HiBench benchmark suite from
+      [https://github.com/Intel-bigdata/Sparkbench/tree/v4.0-branch](https://github.com/Intel-bigdata/Sparkbench/archive/v4.0-branch.zip)
 
   6. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
@@ -166,7 +166,7 @@ This benchmark suite contains 9 typical micro workloads:
 
      `aptitude install python-numpy`
 
-  7. Setup for SparkBench/report_gen_plot.py (Optional)
+  7. Setup for HiBench/report_gen_plot.py (Optional)
   
      Install python-matplotlib with verion of 0.9+
 
@@ -178,54 +178,81 @@ This benchmark suite contains 9 typical micro workloads:
 
      `aptitude install python-matplotlib`
 
-2. Configure for the all workloads
+2. Configure
 
-    You need to set some global environment variables in the
-    `conf/sparkbench-config.sh` file located in the root dir. 
+     Quick start for minimum requirements: edit
+     `conf/99-user_defined_properties.conf`, make sure below
+     properties has been set:
 
-          HADOOP_HOME            < The Hadoop installation location >
-          SPARK_HOME             < The Spark installation location >
-          HADOOP_HOME            < The HiBench installation location >
-          HDFS_MASTER            < HDFS master >
-          SPARK_MASTER           < SPARK master >
-          HADOOP_CONF_DIR        < The hadoop configuration DIR >
-          HADOOP_EXAMPLES_JAR    < The path to hadoop-examples-xxx.jar >
-          SPARK_CONF_DIR         < The Spark config DIR >
-          SPARK_EXAMPLES_JAR     < The path to spark-examples-xxx.jar >
-          DICT_PATH              < The dict location >
-          DATA_PATH              < The base HDFS path to hold HiBench data >
-          SPARKBENCH_REPORT      < The path to SparkBench reports >
-          YARN_NUM_EXECTORS      < num executors in yarn mode >
-          YARN_EXECUTOR_CORES    < num executor cores in yarn mode >
-          YARN_EXECUTOR_MEMORY   < num of executor memory in yarn mode >
+          hibench.hadoop.home    The Hadoop installation location
+	  hibench.spark.home	 The Spark installation location
+	  hibench.hdfs.master	 HDFS master
+	  hibench.spark.master	 SPARK master
+	  
+     Note: For YARN mode, set `hibench.spark.master` to `yarn-client`.
 
-    Note:
+     Parallelism, memory, exector number tuning:
+     
+          hibench.default.map.parallelism	Mapper numbers in MR, partition numbers in Spark
+          hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle partition numbers in Spark
+	  hibench.yarn.exectors.num		Number executors in YARN mode
+	  hibench.yarn.exectors.cores		Number executor cores in YARN mode 
+	  hibench.yarn.exectors.memory		Number of executor memory in YARN mode
+          spark.executor.memory			Spark executor memory
+	  
+     Compress options:
 
-      1.  SparkBench will guess the value of these variables if they
-      are not explicitly set. If so, SparkBench guarantees neither the
-      correctness of guess nor the success running of benchmarks.
+          hibench.compress.profile		Compression option `enable` or `disable`
+	  hibench.compress.codec.profile	Compression codec, `snappy`, `lzo` or `default`
+     
+     Data scale profile selection:
 
-      2. Do not change the default values of other global environment
-      variables unless necessary.
+     	  hibench.scale.profile			Data scale profile, `tiny`, `small`, `large`
+	  					
+     You can add more data scale profiles in
+     `conf/10-data-scale-profile.conf`. And please don't change
+     `conf/00-default-properties.conf` if you have no confidence.
+
+3. Configure parsing sequence and rules:
+
+     1. All configurations will be loaded in a nested folder structure:
+
+	 - conf/*.conf						=> Configure globally
+	 - workloads/<workload>/conf/*.conf    			=> Configure for each workload
+         - workloads/<workload>/<language APIs>/.../*.conf	=> Configure for various languages
+
+     2. For configurations in same folder, the loading sequence will be
+     sorted according to configure file name. 
+
+     3. Values in latter configures will override former.
+
+     4. The final values for all properties will be stored in a single
+     config file located at `report/<workload><language APIs>/conf/<workload>.conf`,
+     which contain all values and pinpoint the source of the configures.
+
+     5. All `spark.*` properties will be passed to Spark runtime configuration.
 
 3. Configure each workload
 
-    You can modify the `conf/configure.sh` file under each workload
-    folder if it exists. All the data size and options related to the
-    workload are defined in this file.
+    You can add a new data scale profile in
+    `conf/10-data-scale-profile.conf`. Or edit
+    `workloads/<workload>/conf/00-<workload>-default.conf` for each
+    workload directly. However, latter approach will broke data scale
+    profile selection mechanism, which is not suggested.
 
-4. Synchronize the time on all nodes (optional but recommended)
+4. Synchronize the time on all nodes (optional but highly recommended)
 
 5. Build
 
-    You will need to execute `bin/build-all.sh` to build all
-    workloads. (Assume `sbt` is installed properly and accessible in
-    `$PATH`)
+    Run `mvn clean package` in `src` folder:
 
+          cd <HiBench-4.0 root>/src
+	  mvn clean package
+	  
 ---
 ### Running ###
 
-- Run several workloads sequentially
+- Run several workloads sequentially    (FIXME: not working)
 
   The `conf/benchmarks.lst` file under the package folder defines the
   workloads to run when you execute the `bin/run-all.sh` script under
@@ -238,20 +265,21 @@ This benchmark suite contains 9 typical micro workloads:
   You can also run each workload separately. In general, there are 3
   different files under one workload folder.
 
-      conf/configure.sh       Configuration file contains all parameters 
-                              such as data size and test options.
-      prepare/prepare.sh      Generate or copy the job input data into HDFS.
-      java/bin/run.sh         Execute the java workload
-      scala/bin/run.sh        Execute the scala workload
-      python/bin/run.sh       Execute the python workload
+      prepare/prepare.sh            Generate or copy the job input 
+                                    data into HDFS.
+      mapreduce/bin/run.sh    	    run MapReduce language API
+      spark/java/bin/run.sh         run Spark/java language API
+      spark/scala/bin/run.sh        run Spark/scala language API
+      spark.python/bin/run.sh       run Spark/python language API
       
 
   Follow the steps below to run a workload:
 
   1. Configure the benchmark:
 
-      set your own configurations by modifying `configure.sh` if
-      necessary.
+      Set or override properties values for hibench and spark by
+      modifying `<workload>/conf/*.conf` and `<workload>/<language
+      APIs>/*.conf if necessary.
 
   2. Prepare data:
 
@@ -260,11 +288,11 @@ This benchmark suite contains 9 typical micro workloads:
 
   3. Run the benchmark:
 
-      `*/bin/run.sh` to run the corresponding benchmark.
+      `<workload>/<language APIs>/bin/run.sh` to run the corresponding benchmark.
 
   4. Plot the report:
       
-      `${SPARKBENCH}/bin/report_gen_plot.py` to generate report figures.
+      `<HiBench root>/bin/report_gen_plot.py` to generate report figures.
 
       Note:
       
@@ -273,21 +301,4 @@ This benchmark suite contains 9 typical micro workloads:
 ---
 ### Known issues ###
 
-   1. com.esotericsoftware.kryo.KryoException: Buffer overflow....
-
-      MLLib may use KryoSerializer. Add a line or raise the value in
-      `conf/spark-defaults.conf`:
-
-       `spark.kryoserializer.buffer.mb  2000`
-
-   2. Exception in thread "main" org.apache.spark.SparkException: Job
-   aborted due to stage failure: Task 0 in stage 1.0 failed 4 times,
-   most recent failure: Lost task 0.3 in stage 1.0 (TID 6, sr456):
-   java.io.EOFException:
-
-       Currently bayies data converter will fail if using
-       KryoSerializer. Ensure to use default java serializer in
-       `conf/spark-defaults.conf`:
-
-       `spark.closure.serializer  org.apache.spark.serializer.JavaSerializer`
-
+    
