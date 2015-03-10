@@ -281,7 +281,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       Set or override properties values for hibench and spark by
       modifying `<workload>/conf/*.conf` and `<workload>/<language
-      APIs>/*.conf if necessary.
+      APIs>/*.conf` if necessary.
 
   2. Prepare data:
 
