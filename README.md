@@ -219,9 +219,9 @@ This benchmark suite contains 9 typical micro workloads:
 
      1. All configurations will be loaded in a nested folder structure:
 
-          conf/*.conf                                         => Configure globally
-          workloads/<workload>/conf/*.conf                    => Configure for each workload
-          workloads/<workload>/<language APIs>/.../*.conf     => Configure for various languages
+              conf/*.conf                                         Configure globally
+              workloads/<workload>/conf/*.conf                    Configure for each workload
+              workloads/<workload>/<language APIs>/.../*.conf     Configure for various languages
 
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
