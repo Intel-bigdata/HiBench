@@ -42,7 +42,9 @@ object ScalaTeraSort {
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reducer  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
                                         .getOrElse((parallel / 2).toString).toInt
-    val data = file.map(line => (line.substring(0, 10), line.substring(10)))
+    val data = file.map{line =>
+      println(line)
+      (line.substring(0, 10), line.substring(10))}
 
     val partitioner = new BaseRangePartitioner(partitions = reducer, rdd = data)
     val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner)

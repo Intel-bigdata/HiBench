@@ -97,7 +97,7 @@ def load_config(conf_root, workload_root, workload_folder):
 def check_config():             # check configures
     # Ensure mandatory configures are available
     for _, prop_name in HiBenchEnvPropMappingMandatory.items():
-        assert HibenchConf.get(prop_name, ""), "Mandatory configure missing: %s" % prop_name
+        assert HibenchConf.get(prop_name, None) is not None, "Mandatory configure missing: %s" % prop_name
     # Ensure all ref values in configure has been expanded
     for _, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
         assert "${" not in HibenchConf.get(prop_name, ""), "Unsolved ref key: %s. \n    Defined at %s:\n    Unsolved value:%s\n" % (prop_name,

@@ -26,10 +26,14 @@ class IOCommon(object):
 
     @classmethod
     def getPropertiesFromFile(cls):
+        def split(x):
+            ret = re.split("\s", x.strip(), 1)
+            if len(ret)<2: return (ret[0], '')
+            return tuple(ret)
         prop_file = os.environ.get("SPARKBENCH_PROPERTIES_FILES", None)
         assert prop_file, "SPARKBENCH_PROPERTIES_FILES undefined!"
         with open(prop_file) as f:
-            cls.conf = dict([re.split("\s", x.strip(), 1) for x in f.readlines() if x.strip() and x.strip()[0]!="#"])
+            cls.conf = dict([split(x.strip()) for x in f.readlines() if x.strip() and x.strip()[0]!="#"])
 
     def load(self, filename, force_format=None):
         input_format = force_format if force_format else IOCommon.getProperty("sparkbench.inputformat", "Text")
