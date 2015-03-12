@@ -107,6 +107,9 @@ function run-spark-job() {
        if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
 	   YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
        fi
+       if [[ -n "${YARN_DRIVER_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${YARN_DRIVER_MEMORY}"
+       fi
     fi
     if [[ "$CLS" == *.py ]]; then 
 	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
