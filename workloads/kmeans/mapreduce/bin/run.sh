@@ -32,8 +32,9 @@ COMPRESS_OPT=`echo $COMPRESS_OPT | sed -r 's/-D /-D/g'`
 SIZE=`dir_size $INPUT_HDFS`
 OPTION="${COMPRESS_OPT} -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
-echo ${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
-${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}
+CMD="${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}"
+echo "running: $CMD"
+$CMD
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

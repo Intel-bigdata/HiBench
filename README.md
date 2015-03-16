@@ -1,5 +1,5 @@
-# Spark Benchmark Suite (SparkBench) #
-## SparkBench - the micro-benchmark suite for Spark ##
+# HiBench Suite  #
+## HiBench - the micro-benchmark suite for Hadoop and Spark ##
 
 ---
 
@@ -111,52 +111,46 @@ This benchmark suite contains 9 typical micro workloads:
       Oracle-JDK-1.6 is the suggested option which passes all tests.
 
       Other JDK versions such as Oracle-JDK-1.7 and Oracle-JDK-1.8 are
-      also supported if python related workloads can be discarded. 
+      also supported if python related workloads can be discarded or
+      running under standalone mode.
 
-  2. Setup HiBench-3.0
-
-      Download/Checkout HiBench-3.0 benchmark suite from
-      [https://github.com/intel-hadoop/HiBench](https://github.com/intel-hadoop/HiBench).
-      Download packages depended by hibench:
-
-            cd HiBench/common/hibench
-            mvn process-sources
-
-      Recompile DataTools for HiBench with JDK1.6:
-
-            cd HiBench/common/autogen
-            ant package
-
-  3. Setup Hadoop
+  2. Setup Hadoop
 
       Before you run any workload in the package, please verify the
-      Hadoop framework is running correctly. Both Hadoop 1.x and
-      Hadoop-YARN are supported & tested. Currently, the suggested
-      version is Hadoop 1.0.4 which is heavily tested.
+      Hadoop framework is running correctly. Both MR1 and MR2 from
+      Apahce, CDH4 and CDH5 are supported & tested. 
 
-  4. Setup Spark
+  3. Setup Spark
 
       Download/Checkout spark from
       [https://github.com/apache/spark](https://github.com/apache/spark).
-      Use spark 1.1.1 or later versions.
+      Use spark 1.2.0 or later versions.
 
       For hadoop 1.0.4, standalone mode only:
       
       `./make-distribution.sh --name spark --tgz -Phive`
 
-      For hadoop with yarn support:
+      For hadoop with YARN support:
 
-      `./make-distribution.sh --name spark-yarn --tgz -Phive -Pyarn -Dhadoop.version=2.x.x -Dyarn.version=2.x.x`
+      `./make-distribution.sh --name spark-yarn --tgz -Phive -Pyarn -Phadoop-2.x`
       
       Please refer to `Known Issues` to set `conf/spark-default.conf`
       properly.
 
-  5. Setup HiBench
+  4. Setup HiBench
 
       Download/checkout HiBench benchmark suite from
       [https://github.com/Intel-bigdata/Sparkbench/tree/v4.0-branch](https://github.com/Intel-bigdata/Sparkbench/archive/v4.0-branch.zip)
+      
+      Edit `src/pom.xml`, set `spark.version` and `spark.bin.version`
+      according to your spark version. Currently, `spark.bin.version`
+      must be set to `1.2` or `1.3`.
 
-  6. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
+      Begin from HiBench V4.0, HiBench'll need python 2.x(>=2.6) for
+      running. For most modern linux distribution, this is satifised
+      already.
+
+  5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
      For CentOS(6.2+):
      
@@ -166,7 +160,7 @@ This benchmark suite contains 9 typical micro workloads:
 
      `aptitude install python-numpy`
 
-  7. Setup for HiBench/report_gen_plot.py (Optional)
+  6. Setup for HiBench/report_gen_plot.py (Optional)
   
      Install python-matplotlib with verion of 0.9+
 
@@ -199,8 +193,8 @@ This benchmark suite contains 9 typical micro workloads:
                                                 partition numbers in Spark
           hibench.yarn.exectors.num             Number executors in YARN mode
           hibench.yarn.exectors.cores           Number executor cores in YARN mode 
-          hibench.yarn.exectors.memory          Number of executor memory in YARN mode
-          spark.executor.memory                 Spark executor memory
+          spark.exectors.memory                 Executor memory, standalone or YARN mode
+          spark.driver.memory                   Driver memory, standalone or YARN mode
           
      Compress options:
 
@@ -294,7 +288,8 @@ This benchmark suite contains 9 typical micro workloads:
 
   4. Plot the report:
       
-      `<HiBench root>/bin/report_gen_plot.py` to generate report figures.
+      `<HiBench root>/bin/report_gen_plot.py report/hibench.report` to
+      generate report figures.
 
       Note:
       

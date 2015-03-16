@@ -192,11 +192,12 @@ function run-spark-job() {
     fi
     if [[ "$CLS" == *.py ]]; then 
 	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@
+	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@"
     else
-	echo ${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
-	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
+	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
+    echo "Submit Spark job: $SUBMIT_CMD"
+    $SUBMIT_CMD
     result=$?
     if [ $result -ne 0 ]
     then
@@ -212,7 +213,7 @@ function run-hadoop-job(){
     shift
     local tail_arguments=$@
     local CMD="${HADOOP_EXECUTABLE} jar $job_jar $job_name $tail_arguments"
-    echo "$CMD"
+    echo "Submit MapReduce Job: $CMD"
     $CMD
 }
 
