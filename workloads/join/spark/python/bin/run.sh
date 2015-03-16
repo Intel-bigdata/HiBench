@@ -29,7 +29,7 @@ prepare-sql-join ${HIVEBENCH_SQL_FILE}
 START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job ${HIBENCH_PYTHON_PATH}/join.py ${HIVEBENCH_SQL_FILE}
+run-spark-job ${HIBENCH_PYTHON_PATH}/python_spark_sql_bench.py PythonJoin ${HIVEBENCH_SQL_FILE}
 
 sleep 5
 END_TIME=`timestamp`

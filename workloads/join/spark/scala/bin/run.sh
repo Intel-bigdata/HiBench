@@ -29,7 +29,7 @@ prepare-sql-join ${HIVEBENCH_SQL_FILE}
 START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.join.ScalaJoin ${HIVEBENCH_SQL_FILE}
+run-spark-job com.intel.sparkbench.sql.ScalaSparkSQLBench ScalaJoin ${HIVEBENCH_SQL_FILE}
 
 sleep 5
 END_TIME=`timestamp`

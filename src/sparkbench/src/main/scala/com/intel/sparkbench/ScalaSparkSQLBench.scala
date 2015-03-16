@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.intel.sparkbench.scan
+package com.intel.sparkbench.sql
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
@@ -23,21 +23,24 @@ import org.apache.spark.sql.hive.HiveContext
 /*
  * ported from HiBench's hive bench
  */
-object ScalaScan{
+object ScalaSparkSQLBench{
   def main(args: Array[String]){
-    if (args.length < 1){
+    if (args.length < 2){
       System.err.println(
-        s"Usage: $ScalaScan <SQL script file>"
+        s"Usage: $ScalaSparkSQLBench <workload name> <SQL sciprt file>"
       )
       System.exit(1)
     }
-    val sparkConf = new SparkConf().setAppName("ScalaScan")
+    val workload_name = args(0)
+    val sql_file = args(1)
+    val sparkConf = new SparkConf().setAppName(workload_name)
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    val _sql = scala.io.Source.fromFile(args(0)).mkString
+    val _sql = scala.io.Source.fromFile(sql_file).mkString
     _sql.split(';').foreach { x =>
-      if (x.trim.nonEmpty) hc.sql(x)
+      if (x.trim.nonEmpty)
+        hc.sql(x)
     }
 
     sc.stop()

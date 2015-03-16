@@ -28,7 +28,7 @@ prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job ${HIBENCH_PYTHON_PATH}/aggregation.py ${HIVEBENCH_SQL_FILE}
+run-spark-job ${HIBENCH_PYTHON_PATH}/python_spark_sql_bench.py PythonAggregation ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5

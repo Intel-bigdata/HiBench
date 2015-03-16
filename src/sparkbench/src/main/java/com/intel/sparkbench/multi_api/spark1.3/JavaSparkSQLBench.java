@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.sparkbench.join;
+package com.intel.sparkbench.sql;
 
 import scala.Tuple2;
 import org.apache.spark.SparkConf;

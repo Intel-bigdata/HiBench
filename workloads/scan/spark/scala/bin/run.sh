@@ -28,7 +28,7 @@ prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.scan.ScalaScan ${HIVEBENCH_SQL_FILE}
+run-spark-job com.intel.sparkbench.sql.ScalaSparkSQLBench ScalaScan ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5

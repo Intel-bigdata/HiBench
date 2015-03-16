@@ -24,13 +24,14 @@ from pyspark.sql import SQLContext, HiveContext
 # ported from HiBench's hive bench
 #
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: join <SQL script file>"
+    if len(sys.argv) != 3:
+        print >> sys.stderr, "Usage: python_spark_sql_bench.py <workload_name> <SQL script file>"
         exit(-1)
-    sc = SparkContext(appName="PythonJoin")
+    workload_name, sql_script = sys.argv[1], sys.argv[2]
+    sc = SparkContext(appName=workload_name)
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
-    with open(sys.argv[1]) as f:
+    with open(sql_script) as f:
         for line in f.read().split(';'):
             line = line.strip()
             if line:
