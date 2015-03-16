@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.sparkbench.aggregation;
+package com.intel.sparkbench.join;
 
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;
@@ -26,7 +26,6 @@ import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.api.java.function.PairFunction;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
@@ -35,19 +34,21 @@ import java.util.regex.Pattern;
 /*
  * ported from HiBench's hive bench
  */
-public final class JavaAggregation {
+public final class JavaSparkSQLBench {
+    private static final Pattern SPACE = Pattern.compile(" ");
+
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 1) {
-            System.err.println("Usage: JavaAggregation <SQL script file>");
+        if (args.length < 2) {
+            System.err.println("Usage: JavaSparkSqlBench <workload_name> <hdfs_url>");
             System.exit(1);
         }
-
-        SparkConf sparkConf = new SparkConf().setAppName("JavaAggregation");
+        String workload_name = args[0];
+        String sql_script = args[1];
+        SparkConf sparkConf = new SparkConf().setAppName(workload_name);
         JavaSparkContext ctx = new JavaSparkContext(sparkConf);
         JavaHiveContext hc = new JavaHiveContext(ctx);
-
-        FileReader in = new FileReader(args[0]);
+        FileReader in = new FileReader(sql_script);
         StringBuilder contents = new StringBuilder();
         char[] buffer = new char[40960];
         int read = 0;

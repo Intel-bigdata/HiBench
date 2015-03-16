@@ -28,7 +28,7 @@ prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.aggregation.JavaAggregation ${HIVEBENCH_SQL_FILE}
+run-spark-job com.intel.sparkbench.aggregation.JavaSparkSQLBench JavaAggregation ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5
