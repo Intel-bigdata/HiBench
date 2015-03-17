@@ -221,7 +221,7 @@ This benchmark suite contains 9 typical micro workloads:
 5. Build
 
     You will need to execute `bin/build-all.sh` to build all
-    workloads. (Assume `sbt` is installed properly and accessible in
+    workloads. (Assume `maven` is installed properly and accessible in
     `$PATH`)
 
 ---
