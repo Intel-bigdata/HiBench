@@ -18,17 +18,9 @@
 package com.intel.sparkbench.scan;
 
 import org.apache.spark.sql.hive.HiveContext;
-import org.apache.spark.sql.hive.api.java.JavaHiveContext;
-import scala.Tuple2;
 import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.FlatMapFunction;
-import org.apache.spark.api.java.function.PairFunction;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /*
