@@ -67,6 +67,7 @@ HiBenchEnvPropMapping=dict(
     # For Sleep workload
     MAP_SLEEP_TIME="hibench.sleep.mapper.seconds",
     RED_SLEEP_TIME="hibench.sleep.reducer.seconds",
+    HADOOP_SLEEP_JAR="hibench.sleep.job.jar",
     # For Sort, Terasort, Wordcount
     DATASIZE="hibench.workload.datasize",
     BYTES_PER_MAP_NAME="hibench.randomtextwriter.bytespermap.name",

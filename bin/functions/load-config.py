@@ -149,18 +149,42 @@ def generate_optional_value():  # get values from environment or make a guess
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
 
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
+        if HibenchConf["hibench.hadoop.version"] == "hadoop1": # MR1
+            if HibenchConf['hibench.hadoop.release'] == 'apache': # Apache release
+                HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
+                HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
+            elif HibenchConf['hibench.hadoop.release'].startswith('cdh'): # CDH release
+                HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce1/hadoop-examples*.jar")
+                HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce1/hadoop-examples*.jar"
+        else:                   # MR2
+            if HibenchConf['hibench.hadoop.release'] == 'apache': # Apache release
+                HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar")
+                HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
+            elif HibenchConf['hibench.hadoop.release'].startswith('cdh'): # CDH release
+                HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar")
+                HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar"
+
+    if not HibenchConf.get("hibench.hadoop.examples.test.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/hadoop-examples*.jar"
+            HibenchConf["hibench.hadoop.examples.test.jar"] = "dummy"
+            HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Dummy value, not available in hadoop1"
         else:
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
-#            raise Exception("FIXME! for hadoop2, use a HADOOP_JOBCLIENT_TESTS_JAR as hadoop.example.jar")
+            if HibenchConf['hibench.hadoop.release'] == 'apache':
+                HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar")
+                HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar"
+            elif HibenchConf['hibench.hadoop.release'].startswith('cdh'):
+                HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar")
+                HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
 
     if not HibenchConf.get("hibench.hadoop.configure.dir", ""):
-        HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
-            else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
-        HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version'"
+        if HibenchConf["hibench.hadoop.release"] == "apache": # Apache release
+            HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
+                else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
+            HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
+        elif HibenchConf["hibench.hadoop.release"] == "cdh": # CDH release
+            HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop-mapreduce1") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
+                else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
+            HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
 
     if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
         HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"

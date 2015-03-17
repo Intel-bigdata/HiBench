@@ -23,7 +23,7 @@ enter_bench HadoopSleep ${workload_root} ${workload_folder}
 show_bannar start
 
 START_TIME=`timestamp`
-run-hadoop-job $HADOOP_EXAMPLES_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
+run-hadoop-job $HADOOP_SLEEP_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
 END_TIME=`timestamp`
 SIZE="0"
 
