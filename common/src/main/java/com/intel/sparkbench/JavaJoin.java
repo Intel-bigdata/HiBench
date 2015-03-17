@@ -16,6 +16,7 @@
  */
 package com.intel.sparkbench.join;
 
+import org.apache.spark.sql.hive.HiveContext;
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
@@ -45,7 +46,7 @@ public final class JavaJoin {
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaJoin");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaHiveContext hc = new JavaHiveContext(ctx);
+      HiveContext hc = new HiveContext(ctx.sc());
 
     hc.sql("DROP TABLE IF EXISTS rankings");
     hc.sql("DROP TABLE IF EXISTS uservisits");

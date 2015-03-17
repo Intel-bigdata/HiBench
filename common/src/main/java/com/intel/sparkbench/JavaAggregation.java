@@ -16,6 +16,7 @@
  */
 package com.intel.sparkbench.aggregation;
 
+import org.apache.spark.sql.hive.HiveContext;
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
@@ -45,7 +46,7 @@ public final class JavaAggregation {
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaAggregation");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaHiveContext hc = new JavaHiveContext(ctx);
+    HiveContext hc = new HiveContext(ctx.sc());
 
     hc.sql("DROP TABLE IF EXISTS uservisits");
     hc.sql("DROP TABLE IF EXISTS uservisits_aggre");

@@ -17,6 +17,7 @@
 
 package com.intel.sparkbench.scan;
 
+import org.apache.spark.sql.hive.HiveContext;
 import org.apache.spark.sql.hive.api.java.JavaHiveContext;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
@@ -45,12 +46,12 @@ public final class JavaScan {
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaScan");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaHiveContext hc = new JavaHiveContext(ctx);
+      HiveContext hc = new HiveContext(ctx.sc());
 
 
     hc.sql("DROP TABLE if exists rankings");
     hc.sql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
-    hc.sql("FROM rankings SELECT *").saveAsTextFile(String.format("%s/rankings", args[1]));
+    hc.sql("FROM rankings SELECT *").rdd().saveAsTextFile(String.format("%s/rankings", args[1]));
 
     ctx.stop();
   }

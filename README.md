@@ -138,7 +138,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       Download/Checkout spark from
       [https://github.com/apache/spark](https://github.com/apache/spark).
-      Use spark 1.1.1 or later versions.
+      Use spark 1.3.0 or later versions.
 
       For hadoop 1.0.4, standalone mode only:
       
