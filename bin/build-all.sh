@@ -20,24 +20,8 @@ DIR=`cd "${DIR}/.."; pwd`
 
 . $DIR/bin/load-sparkbench-config.sh
 
-function check_and_build {
-    local folder=$1
-    local module=$2
-    echo $folder/*.sbt
-    if ls $folder/*.sbt &> /dev/null; then
-	echo "====================="
-	echo "Build ${module}..."
-	echo "====================="
-	( cd $folder && ./sbt assembly )
-	result=$?
-	if [ $result -ne 0 ]; then
-	    echo "Build ${module} failed!"
-	    exit $result
-	fi
-    fi
-}
-
 # build data generator
-check_and_build $DIR/common SparkBench 
+cd $DIR/common
+mvn clean package
 
-echo "Build all done!"
+echo "Build done!"

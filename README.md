@@ -156,6 +156,8 @@ This benchmark suite contains 9 typical micro workloads:
       Download/checkout SparkBench benchmark suite from
       [https://github.com/intel-bigdata/Sparkbench](https://github.com/Intel-bigdata/Sparkbench/archive/master.zip).
 
+      Edit `common/pom.xml', set `spark.version` and `spark.bin.version` accordingly. Note, currently `spark.bin.version` only supports `1.2` and `1.3`.
+
   6. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
      For CentOS(6.2+):
