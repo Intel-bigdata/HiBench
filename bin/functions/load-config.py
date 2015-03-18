@@ -88,7 +88,7 @@ def load_config(conf_root, workload_root, workload_folder):
     # generate auto probe values
     generate_optional_value()
     # generate ref values again to ensure all values can be found
-    waterfall_config()
+    waterfall_config(force=True)
     # check
     check_config()
     # Export config to file, let bash script to import as local variables.
@@ -104,12 +104,16 @@ def check_config():             # check configures
                                                                                                                               HibenchConfRef.get(prop_name, "unknown"),
                                                                                                                               HibenchConf.get(prop_name, "unknown"))
 
-def waterfall_config():         # replace "${xxx}" to its values
+def waterfall_config(force=False):         # replace "${xxx}" to its values
     def process_replace(m):
         raw_key = m.groups()[0]
         key = raw_key[2:-1].strip()
         log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key))
-        return HibenchConf.get(key, raw_key)
+        if force:
+            return HibenchConf.get(key, raw_key)
+        else:
+            return HibenchConf.get(key, "") or raw_key
+
     p = re.compile("(\$\{\s*[^\s^\$^\}]+\s*\})")
 
     finish = False
@@ -123,13 +127,15 @@ def waterfall_config():         # replace "${xxx}" to its values
                 HibenchConf[key] = value
                 finish = False
 
-def generate_optional_value():  # get values from environment or make a guess
+def generate_optional_value():  # get some critical values from environment or make a guess
     d = os.path.dirname
     join = os.path.join
     HibenchConf['hibench.home']=d(d(d(os.path.abspath(__file__))))
     del d
     HibenchConfRef['hibench.home']="Inferred from %s" % __file__
     version = ""
+
+    # probe hadoop version
     def get_hadoop_version_cmd(): return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     def get_hadoop_version(): return shell(get_hadoop_version_cmd()).strip()
     if not HibenchConf.get("hibench.hadoop.version", ""):
@@ -138,6 +144,26 @@ def generate_optional_value():  # get values from environment or make a guess
         HibenchConf["hibench.hadoop.version"] = "hadoop"+version[0]
         HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + get_hadoop_version_cmd()
 
+    # probe spark version
+    if not HibenchConf.get("hibench.spark.version", ""):
+        spark_home = HibenchConf.get("hibench.spark.home", "")
+        assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
+        try:
+            release_file = join(spark_home, "RELEASE")
+            with open(release_file) as f:
+                version = f.readlines()
+                #version="Spark 1.2.2-SNAPSHOT (git revision f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
+                spark_version = version.split()[1].strip()
+                HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, version)
+        except IOError as e:    # no release file, fall back to hard way
+            shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
+            spark_version = shell(shell_cmd).strip()
+            HibenchConfRef["hibench.spark.version"] = "Probed by shell command: %s, value: %s" % (shell_cmd, spark_version)
+            
+        assert spark_version, "Spark version probe failed, please override `hibench.spark.version` to explicitly define this property"
+        HibenchConf["hibench.spark.version"] = "spark" + spark_version[:3]
+
+    # probe hadoop release
     if not HibenchConf.get("hibench.hadoop.release", ""):
         if not version:
             version = get_hadoop_version()
@@ -148,6 +174,9 @@ def generate_optional_value():  # get values from environment or make a guess
             "UNKNOWN"
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
 
+    assert version!='UNKNOWN', "Unknown hadoop version. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
+
+    # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1": # MR1
             if HibenchConf['hibench.hadoop.release'] == 'apache': # Apache release
@@ -164,6 +193,7 @@ def generate_optional_value():  # get values from environment or make a guess
                 HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar")
                 HibenchConfRef["hibench.hadoop.examples.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar"
 
+    # probe hadoop examples test jars (for sleep in hadoop2 only)
     if not HibenchConf.get("hibench.hadoop.examples.test.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1":
             HibenchConf["hibench.hadoop.examples.test.jar"] = "dummy"
@@ -176,6 +206,7 @@ def generate_optional_value():  # get values from environment or make a guess
                 HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar")
                 HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
 
+    # probe hadoop configuration files
     if not HibenchConf.get("hibench.hadoop.configure.dir", ""):
         if HibenchConf["hibench.hadoop.release"] == "apache": # Apache release
             HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
@@ -186,6 +217,7 @@ def generate_optional_value():  # get values from environment or make a guess
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
 
+    # setting hadoop mapper/reducer property names
     if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
         HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"
         HibenchConfRef["hibench.hadoop.mapper.name"] = "Inferred by: 'hibench.hadoop.version'"

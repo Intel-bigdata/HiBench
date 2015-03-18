@@ -15,8 +15,9 @@
         <encoding>UTF-8</encoding>
         <scala.version>2.10.4</scala.version>
         <scala.binary.version>2.10</scala.binary.version>
-        <spark.version>1.3.0</spark.version>
+	<spark.version>1.3.0</spark.version>
 	<spark.bin.version>1.3</spark.bin.version>
+	<sparkbench.mr.version>MR2</sparkbench.mr.version>
     </properties>
 
     <repositories>
@@ -77,6 +78,25 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+	<plugins>
+	  <plugin>
+	    <groupId>org.apache.maven.plugins</groupId>
+	    <artifactId>maven-jar-plugin</artifactId>
+	    <version>2.3.2</version>
+	    <executions>
+	      <execution>
+		<id>default-jar</id>
+		<phase>package</phase>
+		<goals>
+		  <goal>jar</goal>
+		</goals>
+		<configuration>
+		  <finalName>${project.artifactId}-${project.version}-${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
+		</configuration>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
     </build>
 
     <modules>
@@ -88,4 +108,78 @@
         <module>autogen</module>
     </modules>
 
+    <profiles>
+      <profile>
+	<id>hadoop1</id>
+	<build>
+	  <plugins>
+	    <plugin>
+	      <groupId>net.alchim31.maven</groupId>
+	      <artifactId>scala-maven-plugin</artifactId>	 
+	      <configuration>
+		<excludes>
+		  <exclude>com/intel/sparkbench/multi_api/MR2/</exclude>
+		</excludes>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</build>
+	<properties>
+	  <sparkbench.mr.version>MR1</sparkbench.mr.version>
+	</properties>
+	<activation>
+	  <property><name>hadoop1</name></property>
+	  <activeByDefault>false</activeByDefault>
+        </activation>
+      </profile>
+
+      <profile>
+	<id>hadoop2</id>
+	<build>
+	  <plugins>
+	    <plugin>
+	      <groupId>net.alchim31.maven</groupId>
+	      <artifactId>scala-maven-plugin</artifactId>	 
+	      <configuration>
+		<excludes>
+		  <exclude>com/intel/sparkbench/multi_api/MR1/</exclude>
+		</excludes>
+	      </configuration>
+	    </plugin>
+	  </plugins>
+	</build>
+	<properties>
+	  <sparkbench.mr.version>MR2</sparkbench.mr.version>
+	</properties>
+	<activation>
+	  <property><name>hadoop2</name></property>
+	  <activeByDefault>true</activeByDefault>
+        </activation>
+      </profile>
+      
+      <profile>
+	<id>spark1.2</id>
+	<properties>
+ 	  <spark.version>1.2.0</spark.version>
+	  <spark.bin.version>1.2</spark.bin.version>
+	</properties>
+	<activation>
+	  <property><name>spark1.2</name></property>
+	  <activeByDefault>false</activeByDefault>
+	</activation>
+      </profile>
+      
+      <profile>
+	<id>spark1.3</id>
+	<properties>
+	  <env>spark1.3</env>
+	  <spark.version>1.3.0</spark.version>
+	  <spark.bin.version>1.3</spark.bin.version>
+	</properties>
+	<activation>
+	  <property><name>spark1.3</name></property>
+	  <activeByDefault>false</activeByDefault>
+	</activation>
+      </profile>
+    </profiles>
 </project>

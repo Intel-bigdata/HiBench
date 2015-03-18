@@ -22,6 +22,15 @@ HiBenchEnvPropMappingMandatory=dict(
     SPARK_HOME="hibench.spark.home",
     HDFS_MASTER="hibench.hdfs.master",
     SPARK_MASTER="hibench.spark.master",
+    HADOOP_VERSION="hibench.hadoop.version",       
+    HADOOP_RELEASE="hibench.hadoop.release",        
+    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar", 
+    HADOOP_EXECUTABLE="hibench.hadoop.executable", 
+    HADOOP_CONF_DIR="hibench.hadoop.configure.dir",
+    SPARK_VERSION="hibench.spark.version",
+    HIBENCH_HOME="hibench.home",
+    HIBENCH_CONF="hibench.configure.dir", 
+
     DEPENDENCY_DIR="hibench.dependency.dir",
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
@@ -40,14 +49,8 @@ HiBenchEnvPropMappingMandatory=dict(
     )
 
 HiBenchEnvPropMapping=dict(
-    HADOOP_EXECUTABLE="hibench.hadoop.executable", # defined
-    HADOOP_CONF_DIR="hibench.hadoop.configure.dir", # defined
-    HADOOP_VERSION="hibench.hadoop.version",        # inferred
-    HADOOP_RELEASE="hibench.hadoop.release",        # inferred
-    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar", # inferred
     SPARK_EXAMPLES_JAR="hibench.spark.examples.jar",
-    HIBENCH_HOME="hibench.home", # inferred
-    HIBENCH_CONF="hibench.configure.dir", # set in default
+
     HIVE_HOME="hibench.hive.home",
     HIVE_RELEASE="hibench.hive.release",
     HIVEBENCH_TEMPLATE="hibench.hivebench.template.dir",
