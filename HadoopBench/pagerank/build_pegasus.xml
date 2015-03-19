@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="pegasus" default="run" basedir="." >
+<description>
+PEGASUS: A Peta-Scale Graph Mining System
+</description>
+
+<property environment="env" />
+<property name="hadoop.home" value="${env.HADOOP_HOME}" />
+<property name="basedir" location="." />
+<property name="src.dir" location="src/pegasus/hadi:src/pegasus/matvec:src/pegasus/con_cmpth:src/pegasus/pegasus:src/pegasus/pagerank:src/pegasus/rwr:src/pegasus/degdist:src/pegasus/heigen:src/pegasus/column_joiner" />
+<property name="build.dir" location="${basedir}/classes"/>
+<property name="hadoop.version" value="0.20.1"/>
+<property name="hadoop.dir" value="${basedir}/../../hadoop"/>
+<property name="app.jar" location="${basedir}/pegasus-2.0.jar"/>
+
+
+<!-- classpath definitions -->
+<path id="build.classpath">
+<pathelement location="${build.dir}"/>
+    <fileset dir="${hadoop.home}">
+        <include name="hadoop-core*.jar" />
+    </fileset>
+</path>
+
+<target name="compile" description="compile all Java classes">
+<mkdir dir="${build.dir}"/>
+<javac classpathref="build.classpath" destdir="${build.dir}" debug="on" deprecation="off" includeantruntime="false">
+<src path="${src.dir}"/>
+</javac>
+</target>
+
+<target name="makejar" description="wrap the application class in a JAR file"   depends="compile">
+<jar destfile="${app.jar}" basedir="${build.dir}" includes="pegasus/**"/>
+</target>
+
+</project>

@@ -13,15 +13,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-set -u
 
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-. $DIR/bin/load-sparkbench-config.sh
+. $DIR/bin/hibench-config.sh
 
-# build data generator
-cd $DIR/common
-mvn clean package
+if [ -f $HIBENCH_REPORT ]; then
+    rm $HIBENCH_REPORT
+fi
 
-echo "Build done!"
+for benchmark in `cat $DIR/conf/benchmarks.lst`; do
+    if [[ $benchmark == \#* ]]; then
+        continue
+    fi
+
+    if [ "$benchmark" = "dfsioe" ] ; then
+        # dfsioe specific
+        $DIR/dfsioe/bin/prepare-read.sh
+        $DIR/dfsioe/bin/run-read.sh
+        $DIR/dfsioe/bin/run-write.sh
+
+    elif [ "$benchmark" = "hivebench" ]; then
+        # hivebench specific
+        $DIR/hivebench/bin/prepare.sh
+        $DIR/hivebench/bin/run-aggregation.sh
+        $DIR/hivebench/bin/run-join.sh
+
+    else
+        if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
+            $DIR/${benchmark}/bin/prepare.sh
+        fi
+        $DIR/${benchmark}/bin/run.sh
+    fi
+done
+
