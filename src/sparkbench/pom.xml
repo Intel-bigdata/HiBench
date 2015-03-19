@@ -142,8 +142,7 @@
 	  </dependency>
 	</dependencies>
 	<activation>
-	  <property><name>hadoop2</name></property>
-	  <activeByDefault>true</activeByDefault>
+	  <property><name>!hadoop1</name></property>
         </activation>
       </profile>
     </profiles>

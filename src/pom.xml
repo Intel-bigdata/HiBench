@@ -15,9 +15,9 @@
         <encoding>UTF-8</encoding>
         <scala.version>2.10.4</scala.version>
         <scala.binary.version>2.10</scala.binary.version>
-	<spark.version>1.3.0</spark.version>
-	<spark.bin.version>1.3</spark.bin.version>
-	<sparkbench.mr.version>MR2</sparkbench.mr.version>
+	<!-- <spark.version>1.3.0</spark.version> -->
+	<!-- <spark.bin.version>1.3</spark.bin.version> -->
+	<!-- <sparkbench.mr.version>MR2</sparkbench.mr.version> -->
     </properties>
 
     <repositories>
@@ -129,7 +129,6 @@
 	</properties>
 	<activation>
 	  <property><name>hadoop1</name></property>
-	  <activeByDefault>false</activeByDefault>
         </activation>
       </profile>
 
@@ -152,8 +151,7 @@
 	  <sparkbench.mr.version>MR2</sparkbench.mr.version>
 	</properties>
 	<activation>
-	  <property><name>hadoop2</name></property>
-	  <activeByDefault>true</activeByDefault>
+	  <property><name>!hadoop1</name></property>
         </activation>
       </profile>
       
@@ -165,7 +163,6 @@
 	</properties>
 	<activation>
 	  <property><name>spark1.2</name></property>
-	  <activeByDefault>false</activeByDefault>
 	</activation>
       </profile>
       
@@ -177,8 +174,7 @@
 	  <spark.bin.version>1.3</spark.bin.version>
 	</properties>
 	<activation>
-	  <property><name>spark1.3</name></property>
-	  <activeByDefault>false</activeByDefault>
+	  <property><name>!spark1.2</name></property>
 	</activation>
       </profile>
     </profiles>
