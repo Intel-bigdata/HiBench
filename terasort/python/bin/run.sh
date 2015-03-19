@@ -32,7 +32,7 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
 # run bench
-run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/terasort.py $INPUT_HDFS $OUTPUT_HDFS || exit 1
+run-spark-job ${SPARKBENCH_HOME}/common/src/main/python/terasort.py $INPUT_HDFS $OUTPUT_HDFS $HADOOP_VERSION || exit 1
 #$SPARK_HOME/bin/spark-submit --master ${SPARK_MASTER} ${SPARKBENCH_HOME}/common/src/main/python/terasort.py $INPUT_HDFS $OUTPUT_HDFS
 
 # post-running
