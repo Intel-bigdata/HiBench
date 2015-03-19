@@ -222,7 +222,18 @@ This benchmark suite contains 9 typical micro workloads:
 
     You will need to execute `bin/build-all.sh` to build all
     workloads. (Assume `maven` is installed properly and accessible in
-    `$PATH`)
+    `$PATH`). By default it will build HiBench with hadoop2 and
+    spark1.3 API.
+
+    For running HiBench with Hadoop1 API, supply `-Dhadoop1`, and for
+    running HiBench with Spark1.2 API, supply `-Dspark1.2`. For
+    example, building Hibench with Hadoop1 and Spark1.2 API:
+
+          cd <HiBench root>/src
+          mvn clean package -D hadoop1 -D spark1.2
+
+    Remember to update values of `HADOOP_VERSION` in
+    `conf/sparkbench-config.sh` accordingly.
 
 ---
 ### Running ###
