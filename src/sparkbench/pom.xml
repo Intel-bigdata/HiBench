@@ -83,18 +83,14 @@
             <configuration>
 	      <directory>com/intel/sparkbench/mulit_api</directory>
 	      <includes>
-		<include>**/spark${spark.bin.version}/*.java</include>
+		<include>com/intel/sparkbench/multi_api/spark${spark.bin.version}/*.java</include>
+		<include>com/intel/sparkbench/multi_api/${sparkbench.mr.version}/*.java</include>
 	      </includes>
 	    </configuration>
         </plugin>
 	<plugin>
 	  <groupId>net.alchim31.maven</groupId>
 	  <artifactId>scala-maven-plugin</artifactId>	 
-	  <!-- <configuration> -->
-	  <!--   <excludes> -->
-	  <!--     <exclude>com/intel/sparkbench/multi_api/MR1/</exclude> -->
-	  <!--   </excludes> -->
-	  <!-- </configuration> -->
 	  <executions>
 	    <execution>
 	      <id>scala-compile-first</id>

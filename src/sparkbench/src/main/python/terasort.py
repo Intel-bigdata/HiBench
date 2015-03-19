@@ -27,9 +27,24 @@ if __name__ == "__main__":
         exit(-1)
     sc = SparkContext(appName="PythonTeraSort")
     reducer = int(IOCommon.getProperty("hibench.default.shuffle.parallelism"))
-    lines = sc.textFile(sys.argv[1], 1)
-    sortedCount = lines.map(lambda x: (x[:10], x[10:])) \
-        .sortByKey(lambda x: x, numPartitions = reducer).map(lambda x: x[0] + x[1])
 
-    sortedCount.saveAsTextFile(sys.argv[2])
+    version_api = IOCommon.getProperty("hibench.hadoop.version")
+    # load
+    if version_api=="hadoop1":
+        lines = sc.textFile(sys.argv[1], 1).map(lambda x: (x[:10], x[10:]))
+    elif version_api == "hadoop2":
+        lines = sc.newAPIHadoopFile(sys.argv[1], "org.apache.hadoop.examples.terasort.TeraInputFormat",
+                                    "org.apache.hadoop.io.Text", "org.apache.hadoop.io.Text")
+
+    # sort
+    sortedCount = lines.sortByKey(lambda x: x, numPartitions = reducer)
+
+    # save
+    if version_api=="hadoop1":
+        lines = sortedCount.map(lambda x: x[0] + x[1])
+        sortedCount.saveAsTextFile(sys.argv[2])
+    elif version_api == "hadoop2":
+        sortedCount.saveAsNewAPIHadoopFile(sys.argv[2], "org.apache.hadoop.examples.terasort.TeraOutputFormat",
+                                           "org.apache.hadoop.io.Text", "org.apache.hadoop.io.Text")
+
     sc.stop()
