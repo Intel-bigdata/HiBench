@@ -2,10 +2,14 @@
 #coding: utf-8
 
 import sys, os, re
+from pprint import pprint
 from collections import defaultdict, namedtuple
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
+import numpy as np
 
 RecordRaw=namedtuple("RecordRaw", "type durtation data_size throughput_total throughput_per_node")
 Record=namedtuple("Record", "type language durtation data_size throughput_total throughput_per_node")
@@ -39,8 +43,9 @@ def report_plot(fn):
         sys.exit(1)
 
     with open(fn) as f:
-        data = [x.split() for x in f.readlines()[1:]]
+        data = [x.split() for x in f.readlines()[1:] if x.strip() and not x.strip().startswith('#')]
 
+    pprint(data, width=300)
     groups = group_by_type([RecordRaw(type = x[0],
                                       data_size = int(x[3]),
                                       durtation = float(x[4]),
@@ -63,18 +68,31 @@ def plot(groups, title="Seconds of durtations", ylabel="Seconds", value_field="d
 
     fig = plt.figure()
     ax = plt.axes()
-    colors='rgbcym'
+    colors='rgbcymw'
+#    NCURVES=10
+#    curves = [np.random.random(20) for i in range(NCURVES)]
+#    values = range(NCURVES)
+#    jet = colors.Colormap('jet')
+#    cNorm  = colors.Normalize(vmin=0, vmax=values[-1])
+#    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)
+    patterns = ('-', '+', 'x', '\\', '/', '*', '.', 'O')
     for idx, lang in enumerate(languages):
         rects.append(ax.bar([x + width * (idx + 1) for x in range(len(keys))], # x index
                             [getattr(groups[x][lang], value_field) if x in groups and groups[x].has_key(lang) else 0 for x in keys], # value
                             width,
-                            color = colors[idx]
+                            color = colors[idx],
+                            hatch = patterns[idx]
                             )  # width
                      
                      )
 
-    ax.set_ylabel(ylabel)
-    ax.set_title(title)
+    # Set the tick labels font
+    for label in (ax.get_xticklabels() + ax.get_yticklabels()):
+        label.set_fontname('Arial')
+        label.set_fontsize(24)
+
+    ax.set_ylabel(ylabel, fontname="Arial", size="32")
+    ax.set_title(title, fontname="Arial", size="44")
 
     x_axis_offset = len(languages)* width /2.0
     ax.set_xticks([(x + width + x_axis_offset) for x in range(len(keys))])

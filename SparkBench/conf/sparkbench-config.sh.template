@@ -38,11 +38,12 @@ MAHOUT_HOME=${MAHOUT_HOME:-}
 NUTCH_HOME=${NUTCH_HOME:-}
 SPARKBENCH_HOME=${SPARKBENCH_HOME:-`dirname ${this}`/..}
 SPARKBENCH_CONF=${SPARKBENCH_CONF:-${SPARKBENCH_HOME}/conf}
-SPARKBENCH_JAR=${SPARKBENCH_JAR:-${SPARKBENCH_HOME}/common/target/scala-*/SparkBench-assembly-*.jar}
+SPARKBENCH_JAR=${SPARKBENCH_JAR:-${SPARKBENCH_HOME}/common/target/sparkbench-1.0-jar-with-dependencies.jar}
 SPARKBENCH_REPORT=${SPARKBENCH_REPORT:-${SPARKBENCH_HOME}/sparkbench.report}
 YARN_NUM_EXECTORS=${YARN_NUM_EXECTORS:-} # num executors in yarn mode
 YARN_EXECUTOR_CORES=${YARN_EXECUTOR_CORES:-} # num executor cores in yarn mode
 YARN_EXECUTOR_MEMORY=${YARN_EXECUTOR_MEMORY:-} # num of executor memory in yarn mode
+YARN_DRIVER_MEMORY=${YARN_DRIVER_MEMORY:-} # driver memory in yarn mode
 DATATOOLS=${DATATOOLS:-}
 HADOOP_VERSION=hadoop2 # set it to hadoop1 to enable MR1, hadoop2 to enable MR2
 
