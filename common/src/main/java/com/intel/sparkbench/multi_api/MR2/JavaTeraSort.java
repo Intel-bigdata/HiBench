@@ -17,14 +17,14 @@
 
 package com.intel.sparkbench.terasort;
 
-import org.apache.spark.BaseRangePartitioner;
-import org.apache.spark.ConfigurableJavaPairRDD;
+import com.intel.sparkbench.IOCommon;
+import org.apache.hadoop.examples.terasort.TeraInputFormat;
+import org.apache.hadoop.examples.terasort.TeraOutputFormat;
+import org.apache.hadoop.io.Text;
 import scala.Tuple2;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 
 import java.util.regex.Pattern;
@@ -41,27 +41,25 @@ public final class JavaTeraSort {
 
     SparkConf sparkConf = new SparkConf().setAppName("JavaTeraSort");
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
-    JavaRDD<String> lines = ctx.textFile(args[0], 1);
+    JavaPairRDD<Text, Text> lines = ctx.newAPIHadoopFile(args[0], TeraInputFormat.class, Text.class, Text.class, ctx.hadoopConfiguration());
     Integer parallel = sparkConf.getInt("spark.default.parallelism", ctx.defaultParallelism());
-    Integer reducer  = Integer.parseInt(System.getProperty("sparkbench.reducer"));
-    JavaPairRDD<String, String> words = lines.mapToPair(new PairFunction<String, String, String>() {
+    Integer reducer  = Integer.parseInt(IOCommon.getProperty("sparkbench.reducer").get());
+    JavaPairRDD<String, String> words = lines.mapToPair(new PairFunction<Tuple2<Text, Text>, String, String>() {
         @Override
-        public Tuple2<String, String> call(String s) throws Exception {
-            return new Tuple2<String, String>(s.substring(0, 10), s.substring(10));
+        public Tuple2<String, String> call(Tuple2<Text, Text> e) throws Exception {
+            return new Tuple2<String, String>(e._1().toString(), e._2().toString());
         }
     });
 
 
     JavaPairRDD<String, String> sorted = words.sortByKey(true, reducer);
-
-    JavaRDD<String> result = sorted.map(new Function<Tuple2<String, String>, String>() {
+    JavaPairRDD<Text, Text> result = sorted.mapToPair(new PairFunction<Tuple2<String, String>, Text, Text>() {
         @Override
-        public String call(Tuple2<String, String> e) throws Exception {
-            return e._1() + e._2();
+        public Tuple2<Text, Text> call(Tuple2<String, String> e) throws Exception {
+            return new Tuple2<Text, Text>(new Text(e._1()), new Text(e._2()));
         }
     });
-
-    result.saveAsTextFile(args[1]);
+    result.saveAsNewAPIHadoopFile(args[1], Text.class, Text.class, TeraOutputFormat.class);
 
     ctx.stop();
   }
