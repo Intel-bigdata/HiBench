@@ -25,7 +25,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
 
     # clear hive metastore
-    find $DIR -name "metastore_db" -exec "rm -rf {}" \; 2> /dev/null || true
+    find $DIR -name "metastore_db" -exec rm -rf "{}" \; 2> /dev/null || true
 
     echo "====================="
     echo "Prepare ${benchmark} ..."
@@ -33,6 +33,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     
     WORKLOAD=$DIR/workloads/${benchmark}
     echo "${WORKLOAD}/prepare/prepare.sh"
+    "${WORKLOAD}/prepare/prepare.sh"
 
     if [ $? -ne 0 ]
     then
@@ -48,6 +49,8 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	echo "Run ${benchmark}/${target}"
 	echo "====================="
 	echo $WORKLOAD/${target}/bin/run.sh
+	$WORKLOAD/${target}/bin/run.sh
+
 	result=$?
 	if [ $result -ne 0 ]
 	then
