@@ -25,8 +25,7 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D ${BYTES_PER_MAP_NAME}=$((${DATASIZE} / ${NUM_MAPS})) \
-    -D ${MAPS_PER_HOST_NAME}=${NUM_MAPS} \
+    -D ${BYTES_TOTAL_NAME}=${DATASIZE} \
     -D ${MAP_CONFIG_NAME}=${NUM_MAPS} \
     -D ${REDUCER_CONFIG_NAME}=${NUM_REDS} \
     ${COMPRESS_OPT} \

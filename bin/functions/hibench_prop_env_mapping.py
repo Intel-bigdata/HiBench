@@ -73,8 +73,7 @@ HiBenchEnvPropMapping=dict(
     HADOOP_SLEEP_JAR="hibench.sleep.job.jar",
     # For Sort, Terasort, Wordcount
     DATASIZE="hibench.workload.datasize",
-    BYTES_PER_MAP_NAME="hibench.randomtextwriter.bytespermap.name",
-    MAPS_PER_HOST_NAME="hibench.randomtextwriter.mapsperhost.name",
+    BYTES_TOTAL_NAME="hibench.randomtextwriter.bytestotal.name",
 
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",
