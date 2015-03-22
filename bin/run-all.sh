@@ -18,11 +18,6 @@ set -u
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-. $DIR/bin/load-sparkbench-config.sh
-
-if [ -f $SPARKBENCH_REPORT ]; then
-    rm $SPARKBENCH_REPORT
-fi
 
 for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     if [[ $benchmark == \#* ]]; then
@@ -30,7 +25,20 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
 
     # clear hive metastore
-    find . -name "metastore_db" -exec "rm -rf {}" \; 2> /dev/null || true
+    find $DIR -name "metastore_db" -exec "rm -rf {}" \; 2> /dev/null || true
+
+    echo "====================="
+    echo "Prepare ${benchmark} ..."
+    echo "====================="
+    
+    WORKLOAD=$DIR/workloads/${benchmark}
+    echo "${WORKLOAD}/prepare/prepare.sh"
+
+    if [ $? -ne 0 ]
+    then
+	echo "ERROR: ${benchmark} prepare failed!" 
+        continue
+    fi
 
     for target in `cat $DIR/conf/languages.lst`; do
 	if [[ $target == \#* ]]; then 
@@ -39,7 +47,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	echo "====================="
 	echo "Run ${benchmark}/${target}"
 	echo "====================="
-	$DIR/${benchmark}/${target}/bin/run.sh
+	echo $WORKLOAD/${target}/bin/run.sh
 	result=$?
 	if [ $result -ne 0 ]
 	then
