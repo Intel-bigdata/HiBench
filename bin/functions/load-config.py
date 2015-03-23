@@ -151,15 +151,16 @@ def generate_optional_value():  # get some critical values from environment or m
         try:
             release_file = join(spark_home, "RELEASE")
             with open(release_file) as f:
-                version = f.readlines()
+                version = f.readlines()[0]
                 #version="Spark 1.2.2-SNAPSHOT (git revision f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
                 spark_version = version.split()[1].strip()
                 HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, version)
         except IOError as e:    # no release file, fall back to hard way
+            log("Probing spark verison, may last long time...")
             shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
             spark_version = shell(shell_cmd).strip()
             HibenchConfRef["hibench.spark.version"] = "Probed by shell command: %s, value: %s" % (shell_cmd, spark_version)
-            
+
         assert spark_version, "Spark version probe failed, please override `hibench.spark.version` to explicitly define this property"
         HibenchConf["hibench.spark.version"] = "spark" + spark_version[:3]
 
@@ -212,7 +213,7 @@ def generate_optional_value():  # get some critical values from environment or m
             HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "conf") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
-        elif HibenchConf["hibench.hadoop.release"] == "cdh": # CDH release
+        elif HibenchConf["hibench.hadoop.release"].startswith("cdh"): # CDH release
             HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop-mapreduce1") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
