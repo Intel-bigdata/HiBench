@@ -43,6 +43,7 @@ public final class JavaScan {
 
 
     hc.sql("DROP TABLE if exists rankings");
+    hc.sql("DROP TABLE if exists rankings_copy");
     hc.sql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
     hc.sql(String.format("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[1]));
     hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings");

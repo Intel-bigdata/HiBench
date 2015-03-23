@@ -31,6 +31,7 @@ if __name__ == "__main__":
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
     hc.sql("DROP TABLE if exists rankings")
+    hc.sql("DROP TABLE if exists rankings_copy")
     hc.sql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
     hc.sql("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[2])
     hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings")

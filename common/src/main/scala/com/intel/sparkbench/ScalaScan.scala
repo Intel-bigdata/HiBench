@@ -36,6 +36,7 @@ object ScalaScan{
     val hc = new HiveContext(sc)
 
     hc.sql("DROP TABLE IF EXISTS rankings")
+    hc.sql("DROP TABLE IF EXISTS rankings_copy")
     hc.sql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
            ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
            STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(0)))
