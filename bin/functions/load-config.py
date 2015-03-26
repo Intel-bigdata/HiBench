@@ -133,15 +133,15 @@ def generate_optional_value():  # get some critical values from environment or m
     HibenchConf['hibench.home']=d(d(d(os.path.abspath(__file__))))
     del d
     HibenchConfRef['hibench.home']="Inferred from %s" % __file__
-    version = ""
+    hadoop_version = ""
 
     # probe hadoop version
     def get_hadoop_version_cmd(): return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
     def get_hadoop_version(): return shell(get_hadoop_version_cmd()).strip()
     if not HibenchConf.get("hibench.hadoop.version", ""):
-        if not version:
-            version = get_hadoop_version()
-        HibenchConf["hibench.hadoop.version"] = "hadoop"+version[0]
+        if not hadoop_version:
+            hadoop_version = get_hadoop_version()
+        HibenchConf["hibench.hadoop.version"] = "hadoop" + hadoop_version[0]
         HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + get_hadoop_version_cmd()
 
     # probe spark version
@@ -151,10 +151,10 @@ def generate_optional_value():  # get some critical values from environment or m
         try:
             release_file = join(spark_home, "RELEASE")
             with open(release_file) as f:
-                version = f.readlines()[0]
-                #version="Spark 1.2.2-SNAPSHOT (git revision f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
-                spark_version = version.split()[1].strip()
-                HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, version)
+                spark_version_raw = f.readlines()[0]
+                #spark_version_raw="Spark 1.2.2-SNAPSHOT (git revision f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
+                spark_version = spark_version_raw.split()[1].strip()
+                HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, spark_version_raw)
         except IOError as e:    # no release file, fall back to hard way
             log("Probing spark verison, may last long time...")
             shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
@@ -166,16 +166,16 @@ def generate_optional_value():  # get some critical values from environment or m
 
     # probe hadoop release
     if not HibenchConf.get("hibench.hadoop.release", ""):
-        if not version:
-            version = get_hadoop_version()
+        if not hadoop_version:
+            hadoop_version = get_hadoop_version()
         HibenchConf["hibench.hadoop.release"] = \
-            "cdh4" if "cdh4" in version else \
-            "cdh5" if "cdh5" in version else \
+            "cdh4" if "cdh4" in hadoop_version else \
+            "cdh5" if "cdh5" in hadoop_version else \
             "apache" if "hadoop" in HibenchConf["hibench.hadoop.version"] else \
             "UNKNOWN"
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
 
-    assert version!='UNKNOWN', "Unknown hadoop version. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
+    assert hadoop_version!='UNKNOWN', "Unknown hadoop version. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
 
     # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
