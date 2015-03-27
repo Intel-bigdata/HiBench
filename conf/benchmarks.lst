@@ -1,7 +1,7 @@
-aggregation
-join
-kmeans
-pagerank
+#aggregation
+#join
+#kmeans
+#pagerank
 scan
 sleep
 sort
