@@ -240,19 +240,27 @@ This benchmark suite contains 9 typical micro workloads:
 
 5. Build
 
-    Run `mvn clean package` in `src` folder:
+    Run `bin/build-all.sh` will build HiBench for all running
+    environments:
+
+          - MR1, Spark1.2
+          - MR1, Spark1.3
+          - MR2, Spark1.2
+          - MR2, Spark1.3
+
+    You can build on your own by `mvn clean package` in `src` folder:
 
           cd <HiBench root>/src
           mvn clean package
 
-    By default it will build HiBench with hadoop2 and spark1.3 API.
+    By default it will build HiBench with MR2 and spark1.3 API.
 
-    For running HiBench with Hadoop1 API, supply `-Dhadoop1`, and for
+    For running HiBench with MR1 API, supply `-DMR1`, and for
     running HiBench with Spark1.2 API, supply `-Dspark1.2`. For
-    example, building Hibench with Hadoop1 and Spark1.2 API:
+    example, building Hibench with MR1 and Spark1.2 API:
 
           cd <HiBench root>/src
-          mvn clean package -D hadoop1 -D spark1.2
+          mvn clean package -D MR1 -D spark1.2
 
     Remember to update values of `hibench.hadoop.home` and
     `hibench.spark.home` in `conf/99-user_defined_properties.conf`

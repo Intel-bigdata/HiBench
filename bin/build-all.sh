@@ -20,10 +20,18 @@ DIR=`cd "${DIR}/.."; pwd`
 
 CURDIR=`pwd`
 cd $DIR/src
-mvn clean package && \
-mvn package -D spark1.2 && \
-mvn package -D hadoop1 && \
-mvn package -D hadoop1 -D spark1.2
+mvn clean package
+cd $DIR/src/sparkbench
+mkdir jars
+cp target/*-jar-with-dependencies.jar jars
+mvn clean package -D spark1.2
+cp target/*-jar-with-dependencies.jar jars
+mvn clean package -D hadoop1
+cp target/*-jar-with-dependencies.jar jars
+mvn clean package -D hadoop1 -D spark1.2
+
+cp jars/*.jar target/
+rm -rf jars
 cd $CURDIR
 
 echo "Build all done!"

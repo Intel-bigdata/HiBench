@@ -84,7 +84,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}-${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -103,26 +103,24 @@
 
     <profiles>
         <profile>
-            <id>hadoop1</id>
+            <id>MR1</id>
             <properties>
-                <sparkbench.mr.version>MR1</sparkbench.mr.version>
-                <exclude.multiapi.hadoopversion>2</exclude.multiapi.hadoopversion>
+                <sparkbench.mr.version>1</sparkbench.mr.version>
             </properties>
             <activation>
-                <property><name>hadoop1</name></property>
+                <property><name>MR1</name></property>
             </activation>
         </profile>
 
         <profile>
-            <id>hadoop2</id>
+            <id>MR2</id>
             <build>
             </build>
             <properties>
-                <sparkbench.mr.version>MR2</sparkbench.mr.version>
-                <exclude.multiapi.hadoopversion>1</exclude.multiapi.hadoopversion>
+                <sparkbench.mr.version>2</sparkbench.mr.version>
             </properties>
             <activation>
-                <property><name>!hadoop1</name></property>
+                <property><name>!MR1</name></property>
             </activation>
         </profile>
 
@@ -131,7 +129,6 @@
             <properties>
                 <spark.version>1.2.0</spark.version>
                 <spark.bin.version>1.2</spark.bin.version>
-                <exclude.multiapi.sparkversion>1.3</exclude.multiapi.sparkversion>
             </properties>
             <activation>
                 <property><name>spark1.2</name></property>
@@ -144,7 +141,6 @@
                 <env>spark1.3</env>
                 <spark.version>1.3.0</spark.version>
                 <spark.bin.version>1.3</spark.bin.version>
-                <exclude.multiapi.sparkversion>1.2</exclude.multiapi.sparkversion>
             </properties>
             <activation>
                 <property><name>!spark1.2</name></property>

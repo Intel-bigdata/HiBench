@@ -84,17 +84,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
-                    <scalaVersion>${scala.version}</scalaVersion>
-                    <excludes>
-                        <exclude>**/multi_api/spark${exclude.multiapi.sparkversion}/</exclude>
-                        <exclude>**/multi_api/MR${exclude.multiapi.hadoopversion}/</exclude>
-                    </excludes>
-                </configuration>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-compiler-plugin</artifactId>
+	      <version>3.2</version>
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -102,10 +94,6 @@
                 <configuration>
                     <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
                     <scalaVersion>${scala.version}</scalaVersion>
-                    <excludes>
-                        <exclude>**/multi_api/spark${exclude.multiapi.sparkversion}/</exclude>
-                        <exclude>**/multi_api/MR${exclude.multiapi.hadoopversion}/</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -126,21 +114,10 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/multi_api/spark${exclude.multiapi.sparkversion}/</exclude>
-                        <exclude>**/multi_api/MR${exclude.multiapi.hadoopversion}/</exclude>
-                    </excludes>
-                </configuration>
-                <version>3.2</version>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.5.3</version>
                 <configuration>
-                    <finalName>${project.build.finalName}-${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
+                    <finalName>${project.build.finalName}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -155,11 +132,34 @@
                     </execution>
                 </executions>
             </plugin>
+	    <plugin>
+	      <groupId>org.codehaus.mojo</groupId>
+	      <artifactId>build-helper-maven-plugin</artifactId>
+	      <version>1.9.1</version>
+	      <executions>
+	    	<execution>
+	    	  <id>add-source</id>
+	    	  <phase>generate-sources</phase>
+	    	  <goals>
+	    	    <goal>add-source</goal>
+	    	  </goals>
+	    	  <configuration>
+	    	    <sources>
+	    	      <source>src/multiapi/scala/com/intel/sparkbench/spark${spark.bin.version}/</source>
+	    	      <source>src/multiapi/scala/com/intel/sparkbench/MR${sparkbench.mr.version}/</source>
+	    	      <source>src/multiapi/java/com/intel/sparkbench/spark${spark.bin.version}/</source>
+	    	      <source>src/multiapi/java/com/intel/sparkbench/MR${sparkbench.mr.version}/</source>
+	    	    </sources>
+	    	  </configuration>
+	    	</execution>
+	      </executions>
+	    </plugin>
+
         </plugins>
     </build>
     <profiles>
         <profile>
-            <id>hadoop2</id>
+            <id>MR2</id>
             <dependencies>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
@@ -179,7 +179,7 @@
                 </dependency>
             </dependencies>
             <activation>
-                <property><name>!hadoop1</name></property>
+                <property><name>!MR1</name></property>
             </activation>
         </profile>
     </profiles>
