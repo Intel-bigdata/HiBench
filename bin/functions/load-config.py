@@ -136,8 +136,10 @@ def generate_optional_value():  # get some critical values from environment or m
     version = ""
 
     # probe hadoop version
-    def get_hadoop_version_cmd(): return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
-    def get_hadoop_version(): return shell(get_hadoop_version_cmd()).strip()
+    def get_hadoop_version_cmd(): 
+        return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+    def get_hadoop_version(): 
+        return shell(get_hadoop_version_cmd()).strip()
     if not HibenchConf.get("hibench.hadoop.version", ""):
         if not version:
             version = get_hadoop_version()
@@ -151,10 +153,10 @@ def generate_optional_value():  # get some critical values from environment or m
         try:
             release_file = join(spark_home, "RELEASE")
             with open(release_file) as f:
-                version = f.readlines()[0]
+                _version = f.readlines()[0]
                 #version="Spark 1.2.2-SNAPSHOT (git revision f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
-                spark_version = version.split()[1].strip()
-                HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, version)
+                spark_version = _version.split()[1].strip()
+                HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, _version)
         except IOError as e:    # no release file, fall back to hard way
             log("Probing spark verison, may last long time...")
             shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
@@ -214,6 +216,7 @@ def generate_optional_value():  # get some critical values from environment or m
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
         elif HibenchConf["hibench.hadoop.release"].startswith("cdh"): # CDH release
+            log("probe, version", HibenchConf["hibench.hadoop.version"], "release", HibenchConf["hibench.hadoop.release"])
             HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop-mapreduce1") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
@@ -256,6 +259,7 @@ def export_config(workload_name, workload_tail):
         f.write("SPARK_PROP_CONF=%s\n" % spark_prop_conf_filename)
         f.write("WORKLOAD_RESULT_FOLDER=%s\n" % join(conf_dir, ".."))
         f.write("HIBENCH_WORKLOAD_CONF=%s\n" % conf_filename)
+        f.write("export HADOOP_EXECUTABLE\n")
         f.write("export HADOOP_CONF_DIR\n")
 
     # generate properties for spark & sparkbench

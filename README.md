@@ -248,8 +248,8 @@ This benchmark suite contains 9 typical micro workloads:
     By default it will build HiBench with hadoop2 and spark1.3 API.
 
     For running HiBench with Hadoop1 API, supply `-Dhadoop1`, and for
-    running HiBench with Spark1.2 API, supply `-Dspark1.2`. For example, building Hibench
-    with Hadoop1 and Spark1.2 API:
+    running HiBench with Spark1.2 API, supply `-Dspark1.2`. For
+    example, building Hibench with Hadoop1 and Spark1.2 API:
 
           cd <HiBench root>/src
           mvn clean package -D hadoop1 -D spark1.2

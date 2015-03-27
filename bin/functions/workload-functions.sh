@@ -341,11 +341,11 @@ set hive.stats.autogather=false;
 
 ${HIVE_SQL_COMPRESS_OPTS}
 
-DROP TABLE if exists rankings;
-DROP TABLE if exists rankings_copy;
-CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${INPUT_HDFS}/rankings';
-CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '${OUTPUT_HDFS}/rankings';
-INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings;
+DROP TABLE if exists uservisits;
+DROP TABLE if exists uservisits_copy;
+CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits_copy';
+INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits;
 EOF
 
 }
