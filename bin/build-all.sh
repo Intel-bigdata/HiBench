@@ -20,17 +20,16 @@ DIR=`cd "${DIR}/.."; pwd`
 
 CURDIR=`pwd`
 cd $DIR/src
-mvn clean package
-cd $DIR/src/sparkbench
-mkdir jars
-cp target/*-jar-with-dependencies.jar jars
-mvn clean package -D spark1.2
-cp target/*-jar-with-dependencies.jar jars
-mvn clean package -D hadoop1
-cp target/*-jar-with-dependencies.jar jars
-mvn clean package -D hadoop1 -D spark1.2
-
-cp jars/*.jar target/
+mvn clean package      && \
+cd $DIR/src/sparkbench && \
+( mkdir jars | true )  && \
+cp target/*-jar-with-dependencies.jar jars  && \
+mvn clean package -D spark1.2               && \
+cp target/*-jar-with-dependencies.jar jars  && \
+mvn clean package -D MR1                    && \
+cp target/*-jar-with-dependencies.jar jars  && \
+mvn clean package -D MR1 -D spark1.2        && \
+cp jars/*.jar target/                       && \
 rm -rf jars
 cd $CURDIR
 

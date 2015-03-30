@@ -120,6 +120,13 @@ This benchmark suite contains 9 typical micro workloads:
       Hadoop framework is running correctly. Both MR1 and MR2 from
       Apahce, CDH4 and CDH5 are supported & tested. 
 
+      Note: For CDH5/MR1 with tarball, please recreate symlink file
+      `hadoop-*-cdh*/share/hadoop/mapreduce` to point to correct folder:
+
+           cd share/hadoop
+           rm mapreduce
+           ln -s mapreduce1 mapreduce
+
   3. Setup Spark
 
       Download/Checkout spark from
@@ -178,10 +185,10 @@ This benchmark suite contains 9 typical micro workloads:
      `conf/99-user_defined_properties.conf`, make sure below
      properties has been set:
 
-  	  hibench.hadoop.home      The Hadoop installation location
-	  hibench.spark.home       The Spark installation location
-	  hibench.hdfs.master      HDFS master
-	  hibench.spark.master     SPARK master
+          hibench.hadoop.home      The Hadoop installation location
+          hibench.spark.home       The Spark installation location
+          hibench.hdfs.master      HDFS master
+          hibench.spark.master     SPARK master
 	  
      Note: For YARN mode, set `hibench.spark.master` to `yarn-client`.
 

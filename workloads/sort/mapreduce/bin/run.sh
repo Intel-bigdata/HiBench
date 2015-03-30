@@ -33,22 +33,5 @@ gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-#check_compress
-
-#echo "== start MR job =="
-# pre-running
-#START_TIME=`timestamp`
-
-# run bench
-#$HADOOP_EXECUTABLE jar $HADOOP_EXAMPLES_JAR sort \
-#    $COMPRESS_OPT \
-#    -outKey org.apache.hadoop.io.Text \
-#    -outValue org.apache.hadoop.io.Text \
-#    -r ${NUM_REDS} \
-#    $INPUT_HDFS $OUTPUT_HDFS \
-#    2>&1 | tee ${DIR}/$TMPLOGFILE
-
-# post-running
-#END_TIME=`timestamp`
 
 

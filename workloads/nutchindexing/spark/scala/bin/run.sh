@@ -16,33 +16,12 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/../..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopAggregate ${workload_root} ${workload_folder}
+enter_bench ScalaSparkNutchindexing ${workload_root} ${workload_folder}
 show_bannar start
-
-ensure-hivebench-release
-
-cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-
-# path check
-rmr-hdfs $OUTPUT_HDFS
-
-# prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
-prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
-
-# run bench
-START_TIME=`timestamp`
-CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
-execute $CMD
-END_TIME=`timestamp`
-
-sleep 5
-SIZE=`dir_size $OUTPUT_HDFS`
-
-gen_report ${START_TIME} ${END_TIME} ${SIZE:-}
-
+echo -e "${On_Blue}Spark nutch indexing not implemented yet, nothing to do.${Color_Off}"
 show_bannar finish
 leave_bench
+

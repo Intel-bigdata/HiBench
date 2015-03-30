@@ -83,9 +83,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <finalName>${project.artifactId}-${project.version}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

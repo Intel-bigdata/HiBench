@@ -54,8 +54,6 @@ def load_config(conf_root, workload_root, workload_folder):
     workload_api = os.path.dirname(workload_tail) if os.path.dirname(workload_tail) else workload_tail
     workload_name = os.path.basename(workload_root)
 
-    log("Workload name: %s" % workload_name)
-    log("%s/workloads/%s/conf/*.conf" % (conf_root, workload_name))
     conf_files = sorted(glob.glob(conf_root+"/*.conf")) + \
         sorted(glob.glob("%s/conf/*.conf" % (workload_root,))) + \
         sorted(glob.glob("%s/%s/*.conf" % (workload_root, workload_api)))
@@ -132,19 +130,43 @@ def generate_optional_value():  # get some critical values from environment or m
     join = os.path.join
     HibenchConf['hibench.home']=d(d(d(os.path.abspath(__file__))))
     del d
-    HibenchConfRef['hibench.home']="Inferred from %s" % __file__
-    hadoop_version = ""
+    HibenchConfRef['hibench.home']="Inferred from relative path of dirname(%s)/../../" % __file__
 
-    # probe hadoop version
-    def get_hadoop_version_cmd(): 
-        return HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
-    def get_hadoop_version(): 
-        return shell(get_hadoop_version_cmd()).strip()
-    if not HibenchConf.get("hibench.hadoop.version", ""):
-        if not hadoop_version:
-            hadoop_version = get_hadoop_version()
-        HibenchConf["hibench.hadoop.version"] = "hadoop" + hadoop_version[0]
-        HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + get_hadoop_version_cmd()
+    # probe hadoop version & release.
+    if not HibenchConf.get("hibench.hadoop.version", "") or not HibenchConf.get("hibench.hadoop.release", ""):
+        # check hadoop version first
+        hadoop_version = ""
+        cmd = HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
+        if not HibenchConf.get("hibench.hadoop.version", ""):
+            hadoop_version = shell(cmd).strip()
+            if hadoop_version[0] != '1': # hadoop2? or CDH's MR1?
+                cmd2 = HibenchConf['hibench.hadoop.executable'] + " mradmin 2>&1 | grep yarn"
+                mradm_result = shell(cmd2).strip()
+                
+                if mradm_result: # match with keyword "yarn", must be CDH's MR2, do nothing
+                    pass
+                else:           # didn't match with "yarn", however it calms as hadoop2, must be CDH's MR1
+                    HibenchConf["hibench.hadoop.version"] = "hadoop1"
+                    HibenchConfRef["hibench.hadoop.version"] = "Probed by: `%s` and `%s`" % (cmd, cmd2)
+            if not HibenchConf.get("hibench.hadoop.version", ""):
+                HibenchConf["hibench.hadoop.version"] = "hadoop" + hadoop_version[0]
+                HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + cmd
+                
+        assert HibenchConf["hibench.hadoop.version"] in ["hadoop1", "hadoop2"], "Unknown hadoop version (%s). Auto probe failed, please override `hibench.hadoop.version` to explicitly define this property" % HibenchConf["hibench.hadoop.version"]
+
+        # check hadoop release
+        if not HibenchConf.get("hibench.hadoop.release", ""):
+            if not hadoop_version:
+                hadoop_version = shell(cmd).strip()
+            HibenchConf["hibench.hadoop.release"] = \
+                "cdh4" if "cdh4" in hadoop_version else \
+                "cdh5" if "cdh5" in hadoop_version else \
+                "apache" if "hadoop" in HibenchConf["hibench.hadoop.version"] else \
+                "UNKNOWN"
+            HibenchConfRef["hibench.hadoop.release"] = "Inferred by: hadoop version, which is:\"%s\"" % hadoop_version
+
+        assert HibenchConf["hibench.hadoop.release"] in ["cdh4", "cdh5", "apache"],  "Unknown hadoop release. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
+
 
     # probe spark version
     if not HibenchConf.get("hibench.spark.version", ""):
@@ -166,19 +188,6 @@ def generate_optional_value():  # get some critical values from environment or m
         assert spark_version, "Spark version probe failed, please override `hibench.spark.version` to explicitly define this property"
         HibenchConf["hibench.spark.version"] = "spark" + spark_version[:3]
 
-    # probe hadoop release
-    if not HibenchConf.get("hibench.hadoop.release", ""):
-        if not hadoop_version:
-            hadoop_version = get_hadoop_version()
-        HibenchConf["hibench.hadoop.release"] = \
-            "cdh4" if "cdh4" in hadoop_version else \
-            "cdh5" if "cdh5" in hadoop_version else \
-            "apache" if "hadoop" in HibenchConf["hibench.hadoop.version"] else \
-            "UNKNOWN"
-        HibenchConfRef["hibench.hadoop.release"] = "Inferred by: " + get_hadoop_version_cmd()
-
-    assert hadoop_version!='UNKNOWN', "Unknown hadoop version. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
-
     # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         if HibenchConf["hibench.hadoop.version"] == "hadoop1": # MR1
@@ -198,7 +207,7 @@ def generate_optional_value():  # get some critical values from environment or m
 
     # probe hadoop examples test jars (for sleep in hadoop2 only)
     if not HibenchConf.get("hibench.hadoop.examples.test.jar", ""):
-        if HibenchConf["hibench.hadoop.version"] == "hadoop1":
+        if HibenchConf["hibench.hadoop.version"] == "hadoop1" and HibenchConf["hibench.hadoop.release"] == "apache":
             HibenchConf["hibench.hadoop.examples.test.jar"] = "dummy"
             HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Dummy value, not available in hadoop1"
         else:
@@ -206,8 +215,22 @@ def generate_optional_value():  # get some critical values from environment or m
                 HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar")
                 HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar"
             elif HibenchConf['hibench.hadoop.release'].startswith('cdh'):
-                HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar")
-                HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
+                if HibenchConf["hibench.hadoop.version"] == "hadoop2":
+                    HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar")
+                    HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
+                elif HibenchConf["hibench.hadoop.version"] == "hadoop1":
+                    HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce1/hadoop-examples-*.jar")
+                    HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce1/hadoop-mapreduce-client-jobclient*-tests.jar"            
+
+    # set hibench.sleep.job.jar
+    if not HibenchConf.get('hibench.sleep.job.jar', ''):
+        if HibenchConf['hibench.hadoop.release'] == 'apache' and HibenchConf["hibench.hadoop.version"] == "hadoop1":
+            HibenchConf["hibench.sleep.job.jar"] = HibenchConf['hibench.hadoop.examples.jar']
+            HibenchConfRef["hibench.sleep.job.jar"] = "Refer to `hibench.hadoop.examples.jar` according to the evidence of `hibench.hadoop.release` and `hibench.hadoop.version`"
+        else:
+            log("probe sleep jar:", HibenchConf['hibench.hadoop.examples.test.jar'])
+            HibenchConf["hibench.sleep.job.jar"] = HibenchConf['hibench.hadoop.examples.test.jar']
+            HibenchConfRef["hibench.sleep.job.jar"] = "Refer to `hibench.hadoop.examples.test.jar` according to the evidence of `hibench.hadoop.release` and `hibench.hadoop.version`"
 
     # probe hadoop configuration files
     if not HibenchConf.get("hibench.hadoop.configure.dir", ""):
@@ -216,7 +239,6 @@ def generate_optional_value():  # get some critical values from environment or m
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
         elif HibenchConf["hibench.hadoop.release"].startswith("cdh"): # CDH release
-            log("probe, version", HibenchConf["hibench.hadoop.version"], "release", HibenchConf["hibench.hadoop.release"])
             HibenchConf["hibench.hadoop.configure.dir"] = join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop-mapreduce1") if HibenchConf["hibench.hadoop.version"] == "hadoop1" \
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"

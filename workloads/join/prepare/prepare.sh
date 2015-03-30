@@ -23,7 +23,7 @@ enter_bench HadoopPrepareJoin ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
-echo "Pages:${PAGES}, USERVISITS:${USERVISITS}"
+echo -e "${On_Blue}Pages:${PAGES}, USERVISITS:${USERVISITS}${Color_Off}"
 
 OPTION="-t hive \
         -b ${HIVE_BASE_HDFS} \

@@ -19,6 +19,7 @@ set -u
 this="${BASH_SOURCE-$0}"
 workload_func_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 . ${workload_func_bin}/assert.sh
+. ${workload_func_bin}/color.sh
 
 HIBENCH_CONF_FOLDER=${HIBENCH_CONF_FOLDER:-${workload_func_bin}/../../conf}
 
@@ -40,7 +41,7 @@ function leave_bench(){		# declare the workload is finished
 function show_bannar(){		# print bannar
     assert $HIBENCH_CUR_WORKLOAD_NAME "HIBENCH_CUR_WORKLOAD_NAME not specified."
     assert $1 "Unknown banner operation"
-    echo "========== $1 $HIBENCH_CUR_WORKLOAD_NAME bench =========="
+    echo -e "${BGreen}$1 ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME${Color_Off} ${BGreen}bench${Color_Off}"
 }
 
 function timestamp(){		# get current timestamp
@@ -62,7 +63,7 @@ function gen_report() {		# dump the result to report file
     local size=$3
     which bc > /dev/null 2>&1
     if [ $? -eq 1 ]; then
-        echo "\"bc\" utility missing. Please install it to generate proper report."
+	assert 0 "\"bc\" utility missing. Please install it to generate proper report."
         return 1
     fi
     local duration=$(echo "scale=3;($end-$start)/1000"|bc)
@@ -90,8 +91,9 @@ function rmr-hdfs(){		# rm -r for hdfs
     else
 	RMDIR_CMD="fs -rm -r -skipTrash"
     fi
-    echo $HADOOP_EXECUTABLE $RMDIR_CMD $1
-    $HADOOP_EXECUTABLE $RMDIR_CMD $1
+    local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
+    echo -e "${BCyan}hdfs rm -r:${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
+    ${CMD}
 }
 
 function dus-hdfs(){		# du -s for hdfs
@@ -101,7 +103,9 @@ function dus-hdfs(){		# du -s for hdfs
     else
 	DUS_CMD="fs -du -s"
     fi
-    $HADOOP_EXECUTABLE $DUS_CMD $1
+    local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
+    echo -e "${BPurple}hdfs du -s:${Purple}${CMD}${Color_Off}" 2> /dev/stderr
+    ${CMD}
 }
 
 
@@ -109,16 +113,16 @@ function check_dir() {		# ensure dir is created
     local dir=$1
     assert $1 "dir parameter missing"
     if [ -z "$dir" ];then
-        echo "WARN: payload missing."
+        echo -e "${BYellow}WARN${Color_Off}: payload missing."
         return 1
     fi
     if [ ! -d "$dir" ];then
-        echo "ERROR: directory $dir does not exist."
+        echo -e "${BRed}ERROR${Color_Off}: directory $dir does not exist."
         exit 1
     fi
     touch "$dir"/touchtest
     if [ $? -ne 0 ]; then
-	echo "ERROR: directory unwritable."
+	echo -e "${BRed}ERROR${Color_Off}: directory unwritable."
 	exit 1
     else
 	rm "$dir"/touchtest
@@ -196,12 +200,12 @@ function run-spark-job() {
     else
 	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
-    echo "Submit Spark job: $SUBMIT_CMD"
+    echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
     $SUBMIT_CMD
     result=$?
     if [ $result -ne 0 ]
     then
-	echo "ERROR: Spark job ${CLS} failed to run successfully."
+	echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
 	exit $result
     fi
 }
@@ -212,14 +216,17 @@ function run-hadoop-job(){
     local job_name=$1
     shift
     local tail_arguments=$@
-    local CMD="${HADOOP_EXECUTABLE} jar $job_jar $job_name $tail_arguments"
-    echo "Submit MapReduce Job: $CMD"
+    local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
+    echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
     $CMD
+#    local CMD="HADOOP_CLASSPATH=$job_jar HADOOP_USER_CLASSPATH_FIRST=true ${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} $job_name $tail_arguments"
+#    echo "Submit MapReduce Job: $CMD"
+#    bash -c "$CMD"
 }
 
 function ensure-hivebench-release(){
     if [ ! -e ${DEPENDENCY_DIR}"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
-	echo "Error: The hive bin file hasn't be downloaded by maven, please check!"
+	assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
 
@@ -232,7 +239,7 @@ function ensure-hivebench-release(){
 
 function ensure-mahout-release (){
     if [ ! -e ${DEPENDENCY_DIR}"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
-	echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+	assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
 
@@ -245,9 +252,15 @@ function ensure-mahout-release (){
     export HADOOP_CONF_DIR
 }
 
+function execute () {
+    CMD="$@"
+    echo -e "${BCyan}Executing: ${Cyan}${CMD}${Color_Off}"
+    $CMD
+}
+
 function ensure-nutchindexing-release () {
     if [ ! -e ${DEPENDENCY_DIR}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
-	echo "Error: The nutch bin file hasn't be downloaded by maven, please check!"
+	assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
 	exit
     fi
 

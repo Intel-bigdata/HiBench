@@ -22,7 +22,7 @@ workload_root=${workload_folder}/..
 enter_bench PrepareSleep ${workload_root} ${workload_folder}
 show_bannar start
 
-echo "Prepare sleep: nothing to do"
+echo -e "${On_Blue}Prepare sleep: nothing to do${Color_Off}"
 
 show_bannar finish
 leave_bench

@@ -18,6 +18,7 @@ set -u
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
+. ${DIR}/bin/functions/color.sh
 
 for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     if [[ $benchmark == \#* ]]; then
@@ -27,12 +28,10 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     # clear hive metastore
     find $DIR -name "metastore_db" -exec rm -rf "{}" \; 2> /dev/null || true
 
-    echo "====================="
-    echo "Prepare ${benchmark} ..."
-    echo "====================="
+    echo -e "${UYellow}${BYellow}Prepare ${Yellow}${UYellow}${benchmark} ${BYellow}...${Color_Off}"
     
     WORKLOAD=$DIR/workloads/${benchmark}
-    echo "${WORKLOAD}/prepare/prepare.sh"
+    echo -e "${BCyan}Exec script:${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
     "${WORKLOAD}/prepare/prepare.sh"
 
     if [ $? -ne 0 ]
@@ -45,16 +44,14 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	if [[ $target == \#* ]]; then 
 	    continue
 	fi
-	echo "====================="
-	echo "Run ${benchmark}/${target}"
-	echo "====================="
-	echo $WORKLOAD/${target}/bin/run.sh
+	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${target}${Color_Off}"
+	echo -e "${BCyan}Exec script:${Cyan}$WORKLOAD/${target}/bin/run.sh${Color_Off}"
 	$WORKLOAD/${target}/bin/run.sh
 
 	result=$?
 	if [ $result -ne 0 ]
 	then
-	    echo "ERROR: ${benchmark}/${target} failed to run successfully." 
+	    echo -e "${On_IRed}ERROR: ${benchmark}/${target} failed to run successfully.${Color_Off}" 
             exit $result
 	fi
     done
