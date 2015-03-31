@@ -93,7 +93,7 @@ function rmr-hdfs(){		# rm -r for hdfs
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
     echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
-    ${CMD}
+    execute_withlog ${CMD}
 }
 
 function dus-hdfs(){		# du -s for hdfs
@@ -105,7 +105,7 @@ function dus-hdfs(){		# du -s for hdfs
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
     echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" 2> /dev/stderr
-    ${CMD}
+    execute_withlog ${CMD}
 }
 
 
@@ -201,7 +201,7 @@ function run-spark-job() {
 	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
-    $SUBMIT_CMD
+    execute_withlog ${SUBMIT_CMD}
     result=$?
     if [ $result -ne 0 ]
     then
@@ -218,10 +218,7 @@ function run-hadoop-job(){
     local tail_arguments=$@
     local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
     echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
-    $CMD
-#    local CMD="HADOOP_CLASSPATH=$job_jar HADOOP_USER_CLASSPATH_FIRST=true ${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} $job_name $tail_arguments"
-#    echo "Submit MapReduce Job: $CMD"
-#    bash -c "$CMD"
+    execute_withlog ${CMD}
 }
 
 function ensure-hivebench-release(){
@@ -256,6 +253,15 @@ function execute () {
     CMD="$@"
     echo -e "${BCyan}Executing: ${Cyan}${CMD}${Color_Off}"
     $CMD
+}
+
+function execute_withlog () {
+    CMD="$@"
+    if [ -t 1 ] ; then
+	$CMD			# TODO
+    else
+	$CMD
+    fi
 }
 
 function export_withlog () {
@@ -346,7 +352,7 @@ DROP TABLE if exists rankings_uservisits_join;
 CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
-INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC limit 1;
+INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC;
 EOF
 }
 
