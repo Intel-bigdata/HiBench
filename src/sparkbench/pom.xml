@@ -25,7 +25,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -62,23 +62,23 @@
         <dependency>
             <groupId>com.github.scopt</groupId>
             <artifactId>scopt_2.10</artifactId>
-            <version>3.2.0</version>
+            <version>${scopt.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
+            <version>${log4j.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-core</artifactId>
-            <version>0.9</version>
+            <version>${mahout.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-math</artifactId>
-            <version>0.9</version>
+            <version>${mahout.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -86,7 +86,7 @@
             <plugin>
 	      <groupId>org.apache.maven.plugins</groupId>
 	      <artifactId>maven-compiler-plugin</artifactId>
-	      <version>3.2</version>
+	      <version>${maven-compiler-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -132,7 +132,7 @@
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <finalName>${project.build.finalName}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
                     <descriptorRefs>
@@ -152,7 +152,7 @@
 	    <plugin>
 	      <groupId>org.codehaus.mojo</groupId>
 	      <artifactId>build-helper-maven-plugin</artifactId>
-	      <version>1.9.1</version>
+	      <version>${build-helper-maven-plugin.version}</version>
 	      <executions>
 	    	<execution>
 	    	  <id>add-source</id>
@@ -181,12 +181,12 @@
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-mapreduce-examples</artifactId>
-                    <version>2.2.0</version>
+                    <version>${hadoop.mr2.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.hadoop</groupId>
                     <artifactId>hadoop-client</artifactId>
-                    <version>2.2.0</version>
+                    <version>${hadoop.mr2.version}</version>
                     <exclusions>
                         <exclusion>
                             <groupId>org.apache.hadoop</groupId>

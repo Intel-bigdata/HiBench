@@ -228,7 +228,7 @@ def generate_optional_value():  # get some critical values from environment or m
             HibenchConf["hibench.sleep.job.jar"] = HibenchConf['hibench.hadoop.examples.jar']
             HibenchConfRef["hibench.sleep.job.jar"] = "Refer to `hibench.hadoop.examples.jar` according to the evidence of `hibench.hadoop.release` and `hibench.hadoop.version`"
         else:
-            log("probe sleep jar:", HibenchConf['hibench.hadoop.examples.test.jar'])
+#            log("probe sleep jar:", HibenchConf['hibench.hadoop.examples.test.jar'])
             HibenchConf["hibench.sleep.job.jar"] = HibenchConf['hibench.hadoop.examples.test.jar']
             HibenchConfRef["hibench.sleep.job.jar"] = "Refer to `hibench.hadoop.examples.test.jar` according to the evidence of `hibench.hadoop.release` and `hibench.hadoop.version`"
 

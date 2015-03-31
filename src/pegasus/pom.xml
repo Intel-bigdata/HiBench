@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
-            <version>1.2.1</version>
+            <version>${hadoop.mr1.version}</version>
         </dependency>
     </dependencies>
 </project>

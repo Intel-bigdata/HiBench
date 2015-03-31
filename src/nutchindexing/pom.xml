@@ -17,7 +17,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>1.6.1</version>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
 
@@ -41,7 +41,7 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.0</version>
+                <version>${download-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>process-sources</phase>

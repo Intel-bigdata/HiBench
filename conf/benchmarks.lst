@@ -1,11 +1,11 @@
 aggregation
-#join
+join
 kmeans
 pagerank
-#scan
-#sleep
-#sort
-#wordcount
+scan
+sleep
+sort
+wordcount
 bayes
 terasort
 nutchindexing

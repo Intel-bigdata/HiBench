@@ -26,22 +26,22 @@
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-core</artifactId>
-            <version>0.9</version>
+            <version>${mahout.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-math</artifactId>
-            <version>0.9</version>
+            <version>${mahout.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
-            <version>1.2.1</version>
+            <version>${hadoop.mr1.version}</version>
         </dependency>
         <dependency>
             <groupId>org.uncommons.maths</groupId>
             <artifactId>uncommons-maths</artifactId>
-            <version>1.2.2a</version>
+            <version>${uncommons-maths.version}</version>
         </dependency>
     </dependencies>
 
@@ -49,7 +49,7 @@
       <plugins>
 	<plugin>
 	  <artifactId>maven-assembly-plugin</artifactId>
-	  <version>2.5.3</version>
+	  <version>${maven-assembly-plugin.version}</version>
 	  <configuration>
 	    <descriptorRefs>
 	      <descriptorRef>jar-with-dependencies</descriptorRef>

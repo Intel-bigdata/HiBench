@@ -92,7 +92,7 @@ function rmr-hdfs(){		# rm -r for hdfs
 	RMDIR_CMD="fs -rm -r -skipTrash"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
-    echo -e "${BCyan}hdfs rm -r:${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
     ${CMD}
 }
 
@@ -104,7 +104,7 @@ function dus-hdfs(){		# du -s for hdfs
 	DUS_CMD="fs -du -s"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
-    echo -e "${BPurple}hdfs du -s:${Purple}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" 2> /dev/stderr
     ${CMD}
 }
 
@@ -179,7 +179,7 @@ function run-spark-job() {
     CLS=$1
     shift
  
-    export SPARKBENCH_PROPERTIES_FILES
+    export_withlog SPARKBENCH_PROPERTIES_FILES
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
@@ -234,7 +234,7 @@ function ensure-hivebench-release(){
     if [ ! -d $HIVE_HOME ]; then
 	tar zxf $HIVE_RELEASE".tar.gz"
     fi
-    export HADOOP_EXECUTABLE
+    export_withlog HADOOP_EXECUTABLE
 }
 
 function ensure-mahout-release (){
@@ -247,15 +247,24 @@ function ensure-mahout-release (){
     if [ ! -d $MAHOUT_HOME ]; then
 	tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
-    export HADOOP_EXECUTABLE
-    export HADOOP_HOME
-    export HADOOP_CONF_DIR
+    export_withlog HADOOP_EXECUTABLE
+    export_withlog HADOOP_HOME
+    export_withlog HADOOP_CONF_DIR
+    
 }
 
 function execute () {
     CMD="$@"
     echo -e "${BCyan}Executing: ${Cyan}${CMD}${Color_Off}"
     $CMD
+}
+
+function export_withlog () {
+    var_name=$1
+    var_val=${!1}
+    assert $1 "export without a variable name!"
+    echo -e "${BCyan}Export env: ${Cyan}${var_name}${BCyan}=${Cyan}${var_val}${Color_Off}"
+    export ${var_name}
 }
 
 function ensure-nutchindexing-release () {
@@ -284,7 +293,8 @@ function ensure-nutchindexing-release () {
     cp $NUTCH_ROOT/nutch/conf/nutch-site.xml $NUTCH_HOME_WORKLOAD/conf
     cp $NUTCH_ROOT/nutch/bin/nutch $NUTCH_HOME_WORKLOAD/bin
 
-    if [ $HADOOP_VERSION == "hadoop2" ]; then
+    # Patching jcl-over-slf4j version against cdh or hadoop2
+    if [ $HADOOP_VERSION == "hadoop2" ] || [ ${HADOOP_RELEASE:0:3} == "cdh" ]; then
 	mkdir $NUTCH_HOME_WORKLOAD/temp
 	unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
 	rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
