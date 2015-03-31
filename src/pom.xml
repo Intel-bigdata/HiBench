@@ -138,7 +138,7 @@
         <profile>
             <id>spark1.2</id>
             <properties>
-                <spark.version>1.2.0</spark.version>
+                <spark.version>1.2.1</spark.version>
                 <spark.bin.version>1.2</spark.bin.version>
             </properties>
             <activation>

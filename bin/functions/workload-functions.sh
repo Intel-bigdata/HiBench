@@ -249,8 +249,7 @@ function ensure-mahout-release (){
     fi
     export_withlog HADOOP_EXECUTABLE
     export_withlog HADOOP_HOME
-    export_withlog HADOOP_CONF_DIR
-    
+    export_withlog HADOOP_CONF_DIR    
 }
 
 function execute () {
