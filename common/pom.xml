@@ -15,8 +15,8 @@
       <encoding>UTF-8</encoding>
       <scala.version>2.10.4</scala.version>
       <scala.binary.version>2.10</scala.binary.version>
-      <spark.version>1.3.0</spark.version>
-      <spark.bin.version>1.3</spark.bin.version>
+      <spark.version>1.2.1</spark.version>
+      <spark.bin.version>1.2</spark.bin.version>
       <sparkbench.mr.version>MR2</sparkbench.mr.version>
     </properties>
 
@@ -78,7 +78,13 @@
             <artifactId>mahout-math</artifactId>
             <version>0.9</version>
         </dependency>
-    </dependencies>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.17</version>
+        <scope>compile</scope>
+        </dependency>
+     </dependencies>
     <build>
  
       <plugins>

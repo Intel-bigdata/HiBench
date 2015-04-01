@@ -40,11 +40,12 @@ public final class JavaScan {
     JavaSparkContext ctx = new JavaSparkContext(sparkConf);
       HiveContext hc = new HiveContext(ctx.sc());
 
+    hc.sql("DROP TABLE if exists uservisits");
+    hc.sql("DROP TABLE if exists uservisits_copy");
+    hc.sql(String.format("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'", args[0]));
+    hc.sql(String.format("CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits_copy'", args[1]));
+    hc.sql("INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits");
 
-    hc.sql("DROP TABLE if exists rankings");
-    hc.sql(String.format("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[0]));
-    hc.sql(String.format("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'", args[1]));
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings");
 
     ctx.stop();
   }

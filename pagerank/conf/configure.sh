@@ -37,7 +37,7 @@ OUTPUT_HDFS=${OUTPUT_HDFS_DIR}.txt
 	
 # for preparation (per node) - 32G
 #PAGES=500000
-PAGES=5000      # small scale
+PAGES=10000000      # small scale
 
 # for running (in total)
 NUM_ITERATIONS=3

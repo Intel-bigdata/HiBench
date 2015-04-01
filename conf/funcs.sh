@@ -119,7 +119,7 @@ function run-spark-job() {
 	${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${PROP_FILES} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@
     fi
     result=$?
-    rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true
+#    rm -rf ${WORKLOAD_DIR}/conf/._prop.conf 2> /dev/null || true
     if [ $result -ne 0 ]
     then
 	echo "ERROR: Spark job ${CLS} failed to run successfully."

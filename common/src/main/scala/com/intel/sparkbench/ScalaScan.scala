@@ -35,14 +35,12 @@ object ScalaScan{
     val sc = new SparkContext(sparkConf)
     val hc = new HiveContext(sc)
 
-    hc.sql("DROP TABLE IF EXISTS rankings")
-    hc.sql("""CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT)
-           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-           STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(0)))
-    hc.sql("""CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT)
-           ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
-           STORED AS SEQUENCEFILE LOCATION '%s/rankings'""".format(args(1)))
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings")
+    hc.sql("DROP TABLE if exists uservisits")
+    hc.sql("DROP TABLE if exists uservisits_copy")
+    hc.sql("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'".format(args(0)))
+    hc.sql("CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits_copy'".format(args(1)))
+    hc.sql("INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits")
+
     sc.stop()
   }
 }

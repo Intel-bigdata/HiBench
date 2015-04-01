@@ -30,9 +30,11 @@ if __name__ == "__main__":
     sc = SparkContext(appName="PythonScan")
     sqlctx = SQLContext(sc)
     hc = HiveContext(sc)
-    hc.sql("DROP TABLE if exists rankings")
-    hc.sql("CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[1])
-    hc.sql("CREATE EXTERNAL TABLE rankings_copy (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/rankings'" % sys.argv[2])
-    hc.sql("INSERT OVERWRITE TABLE rankings_copy SELECT * FROM rankings")
+
+    hc.sql("DROP TABLE if exists uservisits")
+    hc.sql("DROP TABLE if exists uservisits_copy")
+    hc.sql("CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits'" % sys.argv[1])
+    hc.sql("CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits_copy'" % sys.argv[2])
+    hc.sql("INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits")
 
     sc.stop()

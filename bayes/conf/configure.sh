@@ -33,7 +33,7 @@ OUTPUT_HDFS=${BAYES_BASE_HDFS}/${BAYES_OUTPUT}
 
 # for prepare
 #PAGES=100000
-PAGES=30000     # small scale
+PAGES=10000000     # small scale
 CLASSES=100
 
 # bench parameters

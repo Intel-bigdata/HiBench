@@ -24,6 +24,8 @@ DIR=`cd $bin/../; pwd`
 . "${DIR}/conf/configure.sh"
 
 # prepare for mahout
+echo "==="$DEPENDENCY_DIR"==="/$MAHOUT_RELEASE
+export MAHOUT_RELEASE=mahout-distribution-0.7
 if [ ! -e $DEPENDENCY_DIR"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
   echo "Error: The mahout bin file hasn't be downloaded by maven, please check!"
   exit

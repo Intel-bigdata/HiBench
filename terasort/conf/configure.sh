@@ -27,7 +27,7 @@ OUTPUT_HDFS=${DATA_HDFS}/TeraSort/Output
 #DATASIZE=32000000000   # 320M records, 100Bytes each = 3.2TB
 #DATASIZE=320000000      # small scale, 320M records * 100 = 32GB
 #DATASIZE=3200000        # tiny scale, 3.2M records * 100 = 320MB
-DATASIZE=320000        # very tiny scale, 0.32M records * 100 = 32MB
+DATASIZE=1300000000        # very tiny scale, 0.32M records * 100 = 32MB
 
 # for genreport
 SIZE=$(( $DATASIZE * 100 ))  

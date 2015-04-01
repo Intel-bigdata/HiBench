@@ -29,6 +29,6 @@ if [ $COMPRESS -eq 1 ]; then
 fi
 
 # for preparation (per node) - 32G
-#DATASIZE=32000000000
-DATASIZE=3200000000      # small scale
+DATASIZE=320000000000    #1T
+#DATASIZE=3200000000      # small scale
 
