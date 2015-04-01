@@ -258,7 +258,7 @@ function execute () {
 function execute_withlog () {
     CMD="$@"
     if [ -t 1 ] ; then
-	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER} $CMD			# TODO
+	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER} $CMD
     else
 	$CMD
     fi

@@ -16,6 +16,8 @@
 
 import sys, os, subprocess
 from terminalsize import get_terminal_size
+from time import time, sleep
+import re
 
 def load_colors():
     color_script_fn = os.path.join(os.path.dirname(__file__), "color.enabled.sh")
@@ -23,6 +25,48 @@ def load_colors():
         return {k:v.split("'")[1].replace('\e[', "\033[") for k,v in [x.strip().split('=') for x in f.readlines() if x.strip() and not x.strip().startswith('#')]}
 
 Color=load_colors()
+
+tab_matcher = re.compile("\t")
+tabstop = 8
+def replace_tab_to_space(s):
+    def tab_replacer(match):
+        pos = match.start()
+        length = pos % tabstop
+        if not length: length += tabstop
+        return " " * length
+    return tab_matcher.sub(tab_replacer, s)
+
+class _Matcher:
+    hadoop = re.compile(r"^.*map\s*=\s*(\d+)%,\s*reduce\s*=\s*(\d+)%.*$")
+    hadoop2 = re.compile(r"^.*map\s+\s*(\d+)%\s+reduce\s+\s*(\d+)%.*$")
+    spark = re.compile(r"^.*finished task \S+ in stage \S+ \(tid \S+\) in.*on.*\((\d+)/(\d+)\)\s*$")
+    def match(self, line):
+        for p in [self.hadoop, self.hadoop2]:
+            m = p.match(line)
+            if m:
+                return (float(m.groups()[0]) + float(m.groups()[1]))/2
+
+        for p in [self.spark]:
+            m = p.match(line)
+            if m:
+                return float(m.groups()[0]) / float(m.groups()[1]) * 100
+        
+matcher = _Matcher()
+
+def show_with_progress_bar(line, progress, line_width):
+    """
+    Show text with progress bar.
+
+    @progress:0-100
+    @line: text to show
+    @line_width: width of screen
+    """
+    pos = int(line_width * progress / 100)
+    if len(line) < line_width:
+        line = line + " " * (line_width - len(line))
+    line = "{On_Yellow}{line_seg1}{On_Blue}{line_seg2}{Color_Off}\r".format(
+        line_seg1 = line[:pos], line_seg2 = line[pos:], **Color)
+    sys.stdout.write(line)
 
 def execute(workload_result_folder, command_lines):
     proc = subprocess.Popen(" ".join(command_lines), shell=True, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -33,22 +77,47 @@ def execute(workload_result_folder, command_lines):
         if count>100 or time()-last_time>1: # refresh terminal size for 100 lines or each seconds
             count, last_time = 0, time()
             width, height = get_terminal_size()
+            width -= 1
 
-        line = proc.stdout.readline().rstrip()
+        try:
+            line = proc.stdout.readline().rstrip()
+        except KeyboardInterrupt:
+            proc.terminate()
+            break
         line = line.decode('utf-8')
         if not line: break
+        line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
         if "warn" in lline or 'err' in lline:
-            print u"{Red}{line}{Color_Off}{ClearEnd}".format(line=line,**Color)
+            COLOR="Yellow" if "warn" in lline else "Red"
+            sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color))
+            
         else:
             if len(line) >= width:
                 line = line[:width-4]+'...'
-            print u"{line}{ClearEnd}\r".format(line=line, **Color),
-            sys.stdout.flush()
+            progress = matcher.match(lline)
+            if progress is not None:
+                show_with_progress_bar(line, progress, width)
+            else:
+                sys.stdout.write(u"{line}{ClearEnd}\r".format(line=line, **Color))
+        sys.stdout.flush()
     print
-    proc.wait()
+    try:
+        proc.wait()
+    except KeyboardInterrupt:
+        proc.kill()
+        return 1
     return proc.returncode
+
+def test_progress_bar():
+    for i in range(101):
+        show_with_progress_bar("test progress : %d" % i, i, 80)
+        sys.stdout.flush()
+
+        sleep(0.05)
+
 if __name__=="__main__":
     sys.exit(execute(workload_result_folder=sys.argv[1],
                      command_lines=sys.argv[2:]))
+#    test_progress_bar()

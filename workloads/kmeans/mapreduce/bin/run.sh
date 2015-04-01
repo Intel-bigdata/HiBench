@@ -33,7 +33,7 @@ SIZE=`dir_size $INPUT_HDFS`
 OPTION="${COMPRESS_OPT} -i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 START_TIME=`timestamp`
 CMD="${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}"
-execute $CMD
+execute_withlog $CMD
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

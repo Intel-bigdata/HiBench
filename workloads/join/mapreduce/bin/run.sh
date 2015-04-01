@@ -37,7 +37,7 @@ prepare-sql-join ${HIVEBENCH_SQL_FILE}
 # run bench
 START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
-execute $CMD
+execute_withlog $CMD
 END_TIME=`timestamp`
 
 sleep 5

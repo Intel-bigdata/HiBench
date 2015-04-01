@@ -90,5 +90,4 @@ On_IPurple=''  # Purple
 On_ICyan=''    # Cyan
 On_IWhite=''   # White
 
-
-
+ClearEnd=''
