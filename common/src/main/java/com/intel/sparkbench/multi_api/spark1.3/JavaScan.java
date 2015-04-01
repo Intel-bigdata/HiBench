@@ -46,7 +46,6 @@ public final class JavaScan {
     hc.sql(String.format("CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '%s/uservisits_copy'", args[1]));
     hc.sql("INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits");
 
-
     ctx.stop();
   }
 }
