@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re
+import threading, subprocess, re, os
+from time import sleep
 from collections import namedtuple
 from pprint import pprint
+from itertools import groupby
 
 class PatchedNameTuple(object):
     def __sub__(self, other):
@@ -52,6 +54,7 @@ while True:
         self.interval = interval
         self.monitor_ins = {}
         self.local_aggr_container={}
+        self._running=True
 
         super(RemoteProc, self).__init__()
 
@@ -78,7 +81,7 @@ while True:
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
         with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
-            while 1:
+            while self._running:
                 try:
                     l = f.readline()
                 except KeyboardInterrupt:
@@ -98,6 +101,9 @@ while True:
                 else:
                     container.append(l.rstrip())
         self.ssh_close()
+
+    def stop(self):
+        self._running=False
 
     def aggregate(self, timestamp, data):
         if not self.local_aggr_container:
@@ -150,14 +156,15 @@ class BashSSHClientMixin(object):
 
     def ssh_close(self):
         assert self.proc
+        self.proc.terminate()
         self.proc.wait()
         return self.proc.returncode
 
-_cpu=namedtuple("cpu", ['label', 'user', 'nice', 'system', 'idle', 'iowait', 'irq', 'softirq'])
-class cpu(_cpu, PatchedNameTuple):
+_CPU=namedtuple("CPU", ['label', 'user', 'nice', 'system', 'idle', 'iowait', 'irq', 'softirq'])
+class CPU(_CPU, PatchedNameTuple):
     def percentage(self):
         total = sum(self[1:])
-        return cpu(self[0], *[x*100.0 / total for x in self[1:]]) if total>0 else self
+        return CPU(self[0], *[x*100.0 / total for x in self[1:]]) if total>0 else self
 
 class CPUMonitor(BaseMonitor):
     def __init__(self, rproc):
@@ -176,7 +183,7 @@ class CPUMonitor(BaseMonitor):
         fields = line.split()
         if fields[0]=='cpu':
             fields[0]='total'
-        return (fields[0], cpu(fields[0], *[int(x) for x in fields[1:8]]))
+        return (fields[0], CPU(fields[0], *[int(x) for x in fields[1:8]]))
 
     def commit(self, timestamp, cpu_stat):
         if self._last is None:
@@ -186,9 +193,9 @@ class CPUMonitor(BaseMonitor):
             self._last = cpu_stat
             self.rproc.aggregate(timestamp, cpu_usage)
 
-_network=namedtuple("net", ['label', "recv_bytes", "recv_packets", "recv_errs", "recv_drop",
-                            "send_bytes", "send_packets", "send_errs", "send_drop"])
-class network(_network, PatchedNameTuple): pass
+_Network=namedtuple("Network", ['label', "recv_bytes", "recv_packets", "recv_errs", "recv_drop",
+                                "send_bytes", "send_packets", "send_errs", "send_drop"])
+class Network(_Network, PatchedNameTuple): pass
 
 class NetworkMonitor(BaseMonitor):
     IGNORE_KEYS=["lo"]
@@ -206,12 +213,12 @@ class NetworkMonitor(BaseMonitor):
     def _parse_net_dev(self, line):
         matched = self._filter.match(line)
         if matched:
-            obj = network(matched.groups()[0], *[int(x) for x in matched.groups()[1:]])
+            obj = Network(matched.groups()[0], *[int(x) for x in matched.groups()[1:]])
             return (obj[0], obj)
 
-_disk=namedtuple("disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
+_Disk=namedtuple("Disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
 
-class disk(_disk, PatchedNameTuple): pass
+class Disk(_Disk, PatchedNameTuple): pass
 
 class DiskMonitor(BaseMonitor):
     def __init__(self, rproc):
@@ -227,14 +234,14 @@ class DiskMonitor(BaseMonitor):
 
     def _parse_disk_stat(self, line):
         fields = line.split()[2:]
-        obj = disk(fields[0],
+        obj = Disk(fields[0],
                     io_read=int(fields[1]), bytes_read=int(fields[3])*512, time_spent_read=int(fields[4])/1000.0,
                     io_write=int(fields[5]), bytes_write=int(fields[7])*512, time_spent_write=int(fields[8])/1000.0)
         return (obj[0], obj)
 
 
-_memory=namedtuple("memory", ["label", "total", "used", "buffer_cache", "free", "map"])
-class memory(_memory, PatchedNameTuple): pass
+_Memory=namedtuple("Memory", ["label", "total", "used", "buffer_cache", "free", "map"])
+class Memory(_Memory, PatchedNameTuple): pass
 
 class MemoryMonitor(BaseMonitor):
     def __init__(self, rproc):
@@ -248,14 +255,19 @@ class MemoryMonitor(BaseMonitor):
         "parse /proc/meminfo"
         total, avail, buffers, cached, free, mapped= [int(x) for x in memory_status[0].split(":")]
 
-        self.rproc.aggregate(timestamp, {"memory/total":memory(label="total", total=total,
+        self.rproc.aggregate(timestamp, {"memory/total":Memory(label="total", total=total,
                                                                used=total - avail,
                                                                buffer_cache=buffers + cached,
                                               free=free, map=mapped)})
 
 class NodeAggregator(object):
-    def __init__(self):
+    def __init__(self, log_name):
         self.node_pool = {}
+        self.log_name = log_name
+        try:
+            os.unlink(self.log_name)
+        except OSError:
+            pass
 
     def append(self, node):
         assert isinstance(node, RemoteProc)
@@ -263,13 +275,42 @@ class NodeAggregator(object):
         node.na_register(self)
 
     def commit_aggregate(self, node, datas):
-        pprint((node, datas))
+        datas['hostname'] = node
+        with file(self.log_name, "a") as f:
+            f.write(repr(datas)+"\n")
 
     def run(self):
         for v in self.node_pool.values():
             v.start()
+
+    def stop(self):
+        for v in self.node_pool.values():
+            v.stop()
         for v in self.node_pool.values():
             v.join()
+
+def round_to_base(v, b):
+    """
+    >>> round_to_base(0.1, 0.3)
+    0.0
+    >>> round_to_base(0.3, 0.3)
+    0.3
+    >>> round_to_base(0.0, 0.3)
+    0.0
+    >>> round_to_base(0.5, 0.3)
+    0.3
+    >>> round_to_base(0.51, 0.3)
+    0.3
+    """
+    for i in range(10):
+        base = int(b * 10**i)
+        if abs(base - b * 10**i) < 0.001: break
+    assert base>0
+    return float(int(v * 10**i) / base * base) / (10**i)
+
+def filter_dict_with_prefix(d, prefix, sort=True):
+    keys = sorted(d.keys()) if sort else d.keys()
+    return dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
 def test():
     p = BashSSHClientMixin()
@@ -307,11 +348,30 @@ def test3():
             NetworkMonitor(self)
             DiskMonitor(self)
             MemoryMonitor(self)
-    na = NodeAggregator()
+    na = NodeAggregator("log.txt")
     na.append(P("localhost", 0.3))
     na.append(P("helix2", 0.3))
 
     na.run()
+    sleep(3)
+    na.stop()
+
+def test4():
+    with open("log.txt") as f:
+        datas=[eval(x) for x in f.readlines()]
+
+    all_hosts = sorted(list(set([x['hostname'] for x in datas])))
+    print all_hosts
+    data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
+    for t, sub_data in data_slices:
+        classed_by_host = dict([(x['hostname'], x) for x in sub_data])
+        # total cpus, plot user/sys/iowait/other
+        data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
+        #print t, [x.get("cpu/total", 0) for x in data_by_all_hosts]
+
+        # all cpus, plot heatmap according to cpus/time/usage(100%-idle)
+        print t, [[y.idle for y in filter_dict_with_prefix(x, 'cpu/cpu').values()] for x in data_by_all_hosts]
 
 if __name__=="__main__":
-    test3()
+    #test3()
+    test4()
