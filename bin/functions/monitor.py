@@ -40,8 +40,9 @@ class RemoteProc(threading.Thread):
 import time, os, sys
 {func_template}
 while True:
-  print "{SEP}",time.time()
+  print "{SEP}+%s" % time.time()
 {call_template}
+  print "{SEP}#end"
   time.sleep({interval})
 ')"""
 
@@ -50,6 +51,8 @@ while True:
         self.cmds = []
         self.interval = interval
         self.monitor_ins = {}
+        self.local_aggr_container={}
+
         super(RemoteProc, self).__init__()
 
     def register(self, monitor_ins, cmds):
@@ -67,7 +70,7 @@ while True:
         call_template="\n".join(["  func_{id}()"\
                                      .format(id=id) for id in range(len(self.cmds))]
                                 )
-        script = self.template.format(func_template=func_template, 
+        script = self.template.format(func_template=func_template,
                                       call_template=call_template,
                                       interval = self.interval,
                                       SEP = self.SEP)
@@ -83,8 +86,10 @@ while True:
                 if not l: break
                 if l.startswith(self.SEP):
                     tail = l.lstrip(self.SEP)
-                    if tail[0]==' ': # timestamp
+                    if tail[0]=='+': # timestamp
                         cur_timestamp = float(tail[1:])
+                    elif tail.startswith('#end'): # end sign
+                        self.na_push(cur_timestamp)
                     else:
                         id = int(tail[1:])
                         if self.monitor_ins[id]:
@@ -93,6 +98,23 @@ while True:
                 else:
                     container.append(l.rstrip())
         self.ssh_close()
+
+    def aggregate(self, timestamp, data):
+        if not self.local_aggr_container:
+            self.local_aggr_container['timestamp']=timestamp
+        assert timestamp == self.local_aggr_container['timestamp']
+        assert type(data) is dict
+        self.local_aggr_container.update(data)
+        self.local_aggr_container['timestamp'] = timestamp
+
+    def na_register(self, na):
+        assert isinstance(na, NodeAggregator)
+        self.node_aggr_parent = na
+
+    def na_push(self, timestamp):
+        assert self.local_aggr_container.get('timestamp', -1) == timestamp
+        self.node_aggr_parent.commit_aggregate(self.host, self.local_aggr_container)
+        self.local_aggr_container.clear()
 
 class BaseMonitor(object):
     IGNORE_KEYS=[]
@@ -118,13 +140,10 @@ class BaseMonitor(object):
                                 ])
             self._last = stat
             stat_delta[header+'/total'] = reduce(lambda a,b: a._add(b, 'total'), stat_delta.values())
-            self.commit_aggregate(timestamp, stat_delta)
-            
-    def commit_aggregate(self, timestamp, datas):           # override for record & aggregation data
-        pprint((timestamp, datas))
-#        raise NotImplementedError()
+            self.rproc.aggregate(timestamp, stat_delta)
 
-class BashSSHClient(object):
+
+class BashSSHClientMixin(object):
     def ssh_client(self, host, shell):
         self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, stdout=subprocess.PIPE)
         return self.proc.stdout
@@ -133,20 +152,20 @@ class BashSSHClient(object):
         assert self.proc
         self.proc.wait()
         return self.proc.returncode
-    
+
 _cpu=namedtuple("cpu", ['label', 'user', 'nice', 'system', 'idle', 'iowait', 'irq', 'softirq'])
 class cpu(_cpu, PatchedNameTuple):
     def percentage(self):
         total = sum(self[1:])
         return cpu(self[0], *[x*100.0 / total for x in self[1:]]) if total>0 else self
-       
+
 class CPUMonitor(BaseMonitor):
     def __init__(self, rproc):
         super(CPUMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/stat") as f:
   sys.stdout.write("".join([x for x in f.readlines() if x.startswith("cpu")]))
-""")    
-        
+""")
+
     def feed(self, container, timestamp):
         "parse /proc/stat"
         self.commit(timestamp, dict([self._parse_stat(line) for line in container]))
@@ -165,7 +184,7 @@ class CPUMonitor(BaseMonitor):
         else:
             cpu_usage = dict([("cpu/"+k, (cpu_stat[k] - self._last[k]).percentage()) for k in self._last])
             self._last = cpu_stat
-            self.commit_aggregate(timestamp, cpu_usage)
+            self.rproc.aggregate(timestamp, cpu_usage)
 
 _network=namedtuple("net", ['label', "recv_bytes", "recv_packets", "recv_errs", "recv_drop",
                             "send_bytes", "send_packets", "send_errs", "send_drop"])
@@ -193,14 +212,14 @@ class NetworkMonitor(BaseMonitor):
 _disk=namedtuple("disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
 
 class disk(_disk, PatchedNameTuple): pass
-    
+
 class DiskMonitor(BaseMonitor):
     def __init__(self, rproc):
         super(DiskMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/diskstats") as f:
   blocks = os.listdir("/sys/block")
   sys.stdout.write("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop")]))
-""")    
+""")
 
     def feed(self, container, timestamp):
         "parse /proc/diskstats"
@@ -223,20 +242,37 @@ class MemoryMonitor(BaseMonitor):
         rproc.register(self, """with open("/proc/meminfo") as f:
   mem = dict([(a, b.split()[0].strip()) for a, b in [x.split(":") for x in f.readlines()]])
   print ":".join([mem[field] for field in ["MemTotal", "MemAvailable", "Buffers", "Cached", "MemFree", "Mapped"]])
-""")   
+""")
 
     def feed(self, memory_status, timestamp):
         "parse /proc/meminfo"
         total, avail, buffers, cached, free, mapped= [int(x) for x in memory_status[0].split(":")]
-        
-        self.commit_aggregate(timestamp, {"memory/total":memory(label="total", total=total,
-                                              used=total - avail,
-                                              buffer_cache=buffers + cached,
+
+        self.rproc.aggregate(timestamp, {"memory/total":memory(label="total", total=total,
+                                                               used=total - avail,
+                                                               buffer_cache=buffers + cached,
                                               free=free, map=mapped)})
 
+class NodeAggregator(object):
+    def __init__(self):
+        self.node_pool = {}
+
+    def append(self, node):
+        assert isinstance(node, RemoteProc)
+        self.node_pool[node.host] = node
+        node.na_register(self)
+
+    def commit_aggregate(self, node, datas):
+        pprint((node, datas))
+
+    def run(self):
+        for v in self.node_pool.values():
+            v.start()
+        for v in self.node_pool.values():
+            v.join()
 
 def test():
-    p = BashSSHClient()
+    p = BashSSHClientMixin()
     script=r"""exec('
 import time, os, sys
 while 1:
@@ -251,9 +287,9 @@ while 1:
             print l.rstrip()
             if not l: break
     p.ssh_close()
-        
+
 def test2():
-    class P(RemoteProc, BashSSHClient):  pass
+    class P(RemoteProc, BashSSHClientMixin):  pass
 
     p = P("localhost", 0.3)
     CPUMonitor(p)
@@ -263,5 +299,19 @@ def test2():
 
     p.run()
 
+def test3():
+    class P(RemoteProc, BashSSHClientMixin):
+        def __init__(self, *args):
+            RemoteProc.__init__(self, *args)
+            CPUMonitor(self)
+            NetworkMonitor(self)
+            DiskMonitor(self)
+            MemoryMonitor(self)
+    na = NodeAggregator()
+    na.append(P("localhost", 0.3))
+    na.append(P("helix2", 0.3))
+
+    na.run()
+
 if __name__=="__main__":
-    test2()
+    test3()
