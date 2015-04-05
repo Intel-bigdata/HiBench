@@ -27,7 +27,11 @@ class PatchedNameTuple(object):
         cls = self.__class__
         return cls(self[0], *[a-b for a, b in zip(self[1:], other[1:])])
 
+    def __div__(self, other):
+        return self.__class__(self[0], *[a/other for a in self[1:]])
+
     def _add(self, other, override_title=None):
+        if other == None: return self
         assert isinstance(other, self.__class__)
         cls = self.__class__
         title = self[0] if not override_title else override_title
@@ -248,15 +252,15 @@ class MemoryMonitor(BaseMonitor):
         super(MemoryMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/meminfo") as f:
   mem = dict([(a, b.split()[0].strip()) for a, b in [x.split(":") for x in f.readlines()]])
-  print ":".join([mem[field] for field in ["MemTotal", "MemAvailable", "Buffers", "Cached", "MemFree", "Mapped"]])
+  print ":".join([mem[field] for field in ["MemTotal", "Buffers", "Cached", "MemFree", "Mapped"]])
 """)
 
     def feed(self, memory_status, timestamp):
         "parse /proc/meminfo"
-        total, avail, buffers, cached, free, mapped= [int(x) for x in memory_status[0].split(":")]
+        total, buffers, cached, free, mapped= [int(x) for x in memory_status[0].split(":")]
 
         self.rproc.aggregate(timestamp, {"memory/total":Memory(label="total", total=total,
-                                                               used=total - avail,
+                                                               used=total - free - buffers-cached,
                                                                buffer_cache=buffers + cached,
                                               free=free, map=mapped)})
 
@@ -310,7 +314,10 @@ def round_to_base(v, b):
 
 def filter_dict_with_prefix(d, prefix, sort=True):
     keys = sorted(d.keys()) if sort else d.keys()
-    return dict([(x, d[x]) for x in keys if x.startswith(prefix)])
+    if prefix[0]=='!':
+        return  dict([(x, d[x]) for x in keys if not x.startswith(prefix[1:])])
+    else:
+        return  dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
 def test():
     p = BashSSHClientMixin()
@@ -363,14 +370,82 @@ def test4():
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
     print all_hosts
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
+
+    cpu_heatmap = ["timestamp, CPU-idx, CPU Usage, Host, CPU-id"]
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
         data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
-        #print t, [x.get("cpu/total", 0) for x in data_by_all_hosts]
+
+        # all cpus, total
+        """
+        summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
+        if not summed1: continue
+        summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
+        for x in data_by_all_hosts:
+            cpu = x.get('cpu/total', None)
+            if not cpu: continue
+            # user, system, io, idle, others
+            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
+        print t, summed
+        """
 
         # all cpus, plot heatmap according to cpus/time/usage(100%-idle)
-        print t, [[y.idle for y in filter_dict_with_prefix(x, 'cpu/cpu').values()] for x in data_by_all_hosts]
+
+        count={}
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
+                try:
+                    pos = count[(idx, idy)]
+                except:
+                    pos =  len(count)
+                    count[(idx, idy)] = pos
+                print t, pos, 100-y.idle, x['hostname'], y.label
+                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=t, pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
+
+        # all disk, total
+        """
+        summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
+        if not summed1: continue
+        summed = reduce(lambda a,b: a._add(b), summed1)
+        for x in data_by_all_hosts:
+            disk = x.get('disk/total', None)
+            if not disk: continue
+            # io-read, io-write, bytes-read, bytes-write
+            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
+        print t, summed
+        """
+
+        # all memory, total
+        """
+        summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
+        if not summed1: continue
+        summed = reduce(lambda a,b: a._add(b), summed1)
+        for x in data_by_all_hosts:
+            mem = x.get("memory/total", None)
+            if not mem: continue
+            # mem-total, mem-used, mem-buffer&cache, mem-free, KB
+            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
+        print t, summed
+        """
+
+        # all network, total
+        """
+        summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
+        if not summed1: continue
+        summed = reduce(lambda a,b: a._add(b), summed1)
+        for x in data_by_all_hosts:
+            net = x.get("net/total", None)
+            if not net: continue
+            # recv-byte, send-byte, recv-packet, send-packet, errors
+            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
+        print t, summed
+        """
+
+    with open("chart-template.html") as f:
+        template = f.read()
+    with open("chart.html", 'w') as f:
+        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap)))
 
 if __name__=="__main__":
     #test3()
