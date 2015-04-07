@@ -5,74 +5,77 @@
     <title>CPU Heatmap</title>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
     <script type='text/javascript'>
+    $(document).ready(function() {
+	  var options = {
+	      chart: {
+		  renderTo: 'container',
+		  type: 'heatmap',
+	      },
+	      title: {
+		  text: 'CPU usage heat map'
+	      },
+	      xAxis: {
+		  type: 'datetime',
+	      },
+	      yAxis: {
+		  title: {
+		      text: 'null'
+		  },
+		  labels: {
+                      format: '{value}:00'
+		  },
+		  minPadding: 0,
+		  maxPadding: 0,
+		  startOnTick: false,
+		  endOnTick: false,
+		  tickPositions: [0, 6, 12, 18, 24],
+		  tickWidth: 1,
+		  min: 0,
+		  max: 23		  
+	      },
+	      colorAxis: {
+		  stops: [
+                      [0, '#3060cf'],
+                      [50, '#fffbbc'],
+                      [90, '#c4463a']
+		  ],
+		  min: 0
+              },
+	      series: []
+	  };
+	var data =  document.getElementById('csv_cpu_heatmap').innerHTML;
+	// Split the lines
+	var lines = data.split('\n');
+	$.each(lines, function(lineNo, line) {
+	    var items = line.split(',');
+	    
+	    // header line containes categories
+	    if (lineNo == 0) {	// just skip
+		
+	    }
+	    
+	    // the rest of the lines contain data with their name in the first position
+	    else {
+		var series = { 
+		    data: []
+		};
+		$.each(items, function(itemNo, item) {
+		    if (itemNo == 3) {
+			series.name = item;
+		    }
+		    if (itemNo <= 2) {
+			series.data.push(parseFloat(item));
+		    } else {
+			series.data.push(item);
+		    }
+		});
+		options.series.push(series);
+	    }				
+	}  );
+	console.log(options.series)
 
-$(function () {
-
-    $('#container').highcharts({
-
-        data: {
-            csv: document.getElementById('csv').innerHTML
-        },
-
-        chart: {
-            type: 'heatmap',
-            inverted: true
-        },
-
-
-        title: {
-            text: 'Highcharts heat map study',
-            align: 'left'
-        },
-
-        subtitle: {
-            text: 'Temperature variation by day and hour through April 2013',
-            align: 'left'
-        },
-
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 50,
-
-        },
-
-        yAxis: {
-            title: {
-                text: null
-            },
-            labels: {
-                format: '{value}:00'
-            },
-            minPadding: 0,
-            maxPadding: 0,
-            startOnTick: false,
-            endOnTick: false,
-            tickPositions: [0, 6, 12, 18, 24],
-            tickWidth: 1,
-            min: 0,
-            max: 23
-        },
-
-        colorAxis: {
-            stops: [
-                [0, '#3060cf'],
-                [50, '#fffbbc'],
-                [90, '#c4463a']
-            ],
-            min: 0
-        },
-
-        series: [{
-            borderWidth: 0,
-            colsize: 24 * 36e5, // one day
-            tooltip: {
-                headerFormat: 'CPU Usage<br/>',
-                pointFormat: '{point.x:%e %b, %Y} {point.y}:00: <b>{point.value} ℃</b>'
-            }
-        }]
-
+	var chart = new Highcharts.Chart(options);
     });
-});
 </script>
 </head>
 <body>
@@ -80,11 +83,9 @@ $(function () {
 <script src="http://code.highcharts.com/maps/modules/map.js"></script>
 <script src="http://code.highcharts.com/maps/modules/data.js"></script>
 
-
 <div id="container" style="height: 400px; max-width: 400px; margin: 0 auto"></div>
 
-
-<pre id="csv" style="display: none">timestamp, CPU-idx, CPU Usage, Host, CPU-id
+<pre id="csv_cpu_heatmap" style="display: none">timestamp, CPU-idx, CPU Usage, Host, CPU-id
 1428330705600,0,0.0,homeserver,cpu3
 1428330705600,1,3.22580645161,homeserver,cpu2
 1428330705600,2,0.0,homeserver,cpu1
@@ -93,9 +94,143 @@ $(function () {
 1428330705600,5,0.0,homeserver,cpu6
 1428330705600,6,0.0,homeserver,cpu5
 1428330705600,7,0.0,homeserver,cpu4
-</pre>
-
-
+1428330720000,0,0.0,localhost,cpu3
+1428330720000,1,10.0,localhost,cpu2
+1428330720000,2,0.0,localhost,cpu1
+1428330720000,3,0.0,localhost,cpu0
+1428330720000,4,0.0,localhost,cpu7
+1428330720000,5,0.0,localhost,cpu6
+1428330720000,6,0.0,localhost,cpu5
+1428330720000,7,0.0,localhost,cpu4
+1428330705900,0,0.0,homeserver,cpu3
+1428330705900,1,0.0,homeserver,cpu2
+1428330705900,2,0.0,homeserver,cpu1
+1428330705900,3,3.22580645161,homeserver,cpu0
+1428330705900,4,0.0,homeserver,cpu7
+1428330705900,5,0.0,homeserver,cpu6
+1428330705900,6,0.0,homeserver,cpu5
+1428330705900,7,0.0,homeserver,cpu4
+1428330720300,0,0.0,localhost,cpu3
+1428330720300,1,0.0,localhost,cpu2
+1428330720300,2,0.0,localhost,cpu1
+1428330720300,3,0.0,localhost,cpu0
+1428330720300,4,0.0,localhost,cpu7
+1428330720300,5,0.0,localhost,cpu6
+1428330720300,6,0.0,localhost,cpu5
+1428330720300,7,0.0,localhost,cpu4
+1428330706200,0,3.22580645161,homeserver,cpu3
+1428330706200,1,3.33333333333,homeserver,cpu2
+1428330706200,2,3.22580645161,homeserver,cpu1
+1428330706200,3,0.0,homeserver,cpu0
+1428330706200,4,3.22580645161,homeserver,cpu7
+1428330706200,5,3.22580645161,homeserver,cpu6
+1428330706200,6,0.0,homeserver,cpu5
+1428330706200,7,0.0,homeserver,cpu4
+1428330720600,0,0.0,localhost,cpu3
+1428330720600,1,0.0,localhost,cpu2
+1428330720600,2,3.33333333333,localhost,cpu1
+1428330720600,3,3.33333333333,localhost,cpu0
+1428330720600,4,0.0,localhost,cpu7
+1428330720600,5,0.0,localhost,cpu6
+1428330720600,6,0.0,localhost,cpu5
+1428330720600,7,0.0,localhost,cpu4
+1428330706500,0,0.0,homeserver,cpu3
+1428330706500,1,3.22580645161,homeserver,cpu2
+1428330706500,2,3.22580645161,homeserver,cpu1
+1428330706500,3,0.0,homeserver,cpu0
+1428330706500,4,0.0,homeserver,cpu7
+1428330706500,5,0.0,homeserver,cpu6
+1428330706500,6,0.0,homeserver,cpu5
+1428330706500,7,0.0,homeserver,cpu4
+1428330720900,0,3.33333333333,localhost,cpu3
+1428330720900,1,6.45161290323,localhost,cpu2
+1428330720900,2,0.0,localhost,cpu1
+1428330720900,3,6.66666666667,localhost,cpu0
+1428330720900,4,0.0,localhost,cpu7
+1428330720900,5,3.33333333333,localhost,cpu6
+1428330720900,6,3.33333333333,localhost,cpu5
+1428330720900,7,0.0,localhost,cpu4
+1428330706800,0,3.33333333333,homeserver,cpu3
+1428330706800,1,0.0,homeserver,cpu2
+1428330706800,2,0.0,homeserver,cpu1
+1428330706800,3,6.45161290323,homeserver,cpu0
+1428330706800,4,0.0,homeserver,cpu7
+1428330706800,5,0.0,homeserver,cpu6
+1428330706800,6,0.0,homeserver,cpu5
+1428330706800,7,0.0,homeserver,cpu4
+1428330721200,0,3.22580645161,localhost,cpu3
+1428330721200,1,0.0,localhost,cpu2
+1428330721200,2,0.0,localhost,cpu1
+1428330721200,3,0.0,localhost,cpu0
+1428330721200,4,0.0,localhost,cpu7
+1428330721200,5,0.0,localhost,cpu6
+1428330721200,6,0.0,localhost,cpu5
+1428330721200,7,0.0,localhost,cpu4
+1428330707100,0,0.0,homeserver,cpu3
+1428330707100,1,0.0,homeserver,cpu2
+1428330707100,2,0.0,homeserver,cpu1
+1428330707100,3,3.22580645161,homeserver,cpu0
+1428330707100,4,0.0,homeserver,cpu7
+1428330707100,5,0.0,homeserver,cpu6
+1428330707100,6,0.0,homeserver,cpu5
+1428330707100,7,3.22580645161,homeserver,cpu4
+1428330721500,0,0.0,localhost,cpu3
+1428330721500,1,0.0,localhost,cpu2
+1428330721500,2,3.33333333333,localhost,cpu1
+1428330721500,3,0.0,localhost,cpu0
+1428330721500,4,0.0,localhost,cpu7
+1428330721500,5,0.0,localhost,cpu6
+1428330721500,6,0.0,localhost,cpu5
+1428330721500,7,0.0,localhost,cpu4
+1428330707400,0,0.0,homeserver,cpu3
+1428330707400,1,0.0,homeserver,cpu2
+1428330707400,2,0.0,homeserver,cpu1
+1428330707400,3,0.0,homeserver,cpu0
+1428330707400,4,0.0,homeserver,cpu7
+1428330707400,5,0.0,homeserver,cpu6
+1428330707400,6,0.0,homeserver,cpu5
+1428330707400,7,0.0,homeserver,cpu4
+1428330721800,0,0.0,localhost,cpu3
+1428330721800,1,0.0,localhost,cpu2
+1428330721800,2,0.0,localhost,cpu1
+1428330721800,3,0.0,localhost,cpu0
+1428330721800,4,0.0,localhost,cpu7
+1428330721800,5,3.22580645161,localhost,cpu6
+1428330721800,6,0.0,localhost,cpu5
+1428330721800,7,0.0,localhost,cpu4
+1428330707700,0,3.22580645161,homeserver,cpu3
+1428330707700,1,0.0,homeserver,cpu2
+1428330707700,2,0.0,homeserver,cpu1
+1428330707700,3,0.0,homeserver,cpu0
+1428330707700,4,0.0,homeserver,cpu7
+1428330707700,5,0.0,homeserver,cpu6
+1428330707700,6,0.0,homeserver,cpu5
+1428330707700,7,0.0,homeserver,cpu4
+1428330722100,0,0.0,localhost,cpu3
+1428330722100,1,0.0,localhost,cpu2
+1428330722100,2,3.22580645161,localhost,cpu1
+1428330722100,3,3.33333333333,localhost,cpu0
+1428330722100,4,0.0,localhost,cpu7
+1428330722100,5,0.0,localhost,cpu6
+1428330722100,6,0.0,localhost,cpu5
+1428330722100,7,0.0,localhost,cpu4
+1428330708000,0,0.0,homeserver,cpu3
+1428330708000,1,0.0,homeserver,cpu2
+1428330708000,2,0.0,homeserver,cpu1
+1428330708000,3,0.0,homeserver,cpu0
+1428330708000,4,0.0,homeserver,cpu7
+1428330708000,5,0.0,homeserver,cpu6
+1428330708000,6,0.0,homeserver,cpu5
+1428330708000,7,0.0,homeserver,cpu4
+1428330722400,0,0.0,localhost,cpu3
+1428330722400,1,0.0,localhost,cpu2
+1428330722400,2,0.0,localhost,cpu1
+1428330722400,3,6.45161290323,localhost,cpu0
+1428330722400,4,0.0,localhost,cpu7
+1428330722400,5,0.0,localhost,cpu6
+1428330722400,6,0.0,localhost,cpu5
+1428330722400,7,0.0,localhost,cpu4</pre>
 
 </body>
 </html>
+

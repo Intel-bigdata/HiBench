@@ -396,10 +396,10 @@ def test4():
         for idx, x in enumerate(data_by_all_hosts):
             for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
                 try:
-                    pos = count[(idx, idy)]
+                    pos = count[(idx, idy, x['hostname'])]
                 except:
                     pos =  len(count)
-                    count[(idx, idy)] = pos
+                    count[(idx, idy, x['hostname'])] = pos
                 print t, pos, 100-y.idle, x['hostname'], y.label
                 cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=int(t*1000), pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
 

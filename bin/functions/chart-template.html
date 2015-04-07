@@ -5,74 +5,77 @@
     <title>CPU Heatmap</title>
     <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js'></script>
     <script type='text/javascript'>
+    $(document).ready(function() {
+	  var options = {
+	      chart: {
+		  renderTo: 'container',
+		  type: 'heatmap',
+	      },
+	      title: {
+		  text: 'CPU usage heat map'
+	      },
+	      xAxis: {
+		  type: 'datetime',
+	      },
+	      yAxis: {
+		  title: {
+		      text: 'null'
+		  },
+		  labels: {
+                      format: '{value}:00'
+		  },
+		  minPadding: 0,
+		  maxPadding: 0,
+		  startOnTick: false,
+		  endOnTick: false,
+		  tickPositions: [0, 6, 12, 18, 24],
+		  tickWidth: 1,
+		  min: 0,
+		  max: 23		  
+	      },
+	      colorAxis: {
+		  stops: [
+                      [0, '#3060cf'],
+                      [50, '#fffbbc'],
+                      [90, '#c4463a']
+		  ],
+		  min: 0
+              },
+	      series: []
+	  };
+	var data =  document.getElementById('csv_cpu_heatmap').innerHTML;
+	// Split the lines
+	var lines = data.split('\n');
+	$.each(lines, function(lineNo, line) {
+	    var items = line.split(',');
+	    
+	    // header line containes categories
+	    if (lineNo == 0) {	// just skip
+		
+	    }
+	    
+	    // the rest of the lines contain data with their name in the first position
+	    else {
+		var series = { 
+		    data: []
+		};
+		$.each(items, function(itemNo, item) {
+		    if (itemNo == 3) {
+			series.name = item;
+		    }
+		    if (itemNo <= 2) {
+			series.data.push(parseFloat(item));
+		    } else {
+			series.data.push(item);
+		    }
+		});
+		options.series.push(series);
+	    }				
+	}  );
+	console.log(options.series)
 
-$(function () {
-
-    $('#container').highcharts({
-
-        data: {
-            csv: document.getElementById('csv').innerHTML
-        },
-
-        chart: {
-            type: 'heatmap',
-            inverted: true
-        },
-
-
-        title: {
-            text: 'Highcharts heat map study',
-            align: 'left'
-        },
-
-        subtitle: {
-            text: 'Temperature variation by day and hour through April 2013',
-            align: 'left'
-        },
-
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 50,
-
-        },
-
-        yAxis: {
-            title: {
-                text: null
-            },
-            labels: {
-                format: '{value}:00'
-            },
-            minPadding: 0,
-            maxPadding: 0,
-            startOnTick: false,
-            endOnTick: false,
-            tickPositions: [0, 6, 12, 18, 24],
-            tickWidth: 1,
-            min: 0,
-            max: 23
-        },
-
-        colorAxis: {
-            stops: [
-                [0, '#3060cf'],
-                [50, '#fffbbc'],
-                [90, '#c4463a']
-            ],
-            min: 0
-        },
-
-        series: [{
-            borderWidth: 0,
-            colsize: 24 * 36e5, // one day
-            tooltip: {
-                headerFormat: 'CPU Usage<br/>',
-                pointFormat: '{point.x:%e %b, %Y} {point.y}:00: <b>{point.value} ℃</b>'
-            }
-        }]
-
+	var chart = new Highcharts.Chart(options);
     });
-});
 </script>
 </head>
 <body>
@@ -80,13 +83,10 @@ $(function () {
 <script src="http://code.highcharts.com/maps/modules/map.js"></script>
 <script src="http://code.highcharts.com/maps/modules/data.js"></script>
 
-
 <div id="container" style="height: 400px; max-width: 400px; margin: 0 auto"></div>
 
-
-<pre id="csv" style="display: none">{cpu_heatmap}</pre>
-
-
+<pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>
 
 </body>
 </html>
+
