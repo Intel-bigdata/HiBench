@@ -357,7 +357,7 @@ def test3():
             MemoryMonitor(self)
     na = NodeAggregator("log.txt")
     na.append(P("localhost", 0.3))
-    na.append(P("helix2", 0.3))
+    na.append(P("homeserver", 0.3))
 
     na.run()
     sleep(3)
@@ -401,7 +401,7 @@ def test4():
                     pos =  len(count)
                     count[(idx, idy)] = pos
                 print t, pos, 100-y.idle, x['hostname'], y.label
-                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=t, pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
+                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=int(t*1000), pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
 
         # all disk, total
         """
