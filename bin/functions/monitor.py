@@ -371,7 +371,7 @@ def test4():
     print all_hosts
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
 
-    cpu_heatmap = ["timestamp, CPU-idx, CPU Usage, Host, CPU-id"]
+    cpu_heatmap = ["x,y,value,hostname,coreid"]
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
