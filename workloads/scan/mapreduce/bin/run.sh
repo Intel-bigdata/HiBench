@@ -33,14 +33,13 @@ rmr-hdfs $OUTPUT_HDFS
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare-sql-scan ${HIVEBENCH_SQL_FILE}
 
-START_TIME=`timestamp`
-
 # run bench
-# run bench
-START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
+MONITOR_PID=`start-monitor`
+START_TIME=`timestamp`
 execute_withlog $CMD
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
 sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`

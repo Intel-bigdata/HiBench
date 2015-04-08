@@ -31,7 +31,7 @@ START_TIME=`timestamp`
 
 # strip spaces after "-D"
 COMPRESS_OPT=`echo $COMPRESS_OPT | sed -r 's/-D /-D/g'`
-
+MONITOR_PID=`start-monitor`
 CMD1="$MAHOUT_HOME/bin/mahout seq2sparse ${COMPRESS_OPT} -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS"
 execute_withlog ${CMD1}
 
@@ -39,6 +39,7 @@ CMD2="$MAHOUT_HOME/bin/mahout trainnb ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/
 execute_withlog ${CMD2}
 
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

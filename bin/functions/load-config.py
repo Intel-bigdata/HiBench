@@ -243,7 +243,7 @@ def generate_optional_value():  # get some critical values from environment or m
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
 
-    # setting hadoop mapper/reducer property names
+    # set hadoop mapper/reducer property names
     if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
         HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"
         HibenchConfRef["hibench.hadoop.mapper.name"] = "Inferred by: 'hibench.hadoop.version'"
@@ -251,7 +251,18 @@ def generate_optional_value():  # get some critical values from environment or m
         HibenchConf["hibench.hadoop.reducer.name"] = "mapred.reduce.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.reduces"
         HibenchConfRef["hibench.hadoop.reducer.name"] = "Inferred by: 'hibench.hadoop.version'"
 
+    # probe masters, slaves hostnames
+    # determine running mode according to spark master
+    spark_master = HibenchConf['hibench.spark.master']
+    if spark_master.startswith("local"):   # local mode
+        HibenchConf['hibench.masters.hostnames'] = ''             # no master
+        HibenchConf['hibench.slaves.hostnames'] = 'localhost'     # localhost as slaves
+        HibenchConfRef['hibench.masters.hostnames'] = HibenchConfRef['hibench.slaves.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
+    elif spark_master.startswith("spark"):   # spark standalone mode
+        HibenchConf['hibench.masters.hostnames'] = spark_master.lstrip("spark://").split(":")[0]
+        HibenchConfRef['hibench.masters.hostnames'] = HibenchConfRef['hibench.slaves.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
 
+        
 def export_config(workload_name, workload_tail):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']

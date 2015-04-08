@@ -14,11 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re, os
+import threading, subprocess, re, os, sys
+import signal
 from time import sleep
 from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
+
+def sig_term_handler(signo, stack):
+    generate_report(sys.argv[1], sys.argv[2])
+    sys.exit(0)
 
 def samedir(fn):
     """
@@ -353,7 +358,7 @@ def test2():
 
     p.run()
 
-def test3():
+def start_monitor(log_filename, nodes):
     class P(RemoteProc, BashSSHClientMixin):
         def __init__(self, *args):
             RemoteProc.__init__(self, *args)
@@ -361,12 +366,10 @@ def test3():
             NetworkMonitor(self)
             DiskMonitor(self)
             MemoryMonitor(self)
-    na = NodeAggregator("log.txt")
-    na.append(P("localhost", 1))
-
-    na.run()
-    sleep(60)
-    na.stop()
+    na = NodeAggregator(log_filename)
+    nodes = sorted(list(set(nodes)))
+    for node in nodes:
+        na.append(P(node, 1))
 
 def generate_report(log_fn, report_fn):
     with open(log_fn) as f:
@@ -459,6 +462,20 @@ def generate_report(log_fn, report_fn):
                     .replace("{memory_overall}", "\n".join(memory_overall))
                 )
 
+def show_usage():
+    print """Usage:
+    monitor.py <log_path.log> <report_path.html> <monitor_node_name1> ... <monitor_node_nameN>
+"""
+    
 if __name__=="__main__":
-    test3()
-    generate_report("log.txt", "chart.html")
+    if len(sys.argv)<3:
+        show_usage()
+        sys.exit(1)
+        
+    pid=os.fork()
+    if pid:                               #parent
+        print pid
+    else:                                 #child
+        start_monitor(sys.argv[1], sys.argv[3:])
+        while True:
+            sleep(1)

@@ -52,6 +52,17 @@ function timestamp(){		# get current timestamp
     echo `expr $tmp + $msec`
 }
 
+function start-monitor(){
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES}`
+    echo ${MONITOR_PID}
+}
+
+function stop-monitor(){
+    MONITOR_PID=$1
+    assert $1 "monitor pid missing"
+    kill ${MONITOR_PID}
+}
+
 function get_field_name() {	# print report column header
     printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node 
 }
@@ -92,7 +103,7 @@ function rmr-hdfs(){		# rm -r for hdfs
 	RMDIR_CMD="fs -rm -r -skipTrash"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
-    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
 }
 
@@ -104,7 +115,7 @@ function dus-hdfs(){		# du -s for hdfs
 	DUS_CMD="fs -du -s"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
-    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
 }
 
@@ -201,8 +212,10 @@ function run-spark-job() {
 	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
+    MONITOR_PID=`start-monitor`
     execute_withlog ${SUBMIT_CMD}
     result=$?
+    stop-monitor ${MONITOR_PID}
     if [ $result -ne 0 ]
     then
 	echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
@@ -211,6 +224,11 @@ function run-spark-job() {
 }
 
 function run-hadoop-job(){
+    ENABLE_MONITOR=1
+    if [ "$1" = "--without-monitor"]; then
+	ENABLE_MONITOR=0
+	shift 1
+    fi
     local job_jar=$1
     shift
     local job_name=$1
@@ -218,7 +236,18 @@ function run-hadoop-job(){
     local tail_arguments=$@
     local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
     echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
+    if [ ${ENABLE_MONITOR} = 1 ]; then
+	MONITOR_PID=`start-monitor`
+    fi
     execute_withlog ${CMD}
+    result=$?
+    if [ ${ENABLE_MONITOR} = 1 ]; then
+	stop-monitor ${MONITOR_PID}
+    fi
+    if [ $result -ne 0 ]; then
+	echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
+	exit $result
+    fi
 }
 
 function ensure-hivebench-release(){
