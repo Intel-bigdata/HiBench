@@ -20,6 +20,67 @@
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
     <script type='text/javascript'>
+    function gen_overall_options(suffix, title, yAxis_desc, plot_options ){
+	var data = document.getElementById("csv_"+suffix).innerHTML;
+	var csv_header = [];
+	
+	var series=[];
+	var yaxis=0;
+	$.each(data.split('\n'), function(lineNo, line){
+	    var items = line.split(',');
+	    if (lineNo==0){
+		$.each(items, function(itemNo, item){
+		    if (item[0]=='|'){ // new axis
+			item = item.substring(1);
+			yaxis +=1;
+		    }
+		    csv_header.push(item);
+		    series.push({name:item, yAxis: yaxis, data:[]})
+		});
+	    } else {
+		$.each(items, function(itemNo, item){
+		    if (itemNo>0){
+			series[itemNo].data.push([parseFloat(items[0]), parseFloat(item)])
+		    }
+		});
+	    }
+	});
+	series.splice(0,1);
+	var options = {
+	    chart: {
+		renderTo: 'container_'+suffix,
+		type: 'area',
+	    },
+	    title: {
+		text: title
+	    },
+	    tooltip: {
+		pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
+            shared: true
+            },
+
+	    plotOptions: plot_options,
+	    
+	    xAxis: {
+		type: 'datetime',
+		tickmarkPlacement: 'on',
+		labels: {
+                    align: 'left',
+                    x: 5,
+                    format: '{value:%S}'
+		},
+		title: {
+                    enabled: false
+		}
+	    },
+	    yAxis: yAxis_desc,
+	    series: series
+	};
+	console.log(options.series)
+
+	var newchart = new Highcharts.Chart(options);
+    }
+
     $(function() {
 
 	/**
@@ -115,7 +176,7 @@
 		}
             },
 	    xAxis: {
-		Type: 'datetime',
+		type: 'datetime',
 		labels: {
                     align: 'left',
                     x: 5,
@@ -174,7 +235,7 @@
 	    var items = line.split(',');
 	    
 	    // header line containes categories
-	    if (lineNo == 0) {	// just skip
+	    if (lineNo == 0) {
 		$.each(items, function(itemNo, item){
 		    csv_header.push(item);
 		});
@@ -195,9 +256,85 @@
 		options.series[0].data.push(series_data);
 	    }				
 	}  );
-	console.log(options.series)
 
-	var chart = new Highcharts.Chart(options);
+	var chart_cpu_heatmap = new Highcharts.Chart(options);
+
+
+	// load cpu overall
+	gen_overall_options("cpu_overall", "Summarized CPU usage",
+			    {	// yaxis
+				title: {
+				    text: 'Percent'
+				}
+			    }, 
+			    {	// plot options
+				area: {
+				    stacking: 'percent',
+				    lineColor: '#ffffff',
+				    lineWidth: 1,
+				    marker: {
+					lineWidth: 1,
+					lineColor: '#ffffff'
+				    }
+				}
+			    }
+			   );
+
+	// load network overall
+	gen_overall_options("network_overall", "Summarized Network throughputs & Packet-per-seconds", 
+			    [	// yaxis
+				{
+				    title:{
+					text: "Bytes"
+				    }
+				},
+				{
+				    title:{
+					text: "Packets"
+				    },
+				    opposite: true
+				}
+			    ],
+			    {}	// plot options
+			   );
+
+	// load diskio overall
+	gen_overall_options("diskio_overall", "Summarized Disk throughputs & IOPS",
+			    [	// yaxis
+				{
+				    title:{
+					text: "Bytes"
+				    }
+				},
+				{
+				    title:{
+					text: "Operations"
+				    },
+				    opposite: true
+				}
+			    ],
+			    {}	// plot operations
+			   );
+
+	// load memory overall
+	gen_overall_options("memory_overall", "Summarized Memory usage",
+			    {	// yaxis
+				title: {
+				    text: 'Percent'
+				}
+			    }, 
+			    {	// plot options
+				area: {
+				    stacking: 'percent',
+				    lineColor: '#ffffff',
+				    lineWidth: 1,
+				    marker: {
+					lineWidth: 1,
+					lineColor: '#ffffff'
+				    }
+				}
+			    }
+			   );
     });
 </script>
 </head>

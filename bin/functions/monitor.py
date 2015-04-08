@@ -20,6 +20,12 @@ from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
 
+def samedir(fn):
+    """
+    return abspath of fn in the same directory where this python file stores
+    """
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), fn))
+
 class PatchedNameTuple(object):
     def __sub__(self, other):
         assert isinstance(other, self.__class__)
@@ -356,15 +362,14 @@ def test3():
             DiskMonitor(self)
             MemoryMonitor(self)
     na = NodeAggregator("log.txt")
-    na.append(P("localhost", 0.3))
-    na.append(P("homeserver", 0.3))
+    na.append(P("localhost", 1))
 
     na.run()
-    sleep(3)
+    sleep(60)
     na.stop()
 
-def test4():
-    with open("log.txt") as f:
+def generate_report(log_fn, report_fn):
+    with open(log_fn) as f:
         datas=[eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
@@ -372,13 +377,16 @@ def test4():
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
 
     cpu_heatmap = ["x,y,value,hostname,coreid"]
+    cpu_overall = ["x,idle,user,system,iowait,others"]
+    network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
+    disk_overall = ["x,bytes_read,bytes_write,|io_read,io_write"]
+    memory_overall = ["x,free,used,buffer_cache"]
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
         data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
 
         # all cpus, total
-        """
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
@@ -386,9 +394,9 @@ def test4():
             cpu = x.get('cpu/total', None)
             if not cpu: continue
             # user, system, io, idle, others
-            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
-        print t, summed
-        """
+#            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
+#        print t, summed
+        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}".format(time=int(t*1000), user=summed.user, system=summed.system, iowait=summed.iowait, idle=summed.idle, others=summed.nice+summed.irq+summed.softirq))
 
         # all cpus, plot heatmap according to cpus/time/usage(100%-idle)
 
@@ -400,11 +408,10 @@ def test4():
                 except:
                     pos =  len(count)
                     count[(idx, idy, x['hostname'])] = pos
-                print t, pos, 100-y.idle, x['hostname'], y.label
+#                print t, pos, 100-y.idle, x['hostname'], y.label
                 cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=int(t*1000), pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
 
         # all disk, total
-        """
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -412,12 +419,12 @@ def test4():
             disk = x.get('disk/total', None)
             if not disk: continue
             # io-read, io-write, bytes-read, bytes-write
-            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
-        print t, summed
-        """
+#            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
+ #       print t, summed
+        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}".format(time=int(t*1000), bytes_read=summed.bytes_read, bytes_write=summed.bytes_write,io_read=summed.io_read,io_write=summed.io_write))
+
 
         # all memory, total
-        """
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -425,12 +432,12 @@ def test4():
             mem = x.get("memory/total", None)
             if not mem: continue
             # mem-total, mem-used, mem-buffer&cache, mem-free, KB
-            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
-        print t, summed
-        """
+#            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
+        #print t, summed
+        memory_overall.append("{time},{free},{used},{buffer_cache}".format(time=int(t*1000),free=summed.free,used=summed.used,buffer_cache=summed.buffer_cache))
+
 
         # all network, total
-        """
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -438,15 +445,20 @@ def test4():
             net = x.get("net/total", None)
             if not net: continue
             # recv-byte, send-byte, recv-packet, send-packet, errors
-            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
-        print t, summed
-        """
-
-    with open("chart-template.html") as f:
+#            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
+#        print t, summed
+        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}".format(time=int(t*1000), recv_bytes=summed.recv_bytes, send_bytes=summed.send_bytes,recv_packets=summed.recv_packets, send_packets=summed.send_packets,errors=summed.recv_errs+summed.send_errs+summed.recv_drop+summed.send_drop))
+        
+    with open(samedir("chart-template.html")) as f:
         template = f.read()
-    with open("chart.html", 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap)))
+    with open(report_fn, 'w') as f:
+        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))\
+                    .replace("{cpu_overall}", "\n".join(cpu_overall))\
+                    .replace("{network_overall}", "\n".join(network_overall))\
+                    .replace("{diskio_overall}", "\n".join(disk_overall))
+                    .replace("{memory_overall}", "\n".join(memory_overall))
+                )
 
 if __name__=="__main__":
-    #test3()
-    test4()
+    test3()
+    generate_report("log.txt", "chart.html")
