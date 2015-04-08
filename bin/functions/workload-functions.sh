@@ -249,6 +249,18 @@ function ensure-mahout-release (){
     export_withlog HADOOP_CONF_DIR    
 }
 
+
+function start-bench () {
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${WORKLOAD_RESULT_FOLDER}`
+    echo timestamp
+    echo $MONITOR_PID > /dev/stderr
+}
+
+function end-bench () {
+    kill $MONITOR_PID
+    echo timestamp
+}
+
 function execute () {
     CMD="$@"
     echo -e "${BCyan}Executing: ${Cyan}${CMD}${Color_Off}"
@@ -263,6 +275,7 @@ function execute_withlog () {
 	$CMD
     fi
 }
+
 
 function export_withlog () {
     var_name=$1

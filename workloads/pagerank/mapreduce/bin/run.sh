@@ -33,7 +33,7 @@ else
     OPTION="${COMPRESS_OPT} ${OUTPUT_HDFS} ${PAGES} ${NUM_REDS} ${NUM_ITERATIONS} ${BLOCK_WIDTH}"
 fi
 
-START_TIME=`timestamp`
+START_TIME=`start-bench`
 
 # run bench
 if [ $BLOCK -eq 0 ]
@@ -57,7 +57,7 @@ else
     run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankBlock ${OPTION}
 fi
 
-END_TIME=`timestamp`
+END_TIME=`end-bench`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

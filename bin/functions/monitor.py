@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re, os
-from time import sleep
+import threading, subprocess, re, os, sys
+from time import sleep, time
 from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
@@ -100,7 +100,8 @@ while True:
                 if l.startswith(self.SEP):
                     tail = l.lstrip(self.SEP)
                     if tail[0]=='+': # timestamp
-                        cur_timestamp = float(tail[1:])
+                        remote_timestamp = float(tail[1:])
+                        cur_timestamp = time()
                     elif tail.startswith('#end'): # end sign
                         self.na_push(cur_timestamp)
                     else:
@@ -380,7 +381,7 @@ def generate_report(log_fn, report_fn):
     cpu_overall = ["x,idle,user,system,iowait,others"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
     disk_overall = ["x,bytes_read,bytes_write,|io_read,io_write"]
-    memory_overall = ["x,free,used,buffer_cache"]
+    memory_overall = ["x,free,buffer_cache,used"]
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
@@ -434,7 +435,7 @@ def generate_report(log_fn, report_fn):
             # mem-total, mem-used, mem-buffer&cache, mem-free, KB
 #            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
         #print t, summed
-        memory_overall.append("{time},{free},{used},{buffer_cache}".format(time=int(t*1000),free=summed.free,used=summed.used,buffer_cache=summed.buffer_cache))
+        memory_overall.append("{time},{free},{buffer_cache},{used}".format(time=int(t*1000),free=summed.free,used=summed.used,buffer_cache=summed.buffer_cache))
 
 
         # all network, total
@@ -460,5 +461,18 @@ def generate_report(log_fn, report_fn):
                 )
 
 if __name__=="__main__":
-    test3()
-    generate_report("log.txt", "chart.html")
+    pid = os.fork()
+    if pid==0:
+        import signal
+        def sig_term(signnum, frame):
+            print "catched signal:%d" % signnum
+            generate_report("log.txt", "chart.html")
+
+            sys.exit()
+        signal.signal(signal.SIGTERM, sig_term)
+
+        test3()
+
+    else:
+        print pid
+    

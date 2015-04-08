@@ -22,9 +22,9 @@ workload_root=${workload_folder}/../../..
 enter_bench ScalaSparkSleep ${workload_root} ${workload_folder}
 show_bannar start
 
-START_TIME=`timestamp`
+START_TIME=`start-bench`
 run-spark-job com.intel.sparkbench.sleep.ScalaSleep $MAP_SLEEP_TIME
-END_TIME=`timestamp`
+END_TIME=`end-bench`
 SIZE="0"
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
