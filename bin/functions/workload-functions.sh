@@ -196,7 +196,7 @@ function run-spark-job() {
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
-       YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS:-1}"
+       YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
        if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
 	   YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi

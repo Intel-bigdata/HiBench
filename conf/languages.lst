@@ -1,4 +1,4 @@
-#mapreduce
-#spark/java
+mapreduce
+spark/java
 spark/scala
 spark/python
