@@ -349,7 +349,7 @@ function prepare-sql-aggregation () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
-    find . -name "metastore_db" -exec rm -rf "{}" \;
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
 
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;
@@ -369,7 +369,7 @@ function prepare-sql-join () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
-    find . -name "metastore_db" -exec rm -rf "{}" \;
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
 
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;
@@ -391,7 +391,7 @@ function prepare-sql-scan () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
-    find . -name "metastore_db" -exec rm -rf "{}" \;
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
 
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;

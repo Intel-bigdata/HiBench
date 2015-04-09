@@ -181,7 +181,7 @@ def generate_optional_value():  # get some critical values from environment or m
                 spark_version = spark_version_raw.split()[1].strip()
                 HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, spark_version_raw)
         except IOError as e:    # no release file, fall back to hard way
-            log("Probing spark verison, may last long time...")
+            log("Probing spark verison, may last long at first time...")
             shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
             spark_version = shell(shell_cmd).strip()
             HibenchConfRef["hibench.spark.version"] = "Probed by shell command: %s, value: %s" % (shell_cmd, spark_version)
@@ -298,8 +298,8 @@ def generate_optional_value():  # get some critical values from environment or m
             new_name_mapping[name] = socket.gethostbyaddr(name)[0]
         except:                 # host name lookup failure?
             new_name_mapping[name] = name
-    HibenchConf['hibench.masters.hostnames'] = " ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()])
-    HibenchConf['hibench.slaves.hostnames'] = " ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()])
+    HibenchConf['hibench.masters.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
+    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
         
 def export_config(workload_name, workload_tail):
     join = os.path.join
