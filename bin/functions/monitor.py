@@ -35,9 +35,10 @@ def sig_term_handler(signo, stack):
     global report_path
     global workload_title
     global na
-    if entered:
-        while True: sleep(1)    # block to avoid re-enter started generate_report
+    if not entered:
         entered=True            # FIXME: Not atomic
+    else: return
+
     na.stop()
     generate_report(workload_title, log_path, report_path)
     sys.exit(0)
@@ -497,6 +498,7 @@ if __name__=="__main__":
     global log_path
     global report_path
     global workload_title
+    global na
 
     workload_title = sys.argv[1]
     parent_pid = sys.argv[2]
@@ -515,5 +517,7 @@ if __name__=="__main__":
         while  os.path.exists("/proc/%s" % parent_pid):
             sleep(1)
         # parent pid lost, kill self
-        sig_term_handler(None, None)
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        na.stop()
+        generate_report(workload_title, log_path, report_path)
 
