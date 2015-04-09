@@ -14,9 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re, os, sys
+import threading, subprocess, re, os, sys, signal, ast
 from time import sleep, time
-import signal
 
 from collections import namedtuple
 from pprint import pprint
@@ -394,11 +393,11 @@ def start_monitor(log_filename, nodes):
 
 def generate_report(workload_title, log_fn, report_fn):
     with open(log_fn) as f:
-        datas=[eval(x) for x in f.readlines()]
+        datas=[ast.literal_eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
 #    print all_hosts
-    data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
+    data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 1)) # round to 0.3 and groupby
 
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
