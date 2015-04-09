@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>CPU Heatmap</title>
+    <title>System monitor report of {workload_name}</title>
     <style TYPE="text/css">
       .highcharts-tooltip>span {
 	background: rgba(255,255,255,0.85);
@@ -20,6 +20,12 @@
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
     <script type='text/javascript'>
+    Object.defineProperty(Number.prototype,'fileSize',{value:function(a,b,c,d){
+	return (a=a?[1e3,'k','B']:[1024,'K','iB'],b=Math,c=b.log,
+		d=c(this)/c(a[0])|0,this/b.pow(a[0],d)).toFixed(2)
+	    +' '+(d?(a[1]+'MGTPEZY')[--d]+a[2]:'Bytes');
+    },writable:false,enumerable:false});
+
     function gen_overall_options(suffix, title, yAxis_desc, plot_options ){
 	var data = document.getElementById("csv_"+suffix).innerHTML;
 	var csv_header = [];
@@ -35,7 +41,9 @@
 			yaxis +=1;
 		    }
 		    csv_header.push(item);
-		    series.push({name:item, yAxis: yaxis, data:[]})
+		    series.push({name:item, yAxis: yaxis, data:[],
+				 tooltip: yAxis_desc[yaxis].tooltip
+				})
 		});
 	    } else {
 		$.each(items, function(itemNo, item){
@@ -54,10 +62,11 @@
 	    title: {
 		text: title
 	    },
-	    tooltip: {
-		pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
-            shared: true
-            },
+	    // tooltip: {
+	    // 	pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
+            // shared: true
+            // },
+	    
 
 	    plotOptions: plot_options,
 	    
@@ -67,7 +76,7 @@
 		labels: {
                     align: 'left',
                     x: 5,
-                    format: '{value:%S}'
+                    format: '{value:%M:%S}'
 		},
 		title: {
                     enabled: false
@@ -76,7 +85,7 @@
 	    yAxis: yAxis_desc,
 	    series: series
 	};
-	console.log(options.series)
+//	console.log(options.series)
 
 	var newchart = new Highcharts.Chart(options);
     }
@@ -180,7 +189,7 @@
 		labels: {
                     align: 'left',
                     x: 5,
-                    format: '{value:%S}'
+                    format: '{value:%M:%S}'
 		},
 		showLastLabel: false,
 		tickLength: 16
@@ -262,11 +271,14 @@
 
 	// load cpu overall
 	gen_overall_options("cpu_overall", "Summarized CPU usage",
-			    {	// yaxis
+			    [{	// yaxis
 				title: {
 				    text: 'Percent'
-				}
-			    }, 
+				},
+				tooltip: {
+				    pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b>)<br/>',
+				},
+			    }], 
 			    {	// plot options
 				area: {
 				    stacking: 'percent',
@@ -285,14 +297,28 @@
 			    [	// yaxis
 				{
 				    title:{
-					text: "Bytes"
-				    }
+					text: "Throughput"
+				    },
+				    tooltip: {
+					pointFormatter: function () {
+					    return '<span style="color:{series.color}">{series.name}</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					}
+				    },
+				    labels: {
+					formatter: function() {
+					    return this.value.fileSize();
+					    }
+					}
 				},
 				{
 				    title:{
 					text: "Packets"
 				    },
-				    opposite: true
+				    tooltip: {
+					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.0f} packets</b>)<br/>',
+				    },
+				    opposite: true,
+				    reversed: true
 				}
 			    ],
 			    {}	// plot options
@@ -303,14 +329,28 @@
 			    [	// yaxis
 				{
 				    title:{
-					text: "Bytes"
+					text: "Throughput"
+				    },
+				    tooltip: {
+					pointFormatter: function () {
+					    return '<span style="color:{series.color}">{series.name}</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					},
+				    },
+				    labels: {
+					formatter: function() {
+					    return this.value.fileSize();
+					}
 				    }
 				},
 				{
 				    title:{
 					text: "Operations"
 				    },
-				    opposite: true
+				    tooltip: {
+					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.0f} IO</b>)<br/>',
+				    },
+				    opposite: true,
+				    reversed: true
 				}
 			    ],
 			    {}	// plot operations
@@ -318,11 +358,16 @@
 
 	// load memory overall
 	gen_overall_options("memory_overall", "Summarized Memory usage",
-			    {	// yaxis
+			    [{	// yaxis
 				title: {
 				    text: 'Percent'
-				}
-			    }, 
+				},
+				tooltip: {
+				    pointFormatter: function () {
+					return '<span style="color:{series.color}">{series.name}</span>: <b>' + (this.y*1024).fileSize()+'</b>)<br/>';
+				    }
+				},
+			    }], 
 			    {	// plot options
 				area: {
 				    stacking: 'percent',
@@ -339,22 +384,23 @@
 </script>
 </head>
 <body>
+    <h1>Workload: {workload_name}</h1>
+    
+    <div id="container_cpu_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
 
-<div id="container_cpu_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
+    <div id="container_cpu_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
+    
+    <div id="container_network_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
+    
+    <div id="container_diskio_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
+    
+    <div id="container_memory_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
-<div id="container_cpu_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
-
-<div id="container_network_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
-
-<div id="container_diskio_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
-
-<div id="container_memory_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
-
-<pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>
-<pre id="csv_cpu_overall" style="display: none">{cpu_overall}</pre>
-<pre id="csv_network_overall" style="display: none">{network_overall}</pre>
-<pre id="csv_diskio_overall" style="display: none">{diskio_overall}</pre>
-<pre id="csv_memory_overall" style="display: none">{memory_overall}</pre>
+    <pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>
+    <pre id="csv_cpu_overall" style="display: none">{cpu_overall}</pre>
+    <pre id="csv_network_overall" style="display: none">{network_overall}</pre>
+    <pre id="csv_diskio_overall" style="display: none">{diskio_overall}</pre>
+    <pre id="csv_memory_overall" style="display: none">{memory_overall}</pre>
 
 </body>
 </html>

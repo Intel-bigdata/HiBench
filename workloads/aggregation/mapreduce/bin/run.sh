@@ -34,10 +34,12 @@ HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare-sql-aggregation ${HIVEBENCH_SQL_FILE}
 
 # run bench
+MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
 execute_withlog $CMD
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
 sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`

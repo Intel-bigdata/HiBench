@@ -16,9 +16,32 @@
 
 import threading, subprocess, re, os, sys
 from time import sleep, time
+import signal
+
 from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
+
+
+#FIXME: use log helper later
+def log(*s):
+    if len(s)==1: s=s[0]
+    else: s= " ".join([str(x) for x in s])
+    sys.stderr.write( str(s) +'\n')
+
+entered=False
+def sig_term_handler(signo, stack):
+    global entered
+    global log_path
+    global report_path
+    global workload_title
+    global na
+    if entered:
+        while True: sleep(1)    # block to avoid re-enter started generate_report
+        entered=True            # FIXME: Not atomic
+    na.stop()
+    generate_report(workload_title, log_path, report_path)
+    sys.exit(0)
 
 def samedir(fn):
     """
@@ -354,7 +377,7 @@ def test2():
 
     p.run()
 
-def test3():
+def start_monitor(log_filename, nodes):
     class P(RemoteProc, BashSSHClientMixin):
         def __init__(self, *args):
             RemoteProc.__init__(self, *args)
@@ -362,25 +385,25 @@ def test3():
             NetworkMonitor(self)
             DiskMonitor(self)
             MemoryMonitor(self)
-    na = NodeAggregator("log.txt")
-    na.append(P("localhost", 1))
-
+    global na
+    na = NodeAggregator(log_filename)
+    nodes = sorted(list(set(nodes)))
+    for node in nodes:
+        na.append(P(node, 1))
     na.run()
-    sleep(60)
-    na.stop()
 
-def generate_report(log_fn, report_fn):
+def generate_report(workload_title, log_fn, report_fn):
     with open(log_fn) as f:
         datas=[eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
-    print all_hosts
+#    print all_hosts
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 0.3)) # round to 0.3 and groupby
 
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
-    disk_overall = ["x,bytes_read,bytes_write,|io_read,io_write"]
+    disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
     memory_overall = ["x,free,buffer_cache,used"]
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
@@ -457,22 +480,41 @@ def generate_report(log_fn, report_fn):
                     .replace("{cpu_overall}", "\n".join(cpu_overall))\
                     .replace("{network_overall}", "\n".join(network_overall))\
                     .replace("{diskio_overall}", "\n".join(disk_overall))
-                    .replace("{memory_overall}", "\n".join(memory_overall))
+                    .replace("{memory_overall}", "\n".join(memory_overall))\
+                    .replace("{workload_name}", workload_title)
                 )
 
-if __name__=="__main__":
-    pid = os.fork()
-    if pid==0:
-        import signal
-        def sig_term(signnum, frame):
-            print "catched signal:%d" % signnum
-            generate_report("log.txt", "chart.html")
-
-            sys.exit()
-        signal.signal(signal.SIGTERM, sig_term)
-
-        test3()
-
-    else:
-        print pid
+def show_usage():
+    log("""Usage:
+    monitor.py <workload_title> <parent_pid> <log_path.log> <report_path.html> <monitor_node_name1> ... <monitor_node_nameN>
+""")
     
+if __name__=="__main__":
+    if len(sys.argv)<5:
+        log(sys.argv)
+        show_usage()
+        sys.exit(1)
+
+    global log_path
+    global report_path
+    global workload_title
+
+    workload_title = sys.argv[1]
+    parent_pid = sys.argv[2]
+    log_path = sys.argv[3]
+    report_path = sys.argv[4]
+    nodes_to_monitor = sys.argv[5:]
+    pid=os.fork()
+    if pid:                               #parent
+        print pid
+    else:                                 #child
+        os.close(0)
+        os.close(1)
+        os.close(2)
+        signal.signal(signal.SIGTERM, sig_term_handler)
+        start_monitor(log_path, nodes_to_monitor)
+        while  os.path.exists("/proc/%s" % parent_pid):
+            sleep(1)
+        # parent pid lost, kill self
+        sig_term_handler(None, None)
+

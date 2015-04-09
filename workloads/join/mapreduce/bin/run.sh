@@ -35,10 +35,12 @@ HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_join.hive
 prepare-sql-join ${HIVEBENCH_SQL_FILE}
 
 # run bench
+MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
 execute_withlog $CMD
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
 sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`

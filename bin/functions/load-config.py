@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, os, glob, re
+import sys, os, glob, re, urllib, socket
+from contextlib import closing
 from collections import defaultdict
 from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvPropMapping, HiBenchPropEnvMapping, HiBenchPropEnvMappingMandatory
 
@@ -243,7 +244,7 @@ def generate_optional_value():  # get some critical values from environment or m
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
 
-    # setting hadoop mapper/reducer property names
+    # set hadoop mapper/reducer property names
     if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
         HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"
         HibenchConfRef["hibench.hadoop.mapper.name"] = "Inferred by: 'hibench.hadoop.version'"
@@ -251,7 +252,55 @@ def generate_optional_value():  # get some critical values from environment or m
         HibenchConf["hibench.hadoop.reducer.name"] = "mapred.reduce.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.reduces"
         HibenchConfRef["hibench.hadoop.reducer.name"] = "Inferred by: 'hibench.hadoop.version'"
 
+    # probe masters, slaves hostnames
+    # determine running mode according to spark master configuration
+    spark_master = HibenchConf['hibench.spark.master']
+    if spark_master.startswith("local"):   # local mode
+        HibenchConf['hibench.masters.hostnames'] = ''             # no master
+        HibenchConf['hibench.slaves.hostnames'] = 'localhost'     # localhost as slaves
+        HibenchConfRef['hibench.masters.hostnames'] = HibenchConfRef['hibench.slaves.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
+    elif spark_master.startswith("spark"):   # spark standalone mode
+        HibenchConf['hibench.masters.hostnames'] = spark_master.lstrip("spark://").split(":")[0]
+        HibenchConfRef['hibench.masters.hostnames'] =  "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
+        try:
+            with closing(urllib.urlopen('http://%s:8080' % HibenchConf['hibench.masters.hostnames'])) as page:
+                worker_hostnames=[re.findall("http:\/\/([a-zA-Z\-\._0-9]+):8081", x)[0] for x in page.readlines() if "8081" in x and "worker" in x]
+            HibenchConf['hibench.slaves.hostnames'] = " ".join(worker_hostnames)
+            HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing "+ 'http://%s:8080' % HibenchConf['hibench.masters.hostnames']
+        except Exception as e:
+            log("Get workers from spark master's web UI page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e)
+    elif spark_master.startswith("yarn"): # yarn mode
+        yarn_executable = os.path.join(os.path.dirname(HibenchConf['hibench.hadoop.executable']), "yarn")
+        cmd = "( " + yarn_executable + " node -list 2> /dev/null | grep RUNNING )"
+        try:
+            worker_hostnames = [line.split(":")[0] for line in shell(cmd).split("\n")]
+            HibenchConf['hibench.slaves.hostnames'] = " ".join(worker_hostnames)
+            HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing results from: "+cmd
 
+            # parse yarn resource manager from hadoop conf            
+            yarn_site_file = os.path.join(HibenchConf["hibench.hadoop.configure.dir"], "yarn-site.xml")
+            with open(yarn_site_file) as f:
+                match=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+                if match:
+                    resourcemanager_hostname = match[0][0]
+                    HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
+                    HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
+                else:
+                    log("Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file")
+        except Exception as e:
+            log("Get workers from spark master's web UI page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e)
+
+    # reset hostnames according to gethostbyaddr
+    names = set(HibenchConf['hibench.masters.hostnames'].split() + HibenchConf['hibench.slaves.hostnames'].split())
+    new_name_mapping={}
+    for name in names:
+        try:
+            new_name_mapping[name] = socket.gethostbyaddr(name)[0]
+        except:                 # host name lookup failure?
+            new_name_mapping[name] = name
+    HibenchConf['hibench.masters.hostnames'] = " ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()])
+    HibenchConf['hibench.slaves.hostnames'] = " ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()])
+        
 def export_config(workload_name, workload_tail):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']

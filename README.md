@@ -314,7 +314,15 @@ This benchmark suite contains 9 typical micro workloads:
 
       `<workload>/<language APIs>/bin/run.sh` to run the corresponding benchmark.
 
-  4. Plot the report:
+  4. View the detailed report for each workloads:
+
+      - `report/<workload>/<language APIs>/bench.log`: raw logs on client side
+      - `report/<workload>/<language APIs>/monitor.html`: System monitor charts
+      - `report/<workload>/<language APIs>/conf/<workload>.conf`: Generated environment variable configuration for this workload.
+      - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/sparkbench.conf`: Generated configuration for this workloads, which is used to mapping to environment variable
+      - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/spark.conf`: Generated configuration for spart
+
+  5. Plot the report:
       
       `<HiBench root>/bin/report_gen_plot.py report/hibench.report` to
       generate report figures.

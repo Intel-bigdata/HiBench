@@ -29,15 +29,17 @@ NUTCH_DEPENDENCY_DIR=$DEPENDENCY_DIR"/nutchindexing/target/dependency"
 cd $NUTCH_HOME_WORKLOAD
 
 SIZE=`dir_size $INPUT_HDFS`
+MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 
 export_withlog HIBENCH_WORKLOAD_CONF
 NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME_WORKLOAD/conf
 export_withlog NUTCH_CONF_DIR
 CMD="$NUTCH_HOME_WORKLOAD/bin/nutch index ${COMPRESS_OPT} $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*"
-execute $CMD
+execute_withlog $CMD
 
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

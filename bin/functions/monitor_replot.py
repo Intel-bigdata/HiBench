@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -14,20 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workload_folder=`dirname "$0"`
-workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/../../..
-. "${workload_root}/../../bin/functions/load-bench-config.sh"
+from monitor import generate_report
+import sys
 
-enter_bench ScalaSparkSleep ${workload_root} ${workload_folder}
-show_bannar start
+if len(sys.argv)<3:
+    print """Usage:
+    monitor_replot.py <workload_name> <log_path.log> <report_path.html>
+"""
+    sys.exit(1)
 
-START_TIME=`timestamp`
-run-spark-job com.intel.sparkbench.sleep.ScalaSleep $MAP_SLEEP_TIME
-END_TIME=`timestamp`
-SIZE="0"
-
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
-show_bannar finish
-leave_bench
-
+generate_report(sys.argv[1], sys.argv[2], sys.argv[3])

@@ -70,17 +70,20 @@ def show_with_progress_bar(line, progress, line_width):
 
 def execute(workload_result_folder, command_lines):
     proc = subprocess.Popen(" ".join(command_lines), shell=True, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    count=100
+    count = 100
     last_time=0
+    log_file = open(os.path.join(workload_result_folder, "bench.log"), 'w')
     while True:
-        count+=1
-        if count>100 or time()-last_time>1: # refresh terminal size for 100 lines or each seconds
+        count += 1
+        if count > 100 or time()-last_time>1: # refresh terminal size for 100 lines or each seconds
             count, last_time = 0, time()
             width, height = get_terminal_size()
             width -= 1
 
         try:
             line = proc.stdout.readline().rstrip()
+            log_file.write(line+"\n")
+            log_file.flush()
         except KeyboardInterrupt:
             proc.terminate()
             break
@@ -89,7 +92,7 @@ def execute(workload_result_folder, command_lines):
         line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
-        if "warn" in lline or 'err' in lline:
+        if "warn" in lline or 'err' in lline and lline.lstrip() == lline:
             COLOR="Yellow" if "warn" in lline else "Red"
             sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color))
             
@@ -103,6 +106,7 @@ def execute(workload_result_folder, command_lines):
                 sys.stdout.write(u"{line}{ClearEnd}\r".format(line=line, **Color))
         sys.stdout.flush()
     print
+    log_file.close()
     try:
         proc.wait()
     except KeyboardInterrupt:
