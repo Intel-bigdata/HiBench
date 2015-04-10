@@ -17,10 +17,10 @@
 from monitor import generate_report
 import sys
 
-if len(sys.argv)<3:
+if len(sys.argv)<4:
     print """Usage:
-    monitor_replot.py <workload_name> <log_path.log> <report_path.html>
+    monitor_replot.py <workload_name> <log_path.log> <bench_log_path.log> <report_path.html>
 """
     sys.exit(1)
 
-generate_report(sys.argv[1], sys.argv[2], sys.argv[3])
+generate_report(sys.argv[1], sys.argv[2], sys.arv[3], sys.argv[4])

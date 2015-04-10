@@ -26,7 +26,40 @@
 	    +' '+(d?(a[1]+'MGTPEZY')[--d]+a[2]:'Bytes');
     },writable:false,enumerable:false});
 
-    function gen_overall_options(suffix, title, yAxis_desc, plot_options ){
+    function parse_events(){
+	var data = document.getElementById("csv_events").innerHTML:
+	var events=[];
+	var csv_header = []
+	$.each(data.split('\n'), function(lineNo, line){
+	    var items = line.split(',');
+	    if (lineNo==0){
+		$.each(items, function(itemNo, item){
+		    csv_header.push(item);
+		});
+	    }else {
+		value = []
+		$.each(item, function(itemNo, item){
+		    if (itemNo == 0){ // 0 -> timestamp
+			item = parseFloat(item);
+		    }
+//		    value[csv_header[itemNo]] = item;
+		    value.push(item);
+		});
+		events.push({color: 'red',
+			     dashStyle: 'longdashdot',
+			     value: value[0],
+			     label:{
+				 useHTML: true,
+				 text:value[1],
+				 align:'left'
+			     },
+			     width: 2});
+	    }
+	});
+	return events;
+    }
+
+function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_events ){
 	var data = document.getElementById("csv_"+suffix).innerHTML;
 	var csv_header = [];
 	
@@ -78,6 +111,7 @@
                     x: 5,
                     format: '{value:%M:%S}'
 		},
+		plotLines: plot_events,
 		title: {
                     enabled: false
 		}
@@ -191,6 +225,7 @@
                     x: 5,
                     format: '{value:%M:%S}'
 		},
+		plotLines:[],
 		showLastLabel: false,
 		tickLength: 16
 	    },
@@ -269,6 +304,7 @@
 
 	var chart_cpu_heatmap = new Highcharts.Chart(options);
 
+	var events = parse_events();
 
 	// load cpu overall
 	gen_overall_options("cpu_overall", "Summarized CPU usage",
@@ -290,7 +326,8 @@
 					lineColor: '#ffffff'
 				    }
 				}
-			    }
+			    },
+			    events
 			   );
 
 	// load network overall
@@ -322,7 +359,8 @@
 				    reversed: true
 				}
 			    ],
-			    {}	// plot options
+			    {},	// plot options
+			    events
 			   );
 
 	// load diskio overall
@@ -354,7 +392,8 @@
 				    reversed: true
 				}
 			    ],
-			    {}	// plot operations
+			    {},	// plot operations
+			    events
 			   );
 
 	// load memory overall
@@ -379,7 +418,8 @@
 					lineColor: '#ffffff'
 				    }
 				}
-			    }
+			    },
+			    events
 			   );
     });
 </script>
@@ -402,6 +442,7 @@
     <pre id="csv_network_overall" style="display: none">{network_overall}</pre>
     <pre id="csv_diskio_overall" style="display: none">{diskio_overall}</pre>
     <pre id="csv_memory_overall" style="display: none">{memory_overall}</pre>
+    <pre id="csv_events" style="display: none">{events}</pre>
 
 </body>
 </html>

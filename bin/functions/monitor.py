@@ -21,6 +21,8 @@ from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
 
+# Probe intervals, in seconds.
+# Warning: a value too short may get wrong results due to lack of data when system load goes high.
 PROBE_INTERVAL=5
 
 #FIXME: use log helper later
@@ -35,13 +37,14 @@ def sig_term_handler(signo, stack):
     global log_path
     global report_path
     global workload_title
+    global bench_log_path
     global na
     if not entered:
         entered=True            # FIXME: Not atomic
     else: return
 
     na.stop()
-    generate_report(workload_title, log_path, report_path)
+    generate_report(workload_title, log_path, bench_log_path, report_path)
     sys.exit(0)
 
 def samedir(fn):
@@ -407,7 +410,7 @@ def start_monitor(log_filename, nodes):
         na.append(P(node, PROBE_INTERVAL))
     na.run()
 
-def generate_report(workload_title, log_fn, report_fn):
+def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     c =- 1
     with open(log_fn) as f:
         datas=[eval(x) for x in f.readlines()]
@@ -503,11 +506,11 @@ def generate_report(workload_title, log_fn, report_fn):
 
 def show_usage():
     log("""Usage:
-    monitor.py <workload_title> <parent_pid> <log_path.log> <report_path.html> <monitor_node_name1> ... <monitor_node_nameN>
+    monitor.py <workload_title> <parent_pid> <log_path.log> <benchlog_fn.log> <report_path.html> <monitor_node_name1> ... <monitor_node_nameN>
 """)
     
 if __name__=="__main__":
-    if len(sys.argv)<5:
+    if len(sys.argv)<6:
         log(sys.argv)
         show_usage()
         sys.exit(1)
@@ -516,13 +519,15 @@ if __name__=="__main__":
     global log_path
     global report_path
     global workload_title
+    global bench_log_path
     global na
 
     workload_title = sys.argv[1]
     parent_pid = sys.argv[2]
     log_path = sys.argv[3]
-    report_path = sys.argv[4]
-    nodes_to_monitor = sys.argv[5:]
+    bench_log_path = sys.argv[4]
+    report_path = sys.argv[5]
+    nodes_to_monitor = sys.argv[6:]
     pid=os.fork()
     if pid:                               #parent
         print pid
@@ -537,5 +542,5 @@ if __name__=="__main__":
         # parent lost, stop!
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         na.stop()
-        generate_report(workload_title, log_path, report_path)
+        generate_report(workload_title, log_path, bench_log_path, report_path)
 
