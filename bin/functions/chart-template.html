@@ -339,7 +339,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				    },
 				    tooltip: {
 					pointFormatter: function () {
-					    return '<span style="color:{series.color}">{series.name}</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					    return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
 					}
 				    },
 				    labels: {
@@ -372,7 +372,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				    },
 				    tooltip: {
 					pointFormatter: function () {
-					    return '<span style="color:{series.color}">{series.name}</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					    return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
 					},
 				    },
 				    labels: {
@@ -404,7 +404,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				},
 				tooltip: {
 				    pointFormatter: function () {
-					return '<span style="color:{series.color}">{series.name}</span>: <b>' + (this.y*1024).fileSize()+'</b>)<br/>';
+					return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + (this.y*1024).fileSize()+'</b>)<br/>';
 				    }
 				},
 			    }], 
