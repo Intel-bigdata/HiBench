@@ -16,7 +16,7 @@
 
 import threading, subprocess, re, os, sys, signal
 from time import sleep, time
-
+from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
@@ -411,11 +411,11 @@ def start_monitor(log_filename, nodes):
     na.run()
 
 def parse_bench_log(benchlog_fn):
-    events=["x","event"]
+    events=["x,event"]
     _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
     _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
     _hadoop_run_job = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*: Running job: job_([\d_]+)$") # hadoop run job
-    _hadoop_reduce_progress = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*:\s+map \d{1,2}% reduce (\d{1,2})%$") # hadoop reduce progress
+    _hadoop_map_reduce_progress = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*:\s+map (\d{1,2})% reduce (\d{1,2})%$") # hadoop reduce progress
     _hadoop_job_complete_mr1 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.JobClient: Job complete: job_([\d_]+)$")
     _hadoop_job_complete_mr2 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapreduce.Job: Job job_([\d_]+) completed successfully$")
 
@@ -433,30 +433,63 @@ def parse_bench_log(benchlog_fn):
 ...
 15/04/10 17:20:25 INFO mapreduce.Job: Job job_1427781540447_0448 completed successfully
     """
+    flag={}
     with open(benchlog_fn) as f:
         while True:
             line = f.readline().rstrip()
             if not line: break
-            for rule in [_spark_stage_submit, _spark_stage_finish, _hadoop_run_job, _hadoop_reduce_progress, _hadoop_job_complete_mr1, _hadoop_job_complete_mr2]:
+            for rule in [_spark_stage_submit, _spark_stage_finish, _hadoop_run_job, _hadoop_map_reduce_progress, _hadoop_job_complete_mr1, _hadoop_job_complete_mr2]:
                 matched = rule.match(line)
                 if matched:
                     result = matched.groups()
-                    timestamp = datetime.strptime(result[0], r"%y/%m/%d %H:%M:%S")
+                    timestamp = datetime.strptime(result[0], r"%y/%m/%d %H:%M:%S").strftime("%s")+"000" # convert to millsec for js
                     if rule is _spark_stage_submit:
-                        pass
+                        events.append("{},Start {} ({})".format(timestamp,result[1], result[2]))
                     elif rule is _spark_stage_finish:
-                        pass
+                        events.append("{},Finish {} ({})".format(timestamp,result[1], result[2]))
                     elif rule is _hadoop_run_job:
-                        pass
-                    elif rule is _hadoop_reduce_progress:
-                        pass
-                    elif rule is _hadoop_job_complete_mr1:
-                        pass
-                    elif rule is _hadoop_job_complete_mr2:
-                        pass
+                        events.append("{},Start Job {}".format(timestamp, result[1]))
+                        flag={}
+                    elif rule is _hadoop_map_reduce_progress:
+                        map_progress,reduce_progress = int(result[1]), int(result[2])
+                        op={'map':False, 'reduce':False}
+                        if map_progress == 100:
+                            if not "map" in flag:
+                                op['map'] = True
+                                flag['map'] = True
+                        elif reduce_progress>0:
+                            if not 'reduce' in flag:
+                                op['reduce'] = True
+                                flag['reduce'] = True
+                        if op['map'] and op['reduce']:
+                            events.append("{},Map finish and Reduce start".format(timestamp))
+                        elif op['map']:
+                            events.append("{},Map finish".format(timestamp))
+                        elif op['reduce']:
+                            events.append("{},Reduce start".format(timestamp))
+                    elif rule is _hadoop_job_complete_mr1 or rule is _hadoop_job_complete_mr2:
+                        events.append("{},Finsih Job {}".format(timestamp, result[1]))
                     else:
                         assert 0, "should never reach here"
-            
+
+        # limit maximum string length of events
+        for i in range(len(events)):
+            event_time, event_str = re.split(',', events[i], 1)
+            if len(event_str) > 45:
+                event_str = event_str[:21]+ '...' + event_str[-21:]
+                events[i]="%s,%s" % (event_time, event_str)
+
+        # merge events occurred at sametime:
+        i = 1
+        while i < len(events)-1:
+            cur = events[i].split(',')[0]
+            next = events[i+1].split(',')[0]
+            if abs(int(cur)/1000 - int(next)/1000) < 1:
+                events[i] = events[i] + "<br>" + re.split(',', events[i+1], 1)[1]
+                del events[i+1]
+                continue
+            i += 1
+        return events
 
 def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     c =- 1
@@ -540,7 +573,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 #            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
 #        print t, summed
         network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}".format(time=int(t*1000), recv_bytes=summed.recv_bytes, send_bytes=summed.send_bytes,recv_packets=summed.recv_packets, send_packets=summed.send_packets,errors=summed.recv_errs+summed.send_errs+summed.recv_drop+summed.send_drop))
-        
+
     with open(samedir("chart-template.html")) as f:
         template = f.read()
     with open(report_fn, 'w') as f:
@@ -550,6 +583,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                     .replace("{diskio_overall}", "\n".join(disk_overall))     \
                     .replace("{memory_overall}", "\n".join(memory_overall))   \
                     .replace("{workload_name}", workload_title)               \
+                    .replace("{events}", "\n".join(events))                   \
                     .replace("{probe_interval}", str(PROBE_INTERVAL*1000))
                 )
 
@@ -557,13 +591,13 @@ def show_usage():
     log("""Usage:
     monitor.py <workload_title> <parent_pid> <log_path.log> <benchlog_fn.log> <report_path.html> <monitor_node_name1> ... <monitor_node_nameN>
 """)
-    
+
 if __name__=="__main__":
     if len(sys.argv)<6:
         log(sys.argv)
         show_usage()
         sys.exit(1)
-    
+
 #    log(sys.argv)
     global log_path
     global report_path

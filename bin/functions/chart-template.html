@@ -27,9 +27,9 @@
     },writable:false,enumerable:false});
 
     function parse_events(){
-	var data = document.getElementById("csv_events").innerHTML:
+	var data = document.getElementById("csv_events").innerHTML;
 	var events=[];
-	var csv_header = []
+	var csv_header = [];
 	$.each(data.split('\n'), function(lineNo, line){
 	    var items = line.split(',');
 	    if (lineNo==0){
@@ -37,8 +37,8 @@
 		    csv_header.push(item);
 		});
 	    }else {
-		value = []
-		$.each(item, function(itemNo, item){
+		value = [];
+		$.each(items, function(itemNo, item){
 		    if (itemNo == 0){ // 0 -> timestamp
 			item = parseFloat(item);
 		    }
