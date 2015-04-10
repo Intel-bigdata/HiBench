@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re, os, sys, signal, ast
+import threading, subprocess, re, os, sys, signal
 from time import sleep, time
 
 from collections import namedtuple
 from pprint import pprint
 from itertools import groupby
 
+PROBE_INTERVAL=5
 
 #FIXME: use log helper later
 def log(*s):
@@ -154,7 +155,7 @@ while True:
     def na_push(self, timestamp):
         assert self.local_aggr_container.get('timestamp', -1) == timestamp
         self.node_aggr_parent.commit_aggregate(self.host, self.local_aggr_container)
-        self.local_aggr_container.clear()
+        self.local_aggr_container={}
 
 class BaseMonitor(object):
     IGNORE_KEYS=[]
@@ -237,7 +238,7 @@ class NetworkMonitor(BaseMonitor):
         rproc.register(self, """with open("/proc/net/dev") as f:
   sys.stdout.write("".join([x for x in f.readlines()]))
 """)
-        self._filter = re.compile('^.*(lo|bond\d+|eth\d+|.+\.\d+):\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$')
+        self._filter = re.compile('^.*(lo|bond\d+|eth\d+|.+\.\d+):\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$')
         super(NetworkMonitor, self).__init__(rproc)
 
     def feed(self, container, timestamp):
@@ -298,6 +299,8 @@ class NodeAggregator(object):
     def __init__(self, log_name):
         self.node_pool = {}
         self.log_name = log_name
+        self.log_cache = []
+        self.log_lock = threading.Lock()
         try:
             os.unlink(self.log_name)
         except OSError:
@@ -310,14 +313,26 @@ class NodeAggregator(object):
 
     def commit_aggregate(self, node, datas):
         datas['hostname'] = node
+        with self.log_lock:
+            if len(self.log_cache)>100:
+                self.flush_log_cache()
+#            log("append log:", len(self.log_cache))
+            self.log_cache.append(datas)
+
+    def flush_log_cache(self):
+#        log("flush log:", len(self.log_cache))
         with file(self.log_name, "a") as f:
-            f.write(repr(datas)+"\n")
+            f.write("\n".join([repr(x) for x in self.log_cache])+"\n")
+            self.log_cache=[]
 
     def run(self):
         for v in self.node_pool.values():
             v.start()
 
     def stop(self):
+        with self.log_lock:
+            self.flush_log_cache()
+
         for v in self.node_pool.values():
             v.stop()
         for v in self.node_pool.values():
@@ -389,16 +404,17 @@ def start_monitor(log_filename, nodes):
     na = NodeAggregator(log_filename)
     nodes = sorted(list(set(nodes)))
     for node in nodes:
-        na.append(P(node, 1))
+        na.append(P(node, PROBE_INTERVAL))
     na.run()
 
 def generate_report(workload_title, log_fn, report_fn):
+    c =- 1
     with open(log_fn) as f:
-        datas=[ast.literal_eval(x) for x in f.readlines()]
+        datas=[eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
 #    print all_hosts
-    data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], 1)) # round to 0.3 and groupby
+    data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], PROBE_INTERVAL)) # round to time interval and groupby
 
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
@@ -476,12 +492,13 @@ def generate_report(workload_title, log_fn, report_fn):
     with open(samedir("chart-template.html")) as f:
         template = f.read()
     with open(report_fn, 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))\
-                    .replace("{cpu_overall}", "\n".join(cpu_overall))\
-                    .replace("{network_overall}", "\n".join(network_overall))\
-                    .replace("{diskio_overall}", "\n".join(disk_overall))
-                    .replace("{memory_overall}", "\n".join(memory_overall))\
-                    .replace("{workload_name}", workload_title)
+        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))    \
+                    .replace("{cpu_overall}", "\n".join(cpu_overall))         \
+                    .replace("{network_overall}", "\n".join(network_overall)) \
+                    .replace("{diskio_overall}", "\n".join(disk_overall))     \
+                    .replace("{memory_overall}", "\n".join(memory_overall))   \
+                    .replace("{workload_name}", workload_title)               \
+                    .replace("{probe_interval}", str(PROBE_INTERVAL*1000))
                 )
 
 def show_usage():
@@ -494,7 +511,8 @@ if __name__=="__main__":
         log(sys.argv)
         show_usage()
         sys.exit(1)
-
+    
+#    log(sys.argv)
     global log_path
     global report_path
     global workload_title
@@ -516,7 +534,7 @@ if __name__=="__main__":
         start_monitor(log_path, nodes_to_monitor)
         while  os.path.exists("/proc/%s" % parent_pid):
             sleep(1)
-        # parent pid lost, kill self
+        # parent lost, stop!
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         na.stop()
         generate_report(workload_title, log_path, report_path)

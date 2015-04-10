@@ -227,11 +227,12 @@
 		name : 'CPU usage',
 		borderWidth: 1,
 		nullColor: '#EFEFEF',
-		colsize: 1000, // 1s
+		colsize: {probe_interval}, // 1s
 		tooltip: {
                     headerFormat: 'CPU Usage<br/>',
                     pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.hostname}.{point.coreid}<br/><b>{point.value:%.2f} %</b>'
 		},
+		turboThreshold: Number.MAX_VALUE,
 		data: []
 	    }]
 	};
