@@ -23,4 +23,4 @@ if len(sys.argv)<4:
 """
     sys.exit(1)
 
-generate_report(sys.argv[1], sys.argv[2], sys.arv[3], sys.argv[4])
+generate_report(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

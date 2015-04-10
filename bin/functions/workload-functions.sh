@@ -53,7 +53,7 @@ function timestamp(){		# get current timestamp
 }
 
 function start-monitor(){
-    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES} &`
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES} &`
     echo ${MONITOR_PID}
 }
 
@@ -289,7 +289,7 @@ function execute () {
 function execute_withlog () {
     CMD="$@"
     if [ -t 1 ] ; then
-	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER} $CMD
+	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
     else
 	$CMD
     fi

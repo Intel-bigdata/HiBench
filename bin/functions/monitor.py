@@ -410,6 +410,54 @@ def start_monitor(log_filename, nodes):
         na.append(P(node, PROBE_INTERVAL))
     na.run()
 
+def parse_bench_log(benchlog_fn):
+    events=["x","event"]
+    _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
+    _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
+    _hadoop_run_job = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*: Running job: job_([\d_]+)$") # hadoop run job
+    _hadoop_reduce_progress = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*:\s+map \d{1,2}% reduce (\d{1,2})%$") # hadoop reduce progress
+    _hadoop_job_complete_mr1 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.JobClient: Job complete: job_([\d_]+)$")
+    _hadoop_job_complete_mr2 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapreduce.Job: Job job_([\d_]+) completed successfully$")
+
+    """
+# MR1 sample
+14/06/24 11:18:39 INFO mapred.JobClient: Running job: job_201406241116_0001
+14/06/24 11:18:40 INFO mapred.JobClient:  map 0% reduce 0%
+...
+13/11/21 14:38:55 INFO mapred.JobClient: Job complete: job_201311150128_0050
+
+# MR2 sample
+15/04/10 17:20:01 INFO mapreduce.Job: Running job: job_1427781540447_0448
+15/04/10 17:20:07 INFO mapreduce.Job: Job job_1427781540447_0448 running in uber mode : false
+15/04/10 17:20:07 INFO mapreduce.Job:  map 0% reduce 0%
+...
+15/04/10 17:20:25 INFO mapreduce.Job: Job job_1427781540447_0448 completed successfully
+    """
+    with open(benchlog_fn) as f:
+        while True:
+            line = f.readline().rstrip()
+            if not line: break
+            for rule in [_spark_stage_submit, _spark_stage_finish, _hadoop_run_job, _hadoop_reduce_progress, _hadoop_job_complete_mr1, _hadoop_job_complete_mr2]:
+                matched = rule.match(line)
+                if matched:
+                    result = matched.groups()
+                    timestamp = datetime.strptime(result[0], r"%y/%m/%d %H:%M:%S")
+                    if rule is _spark_stage_submit:
+                        pass
+                    elif rule is _spark_stage_finish:
+                        pass
+                    elif rule is _hadoop_run_job:
+                        pass
+                    elif rule is _hadoop_reduce_progress:
+                        pass
+                    elif rule is _hadoop_job_complete_mr1:
+                        pass
+                    elif rule is _hadoop_job_complete_mr2:
+                        pass
+                    else:
+                        assert 0, "should never reach here"
+            
+
 def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     c =- 1
     with open(log_fn) as f:
@@ -424,6 +472,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
     disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
     memory_overall = ["x,free,buffer_cache,used"]
+    events = parse_bench_log(benchlog_fn)
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other

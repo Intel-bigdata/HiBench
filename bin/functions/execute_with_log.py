@@ -68,11 +68,11 @@ def show_with_progress_bar(line, progress, line_width):
         line_seg1 = line[:pos], line_seg2 = line[pos:], **Color)
     sys.stdout.write(line)
 
-def execute(workload_result_folder, command_lines):
+def execute(workload_result_file, command_lines):
     proc = subprocess.Popen(" ".join(command_lines), shell=True, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     count = 100
     last_time=0
-    log_file = open(os.path.join(workload_result_folder, "bench.log"), 'w')
+    log_file = open(workload_result_file, 'w')
     while True:
         count += 1
         if count > 100 or time()-last_time>1: # refresh terminal size for 100 lines or each seconds
@@ -122,6 +122,6 @@ def test_progress_bar():
         sleep(0.05)
 
 if __name__=="__main__":
-    sys.exit(execute(workload_result_folder=sys.argv[1],
+    sys.exit(execute(workload_result_file=sys.argv[1],
                      command_lines=sys.argv[2:]))
 #    test_progress_bar()
