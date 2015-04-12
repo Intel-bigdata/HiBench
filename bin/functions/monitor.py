@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import threading, subprocess, re, os, sys, signal
+import threading, subprocess, re, os, sys, signal, socket
 from time import sleep, time
+from contextlib import closing
 from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
@@ -76,12 +77,17 @@ def ident(size, s):
 class RemoteProc(threading.Thread):
     SEP="----SEP----"
     template=r"""exec('
-import time, os, sys
+import time, os, sys, socket
+s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(("0.0.0.0",0))
+print s.getsockname()[1]
+s.listen(5)
+s2,peer=s.accept()
 {func_template}
 while True:
-  print "{SEP}+%s" % time.time()
+  s2.send(("{SEP}+%s" % time.time())+chr(10))
 {call_template}
-  print "{SEP}#end"
+  s2.send("{SEP}#end"+chr(10))
   time.sleep({interval})
 ')"""
 
@@ -104,7 +110,7 @@ while True:
         func_template = "\n".join(["def func_{id}():\n{func}"\
                                        .format(id=id,
                                                func=ident(2,
-                                                          func+'\nprint "{SEP}={id}"'\
+                                                          func+'\ns2.send("{SEP}={id}"+chr(10))'\
                                                               .format(SEP=self.SEP, id=id))) \
                                        for id, func in enumerate(self.cmds)])
         call_template="\n".join(["  func_{id}()"\
@@ -118,26 +124,32 @@ while True:
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
         with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
-            while self._running:
-                try:
-                    l = f.readline()
-                except KeyboardInterrupt:
-                    break
-                if not l: break
-                if l.startswith(self.SEP):
-                    tail = l.lstrip(self.SEP)
-                    if tail[0]=='+': # timestamp
-                        remote_timestamp = float(tail[1:])
-                        cur_timestamp = time()
-                    elif tail.startswith('#end'): # end sign
-                        self.na_push(cur_timestamp)
+            port_line = f.readline()
+            port = int(port_line.rstrip())
+            s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.host, port))
+            with closing(s.makefile()) as f2:
+                while self._running:
+                    try:
+                        l = f2.readline()
+                        print "got:", l.rstrip()
+                    except KeyboardInterrupt:
+                        break
+                    if not l: break
+                    if l.startswith(self.SEP):
+                        tail = l.lstrip(self.SEP)
+                        if tail[0]=='+': # timestamp
+                            remote_timestamp = float(tail[1:])
+                            cur_timestamp = time()
+                        elif tail.startswith('#end'): # end sign
+                            self.na_push(cur_timestamp)
+                        else:
+                            id = int(tail[1:])
+                            if self.monitor_ins[id]:
+                                self.monitor_ins[id].feed(container, cur_timestamp)
+                        container = []
                     else:
-                        id = int(tail[1:])
-                        if self.monitor_ins[id]:
-                            self.monitor_ins[id].feed(container, cur_timestamp)
-                    container = []
-                else:
-                    container.append(l.rstrip())
+                        container.append(l.rstrip())
         self.ssh_close()
 
     def stop(self):
@@ -156,9 +168,10 @@ while True:
         self.node_aggr_parent = na
 
     def na_push(self, timestamp):
-        assert self.local_aggr_container.get('timestamp', -1) == timestamp
-        self.node_aggr_parent.commit_aggregate(self.host, self.local_aggr_container)
-        self.local_aggr_container={}
+        if self.local_aggr_container:
+            assert self.local_aggr_container.get('timestamp', -1) == timestamp
+            self.node_aggr_parent.commit_aggregate(self.host, self.local_aggr_container)
+            self.local_aggr_container={}
 
 class BaseMonitor(object):
     IGNORE_KEYS=[]
@@ -208,7 +221,7 @@ class CPUMonitor(BaseMonitor):
     def __init__(self, rproc):
         super(CPUMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/stat") as f:
-  sys.stdout.write("".join([x for x in f.readlines() if x.startswith("cpu")]))
+  s2.send("".join([x for x in f.readlines() if x.startswith("cpu")]))
 """)
 
     def feed(self, container, timestamp):
@@ -239,7 +252,7 @@ class NetworkMonitor(BaseMonitor):
     IGNORE_KEYS=["lo"]
     def __init__(self, rproc):
         rproc.register(self, """with open("/proc/net/dev") as f:
-  sys.stdout.write("".join([x for x in f.readlines()]))
+  s2.send("".join([x for x in f.readlines()]))
 """)
         self._filter = re.compile('^.*(lo|bond\d+|eth\d+|.+\.\d+):\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$')
         super(NetworkMonitor, self).__init__(rproc)
@@ -263,7 +276,7 @@ class DiskMonitor(BaseMonitor):
         super(DiskMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/diskstats") as f:
   blocks = os.listdir("/sys/block")
-  sys.stdout.write("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop")]))
+  s2.send("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop")]))
 """)
 
     def feed(self, container, timestamp):
@@ -286,7 +299,7 @@ class MemoryMonitor(BaseMonitor):
         super(MemoryMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/meminfo") as f:
   mem = dict([(a, b.split()[0].strip()) for a, b in [x.split(":") for x in f.readlines()]])
-  print ":".join([mem[field] for field in ["MemTotal", "Buffers", "Cached", "MemFree", "Mapped"]])
+  s2.send(":".join([mem[field] for field in ["MemTotal", "Buffers", "Cached", "MemFree", "Mapped"]])+chr(10))
 """)
 
     def feed(self, memory_status, timestamp):
@@ -412,8 +425,8 @@ def start_monitor(log_filename, nodes):
 
 def parse_bench_log(benchlog_fn):
     events=["x,event"]
-    _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
-    _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO scheduler.DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
+    _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]+DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
+    _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]+DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
     _hadoop_run_job = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*: Running job: job_([\d_]+)$") # hadoop run job
     _hadoop_map_reduce_progress = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*:\s+map (\d{1,2})% reduce (\d{1,2})%$") # hadoop reduce progress
     _hadoop_job_complete_mr1 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.JobClient: Job complete: job_([\d_]+)$")
@@ -615,9 +628,9 @@ if __name__=="__main__":
     if pid:                               #parent
         print pid
     else:                                 #child
-        os.close(0)
-        os.close(1)
-        os.close(2)
+#        os.close(0)
+#        os.close(1)
+#        os.close(2)
         signal.signal(signal.SIGTERM, sig_term_handler)
         start_monitor(log_path, nodes_to_monitor)
         while  os.path.exists("/proc/%s" % parent_pid):
