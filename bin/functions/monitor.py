@@ -629,9 +629,9 @@ if __name__=="__main__":
     if pid:                               #parent
         print pid
     else:                                 #child
-#        os.close(0)
-#        os.close(1)
-#        os.close(2)
+        os.close(0)
+        os.close(1)
+        os.close(2)
         signal.signal(signal.SIGTERM, sig_term_handler)
         start_monitor(log_path, nodes_to_monitor)
         while  os.path.exists("/proc/%s" % parent_pid):
