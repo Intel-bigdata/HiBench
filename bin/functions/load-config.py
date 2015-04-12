@@ -48,7 +48,7 @@ def nonBlockRead(output):
     except:
         return ''
 
-def execute_cmd(cmdline, timeout=5):
+def execute_cmd(cmdline, timeout):
     """
     Execute cmdline, limit execution time to 'timeout' seconds.
     Uses the subprocess module and subprocess.PIPE.

@@ -425,8 +425,8 @@ def start_monitor(log_filename, nodes):
 
 def parse_bench_log(benchlog_fn):
     events=["x,event"]
-    _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]+DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
-    _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]+DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
+    _spark_stage_submit = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]*DAGScheduler: Submitting (Stage \d+) \((.*)\).+$") # submit spark stage
+    _spark_stage_finish = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO [a-zA-Z0-9_\.]*DAGScheduler: (Stage \d+) \((.*)\) finished.+$")   # spark stage finish
     _hadoop_run_job = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*: Running job: job_([\d_]+)$") # hadoop run job
     _hadoop_map_reduce_progress = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.*\.Job.*:\s+map (\d{1,2})% reduce (\d{1,2})%$") # hadoop reduce progress
     _hadoop_job_complete_mr1 = re.compile("^(\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}) INFO mapred.JobClient: Job complete: job_([\d_]+)$")
@@ -484,6 +484,7 @@ def parse_bench_log(benchlog_fn):
                         events.append("{},Finsih Job {}".format(timestamp, result[1]))
                     else:
                         assert 0, "should never reach here"
+
 
         # limit maximum string length of events
         for i in range(len(events)):
