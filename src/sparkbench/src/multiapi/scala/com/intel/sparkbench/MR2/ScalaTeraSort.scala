@@ -47,7 +47,6 @@ object ScalaTeraSort {
     val reducer  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
                                         .getOrElse((parallel / 2).toString).toInt
     val data = file.map{item =>
-      println(item)
       (item._1.toString, item._2.toString)
     //  (line.substring(0, 10), line.substring(10))
     }

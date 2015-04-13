@@ -86,7 +86,7 @@ object SparseNaiveBayes {
     val data = sc.sequenceFile[Text, Text](params.input).map{case (k, v) => (k.toString, v.toString)}
     val wordCount = data
       .flatMap{ case (key, doc) => doc.split(" ")}
-      .map((_, 1))
+      .map((_, 1L))
       .reduceByKey(_ + _)
     val wordSum = wordCount.map(_._2).reduce(_ + _)
     val wordDict = wordCount.zipWithIndex()

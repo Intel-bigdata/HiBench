@@ -27,10 +27,15 @@ from itertools import groupby
 PROBE_INTERVAL=5
 
 #FIXME: use log helper later
+#log_lock = threading.Lock()
 def log(*s):
     if len(s)==1: s=s[0]
     else: s= " ".join([str(x) for x in s])
-    sys.stderr.write( str(s) +'\n')
+#    with log_lock:
+#        with open("/home/lv/monitor_proc.log", 'a') as f:
+    log_str = str(os.getpid())+":"+str(s) +'\n'
+#            f.write( log_str )
+    sys.stderr.write( "stderr:"+log_str ) 
 
 entered=False
 def sig_term_handler(signo, stack):
@@ -40,6 +45,7 @@ def sig_term_handler(signo, stack):
     global workload_title
     global bench_log_path
     global na
+
     if not entered:
         entered=True            # FIXME: Not atomic
     else: return
@@ -132,7 +138,6 @@ while True:
                 while self._running:
                     try:
                         l = f2.readline()
-                        print "got:", l.rstrip()
                     except KeyboardInterrupt:
                         break
                     if not l: break
@@ -150,6 +155,7 @@ while True:
                         container = []
                     else:
                         container.append(l.rstrip())
+            s.shutdown()
         self.ssh_close()
 
     def stop(self):
@@ -315,7 +321,7 @@ class NodeAggregator(object):
     def __init__(self, log_name):
         self.node_pool = {}
         self.log_name = log_name
-        self.log_cache = []
+#        self.log_cache = []
         self.log_lock = threading.Lock()
         try:
             os.unlink(self.log_name)
@@ -330,25 +336,23 @@ class NodeAggregator(object):
     def commit_aggregate(self, node, datas):
         datas['hostname'] = node
         with self.log_lock:
-            if len(self.log_cache)>100:
-                self.flush_log_cache()
-#            log("append log:", len(self.log_cache))
-            self.log_cache.append(datas)
+            with file(self.log_name, "a") as f:
+                f.write(repr(datas) + "\n")
 
-    def flush_log_cache(self):
+#            if len(self.log_cache)>100:
+#                self.flush_log_cache()
+#            log("append log:", len(self.log_cache))
+#            self.log_cache.append(datas)
+
+#    def flush_log_cache(self):
 #        log("flush log:", len(self.log_cache))
-        with file(self.log_name, "a") as f:
-            f.write("\n".join([repr(x) for x in self.log_cache])+"\n")
-            self.log_cache=[]
+#            self.log_cache=[]
 
     def run(self):
         for v in self.node_pool.values():
             v.start()
 
     def stop(self):
-        with self.log_lock:
-            self.flush_log_cache()
-
         for v in self.node_pool.values():
             v.stop()
         for v in self.node_pool.values():
@@ -640,4 +644,3 @@ if __name__=="__main__":
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         na.stop()
         generate_report(workload_title, log_path, bench_log_path, report_path)
-
