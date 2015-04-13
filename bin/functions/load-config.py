@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, os, glob, re
+import sys, os, glob, re, urllib, socket
+from contextlib import closing
 from collections import defaultdict
 from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvPropMapping, HiBenchPropEnvMapping, HiBenchPropEnvMappingMandatory
 
@@ -31,8 +32,74 @@ def log_debug(*s):
     #log(*s)
     pass
 
-def shell(cmd):
-    return os.popen(cmd).read()
+# copied from http://stackoverflow.com/questions/3575554/python-subprocess-with-timeout-and-large-output-64k
+# Comment: I have a better solution, but I'm too lazy to write.
+import fcntl
+import os
+import subprocess
+import time
+
+def nonBlockRead(output):
+    fd = output.fileno()
+    fl = fcntl.fcntl(fd, fcntl.F_GETFL)
+    fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
+    try:
+        return output.read()
+    except:
+        return ''
+
+def execute_cmd(cmdline, timeout):
+    """
+    Execute cmdline, limit execution time to 'timeout' seconds.
+    Uses the subprocess module and subprocess.PIPE.
+
+    Raises TimeoutInterrupt
+    """
+
+    p = subprocess.Popen(
+        cmdline,
+        bufsize = 0, # default value of 0 (unbuffered) is best
+        shell   = True,
+        stdout  = subprocess.PIPE,
+        stderr  = subprocess.PIPE
+    )
+
+    t_begin = time.time() # Monitor execution time
+    seconds_passed = 0
+
+    stdout = ''
+    stderr = ''
+
+    while p.poll() is None and ( seconds_passed < timeout or timeout == 0): # Monitor process
+        time.sleep(0.1) # Wait a little
+        seconds_passed = time.time() - t_begin
+
+        stdout += nonBlockRead(p.stdout)
+        stderr += nonBlockRead(p.stderr)
+
+    if seconds_passed >= timeout and timeout>0:
+        try:
+            p.stdout.close()  # If they are not closed the fds will hang around until
+            p.stderr.close()  # os.fdlimit is exceeded and cause a nasty exception
+            p.terminate()     # Important to close the fds prior to terminating the process!
+                              # NOTE: Are there any other "non-freed" resources?
+        except:
+            pass
+
+        return ('Timeout', stdout, stderr)
+
+    return (p.returncode, stdout, stderr)
+
+def shell(cmd, timeout=5):
+    retcode, stdout, stderr = execute_cmd(cmd, timeout)
+    if retcode == 'Timeout':
+        log("ERROR, execute cmd: '%s' timedout." % cmd)
+        log("  STDOUT:\n"+stdout)
+        log("  STDERR:\n"+stderr)
+        log("  Please check!")
+        assert 0, cmd + " executed timedout for %d seconds" % timeout
+
+    return stdout
 
 def OneAndOnlyOneFile(filename_pattern):
     files = glob.glob(filename_pattern)
@@ -142,7 +209,7 @@ def generate_optional_value():  # get some critical values from environment or m
             if hadoop_version[0] != '1': # hadoop2? or CDH's MR1?
                 cmd2 = HibenchConf['hibench.hadoop.executable'] + " mradmin 2>&1 | grep yarn"
                 mradm_result = shell(cmd2).strip()
-                
+
                 if mradm_result: # match with keyword "yarn", must be CDH's MR2, do nothing
                     pass
                 else:           # didn't match with "yarn", however it calms as hadoop2, must be CDH's MR1
@@ -151,7 +218,7 @@ def generate_optional_value():  # get some critical values from environment or m
             if not HibenchConf.get("hibench.hadoop.version", ""):
                 HibenchConf["hibench.hadoop.version"] = "hadoop" + hadoop_version[0]
                 HibenchConfRef["hibench.hadoop.version"] = "Probed by: " + cmd
-                
+
         assert HibenchConf["hibench.hadoop.version"] in ["hadoop1", "hadoop2"], "Unknown hadoop version (%s). Auto probe failed, please override `hibench.hadoop.version` to explicitly define this property" % HibenchConf["hibench.hadoop.version"]
 
         # check hadoop release
@@ -180,9 +247,9 @@ def generate_optional_value():  # get some critical values from environment or m
                 spark_version = spark_version_raw.split()[1].strip()
                 HibenchConfRef["hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (release_file, spark_version_raw)
         except IOError as e:    # no release file, fall back to hard way
-            log("Probing spark verison, may last long time...")
+            log("Probing spark verison, may last long at first time...")
             shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
-            spark_version = shell(shell_cmd).strip()
+            spark_version = shell(shell_cmd, timeout = 600).strip()
             HibenchConfRef["hibench.spark.version"] = "Probed by shell command: %s, value: %s" % (shell_cmd, spark_version)
 
         assert spark_version, "Spark version probe failed, please override `hibench.spark.version` to explicitly define this property"
@@ -220,7 +287,7 @@ def generate_optional_value():  # get some critical values from environment or m
                     HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
                 elif HibenchConf["hibench.hadoop.version"] == "hadoop1":
                     HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(HibenchConf['hibench.hadoop.home'] + "/share/hadoop/mapreduce1/hadoop-examples-*.jar")
-                    HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce1/hadoop-mapreduce-client-jobclient*-tests.jar"            
+                    HibenchConfRef["hibench.hadoop.examples.test.jar"]= "Inferred by: " + HibenchConf['hibench.hadoop.home']+"/share/hadoop/mapreduce1/hadoop-mapreduce-client-jobclient*-tests.jar"
 
     # set hibench.sleep.job.jar
     if not HibenchConf.get('hibench.sleep.job.jar', ''):
@@ -243,7 +310,7 @@ def generate_optional_value():  # get some critical values from environment or m
                 else join(HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
             HibenchConfRef["hibench.hadoop.configure.dir"] = "Inferred by: 'hibench.hadoop.version' & 'hibench.hadoop.release'"
 
-    # setting hadoop mapper/reducer property names
+    # set hadoop mapper/reducer property names
     if not HibenchConf.get("hibench.hadoop.mapper.name", ""):
         HibenchConf["hibench.hadoop.mapper.name"] = "mapred.map.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.maps"
         HibenchConfRef["hibench.hadoop.mapper.name"] = "Inferred by: 'hibench.hadoop.version'"
@@ -251,6 +318,55 @@ def generate_optional_value():  # get some critical values from environment or m
         HibenchConf["hibench.hadoop.reducer.name"] = "mapred.reduce.tasks" if HibenchConf["hibench.hadoop.version"] == "hadoop1" else "mapreduce.job.reduces"
         HibenchConfRef["hibench.hadoop.reducer.name"] = "Inferred by: 'hibench.hadoop.version'"
 
+    # probe masters, slaves hostnames
+    # determine running mode according to spark master configuration
+    spark_master = HibenchConf['hibench.spark.master']
+    if spark_master.startswith("local"):   # local mode
+        HibenchConf['hibench.masters.hostnames'] = ''             # no master
+        HibenchConf['hibench.slaves.hostnames'] = 'localhost'     # localhost as slaves
+        HibenchConfRef['hibench.masters.hostnames'] = HibenchConfRef['hibench.slaves.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
+    elif spark_master.startswith("spark"):   # spark standalone mode
+        HibenchConf['hibench.masters.hostnames'] = spark_master.lstrip("spark://").split(":")[0]
+        HibenchConfRef['hibench.masters.hostnames'] =  "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
+        try:
+            log(spark_master, HibenchConf['hibench.masters.hostnames'])
+            with closing(urllib.urlopen('http://%s:8080' % HibenchConf['hibench.masters.hostnames'])) as page:
+                worker_hostnames=[re.findall("http:\/\/([a-zA-Z\-\._0-9]+):8081", x)[0] for x in page.readlines() if "8081" in x and "worker" in x]
+            HibenchConf['hibench.slaves.hostnames'] = " ".join(worker_hostnames)
+            HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing "+ 'http://%s:8080' % HibenchConf['hibench.masters.hostnames']
+        except Exception as e:
+            assert 0, "Get workers from spark master's web UI page failed, reason:%s\nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually to bypass auto-probe" % e
+    elif spark_master.startswith("yarn"): # yarn mode
+        yarn_executable = os.path.join(os.path.dirname(HibenchConf['hibench.hadoop.executable']), "yarn")
+        cmd = "( " + yarn_executable + " node -list 2> /dev/null | grep RUNNING )"
+        try:
+            worker_hostnames = [line.split(":")[0] for line in shell(cmd).split("\n")]
+            HibenchConf['hibench.slaves.hostnames'] = " ".join(worker_hostnames)
+            HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing results from: "+cmd
+
+            # parse yarn resource manager from hadoop conf
+            yarn_site_file = os.path.join(HibenchConf["hibench.hadoop.configure.dir"], "yarn-site.xml")
+            with open(yarn_site_file) as f:
+                match=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+                if match:
+                    resourcemanager_hostname = match[0][0]
+                    HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
+                    HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
+                else:
+                    assert 0, "Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file"
+        except Exception as e:
+            assert 0, "Get workers from spark master's web UI page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
+
+    # reset hostnames according to gethostbyaddr
+    names = set(HibenchConf['hibench.masters.hostnames'].split() + HibenchConf['hibench.slaves.hostnames'].split())
+    new_name_mapping={}
+    for name in names:
+        try:
+            new_name_mapping[name] = socket.gethostbyaddr(name)[0]
+        except:                 # host name lookup failure?
+            new_name_mapping[name] = name
+    HibenchConf['hibench.masters.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
+    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
 
 def export_config(workload_name, workload_tail):
     join = os.path.join

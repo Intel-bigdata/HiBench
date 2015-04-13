@@ -46,6 +46,9 @@ HiBenchEnvPropMappingMandatory=dict(
     DATATOOLS_COMPRESS_OPT="hibench.workload.compress.datatools.options",
     KMEANS_COMPRESS_OPT="hibench.workload.compress.kmeans_gen.options",
     HIVE_SQL_COMPRESS_OPTS="hibench.workload.compress.hive.options",
+
+    MASTERS="hibench.masters.hostnames",
+    SLAVES="hibench.slaves.hostnames",
     )
 
 HiBenchEnvPropMapping=dict(

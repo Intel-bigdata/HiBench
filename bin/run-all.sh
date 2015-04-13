@@ -25,13 +25,10 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
         continue
     fi
 
-    # clear hive metastore
-    find $DIR -name "metastore_db" -exec rm -rf "{}" \; 2> /dev/null || true
-
     echo -e "${UYellow}${BYellow}Prepare ${Yellow}${UYellow}${benchmark} ${BYellow}...${Color_Off}"
     
     WORKLOAD=$DIR/workloads/${benchmark}
-    echo -e "${BCyan}Exec script:${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
+    echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
     "${WORKLOAD}/prepare/prepare.sh"
 
     if [ $? -ne 0 ]
@@ -45,7 +42,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
 	    continue
 	fi
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${target}${Color_Off}"
-	echo -e "${BCyan}Exec script:${Cyan}$WORKLOAD/${target}/bin/run.sh${Color_Off}"
+	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${target}/bin/run.sh${Color_Off}"
 	$WORKLOAD/${target}/bin/run.sh
 
 	result=$?

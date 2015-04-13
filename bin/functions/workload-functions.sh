@@ -52,6 +52,19 @@ function timestamp(){		# get current timestamp
     echo `expr $tmp + $msec`
 }
 
+function start-monitor(){
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES} &`
+#    echo "start monitor, got child pid:${MONITOR_PID}" > /dev/stderr
+    echo ${MONITOR_PID}
+}
+
+function stop-monitor(){
+    MONITOR_PID=$1
+    assert $1 "monitor pid missing"
+#    echo "stop monitor, kill ${MONITOR_PID}" > /dev/stderr
+    kill ${MONITOR_PID}
+}
+
 function get_field_name() {	# print report column header
     printf "${REPORT_COLUMN_FORMATS}" Type Date Time Input_data_size "Duration(s)" "Throughput(bytes/s)" Throughput/node 
 }
@@ -68,8 +81,10 @@ function gen_report() {		# dump the result to report file
     fi
     local duration=$(echo "scale=3;($end-$start)/1000"|bc)
     local tput=`echo "$size/$duration"|bc`
-    local nodes=`cat ${SPARK_HOME}/conf/slaves 2>/dev/null | grep -v '^\s*$' | sed "/^#/ d" | wc -l`
+#    local nodes=`cat ${SPARK_HOME}/conf/slaves 2>/dev/null | grep -v '^\s*$' | sed "/^#/ d" | wc -l`
+    local nodes=`echo ${SLAVES} | wc -w`
     nodes=${nodes:-1}
+    
     if [ $nodes -eq 0 ]; then nodes=1; fi
     local tput_node=`echo "$tput/$nodes"|bc`
 
@@ -92,7 +107,7 @@ function rmr-hdfs(){		# rm -r for hdfs
 	RMDIR_CMD="fs -rm -r -skipTrash"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
-    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
 }
 
@@ -104,7 +119,7 @@ function dus-hdfs(){		# du -s for hdfs
 	DUS_CMD="fs -du -s"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
-    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" 2> /dev/stderr
+    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
 }
 
@@ -183,7 +198,7 @@ function run-spark-job() {
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
-       YARN_OPTS="--num-executors ${YARN_NUM_EXECTORS:-1}"
+       YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
        if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
 	   YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
@@ -201,8 +216,10 @@ function run-spark-job() {
 	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
+    MONITOR_PID=`start-monitor`
     execute_withlog ${SUBMIT_CMD}
     result=$?
+    stop-monitor ${MONITOR_PID}
     if [ $result -ne 0 ]
     then
 	echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
@@ -211,6 +228,11 @@ function run-spark-job() {
 }
 
 function run-hadoop-job(){
+    ENABLE_MONITOR=1
+    if [ "$1" = "--without-monitor" ]; then
+	ENABLE_MONITOR=0
+	shift 1
+    fi
     local job_jar=$1
     shift
     local job_name=$1
@@ -218,7 +240,18 @@ function run-hadoop-job(){
     local tail_arguments=$@
     local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
     echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
+    if [ ${ENABLE_MONITOR} = 1 ]; then
+	MONITOR_PID=`start-monitor`
+    fi
     execute_withlog ${CMD}
+    result=$?
+    if [ ${ENABLE_MONITOR} = 1 ]; then
+	stop-monitor ${MONITOR_PID}
+    fi
+    if [ $result -ne 0 ]; then
+	echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
+	exit $result
+    fi
 }
 
 function ensure-hivebench-release(){
@@ -258,11 +291,12 @@ function execute () {
 function execute_withlog () {
     CMD="$@"
     if [ -t 1 ] ; then
-	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER} $CMD
+	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
     else
 	$CMD
     fi
 }
+
 
 function export_withlog () {
     var_name=$1
@@ -317,6 +351,8 @@ function prepare-sql-aggregation () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
+
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -325,8 +361,6 @@ set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 ${HIVE_SQL_COMPRESS_OPTS}
 
-DROP TABLE if exists uservisits;
-DROP TABLE if exists uservisits_aggre;
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
 INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP;
@@ -337,6 +371,8 @@ function prepare-sql-join () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
+
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -346,9 +382,6 @@ set hive.stats.autogather=false;
 
 ${HIVE_SQL_COMPRESS_OPTS}
 
-DROP TABLE if exists rankings;
-DROP TABLE if exists uservisits_copy;
-DROP TABLE if exists rankings_uservisits_join;
 CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
@@ -360,6 +393,8 @@ function prepare-sql-scan () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
+    find . -name "metastore_db" -exec rm -rf "{}" \; 2>/dev/null
+
     cat <<EOF > ${HIVEBENCH_SQL_FILE}
 USE DEFAULT;
 set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
@@ -369,8 +404,6 @@ set hive.stats.autogather=false;
 
 ${HIVE_SQL_COMPRESS_OPTS}
 
-DROP TABLE if exists uservisits;
-DROP TABLE if exists uservisits_copy;
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_copy';
 INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits;
