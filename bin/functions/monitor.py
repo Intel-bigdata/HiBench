@@ -86,8 +86,8 @@ class RemoteProc(threading.Thread):
 import time, os, sys, socket
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("0.0.0.0",0))
-print s.getsockname()[1]
 s.listen(5)
+print s.getsockname()[1]
 s2,peer=s.accept()
 {func_template}
 while True:
@@ -155,7 +155,7 @@ while True:
                         container = []
                     else:
                         container.append(l.rstrip())
-            s.shutdown()
+            s.shutdown(socket.SHUT_RDWR)
         self.ssh_close()
 
     def stop(self):
