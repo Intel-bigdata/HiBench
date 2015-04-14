@@ -17,6 +17,7 @@
 import threading, subprocess, re, os, sys, signal, socket
 from time import sleep, time
 from contextlib import closing
+import traceback, thread
 from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
@@ -24,7 +25,8 @@ from itertools import groupby
 
 # Probe intervals, in seconds.
 # Warning: a value too short may get wrong results due to lack of data when system load goes high.
-PROBE_INTERVAL=5
+#          and must be float!
+PROBE_INTERVAL=float(5)
 
 #FIXME: use log helper later
 #log_lock = threading.Lock()
@@ -32,11 +34,11 @@ def log(*s):
     if len(s)==1: s=s[0]
     else: s= " ".join([str(x) for x in s])
 #    with log_lock:
-#        with open("/home/lv/monitor_proc.log", 'a') as f:
-    log_str = str(os.getpid())+":"+str(s) +'\n'
-#            f.write( log_str )
-    sys.stderr.write( "stderr:"+log_str ) 
-
+#        with open("/home/zhihui/monitor_proc.log", 'a') as f:
+    log_str = str(thread.get_ident())+":"+str(s) +'\n'
+    #        f.write( log_str )
+    sys.stderr.write(log_str)
+        
 entered=False
 def sig_term_handler(signo, stack):
     global entered
@@ -82,8 +84,41 @@ def ident(size, s):
 
 class RemoteProc(threading.Thread):
     SEP="----SEP----"
+    template_debug=r"""exec('
+import time, os, sys, socket, traceback
+socket.setdefaulttimeout(1)
+def log(*x, **kw):
+ with open("/home/zhihui/probe.log", kw.get("mode","a")) as f:
+  f.write(repr(x)+chr(10))
+try:
+ log("create socket", mode="w")
+ s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ log("bind socket")
+ s.bind(("0.0.0.0",0))
+ log("listen socket")
+ s.listen(5)
+ log("bind socket to:", s.getsockname())
+ while True:
+  log("accepting")
+  try:
+   print s.getsockname()[1]
+   s2,peer=s.accept()
+   break
+  except socket.timeout:
+   log("accept timeout, retry")
+ log("accepted, peer:",peer)
+except Exception as e:
+ import traceback
+ log(traceback.format_exc())
+{func_template}
+while True:
+  s2.send(("{SEP}+%s" % time.time())+chr(10))
+{call_template}
+  s2.send("{SEP}#end"+chr(10))
+  time.sleep({interval})
+')"""
     template=r"""exec('
-import time, os, sys, socket
+import time, os, sys, socket, traceback
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("0.0.0.0",0))
 s.listen(5)
@@ -129,11 +164,33 @@ while True:
 
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
+#        log("ssh client to:", self.host)
         with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
-            port_line = f.readline()
-            port = int(port_line.rstrip())
-            s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.host, port))
+#            log("ssh client %s connected" % self.host)
+            try:
+                port_line = f.readline()
+#                log("host:", self.host, "got port,", port_line)
+                port = int(port_line.rstrip())
+                s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(0.5)
+                for i in range(30): # try to connect 30 times maximum
+                    try:
+#                        log("try to connect:", self.host, port)
+                        s.connect((self.host, port))
+#                        log("connectted to:", self.host, port)
+                        break
+                    except socket.timeout:
+#                        log("connecting to:", self.host, port, "timedout")
+                        pass
+                else:           # not connectted after 30 times trying
+#                    log("cann't connectted to:", self.host, port)
+                    s.shutdown(socket.SHUT_RDWR)
+                    self.ssh_close()              
+                    return
+                s.settimeout(None)
+            except Exception as e:
+                log(traceback.format_exc())
+
             with closing(s.makefile()) as f2:
                 while self._running:
                     try:
@@ -147,6 +204,7 @@ while True:
                             remote_timestamp = float(tail[1:])
                             cur_timestamp = time()
                         elif tail.startswith('#end'): # end sign
+#                            log("na push, timestamp:", cur_timestamp)
                             self.na_push(cur_timestamp)
                         else:
                             id = int(tail[1:])
@@ -207,8 +265,11 @@ class BaseMonitor(object):
 
 
 class BashSSHClientMixin(object):
+    ssh_lock = threading.Lock()
     def ssh_client(self, host, shell):
-        self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, stdout=subprocess.PIPE)
+        with open(os.devnull, 'rb', 0) as DEVNULL, BashSSHClientMixin.ssh_lock:
+            self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
+                                         stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return self.proc.stdout
 
     def ssh_close(self):
@@ -282,7 +343,7 @@ class DiskMonitor(BaseMonitor):
         super(DiskMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/diskstats") as f:
   blocks = os.listdir("/sys/block")
-  s2.send("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop")]))
+  s2.send("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop") and x.split()[3]!="0"]))
 """)
 
     def feed(self, container, timestamp):
@@ -316,18 +377,35 @@ class MemoryMonitor(BaseMonitor):
                                                                used=total - free - buffers-cached,
                                                                buffer_cache=buffers + cached,
                                               free=free, map=mapped)})
+_Proc=namedtuple("Proc", ["label", "load5", "load10", "load15", "running", "procs"])
+class Proc(_Proc, PatchedNameTuple): pass
+
+class ProcMonitor(BaseMonitor):
+    def __init__(self, rproc):
+        super(ProcMonitor, self).__init__(rproc)
+        rproc.register(self, """with open("/proc/loadavg") as f:
+  s2.send(f.read())
+""")
+
+    def feed(self, load_status, timestamp):
+        "parse /proc/meminfo"
+        load5, load10, load15, running_procs= load_status[0].split()[:4]
+        running, procs = running_procs.split('/')
+
+        self.rproc.aggregate(timestamp, {"proc":Proc(label="total", load5=float(load5), load10=float(load10),
+                                                     load15=float(load15), running=int(running), procs=int(procs))})
+        
 
 class NodeAggregator(object):
     def __init__(self, log_name):
         self.node_pool = {}
         self.log_name = log_name
-#        self.log_cache = []
         self.log_lock = threading.Lock()
         try:
             os.unlink(self.log_name)
         except OSError:
             pass
-
+        
     def append(self, node):
         assert isinstance(node, RemoteProc)
         self.node_pool[node.host] = node
@@ -338,15 +416,6 @@ class NodeAggregator(object):
         with self.log_lock:
             with file(self.log_name, "a") as f:
                 f.write(repr(datas) + "\n")
-
-#            if len(self.log_cache)>100:
-#                self.flush_log_cache()
-#            log("append log:", len(self.log_cache))
-#            self.log_cache.append(datas)
-
-#    def flush_log_cache(self):
-#        log("flush log:", len(self.log_cache))
-#            self.log_cache=[]
 
     def run(self):
         for v in self.node_pool.values():
@@ -420,6 +489,7 @@ def start_monitor(log_filename, nodes):
             NetworkMonitor(self)
             DiskMonitor(self)
             MemoryMonitor(self)
+            ProcMonitor(self)
     global na
     na = NodeAggregator(log_filename)
     nodes = sorted(list(set(nodes)))
@@ -515,21 +585,22 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         datas=[eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
-#    print all_hosts
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], PROBE_INTERVAL)) # round to time interval and groupby
 
+    # Generating CSVs
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
     disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
     memory_overall = ["x,free,buffer_cache,used"]
+    procload_overall = ["x,load5,load10,load15,|running,procs"]
     events = parse_bench_log(benchlog_fn)
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
         data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
 
-        # all cpus, total
+        # all cpu cores, total cluster
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
@@ -539,10 +610,12 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             # user, system, io, idle, others
 #            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
 #        print t, summed
-        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}".format(time=int(t*1000), user=summed.user, system=summed.system, iowait=summed.iowait, idle=summed.idle, others=summed.nice+summed.irq+summed.softirq))
+        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
+                               .format(time   = int(t*1000), user = summed.user, system = summed.system, 
+                                       iowait = summed.iowait, idle = summed.idle, 
+                                       others = summed.nice + summed.irq + summed.softirq))
 
-        # all cpus, plot heatmap according to cpus/time/usage(100%-idle)
-
+        # all cpu cores, plot heatmap according to cpus/time/usage(100%-idle)
         count={}
         for idx, x in enumerate(data_by_all_hosts):
             for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
@@ -552,9 +625,11 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                     pos =  len(count)
                     count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
-                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=int(t*1000), pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
+                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}" \
+                                       .format(time = int(t*1000), pos = pos, value = 100-y.idle,
+                                               host = x['hostname'], cpuid = y.label))
 
-        # all disk, total
+        # all disk of each node, total cluster
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -564,10 +639,14 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             # io-read, io-write, bytes-read, bytes-write
 #            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
  #       print t, summed
-        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}".format(time=int(t*1000), bytes_read=summed.bytes_read, bytes_write=summed.bytes_write,io_read=summed.io_read,io_write=summed.io_write))
+        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
+                                .format(time        = int(t*1000), 
+                                        bytes_read  = summed.bytes_read / PROBE_INTERVAL,
+                                        bytes_write = summed.bytes_write / PROBE_INTERVAL,
+                                        io_read     = summed.io_read / PROBE_INTERVAL,
+                                        io_write    = summed.io_write / PROBE_INTERVAL))
 
-
-        # all memory, total
+        # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -577,10 +656,26 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             # mem-total, mem-used, mem-buffer&cache, mem-free, KB
 #            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
         #print t, summed
-        memory_overall.append("{time},{free},{buffer_cache},{used}".format(time=int(t*1000),free=summed.free,used=summed.used,buffer_cache=summed.buffer_cache))
+        memory_overall.append("{time},{free},{buffer_cache},{used}" \
+                                  .format(time = int(t*1000),
+                                          free = summed.free,
+                                          used = summed.used,
+                                          buffer_cache = summed.buffer_cache))
 
-
-        # all network, total
+        # proc of each node, total cluster
+        summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
+        if not summed1: continue
+        summed = reduce(lambda a,b: a._add(b), summed1)
+        for x in data_by_all_hosts:
+            procs = x.get("proc", None)
+            if not procs: continue
+        procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
+                                    .format(time   = int(t*1000),
+                                            load5  = summed.load5,load10=summed.load10,
+                                            load15 = summed.load15,running=summed.running,
+                                            procs  = summed.procs))
+        
+        # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
         if not summed1: continue
         summed = reduce(lambda a,b: a._add(b), summed1)
@@ -590,19 +685,28 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             # recv-byte, send-byte, recv-packet, send-packet, errors
 #            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
 #        print t, summed
-        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}".format(time=int(t*1000), recv_bytes=summed.recv_bytes, send_bytes=summed.send_bytes,recv_packets=summed.recv_packets, send_packets=summed.send_packets,errors=summed.recv_errs+summed.send_errs+summed.recv_drop+summed.send_drop))
-
+        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
+                                   .format(time         = int(t*1000),
+                                           recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
+                                           send_bytes   = summed.send_bytes / PROBE_INTERVAL,
+                                           recv_packets = summed.recv_packets / PROBE_INTERVAL, 
+                                           send_packets = summed.send_packets / PROBE_INTERVAL,
+                                           errors = (summed.recv_errs + summed.send_errs + \
+                                                         summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
+                               )
+        
     with open(samedir("chart-template.html")) as f:
         template = f.read()
     with open(report_fn, 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))    \
-                    .replace("{cpu_overall}", "\n".join(cpu_overall))         \
-                    .replace("{network_overall}", "\n".join(network_overall)) \
-                    .replace("{diskio_overall}", "\n".join(disk_overall))     \
-                    .replace("{memory_overall}", "\n".join(memory_overall))   \
-                    .replace("{workload_name}", workload_title)               \
-                    .replace("{events}", "\n".join(events))                   \
-                    .replace("{probe_interval}", str(PROBE_INTERVAL*1000))
+        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))         \
+                    .replace("{cpu_overall}",      "\n".join(cpu_overall))         \
+                    .replace("{network_overall}",  "\n".join(network_overall))     \
+                    .replace("{diskio_overall}",   "\n".join(disk_overall))        \
+                    .replace("{memory_overall}",   "\n".join(memory_overall))      \
+                    .replace("{procload_overall}", "\n".join(procload_overall))    \
+                    .replace("{workload_name}",    workload_title)                 \
+                    .replace("{events}",           "\n".join(events))              \
+                    .replace("{probe_interval}",   str(PROBE_INTERVAL*1000))
                 )
 
 def show_usage():
@@ -636,6 +740,7 @@ if __name__=="__main__":
         os.close(0)
         os.close(1)
         os.close(2)
+#        log("child process start")
         signal.signal(signal.SIGTERM, sig_term_handler)
         start_monitor(log_path, nodes_to_monitor)
         while  os.path.exists("/proc/%s" % parent_pid):

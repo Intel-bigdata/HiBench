@@ -53,7 +53,7 @@ function timestamp(){		# get current timestamp
 }
 
 function start-monitor(){
-    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES} &`
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${SLAVES} &`
 #    echo "start monitor, got child pid:${MONITOR_PID}" > /dev/stderr
     echo ${MONITOR_PID}
 }

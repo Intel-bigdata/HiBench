@@ -90,7 +90,6 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 	var options = {
 	    chart: {
 		renderTo: 'container_'+suffix,
-		type: 'area',
 	    },
 	    title: {
 		text: title
@@ -335,11 +334,11 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 			    [	// yaxis
 				{
 				    title:{
-					text: "Throughput"
+					text: "Throughput Per Second"
 				    },
 				    tooltip: {
 					pointFormatter: function () {
-					    return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					    return '<span style="color:'+this.series.color+'">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
 					}
 				    },
 				    labels: {
@@ -350,7 +349,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				},
 				{
 				    title:{
-					text: "Packets"
+					text: "Packets Per Second"
 				    },
 				    tooltip: {
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.0f} packets</b>)<br/>',
@@ -368,11 +367,11 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 			    [	// yaxis
 				{
 				    title:{
-					text: "Throughput"
+					text: "Throughput Per Second"
 				    },
 				    tooltip: {
 					pointFormatter: function () {
-					    return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
+					    return '<span style="color:'+this.series.color +'">'+this.series.name+'</span>: <b>' + this.y.fileSize()+'</b>)<br/>';
 					},
 				    },
 				    labels: {
@@ -383,7 +382,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				},
 				{
 				    title:{
-					text: "Operations"
+					text: "Operations Per Second"
 				    },
 				    tooltip: {
 					pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.0f} IO</b>)<br/>',
@@ -404,7 +403,7 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				},
 				tooltip: {
 				    pointFormatter: function () {
-					return '<span style="color:{series.color}">'+this.series.name+'</span>: <b>' + (this.y*1024).fileSize()+'</b>)<br/>';
+					return '<span style="color:'+this.series.color+'">'+this.series.name+'</span>: <b>' + (this.y*1024).fileSize()+'</b>)<br/>';
 				    }
 				},
 			    }], 
@@ -418,6 +417,30 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 					lineColor: '#ffffff'
 				    }
 				}
+			    },
+			    events
+			   );
+
+	// load procload overall
+	gen_overall_options("procload_overall", "Summarized system load",
+			    [{	// yaxis for loads
+				title: {
+				    text: 'load'
+				},
+				tooltip: {
+				    pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:0.2f}</b>)<br/>',
+				},
+			    },
+			     {	// yaxis for running & total process
+				 title: {
+				     text: 'process number'
+				 },
+				 tooltip: {
+				     pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.0f}</b>)<br/>',
+				 },
+				 opposite: true,
+			    }], 
+			    {	// plot options
 			    },
 			    events
 			   );
@@ -437,11 +460,14 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
     
     <div id="container_memory_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
+    <div id="container_procload_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
+
     <pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>
     <pre id="csv_cpu_overall" style="display: none">{cpu_overall}</pre>
     <pre id="csv_network_overall" style="display: none">{network_overall}</pre>
     <pre id="csv_diskio_overall" style="display: none">{diskio_overall}</pre>
     <pre id="csv_memory_overall" style="display: none">{memory_overall}</pre>
+    <pre id="csv_procload_overall" style="display: none">{procload_overall}</pre>
     <pre id="csv_events" style="display: none">{events}</pre>
 
 </body>
