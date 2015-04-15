@@ -454,6 +454,15 @@ def filter_dict_with_prefix(d, prefix, sort=True):
     else:
         return  dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
+def filter_dict_with_prefixes(d, *prefixes):
+    if len(prefixes)==1:
+        return filter_dict_with_prefix(d, prefixes[0])
+    elif len(prefixes)==0:
+        return []
+    else:
+        return reduce(lambda a,b: filter_dict_with_prefix(filter_dict_with_prefix(d, a),b),
+                      prefixes)
+
 def test():
     p = BashSSHClientMixin()
     script=r"""exec('
@@ -591,11 +600,21 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     # Generating CSVs
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
+    network_heatmap = ["x,y,value,hostname,adapterid"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
-    disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    diskio_heatmap = ["x,y,value,hostname,diskid"]
+    diskio_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    memory_heatmap = ["x,y,value,hostname"]
     memory_overall = ["x,free,buffer_cache,used"]
+    procload_heatmap = ["x,y,value,hostname"]
     procload_overall = ["x,load5,load10,load15,|running,procs"]
     events = parse_bench_log(benchlog_fn)
+
+    cpu_count={}
+    network_count={}
+    diskio_count={}
+    memory_count={}
+    proc_count={}
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
@@ -617,14 +636,13 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                                        others = summed.nice + summed.irq + summed.softirq))
 
         # all cpu cores, plot heatmap according to cpus/time/usage(100%-idle)
-        count={}
         for idx, x in enumerate(data_by_all_hosts):
-            for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "cpu", "!cpu/total").values()):
                 try:
-                    pos = count[(idx, idy, x['hostname'])]
+                    pos = cpu_count[(idx, idy, x['hostname'])]
                 except:
-                    pos =  len(count)
-                    count[(idx, idy, x['hostname'])] = pos
+                    pos =  len(cpu_count)
+                    cpu_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
                 cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}" \
                                        .format(time = int(t*1000), pos = pos, value = 100-y.idle,
@@ -640,12 +658,26 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             # io-read, io-write, bytes-read, bytes-write
 #            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
  #       print t, summed
-        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
+        diskio_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
                                 .format(time        = int(t*1000), 
                                         bytes_read  = summed.bytes_read / PROBE_INTERVAL,
                                         bytes_write = summed.bytes_write / PROBE_INTERVAL,
                                         io_read     = summed.io_read / PROBE_INTERVAL,
                                         io_write    = summed.io_write / PROBE_INTERVAL))
+
+
+        # all disks, plot heatmap according to disks/bytes_read+bytes_write
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "disk", "!disk/total").values()):
+                try:
+                    pos = diskio_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(diskio_count)
+                    diskio_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                diskio_heatmap.append("{time},{pos},{value},{host},{diskid}" \
+                                       .format(time = int(t*1000), pos = pos, value = y.bytes_read + y.bytes_write,
+                                               host = x['hostname'], diskid = y.label))
 
         # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
@@ -663,6 +695,20 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                                           used = summed.used,
                                           buffer_cache = summed.buffer_cache))
 
+        # all memory, plot heatmap according to memory/total - free
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "memory", "!memory/total").values()):
+                try:
+                    pos = memory_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(memory_count)
+                    memory_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                diskio_heatmap.append("{time},{pos},{value},{host}" \
+                                       .format(time = int(t*1000), pos = pos, value = y.total - y.free,
+                                               host = x['hostname']))
+
+
         # proc of each node, total cluster
         summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
         if not summed1: continue
@@ -676,6 +722,19 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                                             load15 = summed.load15,running=summed.running,
                                             procs  = summed.procs))
         
+        # all nodes' proc, plot heatmap according to proc/proc.procs
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "proc").values()):
+                try:
+                    pos = proc_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(proc_count)
+                    proc_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                diskio_heatmap.append("{time},{pos},{value},{host}" \
+                                       .format(time = int(t*1000), pos = pos, value = y.procs,
+                                               host = x['hostname']))
+
         # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
         if not summed1: continue
@@ -695,20 +754,36 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                                            errors = (summed.recv_errs + summed.send_errs + \
                                                          summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
                                )
+
+        # all network adapters, plot heatmap according to net/recv_bytes + send_bytes
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "net", "!net/total").values()):
+                try:
+                    pos = network_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(network_count)
+                    network_count[(idx, idy, x['hostname'])] = pos
+                diskio_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time = int(t*1000), pos = pos, value = y.recv_bytes + y.send_bytes,
+                                               host = x['hostname'], networkid = y.label))
         
     with open(samedir("chart-template.html")) as f:
         template = f.read()
+    
+    variables = locals()
+    def my_replace(match):
+        match = match.group()[1:-1]
+        if match.endswith('heatmap') or match.endswith('overall'):
+            return "\n".join(variables[match])
+        elif match =='events':
+            return "\n".join(events)
+        elif match == 'probe_interval':
+            return str(PROBE_INTERVAL * 1000)
+        elif match == 'workload_name':
+            return workload_title
+            
     with open(report_fn, 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))         \
-                    .replace("{cpu_overall}",      "\n".join(cpu_overall))         \
-                    .replace("{network_overall}",  "\n".join(network_overall))     \
-                    .replace("{diskio_overall}",   "\n".join(disk_overall))        \
-                    .replace("{memory_overall}",   "\n".join(memory_overall))      \
-                    .replace("{procload_overall}", "\n".join(procload_overall))    \
-                    .replace("{workload_name}",    workload_title)                 \
-                    .replace("{events}",           "\n".join(events))              \
-                    .replace("{probe_interval}",   str(PROBE_INTERVAL*1000))
-                )
+        f.write(re.sub(r'{\w+}', my_replace, template))
 
 def show_usage():
     log("""Usage:

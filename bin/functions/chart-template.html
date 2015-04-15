@@ -67,69 +67,206 @@ function merge_options(obj1,obj2){
 }
 
 function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_events, chart_type){
-	var data = document.getElementById("csv_"+suffix).innerHTML;
-	var csv_header = [];
+    var data = document.getElementById("csv_"+suffix).innerHTML;
+    var csv_header = [];
 	
-	var series=[];
-	var yaxis=0;
-	$.each(data.split('\n'), function(lineNo, line){
+    var series=[];
+    var yaxis=0;
+    $.each(data.split('\n'), function(lineNo, line){
+	var items = line.split(',');
+	if (lineNo==0){
+	    $.each(items, function(itemNo, item){
+		if (item[0]=='|'){ // new axis
+		    item = item.substring(1);
+		    yaxis +=1;
+		}
+		csv_header.push(item);
+		series.push({name:item, yAxis: yaxis, data:[],
+			     tooltip: yAxis_desc[yaxis].tooltip
+			    })
+	    });
+	} else {
+	    $.each(items, function(itemNo, item){
+		if (itemNo>0){
+		    series[itemNo].data.push([parseFloat(items[0]), parseFloat(item)])
+		}
+	    });
+	}
+    });
+    series.splice(0,1);
+    var options = {
+	chart: merge_options({
+	    renderTo: 'container_'+suffix,
+	},
+			     chart_type),
+	title: {
+	    text: title
+	},
+	// tooltip: {
+	// 	pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
+        // shared: true
+        // },
+	
+	
+	plotOptions: plot_options,
+	
+	xAxis: {
+	    type: 'datetime',
+	    tickmarkPlacement: 'on',
+	    labels: {
+                align: 'left',
+                x: 5,
+                format: '{value:%M:%S}'
+	    },
+	    plotLines: plot_events,
+	    title: {
+                enabled: false
+	    }
+	},
+	yAxis: yAxis_desc,
+	series: series
+    };
+    //	console.log(options.series)
+
+    var newchart = new Highcharts.Chart(options);
+}
+
+function gen_heatmap_options(suffix, title, yAxis_desc, plot_options, plot_events, chart_type){
+    
+    var data = document.getElementById("csv_"+suffix).innerHTML;
+    var csv_header = [];
+	
+    var series=[];
+    var yaxis=0;
+    $.each(data.split('\n'), function(lineNo, line){
+	var items = line.split(',');
+	if (lineNo==0){
+	    $.each(items, function(itemNo, item){
+		if (item[0]=='|'){ // new axis
+		    item = item.substring(1);
+		    yaxis +=1;
+		}
+		csv_header.push(item);
+		series.push({name:item, yAxis: yaxis, data:[],
+			     tooltip: yAxis_desc[yaxis].tooltip
+			    })
+	    });
+	} else {
+	    $.each(items, function(itemNo, item){
+		if (itemNo>0){
+		    series[itemNo].data.push([parseFloat(items[0]), parseFloat(item)])
+		}
+	    });
+	}
+    });
+    series.splice(0,1);
+    var options = {
+	chart: {
+	    renderTo: 'container_cpu_heatmap',
+	    type: 'heatmap',
+	    margin: [60, 10, 80, 70]
+	},
+	title: {
+	    text: 'CPU usage heat map'
+	},
+	tooltip: {
+	    backgroundColor: null,
+	    borderWidth: 0,
+	    distance: 10,
+	    shadow: false,
+	    useHTML: true,
+	    style: {
+                padding: 0,
+                color: 'black'
+	    }
+        },
+	xAxis: {
+	    type: 'datetime',
+	    labels: {
+                align: 'left',
+                x: 5,
+                format: '{value:%M:%S}'
+	    },
+	    plotLines:[],
+	    showLastLabel: false,
+	    tickLength: 16
+	},
+	yAxis: {
+	    title: {
+		text: null
+	    },
+	    labels: {
+                format: 'Core-{value}'
+	    },
+	    minPadding: 0,
+	    maxPadding: 0,
+	    startOnTick: false,
+	    endOnTick: false,
+	    tickWidth: 1,
+	    min: 0,
+	},
+	colorAxis: {
+	    stops: [
+                [0, '#3060cf'],
+                [0.5, '#fffbbc'],
+                [0.9, '#c4463a'],
+                [1, '#c4463a']
+	    ],
+	    min: 0,
+	    max: 100,
+	    startOnTick: false,
+	    endOnTick: false,
+	    labels: {
+                format: '{value}%'
+	    }
+        },
+	series: [{
+	    name : 'CPU usage',
+	    borderWidth: 1,
+	    nullColor: '#EFEFEF',
+	    colsize: {probe_interval}, // 1s
+	    tooltip: {
+                headerFormat: 'CPU Usage<br/>',
+                pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.hostname}.{point.coreid}<br/><b>{point.value:%.2f} %</b>'
+	    },
+	    turboThreshold: Number.MAX_VALUE,
+	    data: []
+	}]
+    };
+
+    	var data =  document.getElementById('csv_cpu_heatmap').innerHTML;
+	// Split the lines
+	var lines = data.split('\n');
+	var csv_header = [];
+	$.each(lines, function(lineNo, line) {
 	    var items = line.split(',');
-	    if (lineNo==0){
+	    
+	    // header line containes categories
+	    if (lineNo == 0) {
 		$.each(items, function(itemNo, item){
-		    if (item[0]=='|'){ // new axis
-			item = item.substring(1);
-			yaxis +=1;
-		    }
 		    csv_header.push(item);
-		    series.push({name:item, yAxis: yaxis, data:[],
-				 tooltip: yAxis_desc[yaxis].tooltip
-				})
-		});
-	    } else {
-		$.each(items, function(itemNo, item){
-		    if (itemNo>0){
-			series[itemNo].data.push([parseFloat(items[0]), parseFloat(item)])
-		    }
 		});
 	    }
-	});
-	series.splice(0,1);
-	var options = {
-	    chart: merge_options({
-		renderTo: 'container_'+suffix,
-	    },
-				 chart_type),
-	    title: {
-		text: title
-	    },
-	    // tooltip: {
-	    // 	pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f})<br/>',
-            // shared: true
-            // },
 	    
+	    // the rest of the lines contain data with their name in the first position
+	    else {
+		var series_data = {};
+		$.each(items, function(itemNo, item) {
+		    var value;
+		    if (itemNo <= 2) {
+			value = parseFloat(item);
+		    } else {
+			value = item;
+		    }
+		    series_data[csv_header[itemNo]] = value;
+		});
+		options.series[0].data.push(series_data);
+	    }				
+	}  );
 
-	    plotOptions: plot_options,
-	    
-	    xAxis: {
-		type: 'datetime',
-		tickmarkPlacement: 'on',
-		labels: {
-                    align: 'left',
-                    x: 5,
-                    format: '{value:%M:%S}'
-		},
-		plotLines: plot_events,
-		title: {
-                    enabled: false
-		}
-	    },
-	    yAxis: yAxis_desc,
-	    series: series
-	};
-//	console.log(options.series)
 
-	var newchart = new Highcharts.Chart(options);
-    }
+    var newchart = new Highcharts.Chart(options);
+}
 
     $(function() {
 
@@ -205,111 +342,8 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
             });
 	}(Highcharts));
 
-	var options = {
-	    chart: {
-		renderTo: 'container_cpu_heatmap',
-		type: 'heatmap',
-		margin: [60, 10, 80, 70]
-	    },
-	    title: {
-		text: 'CPU usage heat map'
-	    },
-	    tooltip: {
-		backgroundColor: null,
-		borderWidth: 0,
-		distance: 10,
-		shadow: false,
-		useHTML: true,
-		style: {
-                    padding: 0,
-                    color: 'black'
-		}
-            },
-	    xAxis: {
-		type: 'datetime',
-		labels: {
-                    align: 'left',
-                    x: 5,
-                    format: '{value:%M:%S}'
-		},
-		plotLines:[],
-		showLastLabel: false,
-		tickLength: 16
-	    },
-	    yAxis: {
-		title: {
-		    text: null
-		},
-		labels: {
-                    format: 'Core-{value}'
-		},
-		minPadding: 0,
-		maxPadding: 0,
-		startOnTick: false,
-		endOnTick: false,
-		tickWidth: 1,
-		min: 0,
-	    },
-	    colorAxis: {
-		stops: [
-                    [0, '#3060cf'],
-                    [0.5, '#fffbbc'],
-                    [0.9, '#c4463a'],
-                    [1, '#c4463a']
-		],
-		min: 0,
-		max: 100,
-		startOnTick: false,
-		endOnTick: false,
-		labels: {
-                    format: '{value}%'
-		}
-            },
-	    series: [{
-		name : 'CPU usage',
-		borderWidth: 1,
-		nullColor: '#EFEFEF',
-		colsize: {probe_interval}, // 1s
-		tooltip: {
-                    headerFormat: 'CPU Usage<br/>',
-                    pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.hostname}.{point.coreid}<br/><b>{point.value:%.2f} %</b>'
-		},
-		turboThreshold: Number.MAX_VALUE,
-		data: []
-	    }]
-	};
 
-	var data =  document.getElementById('csv_cpu_heatmap').innerHTML;
-	// Split the lines
-	var lines = data.split('\n');
-	var csv_header = [];
-	$.each(lines, function(lineNo, line) {
-	    var items = line.split(',');
-	    
-	    // header line containes categories
-	    if (lineNo == 0) {
-		$.each(items, function(itemNo, item){
-		    csv_header.push(item);
-		});
-	    }
-	    
-	    // the rest of the lines contain data with their name in the first position
-	    else {
-		var series_data = {};
-		$.each(items, function(itemNo, item) {
-		    var value;
-		    if (itemNo <= 2) {
-			value = parseFloat(item);
-		    } else {
-			value = item;
-		    }
-		    series_data[csv_header[itemNo]] = value;
-		});
-		options.series[0].data.push(series_data);
-	    }				
-	}  );
-
-	var chart_cpu_heatmap = new Highcharts.Chart(options);
+//	var chart_cpu_heatmap = new Highcharts.Chart(options);
 
 	var events = parse_events();
 
@@ -473,22 +507,29 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
     <h1>Workload: {workload_name}</h1>
     
     <div id="container_cpu_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
-
     <div id="container_cpu_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
     
+    <div id="container_network_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_network_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
-    
+
+    <div id="container_diskio_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_diskio_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
     
+    <div id="container_memory_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_memory_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
+    <div id="container_procload_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_procload_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
     <pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>
     <pre id="csv_cpu_overall" style="display: none">{cpu_overall}</pre>
+    <pre id="csv_network_heatmap" style="display: none">{network_heatmap}</pre>
     <pre id="csv_network_overall" style="display: none">{network_overall}</pre>
+    <pre id="csv_diskio_heatmap" style="display: none">{diskio_heatmap}</pre>
     <pre id="csv_diskio_overall" style="display: none">{diskio_overall}</pre>
+    <pre id="csv_memory_heatmap" style="display: none">{memory_heatmap}</pre>
     <pre id="csv_memory_overall" style="display: none">{memory_overall}</pre>
+    <pre id="csv_procload_heatmap" style="display: none">{procload_heatmap}</pre>
     <pre id="csv_procload_overall" style="display: none">{procload_overall}</pre>
     <pre id="csv_events" style="display: none">{events}</pre>
 
