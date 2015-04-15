@@ -59,7 +59,14 @@
 	return events;
     }
 
-function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_events ){
+function merge_options(obj1,obj2){
+    var obj3 = {};
+    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+    for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+    return obj3;
+}
+
+function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_events, chart_type){
 	var data = document.getElementById("csv_"+suffix).innerHTML;
 	var csv_header = [];
 	
@@ -88,9 +95,10 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 	});
 	series.splice(0,1);
 	var options = {
-	    chart: {
+	    chart: merge_options({
 		renderTo: 'container_'+suffix,
 	    },
+				 chart_type),
 	    title: {
 		text: title
 	    },
@@ -326,7 +334,10 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				    }
 				}
 			    },
-			    events
+			    events,
+			    {	// chart type
+			    	type: 'area',
+			    }
 			   );
 
 	// load network overall
@@ -356,10 +367,13 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				    },
 				    opposite: true,
 				    reversed: true
-				}
+				},
 			    ],
 			    {},	// plot options
-			    events
+			    events,
+			    {	// chart type
+			    	type: 'area',
+			    }
 			   );
 
 	// load diskio overall
@@ -392,7 +406,10 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				}
 			    ],
 			    {},	// plot operations
-			    events
+			    events,
+			    {	// chart type
+			    	type: 'area',
+			    }
 			   );
 
 	// load memory overall
@@ -418,7 +435,10 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 				    }
 				}
 			    },
-			    events
+			    events,
+			    {	// chart type
+			    	type: 'area',
+			    }
 			   );
 
 	// load procload overall
@@ -442,7 +462,9 @@ function gen_overall_options(suffix, title, yAxis_desc, plot_options, plot_event
 			    }], 
 			    {	// plot options
 			    },
-			    events
+			    events,
+			     {	// chart type
+			    }
 			   );
     });
 </script>

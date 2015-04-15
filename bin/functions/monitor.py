@@ -267,9 +267,10 @@ class BaseMonitor(object):
 class BashSSHClientMixin(object):
     ssh_lock = threading.Lock()
     def ssh_client(self, host, shell):
-        with open(os.devnull, 'rb', 0) as DEVNULL, BashSSHClientMixin.ssh_lock:
-            self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
-                                         stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        with open(os.devnull, 'rb', 0) as DEVNULL:
+            with BashSSHClientMixin.ssh_lock:
+                self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
+                                             stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return self.proc.stdout
 
     def ssh_close(self):
