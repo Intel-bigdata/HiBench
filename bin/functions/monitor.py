@@ -17,6 +17,7 @@
 import threading, subprocess, re, os, sys, signal, socket
 from time import sleep, time
 from contextlib import closing
+import traceback, thread
 from datetime import datetime
 from collections import namedtuple
 from pprint import pprint
@@ -24,7 +25,8 @@ from itertools import groupby
 
 # Probe intervals, in seconds.
 # Warning: a value too short may get wrong results due to lack of data when system load goes high.
-PROBE_INTERVAL=5
+#          and must be float!
+PROBE_INTERVAL=float(5)
 
 #FIXME: use log helper later
 #log_lock = threading.Lock()
@@ -32,11 +34,11 @@ def log(*s):
     if len(s)==1: s=s[0]
     else: s= " ".join([str(x) for x in s])
 #    with log_lock:
-#        with open("/home/lv/monitor_proc.log", 'a') as f:
-    log_str = str(os.getpid())+":"+str(s) +'\n'
-#            f.write( log_str )
-    sys.stderr.write( "stderr:"+log_str ) 
-
+#        with open("/home/zhihui/monitor_proc.log", 'a') as f:
+    log_str = str(thread.get_ident())+":"+str(s) +'\n'
+    #        f.write( log_str )
+    sys.stderr.write(log_str)
+        
 entered=False
 def sig_term_handler(signo, stack):
     global entered
@@ -82,12 +84,45 @@ def ident(size, s):
 
 class RemoteProc(threading.Thread):
     SEP="----SEP----"
+    template_debug=r"""exec('
+import time, os, sys, socket, traceback
+socket.setdefaulttimeout(1)
+def log(*x, **kw):
+ with open("/home/zhihui/probe.log", kw.get("mode","a")) as f:
+  f.write(repr(x)+chr(10))
+try:
+ log("create socket", mode="w")
+ s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ log("bind socket")
+ s.bind(("0.0.0.0",0))
+ log("listen socket")
+ s.listen(5)
+ log("bind socket to:", s.getsockname())
+ while True:
+  log("accepting")
+  try:
+   print s.getsockname()[1]
+   s2,peer=s.accept()
+   break
+  except socket.timeout:
+   log("accept timeout, retry")
+ log("accepted, peer:",peer)
+except Exception as e:
+ import traceback
+ log(traceback.format_exc())
+{func_template}
+while True:
+  s2.send(("{SEP}+%s" % time.time())+chr(10))
+{call_template}
+  s2.send("{SEP}#end"+chr(10))
+  time.sleep({interval})
+')"""
     template=r"""exec('
-import time, os, sys, socket
+import time, os, sys, socket, traceback
 s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(("0.0.0.0",0))
-print s.getsockname()[1]
 s.listen(5)
+print s.getsockname()[1]
 s2,peer=s.accept()
 {func_template}
 while True:
@@ -129,11 +164,33 @@ while True:
 
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
+#        log("ssh client to:", self.host)
         with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
-            port_line = f.readline()
-            port = int(port_line.rstrip())
-            s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.host, port))
+#            log("ssh client %s connected" % self.host)
+            try:
+                port_line = f.readline()
+#                log("host:", self.host, "got port,", port_line)
+                port = int(port_line.rstrip())
+                s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(0.5)
+                for i in range(30): # try to connect 30 times maximum
+                    try:
+#                        log("try to connect:", self.host, port)
+                        s.connect((self.host, port))
+#                        log("connectted to:", self.host, port)
+                        break
+                    except socket.timeout:
+#                        log("connecting to:", self.host, port, "timedout")
+                        pass
+                else:           # not connectted after 30 times trying
+#                    log("cann't connectted to:", self.host, port)
+                    s.shutdown(socket.SHUT_RDWR)
+                    self.ssh_close()              
+                    return
+                s.settimeout(None)
+            except Exception as e:
+                log(traceback.format_exc())
+
             with closing(s.makefile()) as f2:
                 while self._running:
                     try:
@@ -147,6 +204,7 @@ while True:
                             remote_timestamp = float(tail[1:])
                             cur_timestamp = time()
                         elif tail.startswith('#end'): # end sign
+#                            log("na push, timestamp:", cur_timestamp)
                             self.na_push(cur_timestamp)
                         else:
                             id = int(tail[1:])
@@ -155,7 +213,7 @@ while True:
                         container = []
                     else:
                         container.append(l.rstrip())
-            s.shutdown()
+            s.shutdown(socket.SHUT_RDWR)
         self.ssh_close()
 
     def stop(self):
@@ -202,13 +260,19 @@ class BaseMonitor(object):
                                 if k in stat and k in self._last and k not in self.IGNORE_KEYS
                                 ])
             self._last = stat
-            stat_delta[header+'/total'] = reduce(lambda a,b: a._add(b, 'total'), stat_delta.values())
+#            if header.startswith("net"):
+#                print stat_delta
+            stat_delta[header+'/total'] = reduce_patched(lambda a,b: a._add(b, 'total'), stat_delta.values())
             self.rproc.aggregate(timestamp, stat_delta)
 
 
 class BashSSHClientMixin(object):
+    ssh_lock = threading.Lock()
     def ssh_client(self, host, shell):
-        self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, stdout=subprocess.PIPE)
+        with open(os.devnull, 'rb', 0) as DEVNULL:
+            with BashSSHClientMixin.ssh_lock:
+                self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
+                                             stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return self.proc.stdout
 
     def ssh_close(self):
@@ -271,7 +335,8 @@ class NetworkMonitor(BaseMonitor):
         matched = self._filter.match(line)
         if matched:
             obj = Network(matched.groups()[0], *[int(x) for x in matched.groups()[1:]])
-            return (obj[0], obj)
+            if not (obj.recv_bytes==0 and obj.send_bytes==0):
+                return (obj[0], obj)
 
 _Disk=namedtuple("Disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
 
@@ -282,7 +347,7 @@ class DiskMonitor(BaseMonitor):
         super(DiskMonitor, self).__init__(rproc)
         rproc.register(self, """with open("/proc/diskstats") as f:
   blocks = os.listdir("/sys/block")
-  s2.send("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop")]))
+  s2.send("".join([x for x in f.readlines() if x.split()[2] in blocks and not x.split()[2].startswith("loop") and x.split()[3]!="0"]))
 """)
 
     def feed(self, container, timestamp):
@@ -315,19 +380,36 @@ class MemoryMonitor(BaseMonitor):
         self.rproc.aggregate(timestamp, {"memory/total":Memory(label="total", total=total,
                                                                used=total - free - buffers-cached,
                                                                buffer_cache=buffers + cached,
-                                              free=free, map=mapped)})
+                                                               free=free, map=mapped)})
+_Proc=namedtuple("Proc", ["label", "load5", "load10", "load15", "running", "procs"])
+class Proc(_Proc, PatchedNameTuple): pass
+
+class ProcMonitor(BaseMonitor):
+    def __init__(self, rproc):
+        super(ProcMonitor, self).__init__(rproc)
+        rproc.register(self, """with open("/proc/loadavg") as f:
+  s2.send(f.read())
+""")
+
+    def feed(self, load_status, timestamp):
+        "parse /proc/meminfo"
+        load5, load10, load15, running_procs= load_status[0].split()[:4]
+        running, procs = running_procs.split('/')
+
+        self.rproc.aggregate(timestamp, {"proc":Proc(label="total", load5=float(load5), load10=float(load10),
+                                                     load15=float(load15), running=int(running), procs=int(procs))})
+        
 
 class NodeAggregator(object):
     def __init__(self, log_name):
         self.node_pool = {}
         self.log_name = log_name
-#        self.log_cache = []
         self.log_lock = threading.Lock()
         try:
             os.unlink(self.log_name)
         except OSError:
             pass
-
+        
     def append(self, node):
         assert isinstance(node, RemoteProc)
         self.node_pool[node.host] = node
@@ -338,15 +420,6 @@ class NodeAggregator(object):
         with self.log_lock:
             with file(self.log_name, "a") as f:
                 f.write(repr(datas) + "\n")
-
-#            if len(self.log_cache)>100:
-#                self.flush_log_cache()
-#            log("append log:", len(self.log_cache))
-#            self.log_cache.append(datas)
-
-#    def flush_log_cache(self):
-#        log("flush log:", len(self.log_cache))
-#            self.log_cache=[]
 
     def run(self):
         for v in self.node_pool.values():
@@ -384,6 +457,21 @@ def filter_dict_with_prefix(d, prefix, sort=True):
     else:
         return  dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
+def reduce_patched(func, data):
+    if len(data)==1:
+        return data[0]
+    elif len(data)==0:
+        return data
+    else:
+        return reduce(func, data)
+
+def filter_dict_with_prefixes(d, *prefixes):
+    if len(prefixes)==1:
+        return filter_dict_with_prefix(d, prefixes[0])
+    else:
+        return reduce_patched(lambda a,b: filter_dict_with_prefix(filter_dict_with_prefix(d, a),b),
+                      prefixes)
+
 def test():
     p = BashSSHClientMixin()
     script=r"""exec('
@@ -420,6 +508,7 @@ def start_monitor(log_filename, nodes):
             NetworkMonitor(self)
             DiskMonitor(self)
             MemoryMonitor(self)
+            ProcMonitor(self)
     global na
     na = NodeAggregator(log_filename)
     nodes = sorted(list(set(nodes)))
@@ -515,95 +604,211 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         datas=[eval(x) for x in f.readlines()]
 
     all_hosts = sorted(list(set([x['hostname'] for x in datas])))
-#    print all_hosts
     data_slices = groupby(datas, lambda x:round_to_base(x['timestamp'], PROBE_INTERVAL)) # round to time interval and groupby
 
+    # Generating CSVs
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
+    network_heatmap = ["x,y,value,hostname,adapterid"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
-    disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    diskio_heatmap = ["x,y,value,hostname,diskid"]
+    diskio_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    memory_heatmap = ["x,y,value,hostname"]
     memory_overall = ["x,free,buffer_cache,used"]
+    procload_heatmap = ["x,y,value,hostname"]
+    procload_overall = ["x,load5,load10,load15,|running,procs"]
     events = parse_bench_log(benchlog_fn)
+
+    cpu_count={}
+    network_count={}
+    diskio_count={}
+    memory_count={}
+    proc_count={}
+
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
         data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
 
-        # all cpus, total
+        # all cpu cores, total cluster
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
-        for x in data_by_all_hosts:
-            cpu = x.get('cpu/total', None)
-            if not cpu: continue
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1) / len(summed1)
+            for x in data_by_all_hosts:
+                cpu = x.get('cpu/total', None)
+                if not cpu: continue
             # user, system, io, idle, others
 #            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
 #        print t, summed
-        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}".format(time=int(t*1000), user=summed.user, system=summed.system, iowait=summed.iowait, idle=summed.idle, others=summed.nice+summed.irq+summed.softirq))
+            cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
+                                   .format(time   = int(t*1000), user = summed.user, system = summed.system, 
+                                           iowait = summed.iowait, idle = summed.idle, 
+                                           others = summed.nice + summed.irq + summed.softirq))
 
-        # all cpus, plot heatmap according to cpus/time/usage(100%-idle)
-
-        count={}
+        # all cpu cores, plot heatmap according to cpus/time/usage(100%-idle)
         for idx, x in enumerate(data_by_all_hosts):
-            for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "cpu", "!cpu/total").values()):
                 try:
-                    pos = count[(idx, idy, x['hostname'])]
+                    pos = cpu_count[(idx, idy, x['hostname'])]
                 except:
-                    pos =  len(count)
-                    count[(idx, idy, x['hostname'])] = pos
+                    pos =  len(cpu_count)
+                    cpu_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
-                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}".format(time=int(t*1000), pos=pos, value = 100-y.idle, host = x['hostname'], cpuid = y.label))
+                cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}" \
+                                       .format(time = int(t*1000), pos = pos, value = 100-y.idle,
+                                               host = x['hostname'], cpuid = y.label))
 
-        # all disk, total
+        # all disk of each node, total cluster
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            disk = x.get('disk/total', None)
-            if not disk: continue
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                disk = x.get('disk/total', None)
+                if not disk: continue
             # io-read, io-write, bytes-read, bytes-write
 #            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
  #       print t, summed
-        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}".format(time=int(t*1000), bytes_read=summed.bytes_read, bytes_write=summed.bytes_write,io_read=summed.io_read,io_write=summed.io_write))
+            diskio_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
+                                      .format(time        = int(t*1000), 
+                                              bytes_read  = summed.bytes_read / PROBE_INTERVAL,
+                                              bytes_write = summed.bytes_write / PROBE_INTERVAL,
+                                              io_read     = summed.io_read / PROBE_INTERVAL,
+                                              io_write    = summed.io_write / PROBE_INTERVAL))
 
 
-        # all memory, total
+        # all disks, plot heatmap according to disks/bytes_read+bytes_write
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "disk", "!disk/total").values()):
+                try:
+                    pos = diskio_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(diskio_count)
+                    diskio_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                diskio_heatmap.append("{time},{pos},{value},{host},{diskid}" \
+                                       .format(time   = int(t*1000), 
+                                               pos    = pos, 
+                                               value  = (y.bytes_read + y.bytes_write) / PROBE_INTERVAL,
+                                               host   = x['hostname'], 
+                                               diskid = y.label))
+
+        # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            mem = x.get("memory/total", None)
-            if not mem: continue
-            # mem-total, mem-used, mem-buffer&cache, mem-free, KB
-#            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
-        #print t, summed
-        memory_overall.append("{time},{free},{buffer_cache},{used}".format(time=int(t*1000),free=summed.free,used=summed.used,buffer_cache=summed.buffer_cache))
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                mem = x.get("memory/total", None)
+                if not mem: continue
+                # mem-total, mem-used, mem-buffer&cache, mem-free, KB
+    #            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
+            #print t, summed
+            memory_overall.append("{time},{free},{buffer_cache},{used}" \
+                                      .format(time = int(t*1000),
+                                              free = summed.free,
+                                              used = summed.used,
+                                              buffer_cache = summed.buffer_cache))
+
+        # all memory, plot heatmap according to memory/total - free
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "memory/total").values()):
+                try:
+                    pos = memory_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(memory_count)
+                    memory_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                memory_heatmap.append("{time},{pos},{value},{host}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos, 
+                                               value = (y.total - y.free)*1000,
+                                               host  = x['hostname']))
 
 
-        # all network, total
+        # proc of each node, total cluster
+        summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                procs = x.get("proc", None)
+                if not procs: continue
+            procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
+                                        .format(time   = int(t*1000),
+                                                load5  = summed.load5,load10=summed.load10,
+                                                load15 = summed.load15,running=summed.running,
+                                                procs  = summed.procs))
+        
+        # all nodes' proc, plot heatmap according to proc/proc.procs
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "proc").values()):
+                try:
+                    pos = proc_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(proc_count)
+                    proc_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                procload_heatmap.append("{time},{pos},{value},{host}" \
+                                            .format(time = int(t*1000), pos = pos, value = y.procs,
+                                                    host = x['hostname']))
+
+        # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            net = x.get("net/total", None)
-            if not net: continue
-            # recv-byte, send-byte, recv-packet, send-packet, errors
-#            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
-#        print t, summed
-        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}".format(time=int(t*1000), recv_bytes=summed.recv_bytes, send_bytes=summed.send_bytes,recv_packets=summed.recv_packets, send_packets=summed.send_packets,errors=summed.recv_errs+summed.send_errs+summed.recv_drop+summed.send_drop))
 
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                net = x.get("net/total", None)
+                if not net: continue
+                # recv-byte, send-byte, recv-packet, send-packet, errors
+    #            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
+    #        print t, summed
+            network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
+                                       .format(time         = int(t*1000),
+                                               recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
+                                               send_bytes   = summed.send_bytes / PROBE_INTERVAL,
+                                               recv_packets = summed.recv_packets / PROBE_INTERVAL, 
+                                               send_packets = summed.send_packets / PROBE_INTERVAL,
+                                               errors = (summed.recv_errs + summed.send_errs + \
+                                                             summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
+                                   )
+
+        # all network adapters, plot heatmap according to net/recv_bytes + send_bytes
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "net", "!net/total").values()):
+                try:
+                    pos = network_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(network_count)
+                    network_count[(idx, idy, x['hostname'])] = pos
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2, 
+                                               value = y.recv_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".recv"))
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2+1, 
+                                               value = y.send_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".send"))
+        
     with open(samedir("chart-template.html")) as f:
         template = f.read()
+    
+    variables = locals()
+    def my_replace(match):
+        match = match.group()[1:-1]
+        if match.endswith('heatmap') or match.endswith('overall'):
+            return "\n".join(variables[match])
+        elif match =='events':
+            return "\n".join(events)
+        elif match == 'probe_interval':
+            return str(PROBE_INTERVAL * 1000)
+        elif match == 'workload_name':
+            return workload_title
+            
     with open(report_fn, 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))    \
-                    .replace("{cpu_overall}", "\n".join(cpu_overall))         \
-                    .replace("{network_overall}", "\n".join(network_overall)) \
-                    .replace("{diskio_overall}", "\n".join(disk_overall))     \
-                    .replace("{memory_overall}", "\n".join(memory_overall))   \
-                    .replace("{workload_name}", workload_title)               \
-                    .replace("{events}", "\n".join(events))                   \
-                    .replace("{probe_interval}", str(PROBE_INTERVAL*1000))
-                )
+        f.write(re.sub(r'{\w+}', my_replace, template))
 
 def show_usage():
     log("""Usage:
@@ -636,6 +841,7 @@ if __name__=="__main__":
         os.close(0)
         os.close(1)
         os.close(2)
+#        log("child process start")
         signal.signal(signal.SIGTERM, sig_term_handler)
         start_monitor(log_path, nodes_to_monitor)
         while  os.path.exists("/proc/%s" % parent_pid):

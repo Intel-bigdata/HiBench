@@ -19,7 +19,7 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopAggregate ${workload_root} ${workload_folder}
+enter_bench HadoopAggregation ${workload_root} ${workload_folder}
 show_bannar start
 
 ensure-hivebench-release

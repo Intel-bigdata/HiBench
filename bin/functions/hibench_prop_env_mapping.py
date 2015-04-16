@@ -106,5 +106,5 @@ HiBenchEnvPropMapping=dict(
     PEGASUS_JAR="hibench.pagerank.pegasus.dir",
     )
 
-HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}
-HiBenchPropEnvMappingMandatory={v:k for k, v in HiBenchEnvPropMappingMandatory.items()}
+HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
+HiBenchPropEnvMappingMandatory=dict([(v,k) for k, v in HiBenchEnvPropMappingMandatory.items()])

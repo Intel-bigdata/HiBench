@@ -100,6 +100,16 @@ This benchmark suite contains 9 typical micro workloads:
 
 2. Prerequisites
 
+  0. Network configurations
+
+      Setup SSH public/private key pair, and disable
+      `StrictHostKeyChecking` in `/etc/ssh/ssh_config`. Make sure all
+      nodes in your cluster can ssh to each other nodes (including
+      localhost) without prompt for password.
+
+      Double check in each node, make sure all hostnames in the
+      cluster will be resolved to right IP addresses.
+
   1. Setup JDK-1.6(suggested)
 
       Download Oracle-JDK-1.6 and setup properly.

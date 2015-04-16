@@ -53,7 +53,7 @@ function timestamp(){		# get current timestamp
 }
 
 function start-monitor(){
-    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${MASTERS} ${SLAVES} &`
+    MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${SLAVES} &`
 #    echo "start monitor, got child pid:${MONITOR_PID}" > /dev/stderr
     echo ${MONITOR_PID}
 }
@@ -223,6 +223,8 @@ function run-spark-job() {
     if [ $result -ne 0 ]
     then
 	echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
+	echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+	tail ${WORKLOAD_RESULT_FOLDER}/bench.log
 	exit $result
     fi
 }
@@ -250,6 +252,8 @@ function run-hadoop-job(){
     fi
     if [ $result -ne 0 ]; then
 	echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
+	echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+	tail ${WORKLOAD_RESULT_FOLDER}/bench.log
 	exit $result
     fi
 }
