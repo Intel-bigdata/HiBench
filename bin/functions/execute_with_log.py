@@ -92,7 +92,7 @@ def execute(workload_result_file, command_lines):
         line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
-        if "warn" in lline or 'err' in lline or 'exception' in lline and lline.lstrip() == lline:
+        if ("warn" in lline or 'err' in lline or 'exception' in lline) and lline.lstrip() == lline:
             COLOR="Yellow" if "warn" in lline else "Red"
             sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color).encode('utf-8'))
             
