@@ -624,6 +624,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     diskio_count={}
     memory_count={}
     proc_count={}
+
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
@@ -631,18 +632,18 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all cpu cores, total cluster
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
-        if not summed1: continue
-        summed = reduce_patched(lambda a,b: a._add(b), summed1) / len(summed1)
-        for x in data_by_all_hosts:
-            cpu = x.get('cpu/total', None)
-            if not cpu: continue
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1) / len(summed1)
+            for x in data_by_all_hosts:
+                cpu = x.get('cpu/total', None)
+                if not cpu: continue
             # user, system, io, idle, others
 #            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
 #        print t, summed
-        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
-                               .format(time   = int(t*1000), user = summed.user, system = summed.system, 
-                                       iowait = summed.iowait, idle = summed.idle, 
-                                       others = summed.nice + summed.irq + summed.softirq))
+            cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
+                                   .format(time   = int(t*1000), user = summed.user, system = summed.system, 
+                                           iowait = summed.iowait, idle = summed.idle, 
+                                           others = summed.nice + summed.irq + summed.softirq))
 
         # all cpu cores, plot heatmap according to cpus/time/usage(100%-idle)
         for idx, x in enumerate(data_by_all_hosts):
@@ -659,20 +660,20 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all disk of each node, total cluster
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
-        if not summed1: continue
-        summed = reduce_patched(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            disk = x.get('disk/total', None)
-            if not disk: continue
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                disk = x.get('disk/total', None)
+                if not disk: continue
             # io-read, io-write, bytes-read, bytes-write
 #            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
  #       print t, summed
-        diskio_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
-                                .format(time        = int(t*1000), 
-                                        bytes_read  = summed.bytes_read / PROBE_INTERVAL,
-                                        bytes_write = summed.bytes_write / PROBE_INTERVAL,
-                                        io_read     = summed.io_read / PROBE_INTERVAL,
-                                        io_write    = summed.io_write / PROBE_INTERVAL))
+            diskio_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
+                                      .format(time        = int(t*1000), 
+                                              bytes_read  = summed.bytes_read / PROBE_INTERVAL,
+                                              bytes_write = summed.bytes_write / PROBE_INTERVAL,
+                                              io_read     = summed.io_read / PROBE_INTERVAL,
+                                              io_write    = summed.io_write / PROBE_INTERVAL))
 
 
         # all disks, plot heatmap according to disks/bytes_read+bytes_write
@@ -693,19 +694,19 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
-        if not summed1: continue
-        summed = reduce_patched(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            mem = x.get("memory/total", None)
-            if not mem: continue
-            # mem-total, mem-used, mem-buffer&cache, mem-free, KB
-#            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
-        #print t, summed
-        memory_overall.append("{time},{free},{buffer_cache},{used}" \
-                                  .format(time = int(t*1000),
-                                          free = summed.free,
-                                          used = summed.used,
-                                          buffer_cache = summed.buffer_cache))
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                mem = x.get("memory/total", None)
+                if not mem: continue
+                # mem-total, mem-used, mem-buffer&cache, mem-free, KB
+    #            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
+            #print t, summed
+            memory_overall.append("{time},{free},{buffer_cache},{used}" \
+                                      .format(time = int(t*1000),
+                                              free = summed.free,
+                                              used = summed.used,
+                                              buffer_cache = summed.buffer_cache))
 
         # all memory, plot heatmap according to memory/total - free
         for idx, x in enumerate(data_by_all_hosts):
@@ -725,16 +726,16 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # proc of each node, total cluster
         summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
-        if not summed1: continue
-        summed = reduce_patched(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            procs = x.get("proc", None)
-            if not procs: continue
-        procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
-                                    .format(time   = int(t*1000),
-                                            load5  = summed.load5,load10=summed.load10,
-                                            load15 = summed.load15,running=summed.running,
-                                            procs  = summed.procs))
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                procs = x.get("proc", None)
+                if not procs: continue
+            procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
+                                        .format(time   = int(t*1000),
+                                                load5  = summed.load5,load10=summed.load10,
+                                                load15 = summed.load15,running=summed.running,
+                                                procs  = summed.procs))
         
         # all nodes' proc, plot heatmap according to proc/proc.procs
         for idx, x in enumerate(data_by_all_hosts):
@@ -751,23 +752,24 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
-        if not summed1: continue
-        summed = reduce_patched(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            net = x.get("net/total", None)
-            if not net: continue
-            # recv-byte, send-byte, recv-packet, send-packet, errors
-#            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
-#        print t, summed
-        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
-                                   .format(time         = int(t*1000),
-                                           recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
-                                           send_bytes   = summed.send_bytes / PROBE_INTERVAL,
-                                           recv_packets = summed.recv_packets / PROBE_INTERVAL, 
-                                           send_packets = summed.send_packets / PROBE_INTERVAL,
-                                           errors = (summed.recv_errs + summed.send_errs + \
-                                                         summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
-                               )
+
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                net = x.get("net/total", None)
+                if not net: continue
+                # recv-byte, send-byte, recv-packet, send-packet, errors
+    #            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
+    #        print t, summed
+            network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
+                                       .format(time         = int(t*1000),
+                                               recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
+                                               send_bytes   = summed.send_bytes / PROBE_INTERVAL,
+                                               recv_packets = summed.recv_packets / PROBE_INTERVAL, 
+                                               send_packets = summed.send_packets / PROBE_INTERVAL,
+                                               errors = (summed.recv_errs + summed.send_errs + \
+                                                             summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
+                                   )
 
         # all network adapters, plot heatmap according to net/recv_bytes + send_bytes
         for idx, x in enumerate(data_by_all_hosts):
