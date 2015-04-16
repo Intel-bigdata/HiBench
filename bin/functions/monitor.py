@@ -260,7 +260,9 @@ class BaseMonitor(object):
                                 if k in stat and k in self._last and k not in self.IGNORE_KEYS
                                 ])
             self._last = stat
-            stat_delta[header+'/total'] = reduce(lambda a,b: a._add(b, 'total'), stat_delta.values())
+#            if header.startswith("net"):
+#                print stat_delta
+            stat_delta[header+'/total'] = reduce_patched(lambda a,b: a._add(b, 'total'), stat_delta.values())
             self.rproc.aggregate(timestamp, stat_delta)
 
 
@@ -333,7 +335,8 @@ class NetworkMonitor(BaseMonitor):
         matched = self._filter.match(line)
         if matched:
             obj = Network(matched.groups()[0], *[int(x) for x in matched.groups()[1:]])
-            return (obj[0], obj)
+            if not (obj.recv_bytes==0 and obj.send_bytes==0):
+                return (obj[0], obj)
 
 _Disk=namedtuple("Disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
 
@@ -377,7 +380,7 @@ class MemoryMonitor(BaseMonitor):
         self.rproc.aggregate(timestamp, {"memory/total":Memory(label="total", total=total,
                                                                used=total - free - buffers-cached,
                                                                buffer_cache=buffers + cached,
-                                              free=free, map=mapped)})
+                                                               free=free, map=mapped)})
 _Proc=namedtuple("Proc", ["label", "load5", "load10", "load15", "running", "procs"])
 class Proc(_Proc, PatchedNameTuple): pass
 
@@ -454,13 +457,19 @@ def filter_dict_with_prefix(d, prefix, sort=True):
     else:
         return  dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
+def reduce_patched(func, data):
+    if len(data)==1:
+        return data[0]
+    elif len(data)==0:
+        return data
+    else:
+        return reduce(func, data)
+
 def filter_dict_with_prefixes(d, *prefixes):
     if len(prefixes)==1:
         return filter_dict_with_prefix(d, prefixes[0])
-    elif len(prefixes)==0:
-        return []
     else:
-        return reduce(lambda a,b: filter_dict_with_prefix(filter_dict_with_prefix(d, a),b),
+        return reduce_patched(lambda a,b: filter_dict_with_prefix(filter_dict_with_prefix(d, a),b),
                       prefixes)
 
 def test():
@@ -623,7 +632,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         # all cpu cores, total cluster
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
         if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
+        summed = reduce_patched(lambda a,b: a._add(b), summed1) / len(summed1)
         for x in data_by_all_hosts:
             cpu = x.get('cpu/total', None)
             if not cpu: continue
@@ -651,7 +660,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         # all disk of each node, total cluster
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
         if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
+        summed = reduce_patched(lambda a,b: a._add(b), summed1)
         for x in data_by_all_hosts:
             disk = x.get('disk/total', None)
             if not disk: continue
@@ -676,13 +685,16 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                     diskio_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
                 diskio_heatmap.append("{time},{pos},{value},{host},{diskid}" \
-                                       .format(time = int(t*1000), pos = pos, value = y.bytes_read + y.bytes_write,
-                                               host = x['hostname'], diskid = y.label))
+                                       .format(time   = int(t*1000), 
+                                               pos    = pos, 
+                                               value  = (y.bytes_read + y.bytes_write) / PROBE_INTERVAL,
+                                               host   = x['hostname'], 
+                                               diskid = y.label))
 
         # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
         if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
+        summed = reduce_patched(lambda a,b: a._add(b), summed1)
         for x in data_by_all_hosts:
             mem = x.get("memory/total", None)
             if not mem: continue
@@ -697,22 +709,24 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all memory, plot heatmap according to memory/total - free
         for idx, x in enumerate(data_by_all_hosts):
-            for idy, y in enumerate(filter_dict_with_prefixes(x, "memory", "!memory/total").values()):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "memory/total").values()):
                 try:
                     pos = memory_count[(idx, idy, x['hostname'])]
                 except:
                     pos =  len(memory_count)
                     memory_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
-                diskio_heatmap.append("{time},{pos},{value},{host}" \
-                                       .format(time = int(t*1000), pos = pos, value = y.total - y.free,
-                                               host = x['hostname']))
+                memory_heatmap.append("{time},{pos},{value},{host}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos, 
+                                               value = (y.total - y.free)*1000,
+                                               host  = x['hostname']))
 
 
         # proc of each node, total cluster
         summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
         if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
+        summed = reduce_patched(lambda a,b: a._add(b), summed1)
         for x in data_by_all_hosts:
             procs = x.get("proc", None)
             if not procs: continue
@@ -731,14 +745,14 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                     pos =  len(proc_count)
                     proc_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
-                diskio_heatmap.append("{time},{pos},{value},{host}" \
-                                       .format(time = int(t*1000), pos = pos, value = y.procs,
-                                               host = x['hostname']))
+                procload_heatmap.append("{time},{pos},{value},{host}" \
+                                            .format(time = int(t*1000), pos = pos, value = y.procs,
+                                                    host = x['hostname']))
 
         # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
         if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
+        summed = reduce_patched(lambda a,b: a._add(b), summed1)
         for x in data_by_all_hosts:
             net = x.get("net/total", None)
             if not net: continue
@@ -763,9 +777,18 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                 except:
                     pos =  len(network_count)
                     network_count[(idx, idy, x['hostname'])] = pos
-                diskio_heatmap.append("{time},{pos},{value},{host},{networkid}" \
-                                       .format(time = int(t*1000), pos = pos, value = y.recv_bytes + y.send_bytes,
-                                               host = x['hostname'], networkid = y.label))
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2, 
+                                               value = y.recv_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".recv"))
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2+1, 
+                                               value = y.send_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".send"))
         
     with open(samedir("chart-template.html")) as f:
         template = f.read()
