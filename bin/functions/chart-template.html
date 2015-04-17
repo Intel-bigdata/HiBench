@@ -23,7 +23,7 @@
     Object.defineProperty(Number.prototype,'fileSize',{value:function(a,b,c,d){
 	return (a=a?[1e3,'k','B']:[1024,'K','iB'],b=Math,c=b.log,
 		d=c(this)/c(a[0])|0,this/b.pow(a[0],d)).toFixed(2)
-	    +' '+(d?(a[1]+'MGTPEZY')[--d]+a[2]:'Bytes');
+	    +(d?(a[1]+'MGTPEZY')[--d]+a[2]:'Bytes');
     },writable:false,enumerable:false});
 
     function parse_events(){
@@ -390,7 +390,7 @@ function gen_heatmap_options(suffix, title, yAxis_desc, colorAxis_desc, series_d
 				tickWidth: 1,
 				min: 0,
 			    },
-			    {labels:{format:'{value}B'}},
+			    {labels:{format: '{value}'}},
 			    {name : 'DiskIO throughputs',
 			     tooltip:{
 				 headerFormat: 'DiskIO throughputs<br/>',
@@ -416,7 +416,7 @@ function gen_heatmap_options(suffix, title, yAxis_desc, colorAxis_desc, series_d
 				tickWidth: 1,
 				min: 0,
 			    },
-			    {labels:{format:'{value}Kb'}},
+			    {labels:{formatter: function (){ return this.value.fileSize();}}},
 			    {name : 'Memory Usage',
 			     tooltip:{
 				 headerFormat: 'Memory Usage<br/>',
@@ -620,10 +620,10 @@ function gen_heatmap_options(suffix, title, yAxis_desc, colorAxis_desc, series_d
     <div id="container_diskio_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_diskio_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
     
-    <div id="container_memory_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
+    <div id="container_memory_heatmap" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_memory_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
-    <div id="container_procload_heatmap" style="height: 800px; max-width: 1000px; margin: 0 auto"></div>
+    <div id="container_procload_heatmap" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
     <div id="container_procload_overall" style="height: 400px; max-width: 1000px; margin: 0 auto"></div>
 
     <pre id="csv_cpu_heatmap" style="display: none">{cpu_heatmap}</pre>

@@ -482,7 +482,7 @@ while 1:
   time.sleep(1)
 ')"""
     s = script.replace('"', r'\"').replace("\n", r"\n")
-    with p.ssh_client("localhost", "python -u -c \"{}\"".format(s)) as f:
+    with p.ssh_client("localhost", "python -u -c \"{s}\"".format(s=s)) as f:
         while 1:
             l = f.readline()
             print l.rstrip()
@@ -550,11 +550,11 @@ def parse_bench_log(benchlog_fn):
                     result = matched.groups()
                     timestamp = datetime.strptime(result[0], r"%y/%m/%d %H:%M:%S").strftime("%s")+"000" # convert to millsec for js
                     if rule is _spark_stage_submit:
-                        events.append("{},Start {} ({})".format(timestamp,result[1], result[2]))
+                        events.append("{t},Start {v1} ({v2})".format(t=timestamp, v1=result[1], v2=result[2]))
                     elif rule is _spark_stage_finish:
-                        events.append("{},Finish {} ({})".format(timestamp,result[1], result[2]))
+                        events.append("{t},Finish {v1} ({v2})".format(t=timestamp, v1=result[1], v2=result[2]))
                     elif rule is _hadoop_run_job:
-                        events.append("{},Start Job {}".format(timestamp, result[1]))
+                        events.append("{t},Start Job {v1}".format(t=timestamp, v1=result[1]))
                         flag={}
                     elif rule is _hadoop_map_reduce_progress:
                         map_progress,reduce_progress = int(result[1]), int(result[2])
@@ -568,13 +568,13 @@ def parse_bench_log(benchlog_fn):
                                 op['reduce'] = True
                                 flag['reduce'] = True
                         if op['map'] and op['reduce']:
-                            events.append("{},Map finish and Reduce start".format(timestamp))
+                            events.append("{t},Map finish and Reduce start".format(t=timestamp))
                         elif op['map']:
-                            events.append("{},Map finish".format(timestamp))
+                            events.append("{t},Map finish".format(t=timestamp))
                         elif op['reduce']:
-                            events.append("{},Reduce start".format(timestamp))
+                            events.append("{t},Reduce start".format(t=timestamp))
                     elif rule is _hadoop_job_complete_mr1 or rule is _hadoop_job_complete_mr2:
-                        events.append("{},Finsih Job {}".format(timestamp, result[1]))
+                        events.append("{t},Finsih Job {v1}".format(t=timestamp, v1=result[1]))
                     else:
                         assert 0, "should never reach here"
 
