@@ -165,7 +165,7 @@ while True:
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
 #        log("ssh client to:", self.host)
-        with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
+        with self.ssh_client(self.host, "python -u -c \"{script}\"".format(script=s)) as f:
 #            log("ssh client %s connected" % self.host)
             try:
                 port_line = f.readline()
