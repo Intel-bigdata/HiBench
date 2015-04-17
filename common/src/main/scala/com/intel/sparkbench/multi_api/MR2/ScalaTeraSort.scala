@@ -41,26 +41,21 @@ object ScalaTeraSort {
     val sc = new SparkContext(sparkConf)
     val io = new IOCommon(sc)
 
-    //val file = io.load[String](args(0), Some("Text"))
     val file = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0))
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reducer  = IOCommon.getProperty("sparkbench.reducer")
                                         .getOrElse((parallel / 2).toString).toInt
     val data = file.map{item =>
-      println(item)
       (item._1.toString, item._2.toString)
-    //  (line.substring(0, 10), line.substring(10))
     }
 
     val partitioner = new BaseRangePartitioner(partitions = reducer, rdd = data)
     val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner)
-                          //.map{case (k, v) => k + v}
 
     val seq=sorted_data
       .map{case (k,v) => (new Text(k), new Text(v))}
 
     seq.saveAsNewAPIHadoopFile[TeraOutputFormat](args(1))
-    //io.save(args(1), sorted_data)
 
     sc.stop()
   }
