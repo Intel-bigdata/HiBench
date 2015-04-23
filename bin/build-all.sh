@@ -31,6 +31,12 @@ cp target/*-jar-with-dependencies.jar jars  && \
 mvn clean package -D MR1 -D spark1.2        && \
 cp jars/*.jar target/                       && \
 rm -rf jars
+
+result=$?
 cd $CURDIR
 
-echo "Build all done!"
+if [ $result -ne 0 ]; then
+    echo "Build failed, please check!"
+else
+    echo "Build all done!"
+fi
