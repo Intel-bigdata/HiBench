@@ -200,7 +200,8 @@ This benchmark suite contains 9 typical micro workloads:
           hibench.hdfs.master      HDFS master
           hibench.spark.master     SPARK master
 	  
-     Note: For YARN mode, set `hibench.spark.master` to `yarn-client`.
+     Note: For YARN mode, set `hibench.spark.master` to
+     `yarn-client`. (`yarn-cluster` is not supported yet)
 
      Parallelism, memory, exector number tuning:
      
@@ -286,7 +287,7 @@ This benchmark suite contains 9 typical micro workloads:
 ---
 ### Running ###
 
-- Run several workloads sequentially    (FIXME: not working currently)
+- Run several workloads sequentially
 
   The `conf/benchmarks.lst` file under the package folder defines the
   workloads to run when you execute the `bin/run-all.sh` script under
