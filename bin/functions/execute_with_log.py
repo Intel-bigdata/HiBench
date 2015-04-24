@@ -22,7 +22,7 @@ import re
 def load_colors():
     color_script_fn = os.path.join(os.path.dirname(__file__), "color.enabled.sh")
     with open(color_script_fn) as f:
-        return {k:v.split("'")[1].replace('\e[', "\033[") for k,v in [x.strip().split('=') for x in f.readlines() if x.strip() and not x.strip().startswith('#')]}
+        return dict([(k,v.split("'")[1].replace('\e[', "\033[")) for k,v in [x.strip().split('=') for x in f.readlines() if x.strip() and not x.strip().startswith('#')]])
 
 Color=load_colors()
 
@@ -92,9 +92,9 @@ def execute(workload_result_file, command_lines):
         line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
-        if "warn" in lline or 'err' in lline and lline.lstrip() == lline:
+        if ("warn" in lline or 'err' in lline or 'exception' in lline) and lline.lstrip() == lline:
             COLOR="Yellow" if "warn" in lline else "Red"
-            sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color))
+            sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color).encode('utf-8'))
             
         else:
             if len(line) >= width:
@@ -103,7 +103,7 @@ def execute(workload_result_file, command_lines):
             if progress is not None:
                 show_with_progress_bar(line, progress, width)
             else:
-                sys.stdout.write(u"{line}{ClearEnd}\r".format(line=line, **Color))
+                sys.stdout.write(u"{line}{ClearEnd}\r".format(line=line, **Color).encode('utf-8'))
         sys.stdout.flush()
     print
     log_file.close()

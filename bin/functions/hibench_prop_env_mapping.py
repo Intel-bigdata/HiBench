@@ -34,7 +34,7 @@ HiBenchEnvPropMappingMandatory=dict(
     DEPENDENCY_DIR="hibench.dependency.dir",
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
-    HIBENCH_PYTHON_PATH="hibench.sparkbenc.python.dir",
+    HIBENCH_PYTHON_PATH="hibench.sparkbench.python.dir",
     NUM_MAPS="hibench.default.map.parallelism",
     NUM_REDS="hibench.default.shuffle.parallelism",
     INPUT_HDFS="hibench.workload.input",
@@ -106,5 +106,5 @@ HiBenchEnvPropMapping=dict(
     PEGASUS_JAR="hibench.pagerank.pegasus.dir",
     )
 
-HiBenchPropEnvMapping={v:k for k, v in HiBenchEnvPropMapping.items()}
-HiBenchPropEnvMappingMandatory={v:k for k, v in HiBenchEnvPropMappingMandatory.items()}
+HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
+HiBenchPropEnvMappingMandatory=dict([(v,k) for k, v in HiBenchEnvPropMappingMandatory.items()])

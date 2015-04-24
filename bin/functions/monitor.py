@@ -165,7 +165,7 @@ while True:
         s = script.replace('"', r'\"').replace("\n", r"\n")
         container=[]
 #        log("ssh client to:", self.host)
-        with self.ssh_client(self.host, "python -u -c \"{}\"".format(s)) as f:
+        with self.ssh_client(self.host, "python -u -c \"{script}\"".format(script=s)) as f:
 #            log("ssh client %s connected" % self.host)
             try:
                 port_line = f.readline()
@@ -260,16 +260,19 @@ class BaseMonitor(object):
                                 if k in stat and k in self._last and k not in self.IGNORE_KEYS
                                 ])
             self._last = stat
-            stat_delta[header+'/total'] = reduce(lambda a,b: a._add(b, 'total'), stat_delta.values())
+#            if header.startswith("net"):
+#                print stat_delta
+            stat_delta[header+'/total'] = reduce_patched(lambda a,b: a._add(b, 'total'), stat_delta.values())
             self.rproc.aggregate(timestamp, stat_delta)
 
 
 class BashSSHClientMixin(object):
     ssh_lock = threading.Lock()
     def ssh_client(self, host, shell):
-        with open(os.devnull, 'rb', 0) as DEVNULL, BashSSHClientMixin.ssh_lock:
-            self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
-                                         stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        with open(os.devnull, 'rb', 0) as DEVNULL:
+            with BashSSHClientMixin.ssh_lock:
+                self.proc = subprocess.Popen(["ssh", host, shell], bufsize=1, 
+                                             stdin=DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         return self.proc.stdout
 
     def ssh_close(self):
@@ -332,7 +335,8 @@ class NetworkMonitor(BaseMonitor):
         matched = self._filter.match(line)
         if matched:
             obj = Network(matched.groups()[0], *[int(x) for x in matched.groups()[1:]])
-            return (obj[0], obj)
+            if not (obj.recv_bytes==0 and obj.send_bytes==0):
+                return (obj[0], obj)
 
 _Disk=namedtuple("Disk", ["label", "io_read", "bytes_read", "time_spent_read", "io_write", "bytes_write", "time_spent_write"])
 
@@ -376,7 +380,7 @@ class MemoryMonitor(BaseMonitor):
         self.rproc.aggregate(timestamp, {"memory/total":Memory(label="total", total=total,
                                                                used=total - free - buffers-cached,
                                                                buffer_cache=buffers + cached,
-                                              free=free, map=mapped)})
+                                                               free=free, map=mapped)})
 _Proc=namedtuple("Proc", ["label", "load5", "load10", "load15", "running", "procs"])
 class Proc(_Proc, PatchedNameTuple): pass
 
@@ -453,6 +457,21 @@ def filter_dict_with_prefix(d, prefix, sort=True):
     else:
         return  dict([(x, d[x]) for x in keys if x.startswith(prefix)])
 
+def reduce_patched(func, data):
+    if len(data)==1:
+        return data[0]
+    elif len(data)==0:
+        return data
+    else:
+        return reduce(func, data)
+
+def filter_dict_with_prefixes(d, *prefixes):
+    if len(prefixes)==1:
+        return filter_dict_with_prefix(d, prefixes[0])
+    else:
+        return reduce_patched(lambda a,b: filter_dict_with_prefix(filter_dict_with_prefix(d, a),b),
+                      prefixes)
+
 def test():
     p = BashSSHClientMixin()
     script=r"""exec('
@@ -463,7 +482,7 @@ while 1:
   time.sleep(1)
 ')"""
     s = script.replace('"', r'\"').replace("\n", r"\n")
-    with p.ssh_client("localhost", "python -u -c \"{}\"".format(s)) as f:
+    with p.ssh_client("localhost", "python -u -c \"{s}\"".format(s=s)) as f:
         while 1:
             l = f.readline()
             print l.rstrip()
@@ -531,11 +550,11 @@ def parse_bench_log(benchlog_fn):
                     result = matched.groups()
                     timestamp = datetime.strptime(result[0], r"%y/%m/%d %H:%M:%S").strftime("%s")+"000" # convert to millsec for js
                     if rule is _spark_stage_submit:
-                        events.append("{},Start {} ({})".format(timestamp,result[1], result[2]))
+                        events.append("{t},Start {v1} ({v2})".format(t=timestamp, v1=result[1], v2=result[2]))
                     elif rule is _spark_stage_finish:
-                        events.append("{},Finish {} ({})".format(timestamp,result[1], result[2]))
+                        events.append("{t},Finish {v1} ({v2})".format(t=timestamp, v1=result[1], v2=result[2]))
                     elif rule is _hadoop_run_job:
-                        events.append("{},Start Job {}".format(timestamp, result[1]))
+                        events.append("{t},Start Job {v1}".format(t=timestamp, v1=result[1]))
                         flag={}
                     elif rule is _hadoop_map_reduce_progress:
                         map_progress,reduce_progress = int(result[1]), int(result[2])
@@ -549,13 +568,13 @@ def parse_bench_log(benchlog_fn):
                                 op['reduce'] = True
                                 flag['reduce'] = True
                         if op['map'] and op['reduce']:
-                            events.append("{},Map finish and Reduce start".format(timestamp))
+                            events.append("{t},Map finish and Reduce start".format(t=timestamp))
                         elif op['map']:
-                            events.append("{},Map finish".format(timestamp))
+                            events.append("{t},Map finish".format(t=timestamp))
                         elif op['reduce']:
-                            events.append("{},Reduce start".format(timestamp))
+                            events.append("{t},Reduce start".format(t=timestamp))
                     elif rule is _hadoop_job_complete_mr1 or rule is _hadoop_job_complete_mr2:
-                        events.append("{},Finsih Job {}".format(timestamp, result[1]))
+                        events.append("{t},Finsih Job {v1}".format(t=timestamp, v1=result[1]))
                     else:
                         assert 0, "should never reach here"
 
@@ -590,11 +609,22 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
     # Generating CSVs
     cpu_heatmap = ["x,y,value,hostname,coreid"]
     cpu_overall = ["x,idle,user,system,iowait,others"]
+    network_heatmap = ["x,y,value,hostname,adapterid"]
     network_overall = ["x,recv_bytes,send_bytes,|recv_packets,send_packets,errors"]
-    disk_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    diskio_heatmap = ["x,y,value,hostname,diskid"]
+    diskio_overall = ["x,read_bytes,write_bytes,|read_io,write_io"]
+    memory_heatmap = ["x,y,value,hostname"]
     memory_overall = ["x,free,buffer_cache,used"]
+    procload_heatmap = ["x,y,value,hostname"]
     procload_overall = ["x,load5,load10,load15,|running,procs"]
     events = parse_bench_log(benchlog_fn)
+
+    cpu_count={}
+    network_count={}
+    diskio_count={}
+    memory_count={}
+    proc_count={}
+
     for t, sub_data in data_slices:
         classed_by_host = dict([(x['hostname'], x) for x in sub_data])
         # total cpus, plot user/sys/iowait/other
@@ -602,28 +632,27 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all cpu cores, total cluster
         summed1 = [x['cpu/total'] for x in data_by_all_hosts if x.has_key('cpu/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1) / len(summed1)
-        for x in data_by_all_hosts:
-            cpu = x.get('cpu/total', None)
-            if not cpu: continue
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1) / len(summed1)
+            for x in data_by_all_hosts:
+                cpu = x.get('cpu/total', None)
+                if not cpu: continue
             # user, system, io, idle, others
 #            print t, x['hostname'], cpu.user, cpu.system, cpu.iowait, cpu.idle, cpu.nice+cpu.irq+cpu.softirq
 #        print t, summed
-        cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
-                               .format(time   = int(t*1000), user = summed.user, system = summed.system, 
-                                       iowait = summed.iowait, idle = summed.idle, 
-                                       others = summed.nice + summed.irq + summed.softirq))
+            cpu_overall.append("{time},{idle},{user},{system},{iowait},{others}" \
+                                   .format(time   = int(t*1000), user = summed.user, system = summed.system, 
+                                           iowait = summed.iowait, idle = summed.idle, 
+                                           others = summed.nice + summed.irq + summed.softirq))
 
         # all cpu cores, plot heatmap according to cpus/time/usage(100%-idle)
-        count={}
         for idx, x in enumerate(data_by_all_hosts):
-            for idy, y in enumerate(filter_dict_with_prefix(filter_dict_with_prefix(x, "cpu"), "!cpu/total").values()):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "cpu", "!cpu/total").values()):
                 try:
-                    pos = count[(idx, idy, x['hostname'])]
+                    pos = cpu_count[(idx, idy, x['hostname'])]
                 except:
-                    pos =  len(count)
-                    count[(idx, idy, x['hostname'])] = pos
+                    pos =  len(cpu_count)
+                    cpu_count[(idx, idy, x['hostname'])] = pos
 #                print t, pos, 100-y.idle, x['hostname'], y.label
                 cpu_heatmap.append("{time},{pos},{value},{host},{cpuid}" \
                                        .format(time = int(t*1000), pos = pos, value = 100-y.idle,
@@ -631,83 +660,155 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all disk of each node, total cluster
         summed1=[x['disk/total'] for x in data_by_all_hosts if x.has_key('disk/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            disk = x.get('disk/total', None)
-            if not disk: continue
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                disk = x.get('disk/total', None)
+                if not disk: continue
             # io-read, io-write, bytes-read, bytes-write
 #            print t, x['hostname'], disk.io_read, disk.io_write, disk.bytes_read, disk.bytes_write
  #       print t, summed
-        disk_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
-                                .format(time        = int(t*1000), 
-                                        bytes_read  = summed.bytes_read / PROBE_INTERVAL,
-                                        bytes_write = summed.bytes_write / PROBE_INTERVAL,
-                                        io_read     = summed.io_read / PROBE_INTERVAL,
-                                        io_write    = summed.io_write / PROBE_INTERVAL))
+            diskio_overall.append("{time},{bytes_read},{bytes_write},{io_read},{io_write}" \
+                                      .format(time        = int(t*1000), 
+                                              bytes_read  = summed.bytes_read / PROBE_INTERVAL,
+                                              bytes_write = summed.bytes_write / PROBE_INTERVAL,
+                                              io_read     = summed.io_read / PROBE_INTERVAL,
+                                              io_write    = summed.io_write / PROBE_INTERVAL))
+
+
+        # all disks, plot heatmap according to disks/bytes_read+bytes_write
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "disk", "!disk/total").values()):
+                try:
+                    pos = diskio_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(diskio_count)
+                    diskio_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                diskio_heatmap.append("{time},{pos},{value},{host},{diskid}" \
+                                       .format(time   = int(t*1000), 
+                                               pos    = pos, 
+                                               value  = (y.bytes_read + y.bytes_write) / PROBE_INTERVAL,
+                                               host   = x['hostname'], 
+                                               diskid = y.label))
 
         # memory of each node, total cluster
         summed1 = [x['memory/total'] for x in data_by_all_hosts if x.has_key('memory/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            mem = x.get("memory/total", None)
-            if not mem: continue
-            # mem-total, mem-used, mem-buffer&cache, mem-free, KB
-#            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
-        #print t, summed
-        memory_overall.append("{time},{free},{buffer_cache},{used}" \
-                                  .format(time = int(t*1000),
-                                          free = summed.free,
-                                          used = summed.used,
-                                          buffer_cache = summed.buffer_cache))
+        if summed1:
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                mem = x.get("memory/total", None)
+                if not mem: continue
+                # mem-total, mem-used, mem-buffer&cache, mem-free, KB
+    #            print t, x['hostname'], mem.total, mem.used, mem.buffer_cache, mem.free
+            #print t, summed
+            memory_overall.append("{time},{free},{buffer_cache},{used}" \
+                                      .format(time = int(t*1000),
+                                              free = summed.free,
+                                              used = summed.used,
+                                              buffer_cache = summed.buffer_cache))
+
+        # all memory, plot heatmap according to memory/total - free
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "memory/total").values()):
+                try:
+                    pos = memory_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(memory_count)
+                    memory_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                memory_heatmap.append("{time},{pos},{value},{host}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos, 
+                                               value = (y.total - y.free)*1000,
+                                               host  = x['hostname']))
+
 
         # proc of each node, total cluster
         summed1 = [x['proc'] for x in data_by_all_hosts if x.has_key('proc')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            procs = x.get("proc", None)
-            if not procs: continue
-        procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
-                                    .format(time   = int(t*1000),
-                                            load5  = summed.load5,load10=summed.load10,
-                                            load15 = summed.load15,running=summed.running,
-                                            procs  = summed.procs))
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                procs = x.get("proc", None)
+                if not procs: continue
+            procload_overall.append("{time},{load5},{load10},{load15},{running},{procs}"\
+                                        .format(time   = int(t*1000),
+                                                load5  = summed.load5,load10=summed.load10,
+                                                load15 = summed.load15,running=summed.running,
+                                                procs  = summed.procs))
         
+        # all nodes' proc, plot heatmap according to proc/proc.procs
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "proc").values()):
+                try:
+                    pos = proc_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(proc_count)
+                    proc_count[(idx, idy, x['hostname'])] = pos
+#                print t, pos, 100-y.idle, x['hostname'], y.label
+                procload_heatmap.append("{time},{pos},{value},{host}" \
+                                            .format(time = int(t*1000), pos = pos, value = y.procs,
+                                                    host = x['hostname']))
+
         # all network interface, total cluster
         summed1 = [x['net/total'] for x in data_by_all_hosts if x.has_key('net/total')]
-        if not summed1: continue
-        summed = reduce(lambda a,b: a._add(b), summed1)
-        for x in data_by_all_hosts:
-            net = x.get("net/total", None)
-            if not net: continue
-            # recv-byte, send-byte, recv-packet, send-packet, errors
-#            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
-#        print t, summed
-        network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
-                                   .format(time         = int(t*1000),
-                                           recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
-                                           send_bytes   = summed.send_bytes / PROBE_INTERVAL,
-                                           recv_packets = summed.recv_packets / PROBE_INTERVAL, 
-                                           send_packets = summed.send_packets / PROBE_INTERVAL,
-                                           errors = (summed.recv_errs + summed.send_errs + \
-                                                         summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
-                               )
+
+        if summed1: 
+            summed = reduce_patched(lambda a,b: a._add(b), summed1)
+            for x in data_by_all_hosts:
+                net = x.get("net/total", None)
+                if not net: continue
+                # recv-byte, send-byte, recv-packet, send-packet, errors
+    #            print t, x['hostname'], net.recv_bytes, net.send_bytes, net.recv_packets, net.send_packets, net.recv_errs+net.send_errs+net.recv_drop+net.send_drop
+    #        print t, summed
+            network_overall.append("{time},{recv_bytes},{send_bytes},{recv_packets},{send_packets},{errors}" \
+                                       .format(time         = int(t*1000),
+                                               recv_bytes   = summed.recv_bytes / PROBE_INTERVAL, 
+                                               send_bytes   = summed.send_bytes / PROBE_INTERVAL,
+                                               recv_packets = summed.recv_packets / PROBE_INTERVAL, 
+                                               send_packets = summed.send_packets / PROBE_INTERVAL,
+                                               errors = (summed.recv_errs + summed.send_errs + \
+                                                             summed.recv_drop + summed.send_drop) / PROBE_INTERVAL)
+                                   )
+
+        # all network adapters, plot heatmap according to net/recv_bytes + send_bytes
+        for idx, x in enumerate(data_by_all_hosts):
+            for idy, y in enumerate(filter_dict_with_prefixes(x, "net", "!net/total").values()):
+                try:
+                    pos = network_count[(idx, idy, x['hostname'])]
+                except:
+                    pos =  len(network_count)
+                    network_count[(idx, idy, x['hostname'])] = pos
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2, 
+                                               value = y.recv_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".recv"))
+                network_heatmap.append("{time},{pos},{value},{host},{networkid}" \
+                                       .format(time  = int(t*1000), 
+                                               pos   = pos*2+1, 
+                                               value = y.send_bytes / PROBE_INTERVAL,
+                                               host  = x['hostname'], 
+                                               networkid = y.label+".send"))
         
     with open(samedir("chart-template.html")) as f:
         template = f.read()
+    
+    variables = locals()
+    def my_replace(match):
+        match = match.group()[1:-1]
+        if match.endswith('heatmap') or match.endswith('overall'):
+            return "\n".join(variables[match])
+        elif match =='events':
+            return "\n".join(events)
+        elif match == 'probe_interval':
+            return str(PROBE_INTERVAL * 1000)
+        elif match == 'workload_name':
+            return workload_title
+            
     with open(report_fn, 'w') as f:
-        f.write(template.replace("{cpu_heatmap}",  "\n".join(cpu_heatmap))         \
-                    .replace("{cpu_overall}",      "\n".join(cpu_overall))         \
-                    .replace("{network_overall}",  "\n".join(network_overall))     \
-                    .replace("{diskio_overall}",   "\n".join(disk_overall))        \
-                    .replace("{memory_overall}",   "\n".join(memory_overall))      \
-                    .replace("{procload_overall}", "\n".join(procload_overall))    \
-                    .replace("{workload_name}",    workload_title)                 \
-                    .replace("{events}",           "\n".join(events))              \
-                    .replace("{probe_interval}",   str(PROBE_INTERVAL*1000))
-                )
+        f.write(re.sub(r'{\w+}', my_replace, template))
 
 def show_usage():
     log("""Usage:
