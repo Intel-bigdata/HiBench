@@ -30,6 +30,7 @@ object ScalaTeraSort {
   implicit def rddToSampledOrderedRDDFunctions[K: Ordering : ClassTag, V: ClassTag]
   (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
 
+  implicit def ArrayByteOrdering: Ordering[Array[Byte]] = Ordering.fromLessThan{case (a, b)=> a.compareTo(b)<0}
   def main(args: Array[String]) {
     if (args.length != 2) {
       System.err.println(
@@ -42,24 +43,18 @@ object ScalaTeraSort {
     val io = new IOCommon(sc)
 
     //val file = io.load[String](args(0), Some("Text"))
-    val file = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0))
+    val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0)).map{case (k,v)=>(k.getBytes, v.getBytes)}
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reducer  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
-                                        .getOrElse((parallel / 2).toString).toInt
-    val data = file.map{item =>
-      (item._1.toString, item._2.toString)
-    //  (line.substring(0, 10), line.substring(10))
-    }
+      .getOrElse((parallel / 2).toString).toInt
 
     val partitioner = new BaseRangePartitioner(partitions = reducer, rdd = data)
-    val sorted_data = data.sortByKeyWithPartitioner(partitioner = partitioner)
-                          //.map{case (k, v) => k + v}
+    val ordered_data = new ConfigurableOrderedRDDFunctions[Array[Byte], Array[Byte], (Array[Byte], Array[Byte])](data)
+    val sorted_data = ordered_data.sortByKeyWithPartitioner(partitioner = partitioner).map{case (k, v)=>(new Text(k), new Text(v))}
 
-    val seq=sorted_data
-      .map{case (k,v) => (new Text(k), new Text(v))}
-
-    seq.saveAsNewAPIHadoopFile[TeraOutputFormat](args(1))
+    sorted_data.saveAsNewAPIHadoopFile[TeraOutputFormat](args(1))
     //io.save(args(1), sorted_data)
+
 
     sc.stop()
   }
