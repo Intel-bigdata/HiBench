@@ -24,7 +24,7 @@
     3. A build-in system monitor will be generated with CPU, disk,
     network, memory, process numbers report for each workload.
     
-4.Others:
+4. Others:
 
     1. Most system configurations will be probed and inferred
     automatically, like Hadoop/Spark version/release, hadoop conf dir,
