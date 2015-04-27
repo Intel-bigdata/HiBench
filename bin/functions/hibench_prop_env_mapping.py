@@ -65,9 +65,9 @@ HiBenchEnvPropMapping=dict(
     NUTCH_DIR="hibench.nutch.nutchindexing.dir",
     HIBENCH_REPORT="hibench.report.dir", # set in default
     HIBENCH_REPORT_NAME="hibench.report.name", # set in default
-    YARN_NUM_EXECUTORS="hibench.yarn.exector.num",
-    YARN_EXECUTOR_CORES="hibench.yarn.exector.cores",
-    YARN_EXECUTOR_MEMORY="hibench.yarn.exector.memory",
+    YARN_NUM_EXECUTORS="hibench.yarn.executor.num",
+    YARN_EXECUTOR_CORES="hibench.yarn.executor.cores",
+    YARN_EXECUTOR_MEMORY="hibench.yarn.executor.memory",
     YARN_DRIVER_MEMORY="hibench.yarn.driver.memory",
     DATA_HDFS="hibench.hdfs.data.dir",
     # For Sleep workload

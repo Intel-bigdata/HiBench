@@ -105,7 +105,7 @@ This benchmark suite contains 9 typical micro workloads:
       Setup SSH public/private key pair, and disable
       `StrictHostKeyChecking` in `/etc/ssh/ssh_config`. Make sure all
       nodes in your cluster can ssh to each other nodes (including
-      localhost) without prompt for password.
+      localhost) without prompt for a password.
 
       Double check in each node, make sure all hostnames in the
       cluster will be resolved to right IP addresses.
@@ -128,7 +128,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       Before you run any workload in the package, please verify the
       Hadoop framework is running correctly. Both MR1 and MR2 from
-      Apahce, CDH4 and CDH5 are supported & tested. 
+      Apache, CDH4 and CDH5 are supported & tested. 
 
       Note: For CDH5/MR1 with tarball, please recreate symlink file
       `hadoop-*-cdh*/share/hadoop/mapreduce` to point to correct folder:
@@ -164,14 +164,14 @@ This benchmark suite contains 9 typical micro workloads:
       must be set to `1.2` or `1.3`.
 
       Begin from HiBench V4.0, HiBench'll need python 2.x(>=2.6) for
-      running. For most modern linux distribution, this is satifised
+      running. For most modern Linux distribution, this is satisfied
       already.
 
   5. Setup `numpy` in all nodes for Python related MLLib workloads. (numpy version > 1.4)
 
      For CentOS(6.2+):
      
-     `yum inlstall numpy`
+     `yum install numpy`
 
      For Ubuntu/Debian:
 
@@ -179,11 +179,11 @@ This benchmark suite contains 9 typical micro workloads:
 
   6. Setup for HiBench/report_gen_plot.py (Optional)
   
-     Install python-matplotlib with verion of 0.9+
+     Install python-matplotlib with version of 0.9+
 
      For CentOS(6.2+):
      
-     `yum inlstall python-matplotlib`
+     `yum install python-matplotlib`
 
      For Ubuntu/Debian:
 
@@ -203,15 +203,15 @@ This benchmark suite contains 9 typical micro workloads:
      Note: For YARN mode, set `hibench.spark.master` to
      `yarn-client`. (`yarn-cluster` is not supported yet)
 
-     Parallelism, memory, exector number tuning:
+     Parallelism, memory, executor number tuning:
      
           hibench.default.map.parallelism       Mapper numbers in MR, 
                                                 partition numbers in Spark
           hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle 
                                                 partition numbers in Spark
-          hibench.yarn.exectors.num             Number executors in YARN mode
-          hibench.yarn.exectors.cores           Number executor cores in YARN mode 
-          spark.exectors.memory                 Executor memory, standalone or YARN mode
+          hibench.yarn.executors.num            Number executors in YARN mode
+          hibench.yarn.executors.cores          Number executor cores in YARN mode 
+          spark.executors.memory                Executor memory, standalone or YARN mode
           spark.driver.memory                   Driver memory, standalone or YARN mode
           
      Compress options:
@@ -238,7 +238,7 @@ This benchmark suite contains 9 typical micro workloads:
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
 
-     3. Values in latter configures will override former.
+     3. Values in latter configure will override former.
 
      4. The final values for all properties will be stored in a single
      config file located at `report/<workload><language APIs>/conf/<workload>.conf`,
@@ -271,7 +271,7 @@ This benchmark suite contains 9 typical micro workloads:
           cd <HiBench root>/src
           mvn clean package
 
-    By default it will build HiBench with MR2 and spark1.3 API.
+    By default, it will build HiBench with MR2 and spark1.3 API.
 
     For running HiBench with MR1 API, supply `-DMR1`, and for
     running HiBench with Spark1.2 API, supply `-Dspark1.2`. For
@@ -325,7 +325,7 @@ This benchmark suite contains 9 typical micro workloads:
 
       `<workload>/<language APIs>/bin/run.sh` to run the corresponding benchmark.
 
-  4. View the detailed report for each workloads:
+  4. View the detailed report for each workload:
 
       - `report/<workload>/<language APIs>/bench.log`: raw logs on client side.
       - `report/<workload>/<language APIs>/monitor.html`: System monitor charts.
