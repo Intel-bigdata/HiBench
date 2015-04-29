@@ -200,7 +200,7 @@ Note:
       mapreduce/bin/run.sh          run MapReduce language API
       spark/java/bin/run.sh         run Spark/java language API
       spark/scala/bin/run.sh        run Spark/scala language API
-      spark.python/bin/run.sh       run Spark/python language API
+      spark/python/bin/run.sh       run Spark/python language API
 
 
 --- ### Known issues ###
