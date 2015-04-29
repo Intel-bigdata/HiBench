@@ -16,33 +16,12 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareNutchindexing ${workload_root} ${workload_folder}
+enter_bench JavaSparkDFSIOE ${workload_root} ${workload_folder}
 show_bannar start
-
-rmr-hdfs $INPUT_HDFS || true
-
-SIZE=`dir_size $INPUT_HDFS`
-MONITOR_PID=`start-monitor`
-START_TIME=`timestamp`
-
-# generate data
-OPTION="-t nutch \
-        -b ${NUTCH_BASE_HDFS} \
-        -n ${NUTCH_INPUT} \
-        -m ${NUM_MAPS} \
-        -r ${NUM_REDS} \
-        -p ${PAGES} \
-        -o sequence"
-
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1  ${DATATOOLS_COMPRESS_OPT} 2>&1
-
-END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
-
+echo -e "${On_Blue}Spark DFSIOE not implemented yet, nothing to do.${Color_Off}"
 show_bannar finish
 leave_bench
-
 

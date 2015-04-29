@@ -16,33 +16,38 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareNutchindexing ${workload_root} ${workload_folder}
+enter_bench HadoopDfsioe-read ${workload_root} ${workload_folder}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+# path check
+rmr-hdfs $INPUT_HDFS/io_read || true
+rmr-hdfs $INPUT_HDFS/_* || true
 
 SIZE=`dir_size $INPUT_HDFS`
+OPTION="-read -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 131072 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -Dtest.build.data=${INPUT_HDFS}"
+
+OLD_HADOOP_OPTS=${HADOOP_OPTS:-}
+export HADOOP_OPTS="${HADOOP_OPTS:-} -Dtest.build.data=${INPUT_HDFS} "
+
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 
-# generate data
-OPTION="-t nutch \
-        -b ${NUTCH_BASE_HDFS} \
-        -n ${NUTCH_INPUT} \
-        -m ${NUM_MAPS} \
-        -r ${NUM_REDS} \
-        -p ${PAGES} \
-        -o sequence"
-
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1  ${DATATOOLS_COMPRESS_OPT} 2>&1
+#run benchmark
+run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
+    -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS"    \
+    -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS" \
+    ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_read.txt                  \
+    -tputFile ${WORKLOAD_RESULT_FOLDER}/throughput_read.csv                       \
+    -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
 
 END_TIME=`timestamp`
+export HADOOP_OPTS="$OLD_HADOOP_OPTS"
 stop-monitor $MONITOR_PID
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-
 

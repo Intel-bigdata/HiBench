@@ -806,6 +806,8 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
             return str(PROBE_INTERVAL * 1000)
         elif match == 'workload_name':
             return workload_title
+        else:
+            return '{%s}' % match
             
     with open(report_fn, 'w') as f:
         f.write(re.sub(r'{\w+}', my_replace, template))

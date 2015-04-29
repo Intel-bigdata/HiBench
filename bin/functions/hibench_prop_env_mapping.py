@@ -65,9 +65,9 @@ HiBenchEnvPropMapping=dict(
     NUTCH_DIR="hibench.nutch.nutchindexing.dir",
     HIBENCH_REPORT="hibench.report.dir", # set in default
     HIBENCH_REPORT_NAME="hibench.report.name", # set in default
-    YARN_NUM_EXECUTORS="hibench.yarn.exector.num",
-    YARN_EXECUTOR_CORES="hibench.yarn.exector.cores",
-    YARN_EXECUTOR_MEMORY="hibench.yarn.exector.memory",
+    YARN_NUM_EXECUTORS="hibench.yarn.executor.num",
+    YARN_EXECUTOR_CORES="hibench.yarn.executor.cores",
+    YARN_EXECUTOR_MEMORY="hibench.yarn.executor.memory",
     YARN_DRIVER_MEMORY="hibench.yarn.driver.memory",
     DATA_HDFS="hibench.hdfs.data.dir",
     # For Sleep workload
@@ -104,6 +104,13 @@ HiBenchEnvPropMapping=dict(
     BLOCK="hibench.pagerank.block",
     NUM_ITERATIONS="hibench.pagerank.num_iterations",
     PEGASUS_JAR="hibench.pagerank.pegasus.dir",
+    # For DFSIOE
+    RD_NUM_OF_FILES="hibench.dfsioe.read.number_of_files",
+    RD_FILE_SIZE="hibench.dfsioe.read.file_size",
+    WT_NUM_OF_FILES="hibench.dfsioe.write.number_of_files",
+    WT_FILE_SIZE="hibench.dfsioe.write.file_size",
+    MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
+    RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])

@@ -368,6 +368,15 @@ def generate_optional_value():  # get some critical values from environment or m
     HibenchConf['hibench.masters.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
     HibenchConf['hibench.slaves.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
 
+    # probe map.java_opts red.java_opts
+    cmd1 = """cat %s | grep "mapreduce.map.java.opts" | awk -F\< '{print $5}' | awk -F\> '{print $NF}'""" % os.path.join(HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
+    cmd2 = """cat %s | grep "mapreduce.reduce.java.opts" | awk -F\< '{print $5}' | awk -F\> '{print $NF}'""" % os.path.join(HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
+    HibenchConf['hibench.dfsioe.map.java_opts'] = shell(cmd1)
+    HibenchConfRef['hibench.dfsioe.map.java_opts'] = "Probed by shell command:'%s'" % cmd1
+    HibenchConf['hibench.dfsioe.red.java_opts'] = shell(cmd2)
+    HibenchConfRef['hibench.dfsioe.red.java_opts'] = "Probed by shell command:'%s'" % cmd2
+
+
 def export_config(workload_name, workload_tail):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']

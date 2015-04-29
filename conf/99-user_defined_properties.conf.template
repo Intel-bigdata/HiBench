@@ -55,8 +55,8 @@ hibench.default.map.parallelism		12
 hibench.default.shuffle.parallelism	6	
 
 # YARN resource configuration
-hibench.yarn.exector.num	4
-hibench.yarn.exector.cores	4
+hibench.yarn.executor.num	4
+hibench.yarn.executor.cores	4
 
 # Spark only properties
 #----------------------
