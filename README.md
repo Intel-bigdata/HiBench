@@ -230,7 +230,7 @@ Note:
 
      `aptitude install python-numpy`
 
-4. Setup for `<HiBench_Root>/bin/report_gen_plot.py`:
+4. Execute `<HiBench_Root>/bin/report_gen_plot.py`:
 
    You'll need to install python-matplotlib(version > 0.9).
 
