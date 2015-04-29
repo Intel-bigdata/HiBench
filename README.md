@@ -148,7 +148,7 @@ Note:
      
 3. Data scale profile selection:
 
-          hibench.scale.profile                 Data scale profile, `tiny`, `small`, `large`
+          hibench.scale.profile                 Data scale profile, `tiny`, `small`, `large`, `huge`, `gigantic`, `bigdata`
                                                   
    You can add more data scale profiles in `conf/10-data-scale-profile.conf`. And please don't change `conf/00-default-properties.conf` if you have no confidence.
 
