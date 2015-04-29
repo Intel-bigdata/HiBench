@@ -1,5 +1,5 @@
 # HiBench Suite  #
-## HiBench - the bigdata-benchmark suite for Hadoop and Spark ##
+## HiBench - the bigdata-benchmark suite ##
 
 ---
 
@@ -90,12 +90,11 @@ Note:
 
      Setup JDK, Hadoop-YARN, Spark runtime environment properly.
 
-     Download/checkout HiBench benchmark suite from
-     [https://github.com/Intel-bigdata/Sparkbench/tree/v4.0-branch](https://github.com/Intel-bigdata/Sparkbench/archive/v4.0-branch.zip)  FIXME!
+     Download/checkout HiBench benchmark suite
 
      Run `<HiBench_Root>/bin/build-all.sh` to build HiBench.
       
-     Note: Begin from HiBench V4.0, HiBench will need python 2.x(>=2.6) for running. For most modern Linux distribution, this is satisfied already.
+     Note: Begin from HiBench V4.0, HiBench will need python 2.x(>=2.6) .
 
 2. HiBench Configurations.
 
@@ -122,7 +121,7 @@ Note:
       - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/sparkbench.conf`: Generated configuration for this workloads, which is used for mapping to environment variable.
       - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/spark.conf`: Generated configuration for spark.
       
-   Execute `<HiBench root>/bin/report_gen_plot.py report/hibench.report` to generate report figures.
+   [Optional] Execute `<HiBench root>/bin/report_gen_plot.py report/hibench.report` to generate report figures.
 
    Note: `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
 
@@ -208,7 +207,7 @@ Note:
 
 1. Running Spark/Python API with YARN:
 
-   Due to [SPARK-1703](https://issues.apache.org/jira/browse/SPARK-1703) and [SPARK-1911](https://issues.apache.org/jira/browse/SPARK-1911), Oracle-JDK-1.6 is the suggested option which passes all tests.
+   Due to [SPARK-1703](https://issues.apache.org/jira/browse/SPARK-1703) and [SPARK-1911](https://issues.apache.org/jira/browse/SPARK-1911), Oracle-JDK-1.6 is preferred.
 
 2. Running with CDH/MR1:
 
