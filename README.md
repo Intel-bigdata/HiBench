@@ -12,7 +12,7 @@
   1. Overview
   2. Getting Started
   3. Advanced Configuration
-  4. Known Issues
+  4. Possible Issues
 
 ---
 ### OVERVIEW ###
@@ -78,10 +78,10 @@ Note:
     
 **Supported hadoop/spark release:**
 
-    - Apache release of Hadoop 1.x and Hadoop 2.x
-    - CDH4/CDH5 release of MR1 and MR2.
-    - Spark1.2
-    - Spark1.3
+  - Apache release of Hadoop 1.x and Hadoop 2.x
+  - CDH4/CDH5 release of MR1 and MR2.
+  - Spark1.2
+  - Spark1.3
 
 ---
 ### Getting Started ###
@@ -95,7 +95,7 @@ Note:
 
      Run `<HiBench_Root>/bin/build-all.sh` to build HiBench.
       
-     Note: Begin from HiBench V4.0, HiBench'll need python 2.x(>=2.6) for running. For most modern Linux distribution, this is satisfied already.
+     Note: Begin from HiBench V4.0, HiBench will need python 2.x(>=2.6) for running. For most modern Linux distribution, this is satisfied already.
 
 2. HiBench Configurations.
 
@@ -124,13 +124,13 @@ Note:
       
    Execute `<HiBench root>/bin/report_gen_plot.py report/hibench.report` to generate report figures.
 
-      Note:
-        `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
+   Note: `report_gen_plot.py` requires `python2.x` and `python-matplotlib`.
 
 ---
 ### Advanced Configurations ###
 
 1. Parallelism, memory, executor number tuning:
+
           hibench.default.map.parallelism       Mapper numbers in MR, 
                                                 partition numbers in Spark
           hibench.default.shuffle.parallelism   Reducer numbers in MR, shuffle 
@@ -157,9 +157,9 @@ Note:
 
      1. All configurations will be loaded in a nested folder structure:
 
-          conf/*.conf                                         Configure globally
-          workloads/<workload>/conf/*.conf                    Configure for each workload
-          workloads/<workload>/<language APIs>/.../*.conf     Configure for various languages
+              conf/*.conf                                         Configure globally
+              workloads/<workload>/conf/*.conf                    Configure for each workload
+              workloads/<workload>/<language APIs>/.../*.conf     Configure for various languages
 
      2. For configurations in same folder, the loading sequence will be
      sorted according to configure file name. 
@@ -180,7 +180,7 @@ Note:
           - MR2, Spark1.2
           - MR2, Spark1.3
 
-   And HiBench will probe Hadoop & Spark release version and choose proper HiBench release automatically. However, for furture Spark release (for example, Spark1.4) which is API compatibled with Spark1.3. HiBench'll fail due to lack the profile. You can pinpoint Hadoop/Spark release version by setting:
+   And HiBench will probe Hadoop & Spark release version and choose proper HiBench release automatically. However, for furture Spark release (for example, Spark1.4) which is API compatibled with Spark1.3. HiBench'll fail due to lack the profile. You can define Hadoop/Spark release version by setting to force HiBench using Spark1.3 profile:
 
           hibench.spark.version          spark1.3
 
@@ -203,7 +203,8 @@ Note:
       spark/python/bin/run.sh       run Spark/python language API
 
 
---- ### Known issues ###
+---
+### Possible issues ###
 
 1. Running Spark/Python API with YARN:
 
@@ -211,7 +212,7 @@ Note:
 
 2. Running with CDH/MR1:
 
-   For CDH/MR1 with tarball, please recreate symlink file `hadoop-*-cdh*/share/hadoop/mapreduce` to point to correct folder:
+   For a tarball deployed CDH/MR1, please recreate symlink file `hadoop-*-cdh*/share/hadoop/mapreduce` to point to correct folder:
 
           cd share/hadoop
           rm mapreduce
