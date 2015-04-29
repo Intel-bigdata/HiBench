@@ -16,9 +16,11 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
-. "${workload_root}/../../../bin/functions/load-bench-config.sh"
+workload_root=${workload_folder}/../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
+enter_bench HadoopDfsioe-write ${workload_root} ${workload_folder}
+show_bannar start
 
 #path check
 rmr-hdfs ${OUTPUT_HDFS} || true
@@ -27,6 +29,9 @@ rmr-hdfs ${OUTPUT_HDFS} || true
 SIZE=`dir_size $INPUT_HDFS`
 OPTION="-write -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -Dtest.build.data=${INPUT_HDFS}"
 
+OLD_HADOOP_OPTS=${HADOOP_OPTS:-}
+export HADOOP_OPTS="${HADOOP_OPTS:-} -Dtest.build.data=${INPUT_HDFS} "
+
 MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
 
@@ -34,11 +39,12 @@ START_TIME=`timestamp`
 run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
     -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS"    \
     -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS" \
-    ${OPTION} -resFile ${HIBENCH_CUR_WORKLOAD_NAME}/result_write.txt              \
-    -tputFile ${HIBENCH_CUR_WORKLOAD_NAME}/throughput_write.csv
+    ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_write.txt                 \
+    -tputFile ${WORKLOAD_RESULT_FOLDER}/throughput_write.csv
 
 # post-running
 END_TIME=`timestamp`
+export HADOOP_OPTS="$OLD_HADOOP_OPTS"
 stop-monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
