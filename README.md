@@ -74,9 +74,8 @@ Note:
 
 10. enhanced DFSIO (dfsioe)
 
-	Enhanced DFSIO tests the HDFS throughput of the Hadoop cluster by generating a large number of tasks performing writes and reads simultaneously. It measures the average I/O rate of each map task, the average throughput of each map task, and the aggregated throughput of HDFS cluster. 
-	
-	Note: this benchmark doesn't have Spark corresponding implementation.
+    Enhanced DFSIO tests the HDFS throughput of the Hadoop cluster by generating a large number of tasks performing writes and reads simultaneously. It measures the average I/O rate of each map task, the average throughput of each map task, and the aggregated throughput of HDFS cluster. 
+    Note: this benchmark doesn't have Spark corresponding implementation.
 ---
 ### Getting Started ###
 
