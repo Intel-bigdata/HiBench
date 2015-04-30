@@ -1,5 +1,4 @@
-# HiBench Suite  #
-## HiBench - the bigdata micro benchmark suite ##
+# HiBench Suite - the bigdata micro benchmark suite #
 
 ---
 
