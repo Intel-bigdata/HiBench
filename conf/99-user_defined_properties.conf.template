@@ -1,0 +1,90 @@
+#======================================================
+# Mandatory settings
+#======================================================
+
+# Hadoop home
+hibench.hadoop.home		/PATH/TO/YOUR/HADOOP/ROOT
+
+# Spark home
+hibench.spark.home		/PATH/TO/YOUR/SPARK/ROOT
+
+# HDFS master
+hibench.hdfs.master		/URL/TO/YOUR/HDFS
+
+# Spark master
+#   standalone mode: `spark://xxx:7077`
+#   YARN mode: `yarn-client`
+#   unset: fallback to `local[1]`
+hibench.spark.master		yarn-client
+
+#======================================================
+# Not mandatory but important settings
+#======================================================
+
+# `hibench.hadoop.executable` is used to auto probe hadoop version and
+# hadoop release, which is critical for further configurations. Most
+# cases `hadoop` executable be placed under HADOOP_HOME/bin. However,
+# in some cases such as CDH?/MR1, it must be explicitly defined:
+
+#hibench.hadoop.executable	${hibench.hadoop.home}/bin-mapreduce1/hadoop
+
+# `hibench.hadoop.version` will be auto probed according to
+# `hibench.hadoop.executable` version information report. However, for
+# CDH release, both `hadoop version` of MR1 and MR2 will produce same
+# report, which can't probe right MR versions. You'll need to
+# explicitly define MR versions here.
+
+#hibench.hadoop.version		hadoop1
+
+# `hibench.spark.version` is used to choose which sparkbench workload
+# jar. Mostly situation it'll be auto probed. Please override if spark
+# version is not probed correctly. 
+# Note, supported values: `spark1.2` or `spark1.3`
+
+#hibench.spark.version          spark1.3
+
+#======================================================
+# Optional settings
+#======================================================
+
+# Important parameters
+#---------------------
+
+# execute parallelism settings
+hibench.default.map.parallelism		12
+hibench.default.shuffle.parallelism	6	
+
+# YARN resource configuration
+hibench.yarn.executor.num	4
+hibench.yarn.executor.cores	4
+
+# Spark only properties
+#----------------------
+
+# executor/driver memory in standalone & YARN mode
+spark.executor.memory  4G
+spark.driver.memory    4G
+
+# Compression
+spark.rdd.compress            false
+# compression codec: lz4, lzf, snappy, put class path here accordingly.
+spark.shuffle.compress		false
+spark.broadcast.compress	false
+spark.io.compression.codec    org.apache.spark.io.SnappyCompressionCodec 
+
+# Akka
+spark.akka.frameSize          1000
+spark.akka.timeout            600
+
+# mllib will use KyroSerializer, ensure the buffer is large enough
+spark.kryoserializer.buffer.mb	 2000
+
+# Data scale, Compression profile selection
+#------------------------------------------
+
+# Data scale profile: tiny, small, large, ..., defined in 10-data-scale-profile.conf
+hibench.scale.profile  	      	        large
+# Compression options selection: enable, disable
+hibench.compress.profile	 	disable
+# Compression codec profile selection:	 snappy, lzo, default
+hibench.compress.codec.profile		snappy

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+	Created by Lv, Qi @ 2015-02
+	contact qi.lv@intel.com for any problem
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intel.hibench</groupId>
+        <artifactId>hibench</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>pegasus</artifactId>
+    <packaging>jar</packaging>
+    <groupId>pegasus</groupId>
+    <version>2.0-SNAPSHOT</version>
+    <name>PEGASUS: A Peta-Scale Graph Mining System</name>
+    <url>http://www.cs.cmu.edu/~pegasus/index.htm</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-core</artifactId>
+            <version>${hadoop.mr1.version}</version>
+        </dependency>
+    </dependencies>
+</project>
