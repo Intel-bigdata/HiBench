@@ -1,0 +1,161 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.intel.hibench</groupId>
+    <artifactId>hibench</artifactId>
+    <version>4.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>hibench</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+	<slf4j.version>1.7.5</slf4j.version>
+	<log4j.version>1.2.17</log4j.version>
+	<scopt.version>3.2.0</scopt.version>
+	<mahout.version>0.9</mahout.version>
+	<uncommons-maths.version>1.2.2a</uncommons-maths.version>
+	<junit.version>3.8.1</junit.version>
+	<hadoop.mr2.version>2.2.0</hadoop.mr2.version>
+	<hadoop.mr1.version>1.2.1</hadoop.mr1.version>
+	<scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
+	<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+	<maven-assembly-plugin.version>2.5.3</maven-assembly-plugin.version>
+	<maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
+	<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
+	<download-maven-plugin.version>1.2.0</download-maven-plugin.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <!-- This should be at top, it makes maven try the central repo first and then others and hence faster dep resolution -->
+            <name>Maven Repository</name>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>apache-repo</id>
+            <name>Apache Repository</name>
+            <url>https://repository.apache.org/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>scala-tools.org</id>
+            <name>Scala-tools Maven 2 Repository</name>
+            <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>scala-tools.org</id>
+            <name>Scala-tools Maven2 Repository</name>
+            <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>nutchindexing</module>
+        <module>mahout</module>
+        <module>hivebench</module>
+        <module>sparkbench</module>
+        <module>pegasus</module>
+        <module>autogen</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>MR1</id>
+            <properties>
+                <sparkbench.mr.version>1</sparkbench.mr.version>
+            </properties>
+            <activation>
+                <property><name>MR1</name></property>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>MR2</id>
+            <build>
+            </build>
+            <properties>
+                <sparkbench.mr.version>2</sparkbench.mr.version>
+            </properties>
+            <activation>
+                <property><name>!MR1</name></property>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>spark1.2</id>
+            <properties>
+                <spark.version>1.2.1</spark.version>
+                <spark.bin.version>1.2</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>spark1.2</name></property>
+            </activation>
+        </profile>
+
+        <profile>
+            <id>spark1.3</id>
+            <properties>
+                <env>spark1.3</env>
+                <spark.version>1.3.0</spark.version>
+                <spark.bin.version>1.3</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>!spark1.2</name></property>
+            </activation>
+        </profile>
+    </profiles>
+</project>
