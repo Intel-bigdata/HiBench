@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project name="maven-antrun-" default="main"  >
-<target name="main">
-  <copy file="../src/conf/driver.classes.props" tofile="/home2/kwei1/projects/mahout-distribution-0.7-src/core/target/classes/driver.classes.default.props"/>
-</target>
-</project>
