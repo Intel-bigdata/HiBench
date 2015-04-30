@@ -1,5 +1,4 @@
 # HiBench Suite - the bigdata micro benchmark suite #
-
 ---
 
 - Current version: 4.0
