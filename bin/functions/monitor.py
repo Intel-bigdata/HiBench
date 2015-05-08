@@ -324,7 +324,7 @@ class NetworkMonitor(BaseMonitor):
         rproc.register(self, """with open("/proc/net/dev") as f:
   s2.send("".join([x for x in f.readlines()]))
 """)
-        self._filter = re.compile('^.*(lo|bond\d+|eth\d+|.+\.\d+):\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$')
+        self._filter = re.compile('^\s*(.+):\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+).*$')
         super(NetworkMonitor, self).__init__(rproc)
 
     def feed(self, container, timestamp):
