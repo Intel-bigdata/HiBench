@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.0">
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/DistinctCountJob.scala">
+  <error column="0" line="20" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="21" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="8" line="42" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="8" line="43" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="62" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="72" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="27" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="34" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="45" line="45" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="48" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="49" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="54" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="51" line="63" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="64" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="65" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="66" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="66" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="67" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="67" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="68" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="68" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="69" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="69" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="27" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="34" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="45" line="45" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="48" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="49" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="54" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="51" line="63" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="64" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="65" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="66" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="66" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="67" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="67" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="68" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="68" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="69" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="69" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/TestKafka.scala">
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="50" line="13" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="23" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="45" line="25" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="13" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="23" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="45" line="25" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/GrepStreamJob.scala">
+  <error column="0" line="18" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="19" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="58" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="67" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="25" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="32" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="37" line="39" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="43" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="44" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="49" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="52" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="55" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="58" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="63" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="63" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="64" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="64" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="25" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="32" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="37" line="39" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="43" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="44" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="49" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="52" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="55" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="58" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="63" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="63" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="64" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="64" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/SketchStreamJob.scala">
+  <error column="0" line="18" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="19" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="56" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="65" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="25" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="32" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="41" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="42" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="47" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="50" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="53" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="56" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="58" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="25" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="32" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="41" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="42" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="47" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="50" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="53" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="56" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="58" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/Wordcount.scala">
+  <error column="0" line="20" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="21" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="73" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="82" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="26" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="33" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="39" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="41" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="45" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="58" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="64" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="67" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="70" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="73" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="74" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="75" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="76" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="76" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="77" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="77" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="78" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="78" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="79" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="79" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="26" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="33" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="39" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="42" line="41" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="45" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="58" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="64" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="67" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="70" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="73" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="74" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="75" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="76" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="76" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="77" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="77" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="78" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="78" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="79" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="79" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="11" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="12" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/util/LogUtil.scala">
+  <error column="0" line="9" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="10" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="13" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="29" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error source="org.scalastyle.file.NewLineAtEofChecker" severity="error" message="File must end with newline character"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/NumericCalcJob.scala">
+  <error column="0" line="22" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="23" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="50" line="50" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="50" line="51" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="50" line="52" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="59" line="53" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="81" line="54" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="73" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="74" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="52" line="75" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="52" line="76" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="61" line="77" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="52" line="78" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="90" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="29" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="36" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="45" line="47" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="50" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="50" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="51" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="51" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="52" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="52" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="53" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="55" line="53" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="54" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="77" line="54" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="58" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="63" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="66" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="69" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="37" line="74" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="74" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="75" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="75" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="76" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="76" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="77" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="77" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="78" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="78" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="51" line="80" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="81" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="82" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="83" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="83" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="84" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="84" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="85" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="85" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="86" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="86" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="29" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="36" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="45" line="47" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="42" line="50" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="50" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="42" line="51" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="51" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="42" line="52" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="52" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="53" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="55" line="53" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="42" line="54" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="77" line="54" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="58" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="63" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="66" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="69" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="37" line="74" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="74" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="75" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="75" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="76" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="76" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="77" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="77" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="78" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="78" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="51" line="80" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="81" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="82" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="83" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="83" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="84" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="84" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="85" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="85" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="86" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="86" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/metrics/LatencyCollector.scala">
+  <error column="0" line="20" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="21" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="22" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="23" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="33" line="15" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="24" line="22" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="36" line="24" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="25" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="33" line="15" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="24" line="22" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="36" line="24" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="25" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/TestKafka2.scala">
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="50" line="17" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="31" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="45" line="33" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="17" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="31" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="45" line="33" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="14" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="22" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/SampleStreamJob.scala">
+  <error column="0" line="18" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="19" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="54" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="56" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="65" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="48" line="23" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="30" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="49" line="38" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="70" line="38" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="94" line="38" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="41" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="42" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="47" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="50" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="53" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="56" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="58" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="59" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="60" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="61" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="62" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="23" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="30" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="49" line="38" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="70" line="38" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="94" line="38" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="41" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="42" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="47" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="50" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="53" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="56" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="58" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="59" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="60" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="61" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="62" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="38" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/RunBenchWithInit.scala">
+  <error column="0" line="24" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="26" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="27" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="28" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="33" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="34" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="35" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="36" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="37" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="38" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="20" line="36" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="20" line="36" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="17" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="23" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/microbench/IdentityJob.scala">
+  <error column="0" line="16" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="17" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="51" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="60" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error column="42" line="21" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="22" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="53" line="29" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="39" line="36" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="30" line="37" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="48" line="42" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="41" line="45" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="76" line="48" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="51" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="44" line="52" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="53" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="58" line="54" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="80" line="54" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="50" line="55" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="67" line="55" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="46" line="56" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="57" line="56" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="43" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="69" line="57" source="org.scalastyle.scalariform.SpacesAfterPlusChecker" severity="error" message="There should be a space after the plus (+) sign"></error>
+  <error column="42" line="21" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="22" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="53" line="29" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="39" line="36" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="30" line="37" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="48" line="42" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="41" line="45" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="76" line="48" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="51" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="44" line="52" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="53" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="58" line="54" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="80" line="54" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="50" line="55" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="67" line="55" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="46" line="56" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="57" line="56" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="43" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error column="69" line="57" source="org.scalastyle.scalariform.SpacesBeforePlusChecker" severity="error" message="There should be a space before the plus (+) sign"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="10" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+ </file>
+ <file name="/Users/luruirui/IdeaProjects/StreamingBench/sparkbench/src/main/scala/com/intel/PRCcloud/streamBench/Runbench.scala">
+  <error column="0" line="14" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="21" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="22" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="26" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="27" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="28" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="29" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="30" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="31" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="32" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="33" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="34" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="35" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="36" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="37" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="38" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="39" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="40" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="41" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="42" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="43" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="44" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="45" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="46" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="47" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="48" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="49" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="50" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="51" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="52" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="53" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="54" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="55" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="56" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="57" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="58" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="59" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="60" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="61" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="62" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="63" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="64" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="65" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="66" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="67" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="68" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="69" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="70" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error column="0" line="71" source="org.scalastyle.file.FileTabChecker" severity="error" message="Line contains a tab"></error>
+  <error line="1" source="org.scalastyle.file.HeaderMatchesChecker" severity="error" message="Header does not match expected text"></error>
+  <error line="8" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="14" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="29" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="32" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="36" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="38" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="42" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="45" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="49" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="51" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="55" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="57" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="61" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="64" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error line="67" source="org.scalastyle.file.FileLineLengthChecker" severity="error" message="File line length exceeds 100 characters"></error>
+  <error column="3" line="28" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+  <error column="3" line="35" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+  <error column="3" line="41" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+  <error column="3" line="48" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+  <error column="4" line="54" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+  <error column="4" line="60" source="org.scalastyle.scalariform.IfBraceChecker" severity="error" message="If block needs braces"></error>
+ </file>
+</checkstyle>
