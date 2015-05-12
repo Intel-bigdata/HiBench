@@ -172,6 +172,51 @@
     <testOutputDirectory>target/scala-${scala.binary.version}/test-classes</testOutputDirectory>
     <plugins>
       <plugin>
+	<groupId>net.alchim31.maven</groupId>
+	<artifactId>scala-maven-plugin</artifactId>
+	<configuration>
+	  <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+	  <scalaVersion>${scala.version}</scalaVersion>
+	</configuration>
+	<executions>
+	  <execution>
+	    <id>scala-compile-first</id>
+	    <phase>process-resources</phase>
+	    <goals>
+	      <goal>add-source</goal>
+	      <goal>compile</goal>
+	    </goals>
+	  </execution>
+	  <execution>
+	    <id>scala-test-compile</id>
+	    <phase>process-test-resources</phase>
+	    <goals>
+	      <goal>testCompile</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+       <plugin>
+	      <groupId>org.codehaus.mojo</groupId>
+	      <artifactId>build-helper-maven-plugin</artifactId>
+	      <version>${build-helper-maven-plugin.version}</version>
+	      <executions>
+	    	<execution>
+	    	  <id>add-source</id>
+	    	  <phase>generate-sources</phase>
+	    	  <goals>
+	    	    <goal>add-source</goal>
+	    	  </goals>
+	    	  <configuration>
+	    	    <sources>
+	    	      <source>src/multiapi/scala/spark${spark.bin.version}/</source>
+	    	    </sources>
+	    	  </configuration>
+	    	</execution>
+	      </executions>
+	    </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <configuration>
