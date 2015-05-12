@@ -1,26 +1,26 @@
 #bin directory of spark installation (will use spark-submit)
-SPARK_BIN_DIR=
+SPARK_BIN_DIR=/home/lv/intel/cluster/spark/spark-1.3.0-bin-hadoop2.4/bin
 
 ###############
 
 #Cluster config
 # Spark master location
-sparkMaster=
+sparkMaster=spark://lv-dev:7077
 
 # zookeeper host of kafka cluster
-zkHost=
+zkHost=localhost
 
 ###############
 
 #Parallel config
 # number of nodes that will receive kafka input
-receiverNodes=
+receiverNodes=48
 
 ###############
 #Benchmark args
 #Note to ensure benchName to be consistent with datagen type. Numeric data for statistics and text data for others
 # please uncomment one benchName to run the benchmark
-#benchName="micro/identity"
+benchName="micro/identity"
 #benchName="micro/sample"
 #benchName="micro/sketch"
 #benchName="micro/grep"
@@ -30,13 +30,13 @@ receiverNodes=
 
 #common args
 # the topic that spark will receive input data
-topicName=
+topicName=identity-source-60
 # Spark stream batch interval
-batchInterval=  #In seconds
+batchInterval=50  #In seconds
 # consumer group of the spark consumer for kafka
-consumerGroup=
+consumerGroup=xxx
 # expected number of records to be processed
-recordCount=
+recordCount=900000000
 
 #sketch/distinctcount/statistics arg
 # the field index of the record that will be extracted
