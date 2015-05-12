@@ -29,6 +29,9 @@
 	<maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
 	<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 	<download-maven-plugin.version>1.2.0</download-maven-plugin.version>
+	<jetty.version>8.1.14.v20131031</jetty.version>
+	<scalatest.version>2.2.1</scalatest.version>
+	<scalacheck.version>1.11.3</scalacheck.version>
     </properties>
 
     <repositories>
@@ -55,7 +58,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
         <repository>
             <id>scala-tools.org</id>
             <name>Scala-tools Maven 2 Repository</name>
@@ -110,6 +112,7 @@
         <module>sparkbench</module>
         <module>pegasus</module>
         <module>autogen</module>
+        <module>streambench</module>
     </modules>
 
     <profiles>
