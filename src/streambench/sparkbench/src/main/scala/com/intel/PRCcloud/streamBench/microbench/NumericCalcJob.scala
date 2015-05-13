@@ -28,6 +28,16 @@ case class MultiReducer(var max: Long, var min: Long, var sum: Long, var count: 
 
 class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: String)
   extends RunBenchJobWithInit(subClassParams) {
+  class Aggregator(val ValMin:Long, val ValMax:Long, val ValSum:Long, val ValCount:Long) {
+    def aggr(v:Aggregator) = {
+      val vmin = Math.min(ValMin, v.ValMin)
+      val vmax = Math.max(ValMax, v.ValMax)
+      val vsum = ValSum + v.ValSum
+      val vcount = ValCount + v.ValCount
+
+      new Aggregator(vmin, vmax, vsum, vcount)
+    }
+  }
 
   var history_statistics = new MultiReducer()
 
@@ -59,3 +69,4 @@ class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: St
     })
   }
 }
+
