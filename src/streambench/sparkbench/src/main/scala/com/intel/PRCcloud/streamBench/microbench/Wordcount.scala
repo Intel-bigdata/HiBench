@@ -15,6 +15,10 @@ class Wordcount(subClassParams:ParamEntity,separator:String)
     val sep=separator
     val debug=subClassParams.debug
     var wordmap=Map[String,Long]()
+
+
+    lines.flatMap(x=>x.split(sep)).map((_,1)).reduceByKey(_+_)
+
     lines.foreachRDD(rdd=>{
       val words=rdd.flatMap(line=>line.split(sep))
       val pairs=words.map(word=>(word,1L))
