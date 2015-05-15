@@ -6,58 +6,56 @@ import com.intel.PRCcloud.streamBench.metrics.LatencyListener
 import org.apache.spark.streaming.StreamingContext
 import com.intel.PRCcloud.streamBench.util.BenchLogUtil
 
+case class MultiReducer(var max: Long, var min: Long, var sum: Long, var count: Long) extends Serializable {
+  def this() = this(0, Int.MaxValue, 0, 0)
 
-class NumericCalcJob(subClassParams:ParamEntity,fieldIndex:Int,separator:String)
-  extends RunBenchJobWithInit(subClassParams) {
-  class Aggregator(val ValMin:Long, val ValMax:Long, val ValSum:Long, val ValCount:Long) {
-    def aggr(v:Aggregator) = {
-      val vmin = Math.min(ValMin, v.ValMin)
-      val vmax = Math.max(ValMax, v.ValMax)
-      val vsum = ValSum + v.ValSum
-      val vcount = ValCount + v.ValCount
-
-      new Aggregator(vmin, vmax, vsum, vcount)
-    }
+  def reduceValue(value: Long): MultiReducer = {
+    this.max = Math.max(this.max, value)
+    this.min = Math.min(this.min, value)
+    this.sum += value
+    this.count += 1
+    this
   }
 
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    val index=fieldIndex
-    val sep=separator
+  def reduce(that: MultiReducer): MultiReducer = {
+    this.max = Math.max(this.max, that.max)
+    this.min = Math.min(this.min, that.min)
+    this.sum += that.sum
+    this.count += that.count
+    this
+  }
+}
 
-    var SumAggregator = new Aggregator(Int.MaxValue, 0, 0, 0)
+class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: String)
+  extends RunBenchJobWithInit(subClassParams) {
 
-    lines.foreachRDD(rdd=>{
-      val numbers=rdd.flatMap(line=>{
-        val splits=line.split(sep)
-        if(index<splits.length)
+  var history_statistics = new MultiReducer()
+
+  override def processStreamData(lines: DStream[String], ssc: StreamingContext) {
+    val index = fieldIndex
+    val sep = separator
+
+    lines.foreachRDD( rdd => {
+      val numbers = rdd.flatMap( line => {
+        val splits = line.split(sep)
+        if (index < splits.length)
           Iterator(splits(index).toLong)
         else
           Iterator.empty
       })
 
+      var zero = new MultiReducer()
+      val cur = numbers.map(x => new MultiReducer(x, x, x, 1))
+        .fold(zero)((v1, v2) => v1.reduce(v2))
+      //var cur = numbers.aggregate(zero)((v, x) => v.reduceValue(x), (v1, v2) => v1.reduce(v2))
+      history_statistics.reduce(cur)
 
-
-      val zero = new Aggregator(Int.MaxValue, 0, 0, 0)
-      val curAggregatedValue = numbers.map(x=> new Aggregator(x,x,x,1))
-        .fold(zero)((v1,v2) =>v1.aggr(v2))
-//
-//      val curMax=numbers.fold(0)((v1,v2)=>Math.max(v1, v2))
-//      max=Math.max(max, curMax)
-//      val curMin=numbers.fold(Int.MaxValue)((v1,v2)=>Math.min(v1, v2))
-//      min=Math.min(min, curMin)
-//      var curSum=numbers.fold(0)((v1,v2)=>v1+v2)
-//      sum+=curSum
-//      totalCount+=rdd.count()
-
-      SumAggregator = SumAggregator.aggr(curAggregatedValue)
-
-      BenchLogUtil.logMsg("Current max:"+SumAggregator.ValMax+"  	Time:")
-      BenchLogUtil.logMsg("Current min:"+SumAggregator.ValMin+"  	Time:")
-      BenchLogUtil.logMsg("Current sum:"+SumAggregator.ValSum+"  	Time:")
-      BenchLogUtil.logMsg("Current total:"+SumAggregator.ValCount+"  	Time:")
-      BenchLogUtil.logMsg("Current avg:"+(SumAggregator.ValSum.toDouble/SumAggregator.ValCount.toDouble)+"  	Time:")
+      BenchLogUtil.logMsg("Current max: " + history_statistics.max)
+      BenchLogUtil.logMsg("Current min: " + history_statistics.min)
+      BenchLogUtil.logMsg("Current sum: " + history_statistics.sum)
+      BenchLogUtil.logMsg("Current total: " + history_statistics.count)
+      BenchLogUtil.logMsg("Current avg: " + (history_statistics.sum.toDouble / history_statistics.count.toDouble))
 
     })
   }
 }
-
