@@ -72,72 +72,72 @@ public final class JavaBayes {
                 }
             });
 
-    JavaPairRDD<String, Integer> wordCount = data
+    JavaPairRDD<String, Long> wordCount = data
             .flatMap(new FlatMapFunction<Tuple2<String, String>, String>() {
                 @Override
                 public Iterable<String> call(Tuple2<String, String> e) {
                     return Arrays.asList(SPACE.split(e._2()));
                 }
             })
-            .mapToPair(new PairFunction<String, String, Integer>() {
+            .mapToPair(new PairFunction<String, String, Long>() {
                 @Override
-                public Tuple2<String, Integer> call(String e) {
-                    return new Tuple2<String, Integer>(e, 1);
+                public Tuple2<String, Long> call(String e) {
+                    return new Tuple2<String, Long>(e, 1L);
                 }
             })
-            .reduceByKey(new Function2<Integer, Integer, Integer>() {
+            .reduceByKey(new Function2<Long, Long, Long>() {
                 @Override
-                public Integer call(Integer i1, Integer i2) {
+                public Long call(Long i1, Long i2) {
                     return i1 + i2;
                 }
             });
 
-      final Integer wordSum = wordCount.map(new Function<Tuple2<String, Integer>, Integer>(){
+      final Long wordSum = wordCount.map(new Function<Tuple2<String, Long>, Long>(){
           @Override
-          public Integer call(Tuple2<String, Integer> e) {
+          public Long call(Tuple2<String, Long> e) {
               return e._2();
           }
       })
-      .reduce(new Function2<Integer, Integer, Integer>() {
+      .reduce(new Function2<Long, Long, Long>() {
           @Override
-          public Integer call(Integer v1, Integer v2) throws Exception {
+          public Long call(Long v1, Long v2) throws Exception {
               return v1 + v2;
           }
       });
 
-    List<Tuple2<String, Tuple2<Integer, Double>>> wordDictList = wordCount.zipWithIndex()
-            .map(new Function<Tuple2<Tuple2<String, Integer>, Long>, Tuple2<String, Tuple2<Integer, Double>>>() {
+    List<Tuple2<String, Tuple2<Long, Double>>> wordDictList = wordCount.zipWithIndex()
+            .map(new Function<Tuple2<Tuple2<String, Long>, Long>, Tuple2<String, Tuple2<Long, Double>>>() {
                 @Override
-                public Tuple2<String, Tuple2<Integer, Double>> call(Tuple2<Tuple2<String, Integer>, Long> e) throws Exception {
+                public Tuple2<String, Tuple2<Long, Double>> call(Tuple2<Tuple2<String, Long>, Long> e) throws Exception {
                     String key = e._1()._1();
-                    Integer count = e._1()._2();
+                    Long count = e._1()._2();
                     Long index = e._2();
-                    return new Tuple2<String, Tuple2<Integer, Double>>(key, new Tuple2<Integer, Double>(index.intValue(),
+                    return new Tuple2<String, Tuple2<Long, Double>>(key, new Tuple2<Long, Double>(index,
                             count.doubleValue() / wordSum));
                 }
             }).collect();
 
-    Map<String, Tuple2<Integer, Double>> wordDict = new HashMap();
-    for (Tuple2<String, Tuple2<Integer, Double>> item : wordDictList) {
+    Map<String, Tuple2<Long, Double>> wordDict = new HashMap();
+    for (Tuple2<String, Tuple2<Long, Double>> item : wordDictList) {
         wordDict.put(item._1(), item._2());
     }
 
-    final Broadcast<Map<String, Tuple2<Integer, Double>>> sharedWordDict = ctx.broadcast(wordDict);
+    final Broadcast<Map<String, Tuple2<Long, Double>>> sharedWordDict = ctx.broadcast(wordDict);
 
     // for each document, generate vector based on word freq
-      JavaRDD<Tuple3<Double, Integer[], Double[]>> vector = data.map(new Function<Tuple2<String, String>, Tuple3<Double, Integer[], Double[]>>() {
+      JavaRDD<Tuple3<Double, Long[], Double[]>> vector = data.map(new Function<Tuple2<String, String>, Tuple3<Double, Long[], Double[]>>() {
           @Override
-          public Tuple3<Double, Integer[], Double[]> call(Tuple2<String, String> v1) throws Exception {
+          public Tuple3<Double, Long[], Double[]> call(Tuple2<String, String> v1) throws Exception {
               String dockey = v1._1();
               String doc = v1._2();
               String[] keys = SPACE.split(doc);
-              Tuple2<Integer, Double>[] datas = new Tuple2[keys.length];
+              Tuple2<Long, Double>[] datas = new Tuple2[keys.length];
               for (int i = 0; i < keys.length; i++) {
                   datas[i] = sharedWordDict.getValue().get(keys[i]);
               }
-              Map<Integer, Double> vector = new HashMap<Integer, Double>();
+              Map<Long, Double> vector = new HashMap<Long, Double>();
               for (int i = 0; i < datas.length; i++) {
-                  Integer indic = datas[i]._1();
+                  Long indic = datas[i]._1();
                   Double value = datas[i]._2();
                   if (vector.containsKey(indic)) {
                       vector.put(indic, value + vector.get(indic));
@@ -146,48 +146,49 @@ public final class JavaBayes {
                   }
               }
 
-              Integer[] indices = new Integer[vector.size()];
+              Long[] indices = new Long[vector.size()];
               Double[] values = new Double[vector.size()];
 
-              SortedSet<Integer> sortedKeys = new TreeSet<Integer>(vector.keySet());
+              SortedSet<Long> sortedKeys = new TreeSet<Long>(vector.keySet());
               int c = 0;
-              for (Integer key : sortedKeys) {
+              for (Long key : sortedKeys) {
                   indices[c] = key;
                   values[c] = vector.get(key);
                   c+=1;
               }
 
               Double label = Double.parseDouble(dockey.substring(6));
-              return new Tuple3<Double, Integer[], Double[]>(label, indices, values);
+              return new Tuple3<Double, Long[], Double[]>(label, indices, values);
           }
       });
 
       vector.persist(StorageLevel.MEMORY_ONLY());
-       final Integer d = vector
-               .map(new Function<Tuple3<Double,Integer[],Double[]>, Integer>() {
+       final Long d = vector
+               .map(new Function<Tuple3<Double,Long[],Double[]>, Long>() {
                    @Override
-                   public Integer call(Tuple3<Double, Integer[], Double[]> v1) throws Exception {
-                       Integer[] indices = v1._2();
+                   public Long call(Tuple3<Double, Long[], Double[]> v1) throws Exception {
+                       Long[] indices = v1._2();
                        if (indices.length > 0) {
+//                           System.out.println("v_length:"+indices.length+"  v_val:" + indices[indices.length - 1]);
                            return indices[indices.length - 1];
-                       } else return Integer.valueOf(0);
+                       } else return Long.valueOf(0);
                    }
                })
-              .reduce(new Function2<Integer, Integer, Integer>() {
+              .reduce(new Function2<Long, Long, Long>() {
                   @Override
-                  public Integer call(Integer v1, Integer v2) throws Exception {
-                      //System.out.println("v1:"+v1+"  v2:"+v2);
+                  public Long call(Long v1, Long v2) throws Exception {
+//                      System.out.println("v1:"+v1+"  v2:"+v2);
                       return v1 > v2 ? v1 : v2;
                   }
               }) + 1;
 
-    RDD<LabeledPoint> examples = vector.map(new Function<Tuple3<Double,Integer[],Double[]>, LabeledPoint>() {
+    RDD<LabeledPoint> examples = vector.map(new Function<Tuple3<Double,Long[],Double[]>, LabeledPoint>() {
         @Override
-        public LabeledPoint call(Tuple3<Double, Integer[], Double[]> v1) throws Exception {
+        public LabeledPoint call(Tuple3<Double, Long[], Double[]> v1) throws Exception {
             int intIndices [] = new int[v1._2().length];
             double intValues [] = new double[v1._3().length];
             for (int i=0; i< v1._2().length; i++){
-                intIndices[i] = v1._2()[i];
+                intIndices[i] = v1._2()[i].intValue();
                 intValues[i] = v1._3()[i];
             }
             return new LabeledPoint(v1._1(), Vectors.sparse(d.intValue(),
@@ -218,13 +219,13 @@ public final class JavaBayes {
             }
         }));
 
-    double accuracy = 1.0 * predictionAndLabel.filter(
+    double accuracy = (double) predictionAndLabel.filter(
             new Function<Tuple2<Double, Double>, Boolean>() {
                 @Override
                 public Boolean call(Tuple2<Double, Double> pl) {
-                    return pl._1() == pl._2();
+                    return pl._1().equals(pl._2());
                 }
-            }). count() / test.count();
+            }).count() / test.count();
 
     System.out.println(String.format("Test accuracy = %f", accuracy));
     ctx.stop();
