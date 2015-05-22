@@ -28,7 +28,7 @@ public class DistinctCount extends SingleSpoutTops{
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector){
-      String word = tuple.getString(0);
+      String word = tuple.getString(0); //FIXME: always pick up index 0? should be configurable according to sparkstream's version
       set.add(word);
       BenchLogUtil.logMsg("Distinct count:"+set.size());
       collector.emit(new Values(set.size()));
