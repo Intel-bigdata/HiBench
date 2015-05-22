@@ -28,7 +28,7 @@ public class SampleStream extends SingleSpoutTops{
 	  }
 	  
 	  public void execute(Tuple tuple, BasicOutputCollector collector) {
-	    double randVal=Math.random();
+	    double randVal = Math.random(); //FIXME, Math.random is thread safe!
 		if(randVal<=probability){
 		  count+=1;
 		  collector.emit(new Values(tuple.getString(0)));

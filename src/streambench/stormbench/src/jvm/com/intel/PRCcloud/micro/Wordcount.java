@@ -36,6 +36,7 @@ public class Wordcount extends SingleSpoutTops{
       counts.put(word, count);
       //BenchLogUtil.logMsg("Word:"+word+"  count:"+count);
       collector.emit(new Values(word, count));
+        //FIXME: does this implementation count words globally?
     }
 
     @Override

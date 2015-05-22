@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+  <id>dist</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${basedir}</directory>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+        <include>NOTICE*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${basedir}/src/resources/log4j.xml</source>
+      <outputDirectory>lib</outputDirectory>
+    </file>
+  </files>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>bin</outputDirectory>
+      <includes>
+        <include>org.apache.samza:samza-shell:tgz:dist:*</include>
+      </includes>
+      <fileMode>0744</fileMode>
+      <unpack>true</unpack>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>true</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>org.apache.samza:samza-core_2.10</include>
+        <include>org.apache.samza:samza-kafka_2.10</include>
+        <include>org.apache.samza:samza-yarn_2.10</include>
+        <include>org.apache.samza:samza-kv-rocksdb_2.10</include>
+        <include>org.apache.samza:samza-log4j</include>
+        <include>org.slf4j:slf4j-log4j12</include>
+        <include>org.apache.kafka:kafka_2.10</include>
+        <include>org.apache.hadoop:hadoop-hdfs</include>
+        <include>*:jar</include>
+      </includes>
+      <useTransitiveFiltering>true</useTransitiveFiltering>
+    </dependencySet>
+  </dependencySets>
+</assembly>
