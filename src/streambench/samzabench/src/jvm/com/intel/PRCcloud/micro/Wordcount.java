@@ -30,7 +30,7 @@ public class Wordcount implements StreamTask, InitableTask {
         Integer count = store.get(word);
         if (count == null) count = 0;
         count++;
-        store.put(word, count);
+        store.put(word, count);  //FIXME: need to check if store is globally.
     }
   }
 }
