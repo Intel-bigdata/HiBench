@@ -29,6 +29,10 @@ START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} wordcount ${COMPRESS_OPT} \
     -D ${MAP_CONFIG_NAME}=${NUM_MAPS} \
     -D ${REDUCER_CONFIG_NAME}=${NUM_REDS} \
+    -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
+    -D mapreduce.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
+    -D mapreduce.job.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
+    -D mapreduce.job.outputformat.class=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat \
     ${INPUT_HDFS} ${OUTPUT_HDFS} 
 END_TIME=`timestamp`
 

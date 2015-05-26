@@ -97,7 +97,12 @@ Note:
 
 2. HiBench Configurations.
 
-     For minimum requirements: edit `conf/99-user_defined_properties.conf`, make sure below properties has been set:
+     For minimum requirements: create & edit `conf/99-user_defined_properties.conf`：
+     
+          cd conf 
+          cp 99-user_defined_properties.conf.template 99-user_defined_properties.conf
+     
+     And Make sure below properties has been set:
 
           hibench.hadoop.home      The Hadoop installation location
           hibench.spark.home       The Spark installation location
