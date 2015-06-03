@@ -116,6 +116,8 @@ HiBenchEnvPropMapping=dict(
     # For streaming bench
     # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
+    STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
+    STORM_BIN_HOME="hibench.streamingbench.storm.home",
     zkHost="hibench.streamingbench.zookeeper.host",
     receiverNodes="hibench.streamingbench.receiver_nodes",
     benchName="hibench.streamingbench.benchname",
@@ -134,6 +136,15 @@ HiBenchEnvPropMapping=dict(
     directMode="hibench.streamingbench.direct_mode",
     brokerList="hibench.streamingbench.broker_list",
     # prepare
+    nimbus="hibench.streamingbench.storm.nimbus",
+    nimbusAPIPort="hibench.streamingbench.storm.nimbusAPIPort",
+    nimbusContactInterval="hibench.streamingbench.storm.nimbusContactInterval",
+    workerCount="hibench.streamingbench.storm.worker_count",
+    spoutThreads="hibench.streamingbench.storm.spout_threads",
+    boltThreads="hibench.streamingbench.storm.bolt_threads",
+    readFromStart="hibench.streamingbench.storm.read_from_start"
+    ackon="hibench.streamingbench.storm.ackon",
+    consumer="hibench.streamingbench.storm.consumer",
     
     )
 
