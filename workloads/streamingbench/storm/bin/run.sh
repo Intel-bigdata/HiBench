@@ -46,6 +46,8 @@ gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
 show_bannar finish
 
 
+
+
 #cd ${DIR}
 
 #$STORM_BIN_HOME/storm jar ${SRC_DIR}/target/streaming-bench-storm-0.1-SNAPSHOT-jar-with-dependencies.jar com.intel.PRCcloud.RunBench $benchArgs
