@@ -1,13 +1,28 @@
 #!/bin/bash
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-set -u
-bin=`dirname "$0"`
-bin=`cd "$bin";pwd`
-DIR=`cd $bin/../; pwd`
-. "${DIR}/conf/configure.sh"
-echo "=========start spark benchmark $benchName========="
+workload_folder=`dirname "$0"`
+workload_folder=`cd "$workload_folder"; pwd`
+workload_root=${workload_folder}/..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-benchArgs="$benchName $topicName $sparkMaster $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount"
+enter_bench StreamingBenchTestKafka ${workload_root} ${workload_folder}
+show_bannar start
+
+benchArgs="$benchName $topicName $sparkMaster $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
 if [ "$benchName" == "micro/wordcount" ]; then
   benchArgs="$benchArgs $separator"
 elif [ "$benchName" == "micro/sample"  ]; then
@@ -18,6 +33,12 @@ else
   benchArgs="$benchArgs $fieldIndex $separator"
 fi
 
-echo "Args:$benchArgs"
+START_TIME=`timestamp`
+run-streaming-job com.intel.PRCcloud.streamBench.TestKafkaJob $$topicName
+END_TIME=`timestamp`
 
-$SPARK_BIN_DIR/spark-submit --class  com.intel.PRCcloud.streamBench.TestKafkaJob ${DIR}/target/scala-2.10/streaming-bench-spark_0.1-assembly-1.2.1-SNAPSHOT.jar $topicName 2>&1 | tee consoleLog.txt
+gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+show_bannar finish
+leave_bench
+
+#$SPARK_BIN_DIR/spark-submit --class  com.intel.PRCcloud.streamBench.TestKafkaJob ${DIR}/target/scala-2.10/streaming-bench-spark_0.1-assembly-1.2.1-SNAPSHOT.jar $topicName 2>&1 | tee consoleLog.txt

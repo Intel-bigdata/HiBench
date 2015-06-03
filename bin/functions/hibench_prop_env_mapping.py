@@ -111,6 +111,26 @@ HiBenchEnvPropMapping=dict(
     WT_FILE_SIZE="hibench.dfsioe.write.file_size",
     MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
+
+    # For streaming bench
+    STREAMINGBENCH_JARS="hibench.streamingbench.jars",
+    zkHost="hibench.streamingbench.zookeeper.host",
+    receiverNodes="hibench.streamingbench.receiver_nodes",
+    benchName="hibench.streamingbench.benchname",
+    topicName="hibench.streamingbench.topic_name",
+    batchInterval="hibench.streamingbench.batch_interval",
+    consumerGroup="hibench.streamingbench.consumer_group",
+    recordCount="hibench.streamingbench.record_count",
+    fieldIndex="hibench.streamingbench.field_index",
+    separator="hibench.streamingbench.separator",
+    prob="hibench.streamingbench.prob",
+    pattern="hibench.streamingbench.pattern",
+    copies="hibench.streamingbench.copies",
+    testWAL="hibench.streamingbench.testWAL",
+    checkpointPath="hibench.streamingbench.checkpoint_path",
+    debug="hibench.streamingbench.debug",
+    directMode="hibench.streamingbench.direct_mode",
+    brokerList="hibench.streamingbench.broker_list",
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
