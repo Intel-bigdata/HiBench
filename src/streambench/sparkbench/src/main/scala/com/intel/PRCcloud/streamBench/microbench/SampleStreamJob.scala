@@ -5,7 +5,6 @@ import org.apache.spark.streaming.dstream.DStream
 import com.intel.PRCcloud.streamBench.util.BenchLogUtil
 import org.apache.spark.streaming.StreamingContext
 
-
 object ThreadLocalRandom extends Serializable{
   private val localRandom = new ThreadLocal[util.Random] {
     override protected def initialValue() = new util.Random

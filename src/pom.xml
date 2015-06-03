@@ -160,5 +160,17 @@
                 <property><name>!spark1.2</name></property>
             </activation>
         </profile>
+        <profile>
+            <id>spark1.4</id>
+            <properties>
+                <env>spark1.4</env>
+                <spark.version>1.4.0-SNAPSHOT</spark.version>
+                <spark.bin.version>1.4</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>spark1.4</name></property>
+            </activation>
+        </profile>
+
     </profiles>
 </project>
