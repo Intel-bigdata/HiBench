@@ -229,6 +229,10 @@ function run-spark-job() {
     fi
 }
 
+function run-streaming-job (){
+    run-spark-job --jar ${STEAMINGBENCH_JARS} $@
+}
+
 function run-hadoop-job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
