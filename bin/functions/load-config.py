@@ -29,7 +29,7 @@ def log(*s):
     sys.stderr.write( str(s) +'\n')
 
 def log_debug(*s):
-    #log(*s)
+    log(*s)
     pass
 
 # copied from http://stackoverflow.com/questions/3575554/python-subprocess-with-timeout-and-large-output-64k
@@ -172,10 +172,15 @@ def check_config():             # check configures
 def waterfall_config(force=False):         # replace "${xxx}" to its values
     def process_replace(m):
         raw_key = m.groups()[0]
-        key = raw_key[2:-1].strip()
-        log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key))
+        key, default_value = raw_key[2:-1].strip().split(":-") + [None]
+        
+        log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key), "default value:" + repr(default_value))
         if force:
-            return HibenchConf.get(key, raw_key)
+            if default_value is None:
+                return HibenchConf.get(key)
+#                return HibenchConf.get(key, raw_key)
+            else:
+                return HibenchConf.get(key, default_value)
         else:
             return HibenchConf.get(key, "") or raw_key
 
@@ -199,6 +204,22 @@ def generate_optional_value():  # get some critical values from environment or m
     del d
     HibenchConfRef['hibench.home']="Inferred from relative path of dirname(%s)/../../" % __file__
 
+    # probe JAVA_HOME
+    if not HibenchConf.get("java.bin", ""):
+        # probe java bin
+        if os.environ.get('JAVA_HOME',''): # lookup in os environment
+            HibenchConf['java.bin'] = os.path.join(os.environ.get('JAVA_HOME'), "bin", "java")
+            HibenchConfRef['java.bin'] = "probed from os environment of JAVA_HOME"
+        else:                   # lookup in path
+            path_dirs = os.environ.get('PATH', '').split(':')
+            for path in path_dirs:
+                if os.path.isfile(os.path.join(path, "java")):
+                    HibenchConf['java.bin'] = os.path.join(path, "java")
+                    HibenchConfRef['java.bin'] = "probed by lookup in $PATH: " + path
+                    break
+            else:               # still not found?
+                assert 0, "JAVA_HOME unset or can't found java executable in $PATH"
+
     # probe hadoop version & release.
     if not HibenchConf.get("hibench.hadoop.version", "") or not HibenchConf.get("hibench.hadoop.release", ""):
         # check hadoop version first
@@ -206,6 +227,7 @@ def generate_optional_value():  # get some critical values from environment or m
         cmd = HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
         if not HibenchConf.get("hibench.hadoop.version", ""):
             hadoop_version = shell(cmd).strip()
+            assert hadoop_version, "ERROR, execute '%s' with no return" % cmd
             if hadoop_version[0] != '1': # hadoop2? or CDH's MR1?
                 cmd2 = HibenchConf['hibench.hadoop.executable'] + " mradmin 2>&1 | grep yarn"
                 mradm_result = shell(cmd2).strip()
@@ -386,6 +408,7 @@ def export_config(workload_name, workload_tail):
 
     spark_conf_dir = join(conf_dir, "sparkbench")
     spark_prop_conf_filename = join(spark_conf_dir, "spark.conf")
+    samza_prop_conf_filename = join(spark_conf_dir, "samza.conf")
     sparkbench_prop_conf_filename = join(spark_conf_dir, "sparkbench.conf")
 
     if not os.path.exists(spark_conf_dir):      os.makedirs(spark_conf_dir)
@@ -405,6 +428,7 @@ def export_config(workload_name, workload_tail):
         f.write("#Source: add for internal usage\n")
         f.write("SPARKBENCH_PROPERTIES_FILES=%s\n" % sparkbench_prop_conf_filename)
         f.write("SPARK_PROP_CONF=%s\n" % spark_prop_conf_filename)
+        f.write("SAMZA_PROP_CONF=%s\n" % samza_prop_conf_filename)
         f.write("WORKLOAD_RESULT_FOLDER=%s\n" % join(conf_dir, ".."))
         f.write("HIBENCH_WORKLOAD_CONF=%s\n" % conf_filename)
         f.write("export HADOOP_EXECUTABLE\n")
@@ -419,6 +443,14 @@ def export_config(workload_name, workload_tail):
     with open(spark_prop_conf_filename, 'w') as f:
         for source in sorted(sources.keys()):
             items = [x for x in sources[source] if x.startswith("spark.")]
+            if items:
+                f.write("# Source: %s\n" % source)
+                f.write("\n".join(sorted(items)))
+                f.write("\n\n")
+    # generate configure for samza
+    with open(samza_prop_conf_filename, 'w') as f:
+        for source in sorted(sources.keys()):
+            items = [x for x in sources[source] if x.startswith("samza.")]
             if items:
                 f.write("# Source: %s\n" % source)
                 f.write("\n".join(sorted(items)))

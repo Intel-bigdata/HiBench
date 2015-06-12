@@ -18,6 +18,7 @@
 Mapping from properties to environment variable names
 """
 HiBenchEnvPropMappingMandatory=dict(
+    JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     SPARK_HOME="hibench.spark.home",
     HDFS_MASTER="hibench.hdfs.master",

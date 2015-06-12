@@ -88,3 +88,7 @@ hibench.scale.profile  	      	        large
 hibench.compress.profile	 	disable
 # Compression codec profile selection:	 snappy, lzo, default
 hibench.compress.codec.profile		snappy
+
+# Samza workload selection
+# Select workload for samza: Must be one of the followings: identify, wordcount
+samza.workload.name			identify
