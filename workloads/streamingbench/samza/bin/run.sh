@@ -29,7 +29,7 @@ show_bannar start
 #SRC_DIR="$DIR/../../../src/streambench/samza"
 #. "${SRC_DIR}/conf/configure.sh"
 #echo "=========start samza benchmark $benchName========="
-SRC_DIR=${workload_root}/src/streambench/samzabench/
+SRC_DIR=${workload_root}/../../src/streambench/samzabench/
 
 # prepare samza environment
 

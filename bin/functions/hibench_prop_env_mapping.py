@@ -114,6 +114,7 @@ HiBenchEnvPropMapping=dict(
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
 
     # For streaming bench
+    # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
     zkHost="hibench.streamingbench.zookeeper.host",
     receiverNodes="hibench.streamingbench.receiver_nodes",
@@ -132,6 +133,8 @@ HiBenchEnvPropMapping=dict(
     debug="hibench.streamingbench.debug",
     directMode="hibench.streamingbench.direct_mode",
     brokerList="hibench.streamingbench.broker_list",
+    # prepare
+    
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])

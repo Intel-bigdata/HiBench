@@ -29,7 +29,7 @@ def log(*s):
     sys.stderr.write( str(s) +'\n')
 
 def log_debug(*s):
-    log(*s)
+#    log(*s)
     pass
 
 # copied from http://stackoverflow.com/questions/3575554/python-subprocess-with-timeout-and-large-output-64k
@@ -91,6 +91,7 @@ def execute_cmd(cmdline, timeout):
     return (p.returncode, stdout, stderr)
 
 def shell(cmd, timeout=5):
+    assert not "${" in cmd, "Error, missing configurations: %s" % ", ".join(re.findall("\$\{(.*)\}", cmd))
     retcode, stdout, stderr = execute_cmd(cmd, timeout)
     if retcode == 'Timeout':
         log("ERROR, execute cmd: '%s' timedout." % cmd)
@@ -172,7 +173,7 @@ def check_config():             # check configures
 def waterfall_config(force=False):         # replace "${xxx}" to its values
     def process_replace(m):
         raw_key = m.groups()[0]
-        key, default_value = raw_key[2:-1].strip().split(":-") + [None]
+        key, default_value = (raw_key[2:-1].strip().split(":-") + [None])[:2]
         
         log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key), "default value:" + repr(default_value))
         if force:
