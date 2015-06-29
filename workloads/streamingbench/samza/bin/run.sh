@@ -16,8 +16,8 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
-. "${workload_root}/../../../bin/functions/load-bench-config.sh"
+workload_root=${workload_folder}/../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
@@ -56,7 +56,7 @@ done
 #  JAVA="$JAVA_HOME/bin/java"
 #fi
 
-JAVA_OPTS="-Dlog4j.configuration=file:$SRC_DIR/target/samza/lib/log4j.xml -Dsamza.log.dir=$SRC_DIR/target"
+JAVA_OPTS="-Dlog4j.configuration=file://${SAMZA_PLAYGROUND}/lib/log4j.xml -Dsamza.log.dir=${SAMZA_PLAYGROUND}"
 configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
 #configFile=$SRC_DIR/conf/$benchName.properties
 
@@ -64,11 +64,11 @@ configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
 #cp $configFile $SRC_DIR/conf/.properties
 #cat $SRC_DIR/conf/common.properties >> $SRC_DIR/conf/.properties
 
-CMD=$JAVA_BIN $JAVA_OPTS -cp $CLASSPATH org.apache.samza.job.JobRunner --config-factory=$configFactory --config-path=file:/${SAMZA_PROP_CONF}
-echo $CMD
+CMD="${JAVA_BIN} ${JAVA_OPTS} -cp ${CLASSPATH} org.apache.samza.job.JobRunner --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}"
+echo ${CMD}
 
 START_TIME=`timestamp`
-$CMD
+${CMD}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

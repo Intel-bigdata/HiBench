@@ -230,7 +230,7 @@ function run-spark-job() {
 }
 
 function run-streaming-job (){
-    run-spark-job --jar ${STEAMINGBENCH_JARS} $@
+    run-spark-job --jar ${STREAMINGBENCH_JARS} $@
 }
 
 function run-hadoop-job(){

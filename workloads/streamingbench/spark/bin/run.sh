@@ -16,13 +16,13 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
-. "${workload_root}/../../../bin/functions/load-bench-config.sh"
+workload_root=${workload_folder}/../..
+. "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench SparkStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-benchArgs="$benchName $topicName $sparkMaster $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
+benchArgs="$benchName $topicName $SPARK_MASTER $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
 if [ "$benchName" == "micro/wordcount" ]; then
   benchArgs="$benchArgs $separator"
 elif [ "$benchName" == "micro/sample"  ]; then
