@@ -1,4 +1,13 @@
-tmplog.log
-hibench.report
 target/
-build/
+*.iml
+.idea/
+.idea_modules/
+*.swp
+*~
+.emacs.desktop*
+*.pyc
+*.png
+*.report
+derby.log
+metastore_db/
+report/

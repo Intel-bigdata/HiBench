@@ -13,38 +13,45 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+set -u
 
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-. $DIR/bin/hibench-config.sh
-
-if [ -f $HIBENCH_REPORT ]; then
-    rm $HIBENCH_REPORT
-fi
+. ${DIR}/bin/functions/color.sh
 
 for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     if [[ $benchmark == \#* ]]; then
         continue
     fi
 
-    if [ "$benchmark" = "dfsioe" ] ; then
-        # dfsioe specific
-        $DIR/dfsioe/bin/prepare-read.sh
-        $DIR/dfsioe/bin/run-read.sh
-        $DIR/dfsioe/bin/run-write.sh
+    echo -e "${UYellow}${BYellow}Prepare ${Yellow}${UYellow}${benchmark} ${BYellow}...${Color_Off}"
+    
+    WORKLOAD=$DIR/workloads/${benchmark}
+    echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
+    "${WORKLOAD}/prepare/prepare.sh"
 
-    elif [ "$benchmark" = "hivebench" ]; then
-        # hivebench specific
-        $DIR/hivebench/bin/prepare.sh
-        $DIR/hivebench/bin/run-aggregation.sh
-        $DIR/hivebench/bin/run-join.sh
-
-    else
-        if [ -e $DIR/${benchmark}/bin/prepare.sh ]; then
-            $DIR/${benchmark}/bin/prepare.sh
-        fi
-        $DIR/${benchmark}/bin/run.sh
+    if [ $? -ne 0 ]
+    then
+	echo "ERROR: ${benchmark} prepare failed!" 
+        continue
     fi
+
+    for target in `cat $DIR/conf/languages.lst`; do
+	if [[ $target == \#* ]]; then 
+	    continue
+	fi
+	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${target}${Color_Off}"
+	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${target}/bin/run.sh${Color_Off}"
+	$WORKLOAD/${target}/bin/run.sh
+
+	result=$?
+	if [ $result -ne 0 ]
+	then
+	    echo -e "${On_IRed}ERROR: ${benchmark}/${target} failed to run successfully.${Color_Off}" 
+            exit $result
+	fi
+    done
 done
 
+echo "Run all done!"

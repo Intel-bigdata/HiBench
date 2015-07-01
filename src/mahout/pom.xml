@@ -1,0 +1,73 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.intel.hibench</groupId>
+        <artifactId>hibench</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.intel.hibench</groupId>
+    <artifactId>mahout</artifactId>
+    <version>4.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <!-- You can rewrite these properties to identify different repo and file. If you wanna run on a cdh cluster or hadoop 2, you may need to wget mahout cdh version(http://archive.cloudera.com/cdh5/cdh/5/mahout-0.9-cdh5.1.0.tar.gz). -->
+        <repo1>http://archive.apache.org</repo1>
+        <file1>dist/mahout/0.9/mahout-distribution-0.9.tar.gz</file1>
+	<checksum1>09b999fbee70c9853789ffbd8f28b8a3</checksum1>
+        <repo2>http://archive.cloudera.com</repo2>
+        <file2>cdh4/cdh/4/mahout-0.7-cdh4.7.1.tar.gz</file2>
+	<checksum2>a99dcee44919b34a0859d0d96107b200</checksum2>
+        <repo3>http://archive.cloudera.com</repo3>
+        <file3>cdh5/cdh/5/mahout-0.9-cdh5.1.0.tar.gz</file3>
+	<checksum3>aa953e0353ac104a22d314d15c88d78f</checksum3>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>${download-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+		      <phase>process-sources</phase>
+		      <goals>
+			<goal>wget</goal>
+		      </goals>
+		      <configuration>
+			<url>${repo1}/${file1}</url>
+			<md5>${checksum1}</md5>
+		      </configuration>
+                    </execution>
+		    <execution>
+		      <id>extra-download-execution</id>
+		      <phase>process-sources</phase>
+		      <goals>
+			<goal>wget</goal>
+		      </goals>
+		      <configuration>
+			<url>${repo2}/${file2}</url>
+			<md5>${checksum2}</md5>
+		      </configuration>
+                    </execution>
+		    <execution>
+		      <id>extra-download-execution-2</id>
+		      <phase>process-sources</phase>
+		      <goals>
+			<goal>wget</goal>
+		      </goals>
+		      <configuration>
+			<url>${repo3}/${file3}</url>
+			<md5>${checksum3}</md5>
+		      </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
