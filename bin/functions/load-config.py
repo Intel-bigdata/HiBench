@@ -206,6 +206,7 @@ def generate_optional_value():  # get some critical values from environment or m
         cmd = HibenchConf['hibench.hadoop.executable'] +' version | head -1 | cut -d \    -f 2'
         if not HibenchConf.get("hibench.hadoop.version", ""):
             hadoop_version = shell(cmd).strip()
+            assert hadoop_version, "ERROR, execute '%s' with no return, please confirm hadoop environment is configured properly." % cmd
             if hadoop_version[0] != '1': # hadoop2? or CDH's MR1?
                 cmd2 = HibenchConf['hibench.hadoop.executable'] + " mradmin 2>&1 | grep yarn"
                 mradm_result = shell(cmd2).strip()
