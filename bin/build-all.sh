@@ -22,13 +22,18 @@ CURDIR=`pwd`
 cd $DIR/src
 mvn clean package      && \
 cd $DIR/src/sparkbench && \
-( mkdir jars | true )  && \
-cp target/*-jar-with-dependencies.jar jars  && \
-mvn clean package -D spark1.2               && \
-cp target/*-jar-with-dependencies.jar jars  && \
-mvn clean package -D MR1                    && \
-cp target/*-jar-with-dependencies.jar jars  && \
-mvn clean package -D MR1 -D spark1.2        && \
+( mkdir jars | true )
+
+for mr in MR1 MR2; do
+        for spark_version in 1.2 1.3 1.4; do
+                cp target/*-jar-with-dependencies.jar jars
+                mvn clean package -D spark$spark_version -Dmr
+                if [ $? -ne 0 ]; then
+                        echo "Build failed for spark$spark_version and $mr, please check!"
+                        exit 1
+                fi
+        done
+done
 cp jars/*.jar target/                       && \
 rm -rf jars
 
