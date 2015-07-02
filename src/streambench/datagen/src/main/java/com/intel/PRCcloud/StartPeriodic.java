@@ -10,7 +10,7 @@ public class StartPeriodic {
 	public static void main(String[] args){
 		if(args.length<6){
 			System.err.println("args:<BENCHNAME> <TOPICNAME> <BROKER_HOSTS> <RECORD_COUNT_PERINTEVAL>"
-					+ "<INTERVAL_SPAN> <TOTAL_ROUND>  need to be specified");
+					+ "<INTERVAL_SPAN> <TOTAL_ROUND> <DATA_DIR> need to be specified");
 			System.exit(1);
 		}
 		
@@ -20,13 +20,14 @@ public class StartPeriodic {
 		int recordPerInterval=Integer.parseInt(args[3]);
 		int intervalSpan=Integer.parseInt(args[4]);
 		int totalRound=Integer.parseInt(args[5]);
-		
+        String datadir=args[6];
+
 		ArrayList<byte[]> contents=null;
 		
 		if(benchName.equals("micro/statistics")){
-			contents=FileDataGenNew.loadDataFromFile("test2.data");
+			contents=FileDataGenNew.loadDataFromFile(datadir + "/test2.data");
 		}else
-			contents=FileDataGenNew.loadDataFromFile("test1.data");
+			contents=FileDataGenNew.loadDataFromFile(datadir + "/test1.data");
 		
 		NewKafkaConnector con=new NewKafkaConnector(brokerList);
 		

@@ -117,7 +117,7 @@ HiBenchEnvPropMapping=dict(
     # prepare
     app="hibench.streamingbench.app",
     textdataset_recordsize_factor="hibench.streamingbench.prepare.textdataset_recordsize_factor",
-    mode="hibench.streamingbench.prepare.mode=",
+    mode="hibench.streamingbench.prepare.mode",
     records="hibench.streamingbench.prepare.push.records",
     recordPerInterval="hibench.streamingbench.prepare.periodic.recordPerInterval",
     intervalSpan="hibench.streamingbench.prepare.periodic.intervalSpan",
@@ -134,6 +134,7 @@ HiBenchEnvPropMapping=dict(
     batchInterval="hibench.streamingbench.batch_interval",
     consumerGroup="hibench.streamingbench.consumer_group",
     recordCount="hibench.streamingbench.record_count",
+
     fieldIndex="hibench.streamingbench.field_index",
     separator="hibench.streamingbench.separator",
     prob="hibench.streamingbench.prob",
@@ -154,7 +155,8 @@ HiBenchEnvPropMapping=dict(
     boltThreads="hibench.streamingbench.storm.bolt_threads",
     readFromStart="hibench.streamingbench.storm.read_from_start",
     ackon="hibench.streamingbench.storm.ackon",
-    consumer="hibench.streamingbench.storm.consumer",
+#    consumer="hibench.streamingbench.storm.consumer",
+    consumer="hibench.streamingbench.consumer_group",
     
     )
 
