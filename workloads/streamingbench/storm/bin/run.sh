@@ -49,6 +49,7 @@ echo "Args:$benchArgs"
 cd ${workload_folder}
 
 START_TIME=`timestamp`
+echo $STORM_BIN_HOME/storm jar ${STREAMBENCH_STORM_JAR} com.intel.PRCcloud.RunBench $benchArgs
 $STORM_BIN_HOME/storm jar ${STREAMBENCH_STORM_JAR} com.intel.PRCcloud.RunBench $benchArgs
 END_TIME=`timestamp`
 
