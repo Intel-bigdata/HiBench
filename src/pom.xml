@@ -161,7 +161,7 @@
             <id>spark1.4</id>
             <properties>
                 <env>spark1.4</env>
-                <spark.version>1.4.0-SNAPSHOT</spark.version>
+                <spark.version>1.4.0</spark.version>
                 <spark.bin.version>1.4</spark.bin.version>
             </properties>
             <activation>
