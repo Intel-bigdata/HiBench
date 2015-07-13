@@ -144,7 +144,7 @@ HiBenchEnvPropMapping=dict(
     checkpointPath="hibench.streamingbench.checkpoint_path",
     debug="hibench.streamingbench.debug",
     directMode="hibench.streamingbench.direct_mode",
-    brokerList="hibench.streamingbench.broker_list",
+    brokerList="hibench.streamingbench.broker_list_with_quote",
 
     # prepare
     nimbus="hibench.streamingbench.storm.nimbus",

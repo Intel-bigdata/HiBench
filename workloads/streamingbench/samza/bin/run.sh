@@ -22,13 +22,6 @@ workload_root=${workload_folder}/../..
 enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-#set -u
-#bin=`dirname "$0"`
-#bin=`cd "$bin";pwd`
-#DIR=`cd $bin/../; pwd`
-#SRC_DIR="$DIR/../../../src/streambench/samza"
-#. "${SRC_DIR}/conf/configure.sh"
-#echo "=========start samza benchmark $benchName========="
 SRC_DIR=${workload_root}/../../src/streambench/samzabench/
 
 # prepare samza environment
@@ -43,28 +36,12 @@ SAMZA_PLAYGROUND=${WORKLOAD_RESULT_FOLDER}/samza
 mkdir -p $SAMZA_PLAYGROUND 2> /dev/null
 tar zxf $SRC_DIR/target/*.tar.gz -C ${SAMZA_PLAYGROUND}
 
-
-CLASSPATH=$HADOOP_CONF_DIR
-for file in $SAMZA_PLAYGROUND/lib/*.jar;
-do
-  CLASSPATH=$CLASSPATH:$file
-done
-
-#if [ -z "$JAVA_HOME" ]; then
-#  JAVA="java"
-#else
-#  JAVA="$JAVA_HOME/bin/java"
-#fi
-
-JAVA_OPTS="-Dlog4j.configuration=file://${SAMZA_PLAYGROUND}/lib/log4j.xml -Dsamza.log.dir=${SAMZA_PLAYGROUND}"
 configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
-#configFile=$SRC_DIR/conf/$benchName.properties
 
-#rm -f $SRC_DIR/conf/.properties
-#cp $configFile $SRC_DIR/conf/.properties
-#cat $SRC_DIR/conf/common.properties >> $SRC_DIR/conf/.properties
+# remove samza prefix and change "name    value" to "name=value" style in ${SAMZA_PROP_CONF}
+cat ${SAMZA_PROP_CONF} | sed -r 's/samza\.//' | sed -r 's/\t+/=/' > ${SAMZA_PROP_CONF}.converted
 
-CMD="${JAVA_BIN} ${JAVA_OPTS} -cp ${CLASSPATH} org.apache.samza.job.JobRunner --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}"
+CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"
 echo ${CMD}
 
 START_TIME=`timestamp`
