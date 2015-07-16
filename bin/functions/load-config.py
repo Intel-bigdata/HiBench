@@ -171,9 +171,11 @@ def check_config():             # check configures
                                                                                                                               HibenchConf.get(prop_name, "unknown"))
 
 def waterfall_config(force=False):         # replace "${xxx}" to its values
+    no_value_sign = "___###NO_VALUE_SIGN###___"
     def process_replace(m):
         raw_key = m.groups()[0]
-        key, default_value = (raw_key[2:-1].strip().split(":-") + [None])[:2]
+#        key, default_value = (raw_key[2:-1].strip().split(":-") + [None])[:2]
+        key, spliter, default_value = (re.split("(:-|:_)", raw_key[2:-1].strip()) + [None, None])[:3]
         
         log_debug("key:", key, " value:", HibenchConf.get(key, "RAWKEY:"+raw_key), "default value:" + repr(default_value))
         if force:
@@ -181,6 +183,8 @@ def waterfall_config(force=False):         # replace "${xxx}" to its values
                 return HibenchConf.get(key)
 #                return HibenchConf.get(key, raw_key)
             else:
+                if spliter == ':_' and not default_value: # no return 
+                    return no_value_sign
                 return HibenchConf.get(key, default_value)
         else:
             return HibenchConf.get(key, "") or raw_key
@@ -197,6 +201,11 @@ def waterfall_config(force=False):         # replace "${xxx}" to its values
 #                log("Waterfall conf: %s: %s -> %s" % (key, old_value, value))
                 HibenchConf[key] = value
                 finish = False
+
+    # all finished, remove values contains no_value_sign
+    for key in [x for x in HibenchConf if no_value_sign in HibenchConf[x]]:
+        del HibenchConf[key]
+        del HibenchConfRef[key]
 
 def generate_optional_value():  # get some critical values from environment or make a guess
     d = os.path.dirname
