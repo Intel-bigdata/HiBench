@@ -18,6 +18,7 @@
 Mapping from properties to environment variable names
 """
 HiBenchEnvPropMappingMandatory=dict(
+    JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     SPARK_HOME="hibench.spark.home",
     HDFS_MASTER="hibench.hdfs.master",
@@ -113,9 +114,23 @@ HiBenchEnvPropMapping=dict(
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
 
     # For streaming bench
+    # prepare
+    app="hibench.streamingbench.app",
+    textdataset_recordsize_factor="hibench.streamingbench.prepare.textdataset_recordsize_factor",
+    mode="hibench.streamingbench.prepare.mode",
+    records="hibench.streamingbench.prepare.push.records",
+    recordPerInterval="hibench.streamingbench.prepare.periodic.recordPerInterval",
+    intervalSpan="hibench.streamingbench.prepare.periodic.intervalSpan",
+    totalRound="hibench.streamingbench.prepare.periodic.totalRound",
+
+    # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
     STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
+<<<<<<< HEAD
     STORM_BIN_HOME="hibench.streamingbench.storm.home",
+=======
+    STORM_BIN_HOME="hibench.streamingbench.storm.bin",
+>>>>>>> 8a87ac226388da387a6bde4da78d26450c4ce73a
     zkHost="hibench.streamingbench.zookeeper.host",
     receiverNodes="hibench.streamingbench.receiver_nodes",
     benchName="hibench.streamingbench.benchname",
@@ -123,6 +138,7 @@ HiBenchEnvPropMapping=dict(
     batchInterval="hibench.streamingbench.batch_interval",
     consumerGroup="hibench.streamingbench.consumer_group",
     recordCount="hibench.streamingbench.record_count",
+
     fieldIndex="hibench.streamingbench.field_index",
     separator="hibench.streamingbench.separator",
     prob="hibench.streamingbench.prob",
@@ -132,16 +148,19 @@ HiBenchEnvPropMapping=dict(
     checkpointPath="hibench.streamingbench.checkpoint_path",
     debug="hibench.streamingbench.debug",
     directMode="hibench.streamingbench.direct_mode",
-    brokerList="hibench.streamingbench.broker_list",
+    brokerList="hibench.streamingbench.broker_list_with_quote",
+
+    # prepare
     nimbus="hibench.streamingbench.storm.nimbus",
     nimbusAPIPort="hibench.streamingbench.storm.nimbusAPIPort",
     nimbusContactInterval="hibench.streamingbench.storm.nimbusContactInterval",
     workerCount="hibench.streamingbench.storm.worker_count",
     spoutThreads="hibench.streamingbench.storm.spout_threads",
     boltThreads="hibench.streamingbench.storm.bolt_threads",
-    readFromStart="hibench.streamingbench.storm.read_from_start"
+    readFromStart="hibench.streamingbench.storm.read_from_start",
     ackon="hibench.streamingbench.storm.ackon",
-    consumer="hibench.streamingbench.storm.consumer",
+#    consumer="hibench.streamingbench.storm.consumer",
+    consumer="hibench.streamingbench.consumer_group",
     
     )
 

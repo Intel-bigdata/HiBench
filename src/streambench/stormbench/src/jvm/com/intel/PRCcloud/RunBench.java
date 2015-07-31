@@ -18,8 +18,8 @@ public class RunBench{
   
   public static void runAll(String[] args) throws Exception{
   
-	if(args.length<11)
-	    BenchLogUtil.handleError("RunBench Usage:<NIMBUS> <NIMBUS_APIPORT> <ZKHOST> <WORKER_COUNT> <SPOUT_THREADS> <BENCHNAME> <RECORD_COUNT> <TOPIC> <CONSUMER_GROUP>");
+	if(args.length<12)
+	    BenchLogUtil.handleError("RunBench Usage:<NIMBUS> <NIMBUS_APIPORT> <ZKHOST> <WORKER_COUNT> <SPOUT_THREADS> <BOLT_THREADS> <BENCHNAME> <RECORD_COUNT> <TOPIC> <CONSUMER_GROUP>");
 	
     StormBenchConfig conf=new StormBenchConfig();
 	conf.nimbus=args[0];

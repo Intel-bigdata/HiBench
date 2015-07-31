@@ -16,15 +16,21 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../..
+echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench StormStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
+#set -u
+#bin=`dirname "$0"`
+#bin=`cd "$bin";pwd`
+#DIR=`cd $bin/../; pwd`
+#SRC_DIR="$DIR/../../../src/streambench/stormbench"
+#. "${SRC_DIR}/conf/configure.sh"
+#echo "=========start storm benchmark $benchName========="
 
-echo "=========start storm benchmark $benchName========="
-
-benchArgs="$nimbus $nimbusAPIPort $zkHost $workerCount $spoutThreads $boltThreads $benchName $recordCount $topic $consumer $readFromStart $ackon $nimbusContactInterval"
+benchArgs="$nimbus $nimbusAPIPort $zkHost $workerCount $spoutThreads $boltThreads $benchName $recordCount $topicName $consumer $readFromStart $ackon $nimbusContactInterval"
 if [ "$benchName" == "micro-sample"  ]; then
   benchArgs="$benchArgs $prob"
 elif [ "$benchName" == "trident-sample"  ]; then
@@ -48,6 +54,18 @@ show_bannar finish
 
 
 
+<<<<<<< HEAD
 #cd ${DIR}
 
 #$STORM_BIN_HOME/storm jar ${SRC_DIR}/target/streaming-bench-storm-0.1-SNAPSHOT-jar-with-dependencies.jar com.intel.PRCcloud.RunBench $benchArgs
+=======
+cd ${workload_folder}
+
+START_TIME=`timestamp`
+echo $STORM_BIN_HOME/storm jar ${STREAMBENCH_STORM_JAR} com.intel.PRCcloud.RunBench $benchArgs
+$STORM_BIN_HOME/storm jar ${STREAMBENCH_STORM_JAR} com.intel.PRCcloud.RunBench $benchArgs
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+show_bannar finish
+>>>>>>> 8a87ac226388da387a6bde4da78d26450c4ce73a

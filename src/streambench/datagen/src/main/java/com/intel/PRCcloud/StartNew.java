@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class StartNew {
 
 	public static void main(String[] args){
-		if(args.length<4){
-			System.err.println("args:<BENCHNAME> <TOPICNAME> <BROKER_HOSTS> <RECORD_COUNT> need to be specified");
+		if(args.length<5){
+			System.err.println("args:<BENCHNAME> <TOPICNAME> <BROKER_HOSTS> <RECORD_COUNT> <DATA_DIR> need to be specified");
 			System.exit(1);
 		}
 			
@@ -16,12 +16,13 @@ public class StartNew {
 		String topic=args[1];
 		String brokerList=args[2];
 		long totalCount=Long.parseLong(args[3]);
+        String datadir = args[4];
 		ArrayList<byte[]> contents=null;
 
 		if(benchName.equals("micro/statistics")){
-			contents=FileDataGenNew.loadDataFromFile("test2.data");
+			contents=FileDataGenNew.loadDataFromFile(datadir + "/test2.data");
 		}else
-			contents=FileDataGenNew.loadDataFromFile("test1.data");
+			contents=FileDataGenNew.loadDataFromFile(datadir + "/test1.data");
 		
 		NewKafkaConnector con=new NewKafkaConnector(brokerList);
 		

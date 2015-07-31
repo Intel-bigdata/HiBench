@@ -12,12 +12,10 @@ import java.util.ArrayList;
 
 public class FileDataGenNew {
 
-	protected static final String RESOURCE_LOCATION="src/main/resources/";
 	
-	public static ArrayList<byte[]> loadDataFromFile(String filename){
+	public static ArrayList<byte[]> loadDataFromFile(String filepath){
 		ArrayList<byte[]> contents=new ArrayList<byte[]>();
-		URL url=FileDataGenNew.class.getResource("/"+RESOURCE_LOCATION+filename);
-		File dataFile=new File(url.getFile());
+		File dataFile=new File(filepath);
 		System.out.println(dataFile.getAbsolutePath());
 		try {
 			BufferedReader reader=new BufferedReader(new FileReader(dataFile));

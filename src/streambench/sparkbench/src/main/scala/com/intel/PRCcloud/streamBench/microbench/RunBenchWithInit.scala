@@ -17,7 +17,7 @@ class RunBenchJobWithInit(params:ParamEntity){
     val conf = new SparkConf().setMaster(params.master)
       .setAppName(params.appName)
       .set("spark.cleaner.ttl", "7200")
-      .set("spark.executor.memory","100g")
+      //.set("spark.executor.memory","100g")   // Added by Lv: will be managed in parameters of spark-submit
 
     var ssc:StreamingContext=null
 
