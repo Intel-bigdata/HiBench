@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.net.URL;
 
+import com.intel.PRCcloud.streamBench.util.ConfigLoader;
 import com.intel.PRCcloud.util.*;
 import com.intel.PRCcloud.micro.*;
 import com.intel.PRCcloud.trident.*;
@@ -18,24 +19,41 @@ public class RunBench{
   
   public static void runAll(String[] args) throws Exception{
   
-	if(args.length<12)
-	    BenchLogUtil.handleError("RunBench Usage:<NIMBUS> <NIMBUS_APIPORT> <ZKHOST> <WORKER_COUNT> <SPOUT_THREADS> <BOLT_THREADS> <BENCHNAME> <RECORD_COUNT> <TOPIC> <CONSUMER_GROUP>");
-	
+//	if(args.length<12)
+//	    BenchLogUtil.handleError("RunBench Usage:<NIMBUS> <NIMBUS_APIPORT> <ZKHOST> <WORKER_COUNT> <SPOUT_THREADS> <BOLT_THREADS> <BENCHNAME> <RECORD_COUNT> <TOPIC> <CONSUMER_GROUP>");
+	  if (args.length<1)
+		  BenchLogUtil.handleError("Usage: RunBench <ConfigFile>");
+
     StormBenchConfig conf=new StormBenchConfig();
-	conf.nimbus=args[0];
-	conf.nimbusAPIPort=Integer.parseInt(args[1]);
-	conf.zkHost=args[2];
-	conf.workerCount=Integer.parseInt(args[3]);
-	conf.spoutThreads=Integer.parseInt(args[4]);
-	conf.boltThreads=Integer.parseInt(args[5]);
-	conf.benchName=args[6];
-	conf.recordCount=Long.parseLong(args[7]);
-	conf.topic=args[8];
-	conf.consumerGroup=args[9];
-	conf.readFromStart=Boolean.parseBoolean(args[10]);
-	conf.ackon=Boolean.parseBoolean(args[11]);
-	conf.nimbusContactInterval=Integer.parseInt(args[12]);
-	
+//	conf.nimbus=args[0];
+//	conf.nimbusAPIPort=Integer.parseInt(args[1]);
+//	conf.zkHost=args[2];
+//	conf.workerCount=Integer.parseInt(args[3]);
+//	conf.spoutThreads=Integer.parseInt(args[4]);
+//	conf.boltThreads=Integer.parseInt(args[5]);
+//	conf.benchName=args[6];
+//	conf.recordCount=Long.parseLong(args[7]);
+//	conf.topic=args[8];
+//	conf.consumerGroup=args[9];
+//	conf.readFromStart=Boolean.parseBoolean(args[10]);
+//	conf.ackon=Boolean.parseBoolean(args[11]);
+//	conf.nimbusContactInterval=Integer.parseInt(args[12]);
+
+	  ConfigLoader cl = new ConfigLoader(args[0]);
+	  conf.nimbus = cl.getPropertiy("hibench.streamingbench.storm.nimbus");
+	  conf.nimbusAPIPort=Integer.parseInt(cl.getPropertiy("hibench.streamingbench.storm.nimbusAPIPort"));
+	  conf.zkHost = cl.getPropertiy("hibench.streamingbench.zookeeper.host");
+	  conf.workerCount=Integer.parseInt(cl.getPropertiy("hibench.streamingbench.storm.worker_count"));
+	  conf.spoutThreads=Integer.parseInt(cl.getPropertiy("hibench.streamingbench.storm.spout_threads"));
+	  conf.boltThreads=Integer.parseInt(cl.getPropertiy("hibench.streamingbench.storm.bolt_threads"));
+	  conf.benchName= cl.getPropertiy("hibench.streamingbench.benchname");
+	  conf.recordCount=Long.parseLong(cl.getPropertiy("hibench.streamingbench.record_count"));
+	  conf.topic = cl.getPropertiy("hibench.streamingbench.topic_name");
+	  conf.consumerGroup = cl.getPropertiy("hibench.streamingbench.consumer_group");
+	  conf.readFromStart=Boolean.parseBoolean(cl.getPropertiy("hibench.streamingbench.storm.read_from_start"));
+	  conf.ackon=Boolean.parseBoolean(cl.getPropertiy("hibench.streamingbench.storm.ackon"));
+	  conf.nimbusContactInterval=Integer.parseInt(cl.getPropertiy("hibench.streamingbench.storm.nimbusContactInterval"));
+
 //	boolean isLocal=false;
 //	String mode=prop.getProperty("mode");
 //	int nextIndex=0;
