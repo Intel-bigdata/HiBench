@@ -22,19 +22,19 @@ workload_root=${workload_folder}/../..
 enter_bench SparkStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-benchArgs="$benchName $topicName $SPARK_MASTER $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
-if [ "$benchName" == "micro/wordcount" ]; then
-  benchArgs="$benchArgs $separator"
-elif [ "$benchName" == "micro/sample"  ]; then
-  benchArgs="$benchArgs $prob"
-elif [ "$benchName" == "micro/grep"  ]; then
-  benchArgs="$benchArgs $pattern"
-else
-  benchArgs="$benchArgs $fieldIndex $separator"
-fi
+#benchArgs="$benchName $topicName $SPARK_MASTER $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
+#if [ "$benchName" == "micro/wordcount" ]; then
+#  benchArgs="$benchArgs $separator"
+#elif [ "$benchName" == "micro/sample"  ]; then
+#  benchArgs="$benchArgs $prob"
+#elif [ "$benchName" == "micro/grep"  ]; then
+#  benchArgs="$benchArgs $pattern"
+#else
+#  benchArgs="$benchArgs $fieldIndex $separator"
+#fi
 
 START_TIME=`timestamp`
-run-streaming-job com.intel.PRCcloud.streamBench.RunBench $benchArgs
+run-streaming-job com.intel.PRCcloud.streamBench.RunBench $SPARKBENCH_PROPERTIES_FILES
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

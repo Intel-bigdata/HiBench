@@ -31,17 +31,17 @@ DATA_GEN_DIR=${workload_root}/../../src/streambench/datagen
 data_dir=$DATA_GEN_DIR/src/main/resources
 
 #echo "=========begin gen stream data========="
-echo "Topic:$topicName dataset:$app records:$records kafkaBrokers:$brokerList mode:$mode data_dir:$data_dir"
+#echo "Topic:$topicName dataset:$app records:$records kafkaBrokers:$brokerList mode:$mode data_dir:$data_dir"
 
 if [ "$mode" == "push" ]; then
 	records=$(($records/4))
 	for i in `seq 4`; do      {
-		$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.PRCcloud.StartNew $app $topicName $brokerList $records $data_dir
+		$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.PRCcloud.StartNew $SPARKBENCH_PROPERTIES_FILES $data_dir
 	    }& 
 	done
 	wait
 else
-	$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.PRCcloud.StartPeriodic $app $topicName $brokerList $recordPerInterval $intervalSpan $totalRound $data_dir
+	$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.PRCcloud.StartPeriodic $SPARKBENCH_PROPERTIES_FILES $data_dir
 fi
 
 show_bannar finish
