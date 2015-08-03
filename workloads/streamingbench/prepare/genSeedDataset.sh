@@ -46,6 +46,7 @@ leave_bench
 # Copy and convert as seed
 
 LocalDir=${WORKLOAD_RESULT_FOLDER}/Seed
+rm -rf $LocalDir 2> /dev/null
 echo "Copying uservists table from HDFS to local disk: ${LocalDir}"
 CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -copyToLocal ${HIVE_BASE_HDFS}/Input/uservisits ${LocalDir}"
 execute_withlog ${CMD}
@@ -70,29 +71,12 @@ if [ $# -gt 1 ]; then
 	scale_factor=$1
 fi
 
-need_compute="true"
-if [ -f "$text_dataset" ];  then
-	text_dataset_line_length=`head -2 $text_dataset | tail -1 | wc -c`
-	if [ "$(($scale_factor*$seed_line_length))" -eq "$text_dataset_line_length" ]; then
-		need_compute="false"
-	fi
-fi
+echo "========== start gen dataset with scale factor:$scale_factor ============="
+awk_script="{"
+for i in `seq $scale_factor`; do
+    awk_script=$awk_script+"print $0;"
+done
+awk_script=$awk_script+"}"
+cat $text_seed | awk '$awk_script' > $text_dataset
+echo "========== dataset generated ============="
 
-if [ "$need_compute" == "true" ]; then
-	echo "==========start gen dataset=========="
-	IFS=''
-	> $text_dataset
-	while read line
-	do
-		number=$scale_factor
-		multiple_line=$line
-		while [ $number -gt 1 ]
-		do
-			multiple_line="$multiple_line $line"
-			number=$(($number-1))
-		done
-		echo $multiple_line >> $text_dataset
-	done < $text_seed
-else
-	echo "==========dataset exists============="	
-fi
