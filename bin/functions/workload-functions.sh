@@ -111,6 +111,7 @@ function rmr-hdfs(){		# rm -r for hdfs
     execute_withlog ${CMD}
 }
 
+
 function dus-hdfs(){		# du -s for hdfs
     assert $1 "dir parameter missing"
     if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
