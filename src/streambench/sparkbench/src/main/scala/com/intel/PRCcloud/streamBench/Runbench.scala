@@ -67,8 +67,8 @@ object RunBench {
 			//	    BenchLogUtil.handleError("Args needed "+benchName+"  <FIELD_INDEX> <SEPARATOR>")
 			val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
 			val separator = conf.getPropertiy("hibench.streamingbench.separator")
-			val SketchTest = new StreamProjectionJob(param, fieldIndex, separator)
-			SketchTest.run()
+			val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)
+			ProjectTest.run()
 		} else if (benchName == "micro/sample") {
 			//	  if(args.length<commonParamLength+1)
 			//	    BenchLogUtil.handleError("Args needed "+benchName+commonHint+"<PROBABILITY>")
