@@ -126,7 +126,11 @@ HiBenchEnvPropMapping=dict(
     # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
     STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
+<<<<<<< HEAD
+    STORM_BIN_HOME="hibench.streamingbench.storm.home",
+=======
     STORM_BIN_HOME="hibench.streamingbench.storm.bin",
+>>>>>>> 8a87ac226388da387a6bde4da78d26450c4ce73a
     zkHost="hibench.streamingbench.zookeeper.host",
     receiverNodes="hibench.streamingbench.receiver_nodes",
     benchName="hibench.streamingbench.benchname",

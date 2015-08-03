@@ -20,7 +20,6 @@ workload_root=${workload_folder}/../..
 echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-
 enter_bench StormStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 #set -u
@@ -44,8 +43,22 @@ else
   benchArgs="$benchArgs $separator $fieldIndex "
 fi
 
-echo "Args:$benchArgs"
+run-streaming-job com.intel.PRCcloud.streamBench.RunBench $benchArgs
+${STORM_BIN} jar ${STREAMBENCH_STORM_JAR} com.intel.PRCcloud.RunBench $benchArgs
 
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+show_bannar finish
+
+
+
+
+<<<<<<< HEAD
+#cd ${DIR}
+
+#$STORM_BIN_HOME/storm jar ${SRC_DIR}/target/streaming-bench-storm-0.1-SNAPSHOT-jar-with-dependencies.jar com.intel.PRCcloud.RunBench $benchArgs
+=======
 cd ${workload_folder}
 
 START_TIME=`timestamp`
@@ -55,3 +68,4 @@ END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
 show_bannar finish
+>>>>>>> 8a87ac226388da387a6bde4da78d26450c4ce73a
