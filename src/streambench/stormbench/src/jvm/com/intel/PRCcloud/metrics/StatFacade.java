@@ -182,20 +182,4 @@ public class StatFacade {
 		//If data is consumed in one interval, in average we estimate the consumption time to be half of the interval
 		return time>0?time:((double)COLLECT_INTERVAL)/((double)2000);
 	}
-	
-//	public long getAvgLatencySpout(){
-//		
-//	}
-//	
-//	public long getAvgLatencyProcessBolt(){
-//		
-//	}
-//	
-//	public long getAvgLatencyExecuteBolt(){
-//		
-//	}
-//	
-//	public long getAvgLatency(){
-//		
-//	}
 }

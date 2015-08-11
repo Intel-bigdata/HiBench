@@ -7,15 +7,33 @@ import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.StreamTask;
 import org.apache.samza.task.TaskCoordinator;
 
-public class Sample implements StreamTask {
-  private final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "sample");
+import java.lang.Deprecated;
+import java.lang.Override;
 
-  @Override
-  public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) {
-    String message = (String) envelope.getMessage();
-    double randVal = Math.random();
-    if (randVal <= CommonArg.getProb()) {
-      collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, message));
+public class Sample implements StreamTask {
+    private final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "sample");
+    private ThreadLocal<Random> rand = null;
+
+    @Override
+    public Stream(){
+        rand = threadRandom(1);
     }
-  }
+
+    @Override
+    public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) {
+        String message = (String) envelope.getMessage();
+        double randVal = rand.get().nextDouble();
+        if (randVal <= CommonArg.getProb()) {
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, message));
+        }
+    }
+
+    public static ThreadLocal<Random> threadRandom(final long seed) {
+        return new ThreadLocal<Random>() {
+            @Override
+            protected Random initialValue() {
+                return new Random(seed);
+            }
+        };
+    }
 }

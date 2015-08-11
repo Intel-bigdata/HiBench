@@ -60,51 +60,37 @@ object RunBench {
 
 
 		val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
-		val commonHint = " <TOPIC> <MASTER> <BATCH_INTERVAL> <ZKHOST> <CONSUMER_GROUP> <KAFKA_THREADS> "
-		//Just for test
-		if (benchName == "micro/projection") {
-			//	  if(args.length<commonParamLength+2)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+"  <FIELD_INDEX> <SEPARATOR>")
-			val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
-			val separator = conf.getPropertiy("hibench.streamingbench.separator")
-			val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)
-			ProjectTest.run()
-		} else if (benchName == "micro/sample") {
-			//	  if(args.length<commonParamLength+1)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+commonHint+"<PROBABILITY>")
-			val prob = conf.getPropertiy("hibench.streamingbench.prob").toDouble
-			val SampleTest = new SampleStreamJob(param, prob)
-			SampleTest.run()
-		} else if (benchName == "micro/statistics") {
-			//	  if(args.length<commonParamLength+2)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+ commonHint+"<FIELD_INDEX> <SEPARATOR>")
-			val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
-			val separator = conf.getPropertiy("hibench.streamingbench.separator")
-			val numericCalc = new NumericCalcJob(param, fieldIndex, separator)
-			numericCalc.run()
-		} else if (benchName == "micro/wordcount") {
-			//	  if(args.length<commonParamLength+1)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+ commonHint+"<SEPARATOR>")
-			val separator = conf.getPropertiy("hibench.streamingbench.separator")
-			val wordCount = new Wordcount(param, separator)
-			wordCount.run()
-		} else if (benchName == "micro/grep") {
-			//	   if(args.length<commonParamLength+1)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+commonHint+"<PATTERN>")
-			//val pattern=args(commonParamLength)
-			val pattern = conf.getPropertiy("hibench.streamingbench.pattern")
-			val GrepStream = new GrepStreamJob(param, pattern)
-			GrepStream.run()
-		} else if (benchName == "micro/distinctcount") {
-			//	   if(args.length<commonParamLength+2)
-			//	    BenchLogUtil.handleError("Args needed "+benchName+ commonHint+"<FIELD_INDEX> <SEPARATOR>")
-			val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
-			val separator = conf.getPropertiy("hibench.streamingbench.separator")
-			val distinct = new DistinctCountJob(param, fieldIndex, separator)
-			distinct.run()
-		} else {
-			val emptyTest = new IdentityJob(param)
-			emptyTest.run()
+    benchName match {
+      case "micro/projection" =>
+        val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
+        val separator = conf.getPropertiy("hibench.streamingbench.separator")
+        val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)
+        ProjectTest.run()
+      case "micro/sample" =>
+        val prob = conf.getPropertiy("hibench.streamingbench.prob").toDouble
+        val SampleTest = new SampleStreamJob(param, prob)
+        SampleTest.run()
+      case "micro/statistics" =>
+        val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
+        val separator = conf.getPropertiy("hibench.streamingbench.separator")
+        val numericCalc = new NumericCalcJob(param, fieldIndex, separator)
+        numericCalc.run()
+      case "micro/wordcount" =>
+        val separator = conf.getPropertiy("hibench.streamingbench.separator")
+        val wordCount = new Wordcount(param, separator)
+        wordCount.run()
+      case "micro/grep" =>
+        val pattern = conf.getPropertiy("hibench.streamingbench.pattern")
+        val GrepStream = new GrepStreamJob(param, pattern)
+        GrepStream.run()
+      case "micro/distinctcount" =>
+        val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
+        val separator = conf.getPropertiy("hibench.streamingbench.separator")
+        val distinct = new DistinctCountJob(param, fieldIndex, separator)
+        distinct.run()
+      case _ =>
+        val emptyTest = new IdentityJob(param)
+        emptyTest.run()
 		}
 
 

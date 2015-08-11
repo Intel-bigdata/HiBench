@@ -11,13 +11,13 @@ import org.apache.spark.storage.StorageLevel
 import kafka.serializer.StringDecoder
 
 
-class RunBenchJobWithInit(params:ParamEntity){
+class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
 
   def run(){
     val conf = new SparkConf().setMaster(params.master)
       .setAppName(params.appName)
       .set("spark.cleaner.ttl", "7200")
-      //.set("spark.executor.memory","100g")   // Added by Lv: will be managed in parameters of spark-submit
+    //.set("spark.executor.memory","100g")   // Added by Lv: will be managed in parameters of spark-submit
 
     var ssc:StreamingContext=null
 
@@ -42,10 +42,6 @@ class RunBenchJobWithInit(params:ParamEntity){
 
     ssc.start()
     ssc.awaitTermination()
-  }
-
-  def processStreamData(lines:DStream[String],ssc:StreamingContext){
-
   }
 
   def createStream(ssc:StreamingContext):DStream[(String,String)]={

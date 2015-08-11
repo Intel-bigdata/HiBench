@@ -26,7 +26,7 @@ public class NumericCalcSep extends SingleSpoutTops{
 	  private int fieldIndexInner;
 	  private String separatorInner;
 	  private long max=0;
-	  private long min=10000;
+	  private long min=Long.MAX_VALUE;
 	  private long sum=0;
 	  private long count=0;
 	  

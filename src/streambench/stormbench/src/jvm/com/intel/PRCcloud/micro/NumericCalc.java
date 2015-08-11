@@ -27,7 +27,7 @@ public class NumericCalc extends SingleSpoutTops{
 	  private int fieldIndexInner;
 	  private String separatorInner;
 	  private long max=0;
-	  private long min=10000;
+	  private long min=Long.MAX_VALUE;
 	  
 	  public NumericBolt(String separator,int fieldIndex){
 		fieldIndexInner=fieldIndex;
