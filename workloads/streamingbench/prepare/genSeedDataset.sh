@@ -50,11 +50,12 @@ rm -rf $LocalDir 2> /dev/null
 echo "Copying uservists table from HDFS to local disk: ${LocalDir}"
 CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -copyToLocal ${HIVE_BASE_HDFS}/Input/uservisits ${LocalDir}"
 execute_withlog ${CMD}
-cat $LocalDir/part-* | awk '{split($2,a,",");  print $1, a[1], a[3], "00:00:00", a[4], a[2];}' > ${LocalDir}/seed.data
+cat $LocalDir/part-* | awk '{split($2,a,",");  print $1, a[1], a[3], "00:00:00", a[4], a[2];}' | awk '{print substr($0, 1, 60);}' > ${LocalDir}/seed.data
 
 # Generate data by seed
 DATA_GEN_DIR=${workload_root}/../../src/streambench/datagen
 text_dataset="${DATA_GEN_DIR}/src/main/resources/test1.data"
+text_dataset2="${DATA_GEN_DIR}/src/main/resources/test2.data"
 text_seed=${LocalDir}/seed.data
 
 if [ ! -f $text_seed ]; then
@@ -78,5 +79,7 @@ for i in `seq $scale_factor`; do
 done
 awk_script=$awk_script+"}"
 cat $text_seed | awk '$awk_script' > $text_dataset
+python ${workload_folder}/gendata2.py ${text_dataset2}
 echo "========== dataset generated ============="
+
 
