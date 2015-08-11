@@ -4,33 +4,48 @@ import com.intel.PRCcloud.streamBench.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 import com.intel.PRCcloud.streamBench.util.BenchLogUtil
+import org.apache.spark.streaming.StreamingContext._
 
 import scala.collection.mutable.ArrayBuffer
 
-class DistinctCountJob (subClassParams:ParamEntity, fieldIndex:Int, separator:String) extends RunBenchJobWithInit(subClassParams) {
-  var summed_words:Long = 0
+object SetPool {
+  private var iset: Set[String] = _
+  def getSet(): Set[String] = synchronized {
+    if (iset == null) {
+      iset = Set()
+    }
+    iset
+  }
+  def setSet(iset: Set[String]): Unit = synchronized {
+    this.iset = iset
+  }
+}
 
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
+class DistinctCountJob (subClassParams:ParamEntity, fieldIndex:Int, separator:String) extends RunBenchJobWithInit(subClassParams) {
+
+  override def processStreamData(lines:DStream[String], ssc:StreamingContext) {
     val index = fieldIndex
     val sep   = separator
-    val debug = subClassParams.debug
 
-    lines.foreachRDD(rdd => {
-      val distincted_words = rdd.flatMap(line => {
-        val splits = line.split(sep)
-        if (index < splits.length)
-          Iterator(splits(index))
-        else
-          Iterator.empty
-      }).distinct()
-      val size_of_this_batch = distincted_words.count()
-      summed_words += size_of_this_batch
+    val distinctcount = lines
+      .flatMap(line => {
+      val splits = line.split(sep)
+      if (index < splits.length)
+        Traversable(splits(index))
+      else
+        Traversable.empty
     })
-    BenchLogUtil.logMsg(s"total size:$summed_words")
-    if (debug) {
-      val arr = new ArrayBuffer[String]()
-      BenchLogUtil.logMsg("Debug disabled due to optimization of this workload")
-      //BenchLogUtil.logMsg(arr.mkString("\n"))
-    }
+      .map(word => (word, 1))
+      .reduceByKey((x, y) => x)
+    
+    distinctcount.foreachRDD(rdd => {
+      rdd.foreachPartition(partitionOfRecords => {
+        var iset = SetPool.getSet
+        partitionOfRecords.foreach{case(word, count) =>
+          iset += word
+        }
+        SetPool.setSet(iset)
+      })
+    })
   }
 }

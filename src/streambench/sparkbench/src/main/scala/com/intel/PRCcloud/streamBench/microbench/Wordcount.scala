@@ -2,28 +2,42 @@ package com.intel.PRCcloud.streamBench.microbench
 
 import com.intel.PRCcloud.streamBench.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
+import com.intel.PRCcloud.streamBench.metrics.LatencyListener
 import org.apache.spark.streaming.StreamingContext
 import com.intel.PRCcloud.streamBench.util.BenchLogUtil
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
 import scala.collection.mutable.Map
+
+object MapPool {
+  private var imap: Map[String, Long] = _
+  def getMap(): Map[String, Long] = synchronized {
+    if (imap == null) imap = Map()
+    imap
+  }
+  def setMap(imap: Map[String, Long]) = synchronized {
+    this.imap = imap
+  }
+}
 
 class Wordcount(subClassParams:ParamEntity,separator:String)
   extends RunBenchJobWithInit(subClassParams){
-  var wordmap = Map[String,Long]()
 
   override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    val sep=separator
-    val debug=subClassParams.debug
+    val sep = separator
+    val wordcount = lines
+      .flatMap(x => x.split(sep))
+      .map(word => (word, 1))
+      .reduceByKey(_ + _)
 
-    val wordcount = lines.flatMap(x=>x.split(sep)).map((_,1)).reduceByKey(_+_)
-
-    wordcount.foreachRDD(rdd => {
-      rdd.collect().foreach { case (word, count) =>
-        wordmap(word) = if (wordmap.contains(word)) wordmap(word) + count else count
-      }
+    wordcount.foreachRDD(rdd=> {
+      rdd.foreachPartition(partitionOfRecords => {
+        val imap = MapPool.getMap
+        partitionOfRecords.foreach{case (word, count) =>
+          imap(word) = if (imap.contains(word)) imap(word) + count else count
+        }
+        MapPool.setMap(imap)
+      })
     })
-
-    if(debug) {
-      BenchLogUtil.logMsg(wordmap.mkString("\n"))
-    }
   }
 }
