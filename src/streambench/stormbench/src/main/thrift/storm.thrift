@@ -1,6 +1,6 @@
 #!/usr/local/bin/thrift --gen java:beans,nocamel,hashcode
 
-namespace java backtype.storm.generated
+namespace java com.intel.PRCcloud.thrift.generated
 
 union JavaObjectArg {
   1: i32 int_arg;
