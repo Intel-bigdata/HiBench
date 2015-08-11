@@ -8,11 +8,11 @@ import backtype.storm.tuple.Values;
 import com.intel.PRCcloud.util.*;
 import backtype.storm.tuple.Fields;
 
-public class SketchStreamBolt extends BaseBasicBolt{
+public class ProjectStreamBolt extends BaseBasicBolt{
 	private int fieldIndex;
 	private String separator;
 	
-	public SketchStreamBolt(int fieldIndex,String separator){
+	public ProjectStreamBolt(int fieldIndex, String separator){
 		this.fieldIndex=fieldIndex;
 		this.separator=separator;
 	}

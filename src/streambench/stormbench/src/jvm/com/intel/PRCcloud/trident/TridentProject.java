@@ -28,9 +28,9 @@ import com.intel.PRCcloud.util.*;
 import com.intel.PRCcloud.spout.*;
 import com.intel.PRCcloud.topologies.*;
 
-public class TridentSketch extends SingleTridentSpoutTops {
+public class TridentProject extends SingleTridentSpoutTops {
 
-  public TridentSketch(StormBenchConfig config) {
+  public TridentProject(StormBenchConfig config) {
     super(config);
   }
 

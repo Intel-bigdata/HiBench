@@ -5,7 +5,6 @@ import backtype.storm.topology.*;
 import backtype.storm.tuple.*;
 import storm.kafka.*;
 
-import com.intel.PRCcloud.*;
 import com.intel.PRCcloud.util.*;
 import com.intel.PRCcloud.topologies.*;
 
@@ -19,7 +18,7 @@ public class DistinctCount extends SingleSpoutTops{
   }
   
   public void setBolt(TopologyBuilder builder){
-          builder.setBolt("sketch",new SketchStreamBolt(config.fieldIndex,config.separator),config.boltThreads/2).shuffleGrouping("spout");
+          builder.setBolt("sketch",new ProjectStreamBolt(config.fieldIndex,config.separator),config.boltThreads/2).shuffleGrouping("spout");
 		  builder.setBolt("distinct",new TotalDistinctCountBolt(),config.boltThreads/2).fieldsGrouping("sketch", new Fields("field"));
   }
   
