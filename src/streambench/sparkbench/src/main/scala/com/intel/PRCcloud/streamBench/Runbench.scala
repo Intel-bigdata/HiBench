@@ -61,29 +61,29 @@ object RunBench {
 
 		val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
     benchName match {
-      case "micro/projection" =>
+      case "micro-projection" =>
         val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
         val separator = conf.getPropertiy("hibench.streamingbench.separator")
         val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)
         ProjectTest.run()
-      case "micro/sample" =>
+      case "micro-sample" =>
         val prob = conf.getPropertiy("hibench.streamingbench.prob").toDouble
         val SampleTest = new SampleStreamJob(param, prob)
         SampleTest.run()
-      case "micro/statistics" =>
+      case "micro-statistics" =>
         val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
         val separator = conf.getPropertiy("hibench.streamingbench.separator")
         val numericCalc = new NumericCalcJob(param, fieldIndex, separator)
         numericCalc.run()
-      case "micro/wordcount" =>
+      case "micro-wordcount" =>
         val separator = conf.getPropertiy("hibench.streamingbench.separator")
         val wordCount = new Wordcount(param, separator)
         wordCount.run()
-      case "micro/grep" =>
+      case "micro-grep" =>
         val pattern = conf.getPropertiy("hibench.streamingbench.pattern")
         val GrepStream = new GrepStreamJob(param, pattern)
         GrepStream.run()
-      case "micro/distinctcount" =>
+      case "micro-distinctcount" =>
         val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
         val separator = conf.getPropertiy("hibench.streamingbench.separator")
         val distinct = new DistinctCountJob(param, fieldIndex, separator)
