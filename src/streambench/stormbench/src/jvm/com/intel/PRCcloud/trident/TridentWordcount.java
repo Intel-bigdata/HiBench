@@ -37,12 +37,14 @@ public class TridentWordcount extends SingleTridentSpoutTops {
   public void setTopology(TridentTopology topology) {
     OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
 
-    TridentState wordCounts = topology
+    topology
       .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new Split(config.separator), new Fields("word"))
-      .groupBy(new Fields("word"))
-      .persistentAggregate(new MemoryMapState.Factory(), new Count(), new Fields("count"))
-      .parallelismHint(config.workerCount);
+      .each(spout.getOutputFields(), new Split(config.separator), new Fields("words"))
+      .parallelismHint(config.spoutThreads)
+      .partitionBy(new Fields("words"))
+      .each(new Fields("words"), new WordCount(), new Fields("word", "count"))
+      .parallelismHint(config.workerCount)
+      ;
   }
 
   public static class Split extends BaseFunction {

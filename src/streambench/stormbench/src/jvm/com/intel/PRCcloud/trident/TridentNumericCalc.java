@@ -40,8 +40,10 @@ public class TridentNumericCalc extends SingleTridentSpoutTops {
 
     topology
       .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new NumericCalc(config.separator, config.fieldIndex), new Fields("max", "min", "sum", "count"))
-      .parallelismHint(config.workerCount);
+      .parallelismHint(config.spoutThreads)
+      .each(spout.getOutputFields(), new Trim(config.separator, config.fieldIndex), new Fields("number"))
+      .persistentAggregate(new MemoryMapState.Factory(), new Fields("number"), new NumericCalc(), new Fields("res"))
+      ;
   }
 
   public static class NumericCalc extends BaseFunction {

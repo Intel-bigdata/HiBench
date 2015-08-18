@@ -43,6 +43,8 @@ public class TridentDistinctCount extends SingleTridentSpoutTops {
     topology
       .newStream("bg0", spout)
       .each(spout.getOutputFields(), new Sketch(config.fieldIndex, config.separator), new Fields("field"))
+      .parallelismHint(config.spoutThreads)
+      .partitionBy(new Fields("field"))
       .each(new Fields("field"), new DistinctCount(), new Fields("size"))
       .parallelismHint(config.workerCount);
   }
