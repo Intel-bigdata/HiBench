@@ -1,5 +1,7 @@
 package com.intel.PRCcloud.trident;
 
+import java.io.Serializable;
+
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.LocalDRPC;
@@ -12,8 +14,7 @@ import backtype.storm.topology.base.BaseRichSpout;
 
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;
-import storm.trident.operation.BaseFunction;
-import storm.trident.operation.TridentCollector;
+import storm.trident.operation.*;
 import storm.trident.operation.builtin.Count;
 import storm.trident.operation.builtin.FilterNull;
 import storm.trident.operation.builtin.MapGet;
@@ -28,7 +29,48 @@ import com.intel.PRCcloud.util.*;
 import com.intel.PRCcloud.spout.*;
 import com.intel.PRCcloud.topologies.*;
 
-public class TridentNumericCalc extends SingleTridentSpoutTops {
+class Numeric implements Serializable {
+  public Long max = 0L;
+  public Long min = 10000L;
+  public Long sum = 0L;
+  public Long count = 0L;
+  public Numeric() {}
+  public Numeric(Long max, Long min, Long sum, Long count) {
+    this.max = max;
+    this.min = min;
+    this.sum = sum;
+    this.count = count;
+  }
+}
+
+class NumericCalc implements CombinerAggregator<Numeric>, Serializable {
+
+  @Override
+  public Numeric init(TridentTuple tuple) {
+    if (tuple.contains("number")) {
+      Long val = tuple.getLong(0);
+      return new Numeric(val, val, val, 1L);
+    }
+    return new Numeric();
+  }
+
+  @Override
+  public Numeric combine(Numeric val1, Numeric val2) {
+    if (val1.max < val2.max) val1.max = val2.max;
+    if (val1.min > val2.min) val1.min = val2.min;
+    val1.sum += val2.sum;
+    val1.count += val2.count;
+    System.out.println(val1.max + " " + val1.min + " " + val1.sum + " " + val1.count);
+    return val1;
+  }
+
+  @Override
+  public Numeric zero() {
+    return new Numeric();
+  }
+}
+
+public class TridentNumericCalc extends SingleTridentSpoutTops implements Serializable {
 
   public TridentNumericCalc(StormBenchConfig config){
     super(config);
@@ -46,32 +88,24 @@ public class TridentNumericCalc extends SingleTridentSpoutTops {
       ;
   }
 
-  public static class NumericCalc extends BaseFunction {
-    private int fieldIndexInner;
-    private String separatorInner;
-    private long max=0;
-    private long min=10000;
-    private long sum=0;
-    private long count=0;
-  
-    public NumericCalc(String separator,int fieldIndex) {
-          this.separatorInner = separator;
-          this.fieldIndexInner = fieldIndex;
+  public static class Trim extends BaseFunction {
+    String separator;
+    int fieldIndex;
+
+    public Trim(String separator, int fieldIndex) {
+      this.separator = separator;
+      this.fieldIndex = fieldIndex;
     }
 
     @Override
-    public void execute(TridentTuple tuple, TridentCollector collector){
+    public void execute(TridentTuple tuple, TridentCollector collector) {
       String record = tuple.getString(0);
-      String[] fields = record.trim().split(separatorInner);
-      if (fields.length > fieldIndexInner) {
-        long val = Long.parseLong(fields[fieldIndexInner]);
-        if(val>max) max = val;
-        if(val<min) min = val;
-        sum += val;
-        count += 1;
-        double avg = (double)sum/(double)count;
-        collector.emit(new Values(max,min,sum,avg,count));
+      String[] fields = record.trim().split(separator);
+      if (fields.length > fieldIndex) {
+        Long val = Long.parseLong(fields[fieldIndex]);
+        collector.emit(new Values(val));
       }
     }
   }
+
 }
