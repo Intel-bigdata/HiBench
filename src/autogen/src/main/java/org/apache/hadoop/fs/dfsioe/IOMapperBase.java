@@ -48,11 +48,6 @@ public abstract class IOMapperBase extends Configured
 
   public IOMapperBase(Configuration conf) { 
     super(conf); 
-    try {
-      fs = FileSystem.get(conf);
-    } catch (Exception e) {
-      throw new RuntimeException("Cannot create file system.", e);
-    }
     bufferSize = conf.getInt("test.io.file.buffer.size", 4096);
     buffer = new byte[bufferSize];
     try {
@@ -64,6 +59,11 @@ public abstract class IOMapperBase extends Configured
 
   public void configure(JobConf job) {
     setConf(job);
+    try {
+      fs = FileSystem.get(job);
+    } catch (Exception e) {
+      throw new RuntimeException("Cannot create file system.", e);
+    }
   }
 
   public void close() throws IOException {

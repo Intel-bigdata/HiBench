@@ -342,7 +342,7 @@ function ensure-nutchindexing-release () {
 	unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
 	rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
 	cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
-	rm -f $NUTCH_ROOT/nutch-1.2.job
+	rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
 	cd $NUTCH_HOME_WORKLOAD/temp
 	zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
 	rm -rf $NUTCH_HOME_WORKLOAD/temp
