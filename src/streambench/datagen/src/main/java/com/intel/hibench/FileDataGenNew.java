@@ -1,4 +1,4 @@
-package com.intel.PRCcloud;
+package com.intel.hibench.streambench;
 
 
 

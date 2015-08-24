@@ -1,6 +1,6 @@
-package com.intel.PRCcloud;
+package com.intel.hibench.streambench;
 
-import com.intel.PRCcloud.streamBench.util.ConfigLoader;
+import com.intel.hibench.streambench.utils.ConfigLoader;
 
 import java.util.ArrayList;
 
