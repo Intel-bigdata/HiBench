@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.streamBench
+package com.intel.hibench.streambench.spark
 
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds,StreamingContext}

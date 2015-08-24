@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.streamBench.util
+package com.intel.hibench.streambench.spark.util
 
 import org.apache.spark.Logging
 import org.apache.log4j.{Level, Logger}

@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.streamBench.entity
+package com.intel.hibench.streambench.spark.entity
 
 /**
  * Created by luruirui on 14-11-26.

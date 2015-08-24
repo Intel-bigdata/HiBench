@@ -1,9 +1,9 @@
-package com.intel.PRCcloud.streamBench.metrics
+package com.intel.hibench.streambench.spark.metrics
 
-import com.intel.PRCcloud.streamBench.entity.ParamEntity
+import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
-import com.intel.PRCcloud.streamBench.util._
+import com.intel.hibench.streambench.spark.util._
 
 class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends StreamingListener {
 

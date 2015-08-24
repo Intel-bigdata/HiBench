@@ -1,6 +1,6 @@
-package com.intel.PRCcloud.streamBench
+package com.intel.hibench.streambench.spark
 
-import com.intel.PRCcloud.streamBench.metrics.LatencyListener
+import com.intel.hibench.streambench.spark.metrics.LatencyListener
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds,StreamingContext}
 import StreamingContext._

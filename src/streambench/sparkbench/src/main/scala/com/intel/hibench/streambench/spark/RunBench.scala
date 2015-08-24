@@ -1,8 +1,8 @@
-package com.intel.PRCcloud.streamBench
+package com.intel.hibench.streambench.spark
 
-import com.intel.PRCcloud.streamBench.entity.ParamEntity
-import com.intel.PRCcloud.streamBench.util._
-import com.intel.PRCcloud.streamBench.microbench._
+import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.spark.util._
+import com.intel.hibench.streambench.spark.microbench._
 
 object RunBench {
 	def main(args: Array[String]) {

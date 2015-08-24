@@ -1,12 +1,12 @@
-package com.intel.PRCcloud.streamBench.microbench
+package com.intel.hibench.streambench.spark.microbench
 
-import com.intel.PRCcloud.streamBench.entity.ParamEntity
+import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds,StreamingContext}
 
 import org.apache.spark.streaming.kafka._
 import org.apache.spark.streaming.dstream._
-import com.intel.PRCcloud.streamBench.metrics._
+import com.intel.hibench.streambench.spark.metrics._
 import org.apache.spark.storage.StorageLevel
 import kafka.serializer.StringDecoder
 

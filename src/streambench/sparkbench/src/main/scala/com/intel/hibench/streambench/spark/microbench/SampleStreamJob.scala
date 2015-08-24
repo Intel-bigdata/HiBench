@@ -1,8 +1,8 @@
-package com.intel.PRCcloud.streamBench.microbench
+package com.intel.hibench.streambench.spark.microbench
 
-import com.intel.PRCcloud.streamBench.entity.ParamEntity
+import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
-import com.intel.PRCcloud.streamBench.util.BenchLogUtil
+import com.intel.hibench.streambench.spark.util.BenchLogUtil
 import org.apache.spark.streaming.StreamingContext
 
 object ThreadLocalRandom extends Serializable{

@@ -15,7 +15,7 @@ public class Sample implements StreamTask {
     private final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "sample");
     private ThreadLocal<Random> rand = null;
 
-    
+
     public Sample(){
         rand = threadRandom(1);
     }

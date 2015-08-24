@@ -1,6 +1,6 @@
-package com.intel.PRCcloud.streamBench.microbench
+package com.intel.hibench.streambench.spark.microbench
 
-import com.intel.PRCcloud.streamBench.entity.ParamEntity
+import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 

@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.streamBench.util;
+package com.intel.hibench.streambench.spark;
 
 
 import java.io.BufferedReader;
