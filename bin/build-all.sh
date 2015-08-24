@@ -27,7 +27,7 @@ cd $DIR/src/sparkbench && \
 for mr in MR1 MR2; do
         for spark_version in 1.2 1.3 1.4; do
                 cp target/*-jar-with-dependencies.jar jars
-                mvn clean package -D spark$spark_version -Dmr
+                mvn clean package -D spark$spark_version -D $mr
                 if [ $? -ne 0 ]; then
                         echo "Build failed for spark$spark_version and $mr, please check!"
                         exit 1
