@@ -129,7 +129,7 @@
   </pluginRepositories>
 
   <build>
-    <sourceDirectory>src/jvm</sourceDirectory>
+    <sourceDirectory>src/main</sourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

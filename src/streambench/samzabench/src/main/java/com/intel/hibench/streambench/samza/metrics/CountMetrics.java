@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.metrics;
+package com.intel.hibench.streambench.samza.metrics;
 
 import java.util.Map;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.micro;
+package com.intel.hibench.streambench.samza.micro;
 
 import java.util.HashSet;
 import java.util.Set;

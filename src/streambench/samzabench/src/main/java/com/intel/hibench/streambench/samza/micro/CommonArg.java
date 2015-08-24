@@ -1,4 +1,4 @@
-package com.intel.PRCcloud.micro;
+package com.intel.hibench.streambench.samza.micro;
 
 class CommonArg {
   static private String separator = "\\s+"; 
