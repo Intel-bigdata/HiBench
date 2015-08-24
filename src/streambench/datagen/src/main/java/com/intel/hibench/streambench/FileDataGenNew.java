@@ -5,13 +5,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
+import org.apache.hadoop.fs.*;
+import org.apache.hadoop.conf.*;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapred.*;
+import org.apache.hadoop.util.*;
 
 public class FileDataGenNew {
 
 	
 	public static ArrayList<byte[]> loadDataFromFile(String filepath){
+        Path pt = new Path(filepath);
+        FileSystem fs = FileSystem.get(new Configuration());
+
 		ArrayList<byte[]> contents=new ArrayList<byte[]>();
 		File dataFile=new File(filepath);
 		System.out.println(dataFile.getAbsolutePath());

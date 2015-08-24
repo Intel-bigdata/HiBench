@@ -22,7 +22,7 @@ public class StartNew {
 		long totalCount   = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
         String datadir    = args[2];
 
-		ArrayList<byte[]> contents=null;
+		ArrayList<byte[]> contents = null;
 
 		if(benchName.equals("micro-statistics")){
 			contents=FileDataGenNew.loadDataFromFile(datadir + "/test2.data");
