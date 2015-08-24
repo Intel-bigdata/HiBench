@@ -22,22 +22,10 @@ workload_root=${workload_folder}/../..
 enter_bench SparkStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-#benchArgs="$benchName $topicName $SPARK_MASTER $batchInterval $zkHost $consumerGroup $receiverNodes $recordCount $copies $testWAL $checkpointPath $debug $directMode $brokerList"
-#if [ "$benchName" == "micro/wordcount" ]; then
-#  benchArgs="$benchArgs $separator"
-#elif [ "$benchName" == "micro/sample"  ]; then
-#  benchArgs="$benchArgs $prob"
-#elif [ "$benchName" == "micro/grep"  ]; then
-#  benchArgs="$benchArgs $pattern"
-#else
-#  benchArgs="$benchArgs $fieldIndex $separator"
-#fi
-
 START_TIME=`timestamp`
-run-streaming-job com.intel.PRCcloud.streamBench.RunBench $SPARKBENCH_PROPERTIES_FILES
+run-streaming-job com.intel.hibench.streambench.spark.RunBench $SPARKBENCH_PROPERTIES_FILES
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
 show_bannar finish
 
-#$SPARK_BIN_DIR/spark-submit --class  com.intel.PRCcloud.streamBench.RunBench ${SRC_DIR}/target/scala-2.10/streaming-bench-spark_0.1-assembly-1.3.0.jar $benchArgs 2>&1 | tee consoleLog.txt

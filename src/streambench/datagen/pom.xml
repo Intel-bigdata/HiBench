@@ -9,7 +9,7 @@
    <version>4.0-SNAPSHOT</version>
  </parent>
 
- <groupId>com.intel.PRCcloud</groupId>
+ <groupId>com.intel.hibench.streambench</groupId>
  <artifactId>datagen</artifactId>
  <version>0.0.1</version>
  <name>Streamingbench data generation tools</name> 

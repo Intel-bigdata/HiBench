@@ -34,11 +34,10 @@ else
 fi
 
 START_TIME=`timestamp`
-run-streaming-job com.intel.PRCcloud.streamBench.TestKafkaJob $$topicName
+run-streaming-job com.intel.hibench.streambench.spark.TestKafkaJob $$topicName
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
 show_bannar finish
 leave_bench
 
-#$SPARK_BIN_DIR/spark-submit --class  com.intel.PRCcloud.streamBench.TestKafkaJob ${DIR}/target/scala-2.10/streaming-bench-spark_0.1-assembly-1.2.1-SNAPSHOT.jar $topicName 2>&1 | tee consoleLog.txt
