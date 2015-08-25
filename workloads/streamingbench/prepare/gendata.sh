@@ -24,10 +24,6 @@ show_bannar start
 
 DATA_GEN_DIR=${workload_root}/../../src/streambench/datagen
 
-#SRC_DIR="$DIR/../../src/streambench/datagen"
-
-#. "${SRC_DIR}/conf/configure.sh"
-#. "${DIR}/prepare/genSeedDataset.sh" $textdataset_recordsize_factor
 data_dir=$DATA_GEN_DIR/src/main/resources
 
 #echo "=========begin gen stream data========="

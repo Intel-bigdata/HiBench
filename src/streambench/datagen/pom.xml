@@ -21,5 +21,10 @@
      <scope>system</scope>
      <systemPath>${basedir}/lib/kafka-clients-0.8.1.jar</systemPath>
    </dependency>
+   <dependency>
+     <groupId>org.apache.hadoop</groupId>
+     <artifactId>hadoop-core</artifactId>
+     <version>${hadoop.mr1.version}</version>
+   </dependency>
  </dependencies>
 </project>
