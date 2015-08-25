@@ -19,8 +19,8 @@ public class Wordcount extends SingleSpoutTops{
     }
 
     public void setBolt(TopologyBuilder builder){
-        builder.setBolt("split",new SplitStreamBolt(config.separator),config.boltThreads/2).shuffleGrouping("spout");
-        builder.setBolt("count",new WordCountBolt(), config.boltThreads/2).fieldsGrouping("split", new Fields("word"));
+        builder.setBolt("split",new SplitStreamBolt(config.separator),config.boltThreads).shuffleGrouping("spout");
+        builder.setBolt("count",new WordCountBolt(), config.boltThreads).fieldsGrouping("split", new Fields("word"));
     }
 
     public static class WordCountBolt extends BaseBasicBolt {

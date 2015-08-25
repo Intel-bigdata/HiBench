@@ -43,8 +43,8 @@ show_bannar start
 #  benchArgs="$benchArgs $separator $fieldIndex "
 #fi
 
-gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
-show_bannar finish
+#gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+#show_bannar finish
 
 cd ${workload_folder}
 

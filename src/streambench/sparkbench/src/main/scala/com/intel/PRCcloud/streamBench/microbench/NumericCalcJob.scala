@@ -37,7 +37,7 @@ class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: St
 
     lines.foreachRDD( rdd => {
       val numbers = rdd.flatMap( line => {
-        val splits = line.split(sep)
+        val splits = line.trim.split(sep)
         if (index < splits.length)
           Iterator(splits(index).toLong)
         else
@@ -54,7 +54,6 @@ class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: St
       BenchLogUtil.logMsg("Current min: " + history_statistics.min)
       BenchLogUtil.logMsg("Current sum: " + history_statistics.sum)
       BenchLogUtil.logMsg("Current total: " + history_statistics.count)
-      BenchLogUtil.logMsg("Current avg: " + (history_statistics.sum.toDouble / history_statistics.count.toDouble))
 
     })
   }

@@ -126,8 +126,8 @@ HiBenchEnvPropMapping=dict(
     
 #    app="hibench.streamingbench.app",
 #    textdataset_recordsize_factor="hibench.streamingbench.prepare.textdataset_recordsize_factor",
-#    mode="hibench.streamingbench.prepare.mode",
-#    records="hibench.streamingbench.prepare.push.records",
+    mode="hibench.streamingbench.prepare.mode",
+    records="hibench.streamingbench.prepare.push.records",
 #    recordPerInterval="hibench.streamingbench.prepare.periodic.recordPerInterval",
 #    intervalSpan="hibench.streamingbench.prepare.periodic.intervalSpan",
 #    totalRound="hibench.streamingbench.prepare.periodic.totalRound",
@@ -135,7 +135,7 @@ HiBenchEnvPropMapping=dict(
     # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
     STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
-    STORM_BIN_HOME="hibench.streamingbench.storm.home",
+    STORM_BIN_HOME="hibench.streamingbench.storm.bin",
 #    zkHost="hibench.streamingbench.zookeeper.host",
 #    receiverNodes="hibench.streamingbench.receiver_nodes",
     # benchName="hibench.streamingbench.benchname",

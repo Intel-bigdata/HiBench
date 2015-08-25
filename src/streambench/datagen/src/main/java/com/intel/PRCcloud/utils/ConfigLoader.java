@@ -30,6 +30,7 @@ public class ConfigLoader {
                         System.out.println("Warning: unknown config parsed, skip:"+line);
                     }
                 }
+		line = br.readLine();
             }
         } catch (FileNotFoundException e) {
             System.out.println("ERROR: Config file not found! Should not happen. Caused by:");

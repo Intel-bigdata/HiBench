@@ -18,8 +18,8 @@ public class DistinctCount extends SingleSpoutTops{
   }
   
   public void setBolt(TopologyBuilder builder){
-          builder.setBolt("sketch",new ProjectStreamBolt(config.fieldIndex,config.separator),config.boltThreads/2).shuffleGrouping("spout");
-		  builder.setBolt("distinct",new TotalDistinctCountBolt(),config.boltThreads/2).fieldsGrouping("sketch", new Fields("field"));
+          builder.setBolt("sketch",new ProjectStreamBolt(config.fieldIndex,config.separator),config.boltThreads).shuffleGrouping("spout");
+		  builder.setBolt("distinct",new TotalDistinctCountBolt(),config.boltThreads).fieldsGrouping("sketch", new Fields("field"));
   }
   
   public static class TotalDistinctCountBolt extends BaseBasicBolt {
