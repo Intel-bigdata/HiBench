@@ -56,7 +56,7 @@ object RunBench {
 		val path = if (testWAL) conf.getPropertiy("hibench.streamingbench.checkpoint_path") else ""
 		val debug = conf.getPropertiy("hibench.streamingbench.debug").toBoolean
 		val directMode = conf.getPropertiy("hibench.streamingbench.direct_mode").toBoolean
-		val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.broker_list_with_quote") else ""
+		val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
 
 
 		val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
