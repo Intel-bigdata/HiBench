@@ -26,6 +26,8 @@ public class ConfigLoader {
                         String key = words[0];
                         String value = words[1];
                         store.put(key, value);
+                    } else if (leng.length()==1) {
+                        store.put(key, "");
                     } else {
                         System.out.println("Warning: unknown config parsed, skip:"+line);
                     }

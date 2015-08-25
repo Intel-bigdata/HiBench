@@ -17,8 +17,11 @@
 
 package com.intel.hibench.streambench;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.Callback;
@@ -26,7 +29,6 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.record.Records;
 
 public class NewKafkaConnector {
 
@@ -41,31 +43,36 @@ public class NewKafkaConnector {
 	        producer = new KafkaProducer(props);
 	}
 	
-	public void publishData(ArrayList<byte[]> contents,long size,String topic){
-		int contentsSize=contents.size();
-		long start=System.currentTimeMillis();
-		long bytes=0;
+	public void publishData(BufferedReader reader,long size,String topic){
+		long start = System.currentTimeMillis();
+		long bytes = 0;
 		
 		 Callback callback = new Callback() {
-	            public void onCompletion(RecordMetadata metadata, Exception e) {
-	                if (e != null)
-	                    e.printStackTrace();
-	            }
-	        };
-	    
-		for(int i=0;i<size;i++){
-			byte[] payload=contents.get((int)i%contentsSize);
-			
-			//byte[] payloadold=contents.get((int)i%contentsSize).getBytes();
-			//Last line is the previous way to get payload and the getBytes method is time consuming,
-			//which harms the kafka data publish rate. 
-			//Improve by calculates all byte[] in advance
-			
-			bytes+=payload.length;
-			ProducerRecord record = new ProducerRecord(topic, payload);
-			producer.send(record,callback);
-		}
-		long end=System.currentTimeMillis();
+             public void onCompletion(RecordMetadata metadata, Exception e) {
+                 if (e != null)
+                     e.printStackTrace();
+             }
+         };
+        ByteArrayOutputStream ous = new ByteArrayOutputStream();
+        try {
+            while (true) {
+                for (int i=0; i<1000; i++) {  // read and accumulate 1000 lines top
+                    String line = reader.readLine();
+                    if (line == null) break;
+                    ous.write(line.getBytes());
+                }
+                if (ous.size() == 0) break; // no more data got, let's break
+                ProducerRecord record = new ProducerRecord(topic, ous.toByteArray());
+                bytes += ous.size();
+                producer.send(record, callback);
+                ous.reset();
+            }
+            ous.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+		long end = System.currentTimeMillis();
 		System.out.println("Bytes sent:"+bytes+" after change");
 		System.out.println("Time consumed:"+(end-start));
 		double seconds=(double)(end-start)/(double)1000;

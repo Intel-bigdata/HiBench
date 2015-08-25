@@ -17,29 +17,17 @@
 
 package com.intel.hibench.streambench;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
 
 public class FileDataGenNew {
-
-	
-	public static ArrayList<byte[]> loadDataFromFile(String filepath){
-		ArrayList<byte[]> contents=new ArrayList<byte[]>();
+	public static BufferedReader loadDataFromFile(String filepath){
 		try {
             Path pt = new Path(filepath);
             FileSystem fs = FileSystem.get(new Configuration());
-			BufferedReader reader=new BufferedReader(new InputStreamReader(fs.open(pt)));
-			String line = null;
-			while((line = reader.readLine())!=null){
-				contents.add(line.getBytes());
-			}
-			reader.close();
-			return contents;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(pt)));
+			return reader;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -23,9 +23,6 @@ echo $workload_root
 enter_bench StormStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-#gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
-#show_bannar finish
-
 cd ${workload_folder}
 
 START_TIME=`timestamp`

@@ -102,9 +102,9 @@ function gen_report() {		# dump the result to report file
 function rmr-hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
     if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-	RMDIR_CMD="fs -rmr -skipTrash"
+        RMDIR_CMD="fs -rmr -skipTrash"
     else
-	RMDIR_CMD="fs -rm -r -skipTrash"
+        RMDIR_CMD="fs -rm -r -skipTrash"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
     echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
@@ -112,12 +112,12 @@ function rmr-hdfs(){		# rm -r for hdfs
 }
 
 
-function dus-hdfs(){		# du -s for hdfs
+function dus-hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
     if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-	DUS_CMD="fs -dus"
+        DUS_CMD="fs -dus"
     else
-	DUS_CMD="fs -du -s"
+        DUS_CMD="fs -du -s"
     fi
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
     echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
@@ -125,7 +125,7 @@ function dus-hdfs(){		# du -s for hdfs
 }
 
 
-function check_dir() {		# ensure dir is created
+function check_dir() {                # ensure dir is created
     local dir=$1
     assert $1 "dir parameter missing"
     if [ -z "$dir" ];then
@@ -138,14 +138,14 @@ function check_dir() {		# ensure dir is created
     fi
     touch "$dir"/touchtest
     if [ $? -ne 0 ]; then
-	echo -e "${BRed}ERROR${Color_Off}: directory unwritable."
-	exit 1
+        echo -e "${BRed}ERROR${Color_Off}: directory unwritable."
+        exit 1
     else
-	rm "$dir"/touchtest
+        rm "$dir"/touchtest
     fi
 }
 
-function dir_size() {		
+function dir_size() {                
     for item in $(dus-hdfs $1); do
         if [[ $item =~ ^[0-9]+$ ]]; then
             echo $item
@@ -194,27 +194,29 @@ function run-spark-job() {
 
     CLS=$1
     shift
- 
+
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
-       YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
-       if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
-	   YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
+        export_withlog HADOOP_CONF_DIR
+        
+        YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
+        if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
+            YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
        if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
-	   YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
+           YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
        fi
        if [[ -n "${YARN_DRIVER_MEMORY:-}" ]]; then
-	   YARN_OPTS="${YARN_OPTS} --driver-memory ${YARN_DRIVER_MEMORY}"
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${YARN_DRIVER_MEMORY}"
        fi
     fi
     if [[ "$CLS" == *.py ]]; then 
-	LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
-	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@"
+        LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
+        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@"
     else
-	SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
+        SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
     MONITOR_PID=`start-monitor`
@@ -223,10 +225,10 @@ function run-spark-job() {
     stop-monitor ${MONITOR_PID}
     if [ $result -ne 0 ]
     then
-	echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
-	echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
-	tail ${WORKLOAD_RESULT_FOLDER}/bench.log
-	exit $result
+        echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
+        echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+        tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+        exit $result
     fi
 }
 
@@ -237,8 +239,8 @@ function run-streaming-job (){
 function run-hadoop-job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
-	ENABLE_MONITOR=0
-	shift 1
+        ENABLE_MONITOR=0
+        shift 1
     fi
     local job_jar=$1
     shift
@@ -248,43 +250,43 @@ function run-hadoop-job(){
     local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
     echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
     if [ ${ENABLE_MONITOR} = 1 ]; then
-	MONITOR_PID=`start-monitor`
+        MONITOR_PID=`start-monitor`
     fi
     execute_withlog ${CMD}
     result=$?
     if [ ${ENABLE_MONITOR} = 1 ]; then
-	stop-monitor ${MONITOR_PID}
+        stop-monitor ${MONITOR_PID}
     fi
     if [ $result -ne 0 ]; then
-	echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
-	echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
-	tail ${WORKLOAD_RESULT_FOLDER}/bench.log
-	exit $result
+        echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
+        echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+        tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+        exit $result
     fi
 }
 
 function ensure-hivebench-release(){
     if [ ! -e ${DEPENDENCY_DIR}"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
-	assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
-	exit
+        assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
+        exit
     fi
 
     cd ${DEPENDENCY_DIR}"/hivebench/target"
     if [ ! -d $HIVE_HOME ]; then
-	tar zxf $HIVE_RELEASE".tar.gz"
+        tar zxf $HIVE_RELEASE".tar.gz"
     fi
     export_withlog HADOOP_EXECUTABLE
 }
 
 function ensure-mahout-release (){
     if [ ! -e ${DEPENDENCY_DIR}"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
-	assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
-	exit
+        assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
+        exit
     fi
 
     cd ${DEPENDENCY_DIR}"/mahout/target"
     if [ ! -d $MAHOUT_HOME ]; then
-	tar zxf $MAHOUT_RELEASE".tar.gz"
+        tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
     export_withlog HADOOP_EXECUTABLE
     export_withlog HADOOP_HOME
@@ -300,9 +302,9 @@ function execute () {
 function execute_withlog () {
     CMD="$@"
     if [ -t 1 ] ; then
-	${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
+        ${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
     else
-	$CMD
+        $CMD
     fi
 }
 
@@ -317,22 +319,22 @@ function export_withlog () {
 
 function ensure-nutchindexing-release () {
     if [ ! -e ${DEPENDENCY_DIR}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
-	assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
-	exit
+        assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
+        exit
     fi
 
     NUTCH_ROOT=${WORKLOAD_RESULT_FOLDER}
     cp -a $NUTCH_DIR/nutch $NUTCH_ROOT
 
     if [ $HADOOP_VERSION == "hadoop1" ]; then
-	cp $NUTCH_ROOT/nutch/conf/nutch-site-mr1.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
+        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr1.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
     elif [ $HADOOP_VERSION == "hadoop2" ]; then
-	cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
+        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
     fi
     
     cd ${DEPENDENCY_DIR}"/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
-	tar zxf apache-nutch-1.2-bin.tar.gz
+        tar zxf apache-nutch-1.2-bin.tar.gz
     fi
     find $NUTCH_HOME/lib ! -name "lucene-*" -type f -exec rm -rf {} \;
     rm -rf $NUTCH_ROOT/nutch_release
@@ -343,14 +345,14 @@ function ensure-nutchindexing-release () {
 
     # Patching jcl-over-slf4j version against cdh or hadoop2
     if [ $HADOOP_VERSION == "hadoop2" ] || [ ${HADOOP_RELEASE:0:3} == "cdh" ]; then
-	mkdir $NUTCH_HOME_WORKLOAD/temp
-	unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
-	rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
-	cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
-	rm -f $NUTCH_ROOT/nutch-1.2.job
-	cd $NUTCH_HOME_WORKLOAD/temp
-	zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
-	rm -rf $NUTCH_HOME_WORKLOAD/temp
+        mkdir $NUTCH_HOME_WORKLOAD/temp
+        unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
+        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
+        cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
+        rm -f $NUTCH_ROOT/nutch-1.2.job
+        cd $NUTCH_HOME_WORKLOAD/temp
+        zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
+        rm -rf $NUTCH_HOME_WORKLOAD/temp
     fi
 
     echo $NUTCH_HOME_WORKLOAD

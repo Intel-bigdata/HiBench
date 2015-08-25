@@ -19,6 +19,8 @@ package com.intel.hibench.streambench;
 
 import com.intel.hibench.streambench.utils.ConfigLoader;
 
+import java.io.BufferedReader;
+import java.io.Reader;
 import java.util.ArrayList;
 
 //Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
@@ -40,16 +42,16 @@ public class StartNew {
         String dataFile1    = args[2];
         String dataFile2    = args[3];
 
-		ArrayList<byte[]> contents = null;
+		BufferedReader reader = null;
 
         if(benchName.contains("statistics")){
-			contents = FileDataGenNew.loadDataFromFile(dataFile1);
+            reader = FileDataGenNew.loadDataFromFile(dataFile1);
 		}else
-			contents = FileDataGenNew.loadDataFromFile(dataFile2);
+			reader = FileDataGenNew.loadDataFromFile(dataFile2);
 		
 		NewKafkaConnector con = new NewKafkaConnector(brokerList);
 		
-		con.publishData(contents, totalCount, topic);
+		con.publishData(reader, totalCount, topic);
 	}
 	
 	
