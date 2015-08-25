@@ -126,8 +126,8 @@ HiBenchEnvPropMapping=dict(
     
 #    app="hibench.streamingbench.app",
 #    textdataset_recordsize_factor="hibench.streamingbench.prepare.textdataset_recordsize_factor",
-#    mode="hibench.streamingbench.prepare.mode",
-#    records="hibench.streamingbench.prepare.push.records",
+    mode="hibench.streamingbench.prepare.mode",
+    records="hibench.streamingbench.prepare.push.records",
 #    recordPerInterval="hibench.streamingbench.prepare.periodic.recordPerInterval",
 #    intervalSpan="hibench.streamingbench.prepare.periodic.intervalSpan",
 #    totalRound="hibench.streamingbench.prepare.periodic.totalRound",
