@@ -81,6 +81,7 @@ Note:
   - CDH4/CDH5 release of MR1 and MR2.
   - Spark1.2
   - Spark1.3
+ Note : No version of CDH supports SparkSQL. Please download SparkSQL from Apache-spark official release page if you are using it. 
 
 ---
 ### Getting Started ###
