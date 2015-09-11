@@ -28,8 +28,8 @@ public class StartNew {
 
 	public static void main(String[] args){
 
-        if(args.length < 3){
-            System.err.println("args: <ConfigFile> <DATA_FILE1> <<DATA_FILE2> need to be specified!");
+        if(args.length < 5){
+            System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
             System.exit(1);
         }
 
@@ -39,20 +39,21 @@ public class StartNew {
         String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
         String brokerList = cl.getPropertiy("hibench.streamingbench.broker_list_with_quote");
 		long totalCount   = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
-        String dataFile1    = args[2];
-        String dataFile2    = args[3];
+        String dataFile1        = args[1];
+        long dataFile1Offset    = Long.parseLong(args[2]);
+        String dataFile2        = args[3];
+        long dataFile2Offset    = Long.parseLong(args[4]);
 
-		BufferedReader reader = null;
-
+		BufferedReader reader;
+        boolean isNumericData = false;
         if(benchName.contains("statistics")){
-            reader = FileDataGenNew.loadDataFromFile(dataFile1);
+            isNumericData = true;
+            reader = FileDataGenNew.loadDataFromFile(dataFile1, dataFile1Offset);
 		}else
-			reader = FileDataGenNew.loadDataFromFile(dataFile2);
+			reader = FileDataGenNew.loadDataFromFile(dataFile2, dataFile2Offset);
 		
-		NewKafkaConnector con = new NewKafkaConnector(brokerList);
+		NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
 		
-		con.publishData(reader, totalCount, topic);
+		con.publishData(reader, topic, totalCount, isNumericData);
 	}
-	
-	
 }

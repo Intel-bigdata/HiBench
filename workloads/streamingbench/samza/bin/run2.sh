@@ -17,16 +17,39 @@
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
-echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench StormStreamingBench ${workload_root} ${workload_folder}
+enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-cd ${workload_folder}
+SRC_DIR=${workload_root}/../../src/streambench/samzabench
+
+# prepare samza environment
+
+if [ ! -d $SRC_DIR/target ]; then
+  echo "Please run 'bin/build-all.sh' first."
+  exit 1
+fi
+
+SAMZA_PLAYGROUND=${WORKLOAD_RESULT_FOLDER}/samza
+
+mkdir -p $SAMZA_PLAYGROUND 2> /dev/null
+tar zxf $SRC_DIR/target/*.tar.gz -C ${SAMZA_PLAYGROUND}
+
+configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
+
+# remove samza prefix and change "name    value" to "name=value" style in ${SAMZA_PROP_CONF}
+cat ${SAMZA_PROP_CONF} | sed -r 's/samza\.//' | sed -r 's/\t+/=/' > ${SAMZA_PROP_CONF}.converted
+
+function samza-submit() {
+    workload_name=$1
+    CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"
+    echo -e "${BGreen}Submit Samza Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
 
 START_TIME=`timestamp`
-run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} storm
+. $SRC_DIR/scripts/$STREAMING_BENCHNAME.sh
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

@@ -22,11 +22,14 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
 
 public class FileDataGenNew {
-	public static BufferedReader loadDataFromFile(String filepath){
+	public static BufferedReader loadDataFromFile(String filepath, long offset){
 		try {
             Path pt = new Path(filepath);
             FileSystem fs = FileSystem.get(new Configuration());
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(pt)));
+            FSDataInputStream fileHandler = fs.open(pt);
+            if (offset>0) fileHandler.seek(offset);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fileHandler));
+            if (offset>0) reader.readLine();
 			return reader;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

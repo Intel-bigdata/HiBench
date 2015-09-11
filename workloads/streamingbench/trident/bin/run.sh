@@ -20,13 +20,13 @@ workload_root=${workload_folder}/../..
 echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench StormStreamingBench ${workload_root} ${workload_folder}
+enter_bench StormTridentStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
 cd ${workload_folder}
 
 START_TIME=`timestamp`
-run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} storm
+run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} trident
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

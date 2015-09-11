@@ -14,20 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workload_folder=`dirname "$0"`
-workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/../..
-echo $workload_root
-. "${workload_root}/../../bin/functions/load-bench-config.sh"
-
-enter_bench StormStreamingBench ${workload_root} ${workload_folder}
-show_bannar start
-
-cd ${workload_folder}
-
-START_TIME=`timestamp`
-run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} storm
-END_TIME=`timestamp`
-
-gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
-show_bannar finish
+samza-submit grep

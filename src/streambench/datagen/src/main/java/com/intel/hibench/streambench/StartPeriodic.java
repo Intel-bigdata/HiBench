@@ -30,8 +30,8 @@ public class StartPeriodic {
 
 	public static void main(String[] args){
 
-        if (args.length < 3){
-            System.err.println("args: <ConfigFile> <DATA_FILE1> <<DATA_FILE2> need to be specified!");
+        if (args.length < 5){
+            System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
             System.exit(1);
         }
 
@@ -40,23 +40,27 @@ public class StartPeriodic {
 		String benchName  = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
 		String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
 		String brokerList = cl.getPropertiy("hibench.streamingbench.broker_list_with_quote");
-		int recordPerInterval = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-		int intervalSpan = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
-		int totalRound   = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
-        String dataFile1    = args[1];
-        String dataFile2    = args[2];
+		int recordPerInterval   = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
+		int intervalSpan        = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
+		int totalRound          = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
+        String dataFile1        = args[1];
+        long dataFile1Offset    = Long.parseLong(args[2]);
+        String dataFile2        = args[3];
+        long dataFile2Offset    = Long.parseLong(args[4]);
 
-        Reader reader = null;
+        BufferedReader reader = null;
+        boolean isNumericData = false;
 
         if(benchName.contains("statistics")){
-            reader = FileDataGenNew.loadDataFromFile(dataFile1);
+            isNumericData = true;
+            reader = FileDataGenNew.loadDataFromFile(dataFile1, dataFile1Offset);
         }else
-            reader = FileDataGenNew.loadDataFromFile(dataFile2);
+            reader = FileDataGenNew.loadDataFromFile(dataFile2, dataFile2Offset);
 
-        NewKafkaConnector con=new NewKafkaConnector(brokerList);
+        NewKafkaConnector con=new NewKafkaConnector(brokerList, cl);
 		
 		Timer timer=new Timer();
-		timer.schedule(new SendTask(totalRound, recordPerInterval, con, reader, topic), 0,intervalSpan);
+		timer.schedule(new SendTask(totalRound, recordPerInterval, con, reader, topic, isNumericData), 0, intervalSpan);
 	}
 	
 	static class SendTask extends TimerTask{
@@ -67,24 +71,27 @@ public class StartPeriodic {
 		BufferedReader reader;
 		String topic;
 		long totalBytes;
+        boolean isNumericData;
 		
-		public SendTask(int times,int count,NewKafkaConnector con, BufferedReader reader,String topic){
-			leftTimes=times;
-			recordCount=count;
-			totalTimes=times;
-			kafkaCon=con;
+		public SendTask(int times,int count, NewKafkaConnector con, BufferedReader reader,String topic, boolean isNumericData){
+			leftTimes   = times;
+			recordCount = count;
+			totalTimes  = times;
+			kafkaCon    = con;
 			this.reader = reader;
-			this.topic=topic;
-			totalBytes=0;
+			this.topic  = topic;
+			totalBytes  = 0;
+            this.isNumericData = isNumericData;
 		}
+
 		@Override
 		public void run() {
 			if(leftTimes>0){
-				long thisSize=kafkaCon.publishData(reader, (totalTimes-leftTimes)*recordCount, recordCount, topic);
+				long thisSize = kafkaCon.publishDataSlice(reader, topic, recordCount, isNumericData);
 				totalBytes += thisSize;
 				leftTimes--;
 			}else{
-				System.out.println("Time's up! Total bytes sent:"+totalBytes);
+				System.out.println("Time's up! Total bytes sent:" + totalBytes);
 				kafkaCon.close();
 				System.exit(0);
 			}

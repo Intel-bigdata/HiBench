@@ -236,6 +236,12 @@ function run-streaming-job (){
     run-spark-job --jars ${STREAMINGBENCH_JARS} $@
 }
 
+function run-storm-job(){
+    CMD="${STORM_BIN_HOME}/storm jar ${STREAMBENCH_STORM_JAR} $@"
+    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
+
 function run-hadoop-job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
