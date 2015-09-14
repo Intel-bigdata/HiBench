@@ -22,10 +22,16 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
 
 public class FileDataGenNew {
-	public static BufferedReader loadDataFromFile(String filepath, long offset){
+    Configuration fsConf = new Configuration();
+
+    FileDataGenNew (String HDFSMaster){
+        fsConf.set("fs.default.name", HDFSMaster);
+    }
+
+	public BufferedReader loadDataFromFile(String filepath, long offset){
 		try {
             Path pt = new Path(filepath);
-            FileSystem fs = FileSystem.get(new Configuration());
+            FileSystem fs = FileSystem.get(fsConf);
             FSDataInputStream fileHandler = fs.open(pt);
             if (offset>0) fileHandler.seek(offset);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fileHandler));

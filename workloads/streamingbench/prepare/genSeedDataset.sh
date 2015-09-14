@@ -22,7 +22,7 @@ workload_root=${workload_folder}/..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 # generate seed data1 by hive
-enter_bench HadoopPrepareSeed ${workload_root} ${workload_folder}
+enter_bench HadoopPrepareDatafile1 ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $STREAMING_DATA_DIR || true
@@ -45,7 +45,7 @@ show_bannar finish
 leave_bench
 
 # generate seed data2 by kmeans
-enter_bench HadoopPrepareSeed2 ${workload_root} ${workload_folder}
+enter_bench HadoopPrepareDatafile2 ${workload_root} ${workload_folder}
 show_bannar start
 
 rmr-hdfs $STREAMING_DATA2_SAMPLE_DIR || true
@@ -57,43 +57,4 @@ END_TIME=`timestamp`
 
 show_bannar finish
 leave_bench
-
-# Copy and convert as seed
-LocalDir=${WORKLOAD_RESULT_FOLDER}/Seed
-rm -rf $LocalDir 2> /dev/null
-echo "Copying uservists table from HDFS to local disk: ${LocalDir}"
-CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -copyToLocal ${STREAMING_DATA1_DIR}/uservisits ${LocalDir}"
-execute_withlog ${CMD}
-cat $LocalDir/part-* | awk '{split($2,a,",");  print $1, a[1], a[3], "00:00:00", a[4], a[2];}' | awk "{print substr(\$0, 1, $ll{STREAMING_DATA1_LENGTH});}" > ${LocalDir}/seed.data
-
-# Generate data by seed
-DATA_GEN_DIR=${workload_root}/../../src/streambench/datagen
-text_dataset="${DATA_GEN_DIR}/src/main/resources/test1.data"
-text_dataset2="${DATA_GEN_DIR}/src/main/resources/test2.data"
-text_seed=${LocalDir}/seed.data
-
-if [ ! -f $text_seed ]; then
-	echo "Usage: Require $text_seed file. Please re-download or generate it first."
-	exit 1
-fi
-
-seed_line_length=`head -2 $text_seed | tail -1 | wc -c`
-echo "Seed first record size:$seed_line_length"
-
-scale_factor=${STREAMING_DATA_SCALE_FACTOR}
-
-echo "========== start gen dataset1 with scale factor:$scale_factor ============="
-awk_script="{"
-for i in `seq $scale_factor`; do
-    awk_script=$awk_script+"print $0;"
-done
-awk_script=$awk_script+"}"
-cat $text_seed | awk '$awk_script' > $text_dataset
-
-# Generate data2
-echo "========== start gen dataset2 with scale factor:$scale_factor ============="
-$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -cat ${STREAMING_DATA2_SAMPLE_DIR}/part-\* | ${workload_folder}/parse_data2.py ${scale_factor} > $text_dataset2
-
-echo "========== dataset generated ============="
-
 

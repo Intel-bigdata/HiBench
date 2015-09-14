@@ -38,6 +38,7 @@ public class StartNew {
         String benchName  = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
         String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
         String brokerList = cl.getPropertiy("hibench.streamingbench.broker_list_with_quote");
+        String HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
 		long totalCount   = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
         String dataFile1        = args[1];
         long dataFile1Offset    = Long.parseLong(args[2]);
@@ -46,11 +47,13 @@ public class StartNew {
 
 		BufferedReader reader;
         boolean isNumericData = false;
+        FileDataGenNew files = new FileDataGenNew(HDFSMaster);
+
         if(benchName.contains("statistics")){
             isNumericData = true;
-            reader = FileDataGenNew.loadDataFromFile(dataFile1, dataFile1Offset);
+            reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
 		}else
-			reader = FileDataGenNew.loadDataFromFile(dataFile2, dataFile2Offset);
+			reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
 		
 		NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
 		

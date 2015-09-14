@@ -122,51 +122,16 @@ HiBenchEnvPropMapping=dict(
     STREAMING_DATA1_LENGTH="hibench.streamingbench.datagen.data1.length",
     STREAMING_DATA2_SAMPLE_DIR="hibench.streamingbench.datagen.data2_samples.dir",
     STREAMING_DATA2_CLUSTER_DIR="hibench.streamingbench.datagen.data2_cluster.dir",
+    DATA_GEN_JAR="hibench.streamingbench.datagen.jar",
     
-    
-#    app="hibench.streamingbench.app",
-#    textdataset_recordsize_factor="hibench.streamingbench.prepare.textdataset_recordsize_factor",
-    mode="hibench.streamingbench.prepare.mode",
-    records="hibench.streamingbench.prepare.push.records",
-#    recordPerInterval="hibench.streamingbench.prepare.periodic.recordPerInterval",
-#    intervalSpan="hibench.streamingbench.prepare.periodic.intervalSpan",
-#    totalRound="hibench.streamingbench.prepare.periodic.totalRound",
+    STREAMING_DATAGEN_MODE="hibench.streamingbench.prepare.mode",
+    STREAMING_DATAGEN_RECORDS="hibench.streamingbench.prepare.push.records",
 
     # sparkstreaming
     STREAMINGBENCH_JARS="hibench.streamingbench.jars",
     STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
     STORM_BIN_HOME="hibench.streamingbench.storm.bin",
-#    zkHost="hibench.streamingbench.zookeeper.host",
-#    receiverNodes="hibench.streamingbench.receiver_nodes",
     STREAMING_BENCHNAME="hibench.streamingbench.benchname",
-    # topicName="hibench.streamingbench.topic_name",
-    # batchInterval="hibench.streamingbench.batch_interval",
-    # consumerGroup="hibench.streamingbench.consumer_group",
-    # recordCount="hibench.streamingbench.record_count",
-
-    # fieldIndex="hibench.streamingbench.field_index",
-    # separator="hibench.streamingbench.separator",
-    # prob="hibench.streamingbench.prob",
-    # pattern="hibench.streamingbench.pattern",
-    # copies="hibench.streamingbench.copies",
-    # testWAL="hibench.streamingbench.testWAL",
-    # checkpointPath="hibench.streamingbench.checkpoint_path",
-    # debug="hibench.streamingbench.debug",
-    # directMode="hibench.streamingbench.direct_mode",
-    # brokerList="hibench.streamingbench.broker_list_with_quote",
-
-    # prepare
-    # nimbus="hibench.streamingbench.storm.nimbus",
-    # nimbusAPIPort="hibench.streamingbench.storm.nimbusAPIPort",
-    # nimbusContactInterval="hibench.streamingbench.storm.nimbusContactInterval",
-    # workerCount="hibench.streamingbench.storm.worker_count",
-    # spoutThreads="hibench.streamingbench.storm.spout_threads",
-    # boltThreads="hibench.streamingbench.storm.bolt_threads",
-    # readFromStart="hibench.streamingbench.storm.read_from_start",
-    # ackon="hibench.streamingbench.storm.ackon",
-#    consumer="hibench.streamingbench.storm.consumer",
-    # consumer="hibench.streamingbench.consumer_group",
-    
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])

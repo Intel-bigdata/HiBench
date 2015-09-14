@@ -21,10 +21,40 @@
      <scope>system</scope>
      <systemPath>${basedir}/lib/kafka-clients-0.8.1.jar</systemPath>
    </dependency>
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-hdfs</artifactId>
+        <version>${hadoop.mr2.version}</version>
+    </dependency>
    <dependency>
      <groupId>org.apache.hadoop</groupId>
-     <artifactId>hadoop-core</artifactId>
-     <version>${hadoop.mr1.version}</version>
+     <artifactId>hadoop-client</artifactId>
+     <version>${hadoop.mr2.version}</version>
    </dependency>
  </dependencies>
+
+ <build>
+   <plugins>
+     <plugin>
+       <artifactId>maven-assembly-plugin</artifactId>
+       <version>${maven-assembly-plugin.version}</version>
+       <configuration>
+	 <finalName>${project.build.finalName}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName>
+	 <descriptorRefs>
+	   <descriptorRef>jar-with-dependencies</descriptorRef>
+	 </descriptorRefs>
+       </configuration>
+       <executions>
+	 <execution>
+	   <id>make-assembly</id>
+	   <phase>package</phase>
+	   <goals>
+	     <goal>single</goal>
+	   </goals>
+	 </execution>
+       </executions>
+     </plugin>
+   </plugins>
+ </build>
+
 </project>

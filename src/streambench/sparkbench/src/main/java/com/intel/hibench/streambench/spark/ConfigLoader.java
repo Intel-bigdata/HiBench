@@ -17,7 +17,6 @@
 
 package com.intel.hibench.streambench.spark;
 
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

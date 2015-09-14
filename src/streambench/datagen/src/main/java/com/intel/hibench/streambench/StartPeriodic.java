@@ -43,6 +43,7 @@ public class StartPeriodic {
 		int recordPerInterval   = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
 		int intervalSpan        = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
 		int totalRound          = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
+        String HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
         String dataFile1        = args[1];
         long dataFile1Offset    = Long.parseLong(args[2]);
         String dataFile2        = args[3];
@@ -50,12 +51,13 @@ public class StartPeriodic {
 
         BufferedReader reader = null;
         boolean isNumericData = false;
+        FileDataGenNew files = new FileDataGenNew(HDFSMaster);
 
         if(benchName.contains("statistics")){
             isNumericData = true;
-            reader = FileDataGenNew.loadDataFromFile(dataFile1, dataFile1Offset);
+            reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
         }else
-            reader = FileDataGenNew.loadDataFromFile(dataFile2, dataFile2Offset);
+            reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
 
         NewKafkaConnector con=new NewKafkaConnector(brokerList, cl);
 		
