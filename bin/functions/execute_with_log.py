@@ -17,7 +17,7 @@
 import sys, os, subprocess
 from terminalsize import get_terminal_size
 from time import time, sleep
-import re
+import re    
 
 def load_colors():
     color_script_fn = os.path.join(os.path.dirname(__file__), "color.enabled.sh")
@@ -25,6 +25,10 @@ def load_colors():
         return dict([(k,v.split("'")[1].replace('\e[', "\033[")) for k,v in [x.strip().split('=') for x in f.readlines() if x.strip() and not x.strip().startswith('#')]])
 
 Color=load_colors()
+if int(os.environ.get("HIBENCH_PRINTFULLLOG", 0)):
+    Color['ret'] = os.linesep
+else:
+    Color['ret']='\r'
 
 tab_matcher = re.compile("\t")
 tabstop = 8
@@ -64,7 +68,7 @@ def show_with_progress_bar(line, progress, line_width):
     pos = int(line_width * progress / 100)
     if len(line) < line_width:
         line = line + " " * (line_width - len(line))
-    line = "{On_Yellow}{line_seg1}{On_Blue}{line_seg2}{Color_Off}\r".format(
+    line = "{On_Yellow}{line_seg1}{On_Blue}{line_seg2}{Color_Off}{ret}".format(
         line_seg1 = line[:pos], line_seg2 = line[pos:], **Color)
     sys.stdout.write(line)
 
@@ -103,7 +107,7 @@ def execute(workload_result_file, command_lines):
             if progress is not None:
                 show_with_progress_bar(line, progress, width)
             else:
-                sys.stdout.write(u"{line}{ClearEnd}\r".format(line=line, **Color).encode('utf-8'))
+                sys.stdout.write(u"{line}{ClearEnd}{ret}".format(line=line, **Color).encode('utf-8'))
         sys.stdout.flush()
     print
     log_file.close()

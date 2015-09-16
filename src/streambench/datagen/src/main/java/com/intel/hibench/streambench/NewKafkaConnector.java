@@ -73,7 +73,7 @@ public class NewKafkaConnector {
                     } else {
                         ous.write(parseUserVisitTable(line, Data1Length).getBytes());
                     }
-                    if ((size>0) && (ous.size()>=size)) { // exceed size limit, let's sent
+                    if ((size>0) && (ous.size()>=size)) { // reach the size threshold, let's sent
                         break;
                     }
                 }
@@ -90,12 +90,12 @@ public class NewKafkaConnector {
         }
 
 		long end = System.currentTimeMillis();
-		System.out.println("Bytes sent:"+bytes+" after change");
-		System.out.println("Time consumed:"+(end-start));
+		System.out.println("Bytes sent: "+bytes+" after change");
+		System.out.println("Time consumed(ms):"+(end-start));
 		double seconds=(double)(end-start)/(double)1000;
 		double throughput=((double)bytes/seconds)/1000000;
-		System.out.println("Throughput:"+throughput+"MB/s");
-		producer.close();
+		System.out.println("Throughput: "+throughput+"MB/s");
+
         return bytes;
 	}
 
@@ -103,9 +103,9 @@ public class NewKafkaConnector {
         // raw uservisit table format:
         // 0	227.209.164.46,nbizrgdziebsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,1991-06-10,0.115967035,Mozilla/5.0 (iPhone; U; CPU like Mac OS X)AppleWebKit/420.1 (KHTML like Gecko) Version/3.0 Mobile/4A93Safari/419.3,YEM,YEM-AR,snowdrops,1
         // 0  	35.143.225.164,nbizrgdziebsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,1996-05-31,0.8792629,Mozilla/5.0 (Windows; U; Windows NT 5.2) AppleWebKit/525.13 (KHTML like Gecko) Chrome/0.2.149.27 Safari/525.13,PRT,PRT-PT,fraternally,8
-        // 0 	34.57.45.175,nbizrgdziebsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,2001-06-29,0.14202267,Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1),DOM,DOM-ES,Gaborone's,7
+        // 0 	34.57.45.175,nbizrgdziebtsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,2001-06-29,0.14202267,Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1),DOM,DOM-ES,Gaborone's,7
 
-        String [] elements = line.split("\\s+,");
+        String [] elements = line.split("[\\s,]+");
         StringBuffer sb = new StringBuffer();
         sb.append(elements[0]); sb.append(elements[1]); sb.append(elements[3] + " 00:00:00");
         sb.append(elements[4]); sb.append(elements[2]);
@@ -119,7 +119,7 @@ public class NewKafkaConnector {
         //  8     {0:-60.196392992004334,5:620.4421901009101,14:420.4220612785746,13:185.21083185702275,15:483.72692251215295,1:594.7827813502976,3:140.3239790342253,16:3.104707691856035,9:635.8535653005378,19:322.0711157700041,11:87.66295667498484,18:857.7858889856491,17:101.49594891724111,2:921.839749304954,6:697.4655671122938,7:367.3720748762538,8:855.4795500704753,10:564.4074585413068,4:913.7870598326768,12:275.71369666459043}
         //  9     {0:53.780307992655864,5:670.9608085434543,14:427.8278718060577,13:-42.1599560546298,15:509.38987065684455,1:575.0478527061222,3:111.01989708300927,16:48.39876690814693,9:546.0244129369196,19:344.88758399392515,11:35.63727678698427,18:826.8387868256459,17:100.39105575653751,2:972.7568962232599,6:743.3101817500838,7:367.5321255830725,8:897.5852428056947,10:705.1143980643583,4:891.1293114411877,12:364.63401807787426}
 
-        String [] elements = line.split("{}:,\\s+");
+        String [] elements = line.split("[{}:,\\s]+");
         int idx = -1;
         int maxidx = -1;
         for (int count=0; count<elements.length; count++ ){
@@ -145,6 +145,7 @@ public class NewKafkaConnector {
 
     public void publishData(BufferedReader reader, String topic, boolean isNumericData){
         publishData(reader, topic, 0, isNumericData);
+        producer.close();
     }
 
     public long publishDataSlice(BufferedReader reader, String topic, long size, boolean isNumericData){

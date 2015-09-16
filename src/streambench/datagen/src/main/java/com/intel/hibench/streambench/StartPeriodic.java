@@ -39,7 +39,7 @@ public class StartPeriodic {
 
 		String benchName  = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
 		String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
-		String brokerList = cl.getPropertiy("hibench.streamingbench.broker_list_with_quote");
+		String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
 		int recordPerInterval   = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
 		int intervalSpan        = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
 		int totalRound          = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
@@ -55,15 +55,16 @@ public class StartPeriodic {
 
         if(benchName.contains("statistics")){
             isNumericData = true;
-            reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
+            reader = files.loadDataFromFile(dataFile2, dataFile1Offset);
         }else
-            reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
+            reader = files.loadDataFromFile(dataFile1, dataFile2Offset);
 
         NewKafkaConnector con=new NewKafkaConnector(brokerList, cl);
 		
 		Timer timer=new Timer();
 		timer.schedule(new SendTask(totalRound, recordPerInterval, con, reader, topic, isNumericData), 0, intervalSpan);
-	}
+        System.out.println("Timer scheduled.");
+    }
 	
 	static class SendTask extends TimerTask{
 		int leftTimes;
@@ -88,6 +89,7 @@ public class StartPeriodic {
 
 		@Override
 		public void run() {
+            System.out.println("Task run, remains:" + leftTimes);
 			if(leftTimes>0){
 				long thisSize = kafkaCon.publishDataSlice(reader, topic, recordCount, isNumericData);
 				totalBytes += thisSize;

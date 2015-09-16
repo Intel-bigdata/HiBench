@@ -16,6 +16,7 @@
 
 set -u
 
+export HIBENCH_PRINTFULLLOG=0
 this="${BASH_SOURCE-$0}"
 workload_func_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 . ${workload_func_bin}/assert.sh
@@ -305,11 +306,15 @@ function execute () {
     $CMD
 }
 
+function printFullLog(){
+    export HIBENCH_PRINTFULLLOG=1
+}
+
 function execute_withlog () {
     CMD="$@"
-    if [ -t 1 ] ; then
+    if [ -t 1 ] ; then          # Terminal, beautify the output.
         ${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
-    else
+    else                        # pipe, do nothing.
         $CMD
     fi
 }

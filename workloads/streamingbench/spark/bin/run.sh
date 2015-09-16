@@ -23,6 +23,7 @@ enter_bench SparkStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
 START_TIME=`timestamp`
+printFullLog
 run-streaming-job com.intel.hibench.streambench.spark.RunBench $SPARKBENCH_PROPERTIES_FILES
 END_TIME=`timestamp`
 

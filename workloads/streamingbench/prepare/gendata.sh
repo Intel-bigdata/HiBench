@@ -29,19 +29,24 @@ DATA_FILE2=${STREAMING_DATA2_SAMPLE_DIR}
 #echo "=========begin gen stream data========="
 #echo "Topic:$topicName dataset:$app records:$records kafkaBrokers:$brokerList mode:$mode data_dir:$data_dir"
 
-JVM_OPTS="-Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs"
+
+JVM_OPTS="-Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp ${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_JAR}"
+
+printFullLog
+
 if [ "$STREAMING_DATAGEN_MODE" == "push" ]; then
-	records=$(($STREAMING_DATAGEN_RECORDS/4))
-	for i in `seq 1`; do      {
-#		$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.hibench.streambench.StartNew $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0
-		CMD="$JAVA_BIN $JVM_OPTS -cp ${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_JAR} com.intel.hibench.streambench.StartNew $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
-		echo $CMD
-		$CMD
-	    }& 
-	done
-	wait
+    records=$(($STREAMING_DATAGEN_RECORDS/4))
+    for i in `seq 4`; do      {
+	    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartNew $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 $(($records*$i)) $DATA_FILE2 $(($records*$i))"
+	    echo -e "${BGreen}Sending streaming data to kafka, concurrently: ${Green}$CMD${Color_Off}"
+	    execute_withlog $CMD
+	}& 
+    done
+    wait
 else
-	$JAVA_BIN -Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true  -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false  -Dkafka.logs.dir=bin/../logs -cp :${DATA_GEN_DIR}/lib/kafka-clients-0.8.1.jar:${DATA_GEN_DIR}/target/datagen-0.0.1.jar com.intel.hibench.streambench.StartPeriodic $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0
+    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartPeriodic $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
+    echo -e "${BGreen}Sending streaming data to kafka, periodically: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
 fi
 
 show_bannar finish
