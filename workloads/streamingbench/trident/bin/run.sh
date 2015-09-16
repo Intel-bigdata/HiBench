@@ -25,6 +25,8 @@ show_bannar start
 
 cd ${workload_folder}
 
+printFullLog
+
 START_TIME=`timestamp`
 run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} trident
 END_TIME=`timestamp`

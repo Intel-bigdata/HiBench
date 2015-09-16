@@ -25,9 +25,11 @@ show_bannar start
 
 cd ${workload_folder}
 
+printFullLog
+
 START_TIME=`timestamp`
 run-storm-job com.intel.hibench.streambench.storm.RunBench ${SPARKBENCH_PROPERTIES_FILES} storm
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
-show_bannar finish
+show_bannar finish1

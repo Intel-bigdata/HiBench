@@ -22,7 +22,9 @@ workload_root=${workload_folder}/../..
 enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
 show_bannar start
 
-SRC_DIR=${workload_root}/../../src/streambench/samzabench/
+SRC_DIR=${workload_root}/../../src/streambench/samzabench
+
+printFullLog
 
 # prepare samza environment
 
@@ -41,11 +43,15 @@ configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
 # remove samza prefix and change "name    value" to "name=value" style in ${SAMZA_PROP_CONF}
 cat ${SAMZA_PROP_CONF} | sed -r 's/samza\.//' | sed -r 's/\t+/=/' > ${SAMZA_PROP_CONF}.converted
 
-CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"
-echo ${CMD}
+function samza-submit() {
+    workload_name=$1
+    CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"
+    echo -e "${BGreen}Submit Samza Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
 
 START_TIME=`timestamp`
-${CMD}
+. $SRC_DIR/scripts/$STREAMING_BENCHNAME.sh
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

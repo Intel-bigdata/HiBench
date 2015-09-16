@@ -49,6 +49,7 @@ object RunBench {
 		val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
 
 		val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
+    println(s"params:$param")
     benchName match {
       case "projection" =>
         val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt

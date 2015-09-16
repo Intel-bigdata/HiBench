@@ -152,32 +152,8 @@ public class NewKafkaConnector {
         return publishData(reader, topic, size, isNumericData);
     }
 
-//    public long publishData(BufferedReader reader, int start, int size, String topic){
-//		int contentsSize = contents.size();
-//		long startTime=System.currentTimeMillis();
-//		long bytes=0;
-//		Callback callback = new Callback() {
-//            public void onCompletion(RecordMetadata metadata, Exception e) {
-//                if (e != null)
-//                    e.printStackTrace();
-//            }
-//        };
-//		for(int i=0;i<size;i++){
-//			byte[] payload = contents.get((i + start) %contentsSize);
-//			bytes+=payload.length;
-//			ProducerRecord record = new ProducerRecord(topic, payload);
-//			producer.send(record,callback);
-//		}
-//
-//		long endTime=System.currentTimeMillis();
-//		System.out.println(size+" records sent.  "+"Time consumed:"+(endTime-startTime)+" size:"+bytes);
-//		return bytes;
-//	}
-	
 	public void close(){
 		producer.close();
 	}
-	
-	
 
 }

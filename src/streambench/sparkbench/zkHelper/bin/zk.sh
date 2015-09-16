@@ -5,16 +5,16 @@ op=ls
 #op=update
 
 # number of partitions
-partitions=
+partitions=48
 
 # zkHost address:port
-zkHost=
+zkHost=lv-dev:2181
 
 # topic
-topic=
+topic=identity-source-60
 
 # spark consumer name
-consumer=
+consumer=xxx
 
 path=/consumers/$consumer/offsets/$topic
 
