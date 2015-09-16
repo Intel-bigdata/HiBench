@@ -24,8 +24,8 @@ enter_bench StormStreamingBenchOperator ${workload_root} ${workload_folder}
 echo "=========stop storm benchmark $STREAMING_BENCHNAME========="
 
 ${STORM_BIN_HOME}/storm kill $STREAMING_BENCHNAME
-echo "Wait 20 seconds... and need double confirm!"
-sleep 20
+echo "Wait 30 seconds... and need double confirm!"
+sleep 30
 echo "Double confirm the bench has been killed:"
 ${STORM_BIN_HOME}/storm kill $STREAMING_BENCHNAME
 echo 'If got NotAliveException, the "$STREAMING_BENCHNAME" has been killed successfully.'
