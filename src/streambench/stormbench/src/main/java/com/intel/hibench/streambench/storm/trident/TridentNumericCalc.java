@@ -19,32 +19,18 @@ package com.intel.hibench.streambench.storm.trident;
 
 import java.io.Serializable;
 
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.LocalDRPC;
-import backtype.storm.StormSubmitter;
-import backtype.storm.generated.StormTopology;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
-import backtype.storm.utils.*;
-import backtype.storm.topology.base.BaseRichSpout;
 
-import storm.trident.TridentState;
+import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
+import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import storm.trident.TridentTopology;
 import storm.trident.operation.*;
-import storm.trident.operation.builtin.Count;
-import storm.trident.operation.builtin.FilterNull;
-import storm.trident.operation.builtin.MapGet;
-import storm.trident.operation.builtin.Sum;
-import storm.trident.testing.FixedBatchSpout;
 import storm.trident.testing.MemoryMapState;
 import storm.trident.tuple.TridentTuple;
 import storm.kafka.trident.*;
 
-
-import com.intel.PRCcloud.util.*;
-import com.intel.PRCcloud.spout.*;
-import com.intel.PRCcloud.topologies.*;
 
 class Numeric implements Serializable {
   public Long max = 0L;
