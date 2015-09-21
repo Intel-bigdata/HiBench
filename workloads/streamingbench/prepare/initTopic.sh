@@ -37,6 +37,8 @@ if [ ! -z "${topics//[[:blank:]]/}" ] ; then
 		echo "Delete topic $topic ..."
 		$KAFKA_TOPIC_BIN --delete --topic $topic
 	    done
+	    echo "Sleep 5 seconds ..."
+	    sleep 5
 	    ;;
 	*)
 	    echo "Will not delete any topics"
@@ -44,10 +46,21 @@ if [ ! -z "${topics//[[:blank:]]/}" ] ; then
     esac
 fi
 
-# create internal topics for samza
-$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC" --partitions ? --replication-factor 1
-$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC" --partitions 1 --replication-factor 1
-$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC" --partitions ? --replication-factor 1
+topics=`$KAFKA_TOPIC_BIN --list`
+if [ ! -z "${topics//[[:blank:]]/}" ]; then
+    echo "Warning, topics remain exist:"
+    echo "$topics"
+    echo 
+    echo "Please wait a few more minutes or clean & restart kafka, zookeeper, then retry $0."
+    exit 1
+fi
 
+# create internal topics for samza
+$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC" --partitions ${SAMZA_PARTITIONS} --replication-factor 1
+$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC" --partitions 1 --replication-factor 1
+$KAFKA_TOPIC_BIN --create --topic "$STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC" --partitions ${SAMZA_PARTITIONS} --replication-factor 1
+
+# create topic for bench
+$KAFKA_TOPIC_BIN --create --topic "$STREAMING_TOPIC_NAME" --partitions ${SAMZA_PARTITIONS} --replication-factor ${SAMZA_REPLICATION_FACTOR}
 
 show_bannar finish

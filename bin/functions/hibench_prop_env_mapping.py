@@ -115,6 +115,7 @@ HiBenchEnvPropMapping=dict(
 
     # For streaming bench
     # prepare
+    STREAMING_TOPIC_NAME="hibench.streamingbench.topic_name",
     STREAMING_KAFKA_HOME="hibench.streamingbench.kafka.home",
     STREAMING_ZKADDR="hibench.streamingbench.zookeeper.host",
     STREAMING_DATA_SCALE_FACTOR="hibench.streamingbench.datagen.scale_factor",
@@ -136,9 +137,11 @@ HiBenchEnvPropMapping=dict(
     STREAMING_BENCHNAME="hibench.streamingbench.benchname",
 
     # samza
-    STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_workload_conf.wordcount.task.inputs",
-    STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_workload_conf.statistics.task.inputs",
-    STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC="samza_workload_conf.distinctcount.task.inputs",
+    STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",
+    STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_internal.statistics.kafka.input.name",
+    STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC="samza_internal.distinctcount.kafka.input.name",
+    SAMZA_PARTITIONS="samza_internal.partitions",
+    SAMZA_REPLICATION_FACTOR="samza.task.checkpoint.replication.factor",
     
     )
 

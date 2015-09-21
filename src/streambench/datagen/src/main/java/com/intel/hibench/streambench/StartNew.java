@@ -58,5 +58,6 @@ public class StartNew {
 		NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
 		
 		con.publishData(reader, topic, totalCount, isNumericData);
+        con.close();
 	}
 }

@@ -49,7 +49,7 @@ public class NewKafkaConnector {
     }
 	
 	public long publishData(BufferedReader reader, String topic, long size, boolean isNumericData){
-        // size=0: read all from reader
+        // size=-1: read all from reader
         // size>0: read upto size bytes
 		long start = System.currentTimeMillis();
 		long bytes = 0;
@@ -73,16 +73,25 @@ public class NewKafkaConnector {
                     } else {
                         ous.write(parseUserVisitTable(line, Data1Length).getBytes());
                     }
+
                     if ((size>0) && (ous.size()>=size)) { // reach the size threshold, let's sent
                         break;
                     }
                 }
-                if (ous.size() == 0) break; // no more data got, let's break
+                long ous_size = ous.size();
+                if (ous_size == 0) break; // no more data got, let's break
                 ProducerRecord record = new ProducerRecord(topic, ous.toByteArray());
-                bytes += ous.size();
+
+                bytes += ous_size;
                 producer.send(record, callback);
                 ous.reset();
-                if (size>0) break;  // size=0: endless mode until all datas got; size>0: send maximum size bytes
+
+                if (size>0){
+                    size -= ous_size;
+                    if (size<0) break; // all data readed, let's break
+                }
+                // size ==-1, read all mode, let's repeat
+                assert size==-1: "Bug, size should be -1 in read all mode";
             }
             ous.close();
         } catch (IOException e) {
@@ -90,8 +99,8 @@ public class NewKafkaConnector {
         }
 
 		long end = System.currentTimeMillis();
-		System.out.println("Bytes sent: "+bytes+" after change");
-		System.out.println("Time consumed(ms):"+(end-start));
+		System.out.println("Bytes sent: " + bytes);
+		System.out.println("Time consumed(sec):" + (end-start)/1000.0);
 		double seconds=(double)(end-start)/(double)1000;
 		double throughput=((double)bytes/seconds)/1000000;
 		System.out.println("Throughput: "+throughput+"MB/s");
@@ -111,7 +120,7 @@ public class NewKafkaConnector {
         sb.append(elements[4]); sb.append(elements[2]);
 
         String result = sb.toString();
-        return (result.length() < MaximumLength)?result:result.substring(0, MaximumLength);
+        return String.format("%s%n", (result.length() < MaximumLength)?result:result.substring(0, MaximumLength));
     }
 
     private String parseNumeric(String line) {
@@ -140,11 +149,11 @@ public class NewKafkaConnector {
             sb.append(val + " ");
         }
         String result = sb.toString();
-        return result.substring(0, result.length() - 1);
+        return String.format("%s%n", result.substring(0, result.length() - 1));
     }
 
     public void publishData(BufferedReader reader, String topic, boolean isNumericData){
-        publishData(reader, topic, 0, isNumericData);
+        publishData(reader, topic, -1, isNumericData);
         producer.close();
     }
 
