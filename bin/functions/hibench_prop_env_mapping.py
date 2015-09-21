@@ -115,6 +115,8 @@ HiBenchEnvPropMapping=dict(
 
     # For streaming bench
     # prepare
+    STREAMING_KAFKA_HOME="hibench.streamingbench.kafka.home",
+    STREAMING_ZKADDR="hibench.streamingbench.zookeeper.host",
     STREAMING_DATA_SCALE_FACTOR="hibench.streamingbench.datagen.scale_factor",
     STREAMING_DATA_DIR="hibench.streamingbench.datagen.dir",
     STREAMING_DATA1_NAME="hibench.streamingbench.datagen.data1.name",
@@ -132,6 +134,12 @@ HiBenchEnvPropMapping=dict(
     STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
     STORM_BIN_HOME="hibench.streamingbench.storm.bin",
     STREAMING_BENCHNAME="hibench.streamingbench.benchname",
+
+    # samza
+    STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_workload_conf.wordcount.task.inputs",
+    STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_workload_conf.statistics.task.inputs",
+    STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC="samza_workload_conf.distinctcount.task.inputs",
+    
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
