@@ -33,12 +33,11 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
     val conf = new SparkConf().setMaster(params.master)
       .setAppName(params.appName)
       .set("spark.cleaner.ttl", "7200")
-    //.set("spark.executor.memory","100g")   // Added by Lv: will be managed in parameters of spark-submit
 
     var ssc:StreamingContext=null
 
     if (!params.testWAL) {
-      ssc = new StreamingContext(conf,Seconds(params.batchInterval))
+      ssc = new StreamingContext(conf, Seconds(params.batchInterval))
     } else {
       val create = ()=> new StreamingContext(conf, Seconds(params.batchInterval))
       ssc = StreamingContext.getOrCreate(params.path, create)
@@ -60,7 +59,7 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
     ssc.awaitTermination()
   }
 
-  def createStream(ssc:StreamingContext):DStream[(String,String)]={
+  def createStream(ssc:StreamingContext):DStream[(String, String)] = {
     val kafkaParams=Map(
       "zookeeper.connect" -> params.zkHost,
       "group.id" -> params.consumerGroup,
@@ -73,9 +72,11 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
       storageLevel = StorageLevel.MEMORY_ONLY
 
     val kafkaInputs = (1 to params.threads).map{_ =>
+      println(s"Create kafka input, args:$kafkaParams")
       KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams,
-        Map(params.topic->1), storageLevel)
+        Map(params.topic -> 1), storageLevel)
     }
+
     ssc.union(kafkaInputs)
   }
 
@@ -85,7 +86,7 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
       "auto.offset.reset" -> "smallest",
       "socket.receive.buffer.size" -> "1024*1024*1024"
     )
-
+    println(s"Create direct kafka stream, args:$kafkaParams")
     KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, Set(params.topic))
   }
 

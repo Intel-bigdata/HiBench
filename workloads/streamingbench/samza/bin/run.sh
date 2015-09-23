@@ -43,6 +43,11 @@ configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
 # remove samza prefix and change "name    value" to "name=value" style in ${SAMZA_PROP_CONF}
 cat ${SAMZA_PROP_CONF} | sed -r 's/samza\.//' | sed -r 's/\t+/=/' > ${SAMZA_PROP_CONF}.converted
 
+# Upload samza package to HDFS
+upload-to-hdfs $STREAMING_SAMZA_PACKAGE_LOCAL_PATH $STREAMING_SAMZA_PACKAGE_HDFS_PATH
+
+$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -put $STREAMING_SAMZA_PACKAGE_LOCAL_PATH $STREAMING_SAMZA_PACKAGE_HDFS_PATH
+
 function samza-submit() {
     workload_name=$1
     CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"

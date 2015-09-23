@@ -22,33 +22,33 @@ import com.intel.hibench.streambench.spark.util._
 import com.intel.hibench.streambench.spark.microbench._
 
 object RunBench {
-	def main(args: Array[String]) {
-		this.run(args)
-	}
+  def main(args: Array[String]) {
+    this.run(args)
+  }
 
-	def run(args: Array[String]) {
-		if (args.length < 1) {
-			BenchLogUtil.handleError("Usage: RunBench <ConfigFile>")
-		}
+  def run(args: Array[String]) {
+    if (args.length < 1) {
+      BenchLogUtil.handleError("Usage: RunBench <ConfigFile>")
+    }
 
-		val conf = new ConfigLoader(args(0))
+    val conf = new ConfigLoader(args(0))
 
-		val benchName = conf.getPropertiy("hibench.streamingbench.benchname")
-		val topic = conf.getPropertiy("hibench.streamingbench.topic_name")
-		val master = conf.getPropertiy("hibench.spark.master")
-		val batchInterval = conf.getPropertiy("hibench.streamingbench.batch_interval").toInt
-		val zkHost = conf.getPropertiy("hibench.streamingbench.zookeeper.host")
-		val consumerGroup = conf.getPropertiy("hibench.streamingbench.consumer_group")
-		val kafkaThreads = conf.getPropertiy("hibench.streamingbench.receiver_nodes").toInt
-		val recordCount = conf.getPropertiy("hibench.streamingbench.record_count").toLong
-		val copies = conf.getPropertiy("hibench.streamingbench.copies").toInt
-		val testWAL = conf.getPropertiy("hibench.streamingbench.testWAL").toBoolean
-		val path = if (testWAL) conf.getPropertiy("hibench.streamingbench.checkpoint_path") else ""
-		val debug = conf.getPropertiy("hibench.streamingbench.debug").toBoolean
-		val directMode = conf.getPropertiy("hibench.streamingbench.direct_mode").toBoolean
-		val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
+    val benchName = conf.getPropertiy("hibench.streamingbench.benchname")
+    val topic = conf.getPropertiy("hibench.streamingbench.topic_name")
+    val master = conf.getPropertiy("hibench.spark.master")
+    val batchInterval = conf.getPropertiy("hibench.streamingbench.batch_interval").toInt
+    val zkHost = conf.getPropertiy("hibench.streamingbench.zookeeper.host")
+    val consumerGroup = conf.getPropertiy("hibench.streamingbench.consumer_group")
+    val kafkaThreads = conf.getPropertiy("hibench.streamingbench.receiver_nodes").toInt
+    val recordCount = conf.getPropertiy("hibench.streamingbench.record_count").toLong
+    val copies = conf.getPropertiy("hibench.streamingbench.copies").toInt
+    val testWAL = conf.getPropertiy("hibench.streamingbench.testWAL").toBoolean
+    val path = if (testWAL) conf.getPropertiy("hibench.streamingbench.checkpoint_path") else ""
+    val debug = conf.getPropertiy("hibench.streamingbench.debug").toBoolean
+    val directMode = conf.getPropertiy("hibench.streamingbench.direct_mode").toBoolean
+    val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
 
-		val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
+    val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
     println(s"params:$param")
     benchName match {
       case "projection" =>
@@ -81,6 +81,6 @@ object RunBench {
       case _ =>
         val emptyTest = new IdentityJob(param)
         emptyTest.run()
-		}
-	}
+    }
+  }
 }

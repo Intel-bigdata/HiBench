@@ -112,6 +112,34 @@ function rmr-hdfs(){		# rm -r for hdfs
     execute_withlog ${CMD}
 }
 
+function upload-to-hdfs(){
+    assert $1 "local parameter missing"
+    assert $2 "remote parameter missing"
+    LOCAL_FILE_PATH=$1
+    REMOTE_FILE_PATH=$2
+    echo "REMOTE_FILE_PATH:$REMOTE_FILE_PATH" > /dev/stderr
+    if [[ `echo $REMOTE_FILE_PATH | tr A-Z a-z` = hdfs://* ]]; then # strip leading "HDFS://xxx:xxx/" string
+        echo "HDFS_MASTER:$HDFS_MASTER" > /dev/stderr
+        local LEADING_HDFS_STRING_LENGTH=${#HDFS_MASTER}
+        REMOTE_FILE_PATH=${REMOTE_FILE_PATH:$LEADING_HDFS_STRING_LENGTH}
+        echo "stripped REMOTE_FILE_PATH:$REMOTE_FILE_PATH" > /dev/stderr
+    fi
+
+    # clear previous package file
+    local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -rm $REMOTE_FILE_PATH"
+    echo -e "${BCyan}hdfs rm : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    execute_withlog ${CMD}
+
+    # prepare parent folder
+    CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -mkdir `dirname $REMOTE_FILE_PATH`"
+    echo -e "${BCyan}hdfs mkdir : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    execute_withlog ${CMD}
+
+    # upload
+    CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -put $LOCAL_FILE_PATH $REMOTE_FILE_PATH"
+    echo -e "${BCyan}hdfs put : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    execute_withlog ${CMD}
+}
 
 function dus-hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"

@@ -142,6 +142,9 @@ HiBenchEnvPropMapping=dict(
     STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC="samza_internal.distinctcount.kafka.input.name",
     SAMZA_PARTITIONS="samza_internal.partitions",
     SAMZA_REPLICATION_FACTOR="samza.task.checkpoint.replication.factor",
+
+    STREAMING_SAMZA_PACKAGE_LOCAL_PATH="samza_internal.yarn.package.path",
+    STREAMING_SAMZA_PACKAGE_HDFS_PATH="samza.yarn.package.path",
     
     )
 

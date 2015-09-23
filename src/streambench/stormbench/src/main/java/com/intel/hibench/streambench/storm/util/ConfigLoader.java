@@ -47,7 +47,8 @@ public class ConfigLoader {
                         String key = words[0];
                         store.put(key, "");
                     } else {
-                        System.out.println("Warning: unknown config parsed, skip:" + line);
+                        if (!line.startsWith("hibench"))
+                            System.out.println("Warning: unknown config parsed, skip:" + line);
                     }
                 }
                 line = br.readLine();

@@ -22,7 +22,7 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
 
-class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends StreamingListener {
+class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -32,58 +32,58 @@ class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends Strea
   var batchCount=0
   var totalRecords=0L
 
-  override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit={
-    val clazz:Class[_]=Class.forName("org.apache.spark.streaming.scheduler.ReceivedBlockInfo")
-    val numRecordMethod=clazz.getMethod("numRecords")
-    val batchInfo=batchCompleted.batchInfo
-    val map=batchInfo.receivedBlockInfo
-    val prevCount=totalRecords
-    var recordThisBatch=0L
+  override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit = {
+    val clazz:Class[_] = Class.forName("org.apache.spark.streaming.scheduler.ReceivedBlockInfo")
+    val numRecordMethod = clazz.getMethod("numRecords")
+    val batchInfo = batchCompleted.batchInfo
+    val map = batchInfo.receivedBlockInfo
+    val prevCount = totalRecords
+    var recordThisBatch = 0L
 
     map.foreach{
-      case (id,array)=>{
-        for(receivedInfo<-array){
-          val thisRecord=numRecordMethod.invoke(receivedInfo)
+      case (id,array) => {
+        for(receivedInfo <- array){
+          val thisRecord = numRecordMethod.invoke(receivedInfo)
 //          BenchLogUtil.logMsg("This time id:"+id+" thisRecord:"+thisRecord)
-          recordThisBatch+=thisRecord.toString.toLong
+          recordThisBatch += thisRecord.toString.toLong
         }
       }
     }
-    totalRecords+=recordThisBatch
-    BenchLogUtil.logMsg("LatencyController: total records:"+totalRecords+" Receivers:"+map.size)
+    totalRecords += recordThisBatch
+    BenchLogUtil.logMsg("LatencyController: total records:" + totalRecords + " Receivers:"+map.size)
 
-    if(totalRecords==prevCount){
+    if(totalRecords == prevCount){
       if(hasStarted){
         //not receiving any data more, finish
-        endTime=System.currentTimeMillis()
-        val totalTime=(endTime-startTime).toDouble/1000
+        endTime = System.currentTimeMillis()
+        val totalTime = (endTime-startTime).toDouble / 1000
         //This is weighted avg of every batch process time. The weight is records processed int the batch
-        val avgLatency=totalDelay.toDouble/totalRecords
-        if(avgLatency>params.batchInterval.toDouble*1000)
+        val avgLatency = totalDelay.toDouble / totalRecords
+        if(avgLatency > params.batchInterval.toDouble * 1000)
           BenchLogUtil.logMsg("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
 
-        val avgLatencyAdjust=avgLatency+params.batchInterval.toDouble*500
-        val recordThroughput=params.recordCount/totalTime
-        BenchLogUtil.logMsg("Batch count="+batchCount)
-        BenchLogUtil.logMsg("Total processing delay="+totalDelay+"ms")
-        BenchLogUtil.logMsg("Consumed time="+totalTime+"s")
-        BenchLogUtil.logMsg("Avg latency/batchInterval="+avgLatencyAdjust+"ms")
-        BenchLogUtil.logMsg("Avg records/sec="+recordThroughput+"records/s")
-        ssc.stop(true,true)
+        val avgLatencyAdjust = avgLatency + params.batchInterval.toDouble * 500
+        val recordThroughput = params.recordCount / totalTime
+        BenchLogUtil.logMsg("Batch count=" + batchCount)
+        BenchLogUtil.logMsg("Total processing delay=" + totalDelay + "ms")
+        BenchLogUtil.logMsg("Consumed time=" + totalTime + "s")
+        BenchLogUtil.logMsg("Avg latency/batchInterval=" + avgLatencyAdjust + "ms")
+        BenchLogUtil.logMsg("Avg records/sec=" + recordThroughput + "records/s")
+        ssc.stop(true, true)
         System.exit(0)
       }
     }else if(!hasStarted){
-      startTime=batchCompleted.batchInfo.submissionTime
-      hasStarted=true
+      startTime = batchCompleted.batchInfo.submissionTime
+      hasStarted = true
     }
 
     if(hasStarted){
 //      BenchLogUtil.logMsg("This delay:"+batchCompleted.batchInfo.processingDelay+"ms")
       batchCompleted.batchInfo.processingDelay match{
-        case Some(value) => totalDelay+=value*recordThisBatch
+        case Some(value) => totalDelay += value * recordThisBatch
         case None =>  //Nothing
       }
-      batchCount=batchCount+1
+      batchCount += 1
     }
   }
   
