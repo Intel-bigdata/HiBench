@@ -114,10 +114,13 @@ HiBenchEnvPropMapping=dict(
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
 
     # For streaming bench
+    # zkHelper
+    STREAMING_ZKHELPER_JAR="hibench.streamingbench.zkhelper.jar",
     # prepare
     STREAMING_TOPIC_NAME="hibench.streamingbench.topic_name",
     STREAMING_KAFKA_HOME="hibench.streamingbench.kafka.home",
     STREAMING_ZKADDR="hibench.streamingbench.zookeeper.host",
+    STREAMING_CONSUMER_GROUP="hibench.streamingbench.consumer_group",
     STREAMING_DATA_SCALE_FACTOR="hibench.streamingbench.datagen.scale_factor",
     STREAMING_DATA_DIR="hibench.streamingbench.datagen.dir",
     STREAMING_DATA1_NAME="hibench.streamingbench.datagen.data1.name",

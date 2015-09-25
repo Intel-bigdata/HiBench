@@ -47,11 +47,12 @@ object RunBench {
     val debug = conf.getPropertiy("hibench.streamingbench.debug").toBoolean
     val directMode = conf.getPropertiy("hibench.streamingbench.direct_mode").toBoolean
     val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
+    val totalParallel = conf.getPropertiy("hibench.yarn.executor.num").toInt * conf.getPropertiy("hibench.yarn.executor.cores").toInt
 
-    val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList)
+    val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList, totalParallel)
     println(s"params:$param")
     benchName match {
-      case "projection" =>
+      case "project" =>
         val fieldIndex = conf.getPropertiy("hibench.streamingbench.field_index").toInt
         val separator = conf.getPropertiy("hibench.streamingbench.separator")
         val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)

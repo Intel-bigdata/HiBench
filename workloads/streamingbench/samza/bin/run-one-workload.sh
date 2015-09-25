@@ -19,20 +19,48 @@ workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
+
+workload_basename=`basename ${workload_folder}`
+workload_dirname=`dirname ${workload_folder}`
+workload_name=$1
+enter_bench SamzaStreaming-$workload_name ${workload_root} ${workload_dirname}_$1/${workload_basename} hibench.streamingbench.benchname=$workload_name
 show_bannar start
 
 SRC_DIR=${workload_root}/../../src/streambench/samzabench
 
 printFullLog
 
+# prepare samza environment
+
+if [ ! -d $SRC_DIR/target ]; then
+  echo "Please run 'bin/build-all.sh' first."
+  exit 1
+fi
+
+SAMZA_PLAYGROUND=${WORKLOAD_RESULT_FOLDER}/samza
+
+mkdir -p $SAMZA_PLAYGROUND 2> /dev/null
+tar zxf $SRC_DIR/target/*.tar.gz -C ${SAMZA_PLAYGROUND}
+
+configFactory=org.apache.samza.config.factories.PropertiesConfigFactory
+
+# remove samza prefix and change "name    value" to "name=value" style in ${SAMZA_PROP_CONF}
+cat ${SAMZA_PROP_CONF} | sed -r 's/samza\.//' | sed -r 's/\t+/=/' > ${SAMZA_PROP_CONF}.converted
+
+# Upload samza package to HDFS
+upload-to-hdfs $STREAMING_SAMZA_PACKAGE_LOCAL_PATH $STREAMING_SAMZA_PACKAGE_HDFS_PATH
+
+$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -put $STREAMING_SAMZA_PACKAGE_LOCAL_PATH $STREAMING_SAMZA_PACKAGE_HDFS_PATH
+
 function samza-submit() {
     workload_name=$1
-    $workload_folder/run-one-workload.sh $workload_name
+
 }
 
 START_TIME=`timestamp`
-. $SRC_DIR/scripts/$STREAMING_BENCHNAME.sh
+CMD="$SAMZA_PLAYGROUND/bin/run-job.sh --config-factory=${configFactory} --config-path=file://${SAMZA_PROP_CONF}.converted"
+echo -e "${BGreen}Submit Samza Job: ${Green}$CMD${Color_Off}"
+execute_withlog $CMD
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

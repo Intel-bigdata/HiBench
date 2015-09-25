@@ -27,7 +27,9 @@
    
     <modules>
       <module>datagen</module>
+      <module>zkHelper</module>
       <module>sparkbench</module>
       <module>stormbench</module>
+      <module>samzabench</module>
     </modules>
 </project>

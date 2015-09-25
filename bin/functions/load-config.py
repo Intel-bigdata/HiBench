@@ -113,7 +113,7 @@ def OneAndOnlyOneFile(filename_pattern):
             log("However, there's several files found, please remove the redundant files:\n", "\n".join(files))
         raise Exception("Need to match one and only one file!")
 
-def load_config(conf_root, workload_root, workload_folder):
+def load_config(conf_root, workload_root, workload_folder, patching_config=""):
     abspath = os.path.abspath
     conf_root = abspath(conf_root)
     workload_root = abspath(workload_root)
@@ -148,6 +148,12 @@ def load_config(conf_root, workload_root, workload_folder):
             env_value = os.getenv(env_name)
             HibenchConf[prop_name] = env_value
             HibenchConfRef[prop_name] = "OS environment variable:%s" % env_name
+
+    # override values by patching config
+    for item in [x for x in patching_config.split(',') if x]:
+        key, value = re.split('=', item, 1)
+        HibenchConf[key] = value.strip()
+        HibenchConfRef[key] = "Overrided by parent script during calling: " + item
 
     # generate ref values
     waterfall_config()
@@ -529,6 +535,10 @@ def export_config(workload_name, workload_tail):
 
 if __name__=="__main__":
     if len(sys.argv)<4:
-        raise Exception("Please supply <conf root path>, <workload root path>, <workload folder path>")
+        raise Exception("Please supply <conf root path>, <workload root path>, <workload folder path> [<patch config lists, seperated by comma>")
     conf_root, workload_root, workload_folder = sys.argv[1], sys.argv[2], sys.argv[3]
-    load_config(conf_root, workload_root, workload_folder)
+    if len(sys.argv)>4:
+        patching_config = sys.argv[4]
+    else:
+        patching_config = ''
+    load_config(conf_root, workload_root, workload_folder, patching_config)

@@ -17,5 +17,6 @@ case class ParamEntity(
   path: String,
   debug: Boolean,
   directMode: Boolean,
-  brokerList: String
+  brokerList: String,
+  totalParallel: Int
 )

@@ -76,7 +76,7 @@ public class RunBench {
                 conf.prob = Double.parseDouble(cl.getPropertiy("hibench.streamingbench.prob"));
                 TridentSample sample = new TridentSample(conf);
                 sample.run();
-            } else if (benchName.equals("sketch")) {
+            } else if (benchName.equals("project")) {
                 conf.separator = cl.getPropertiy("hibench.streamingbench.separator");
                 conf.fieldIndex = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.field_index"));
                 TridentProject project = new TridentProject(conf);

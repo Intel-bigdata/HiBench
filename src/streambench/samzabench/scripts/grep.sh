@@ -15,3 +15,4 @@
 # limitations under the License.
 
 samza-submit grep
+samza-submit metrics

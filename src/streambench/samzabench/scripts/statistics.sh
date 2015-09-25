@@ -16,3 +16,4 @@
 
 samza-submit extractforstatistics
 samza-submit statistics
+samza-submit metrics

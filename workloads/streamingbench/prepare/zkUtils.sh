@@ -16,24 +16,33 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/../..
+workload_root=${workload_folder}/..
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
+enter_bench StreamingBenchZkUtils ${workload_root} ${workload_folder}
 show_bannar start
-
-SRC_DIR=${workload_root}/../../src/streambench/samzabench
-
 printFullLog
 
-function samza-submit() {
-    workload_name=$1
-    $workload_folder/run-one-workload.sh $workload_name
-}
+# operation type
+op=${1:-ls}
 
-START_TIME=`timestamp`
-. $SRC_DIR/scripts/$STREAMING_BENCHNAME.sh
-END_TIME=`timestamp`
+# number of partitions
+partitions=$(($YARN_NUM_EXECUTORS*$YARN_EXECUTOR_CORES))
 
-gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+# zkHost address:port
+zkHost=$STREAMING_ZKADDR
+
+# topic
+topic=$STREAMING_TOPIC_NAME
+
+# spark consumer name
+consumer=$STREAMING_CONSUMER_GROUP
+
+path=/consumers/$consumer/offsets/$topic
+
+CMD="$JAVA_BIN -cp $STREAMING_ZKHELPER_JAR com.intel.hibench.streambench.zkHelper.ZKUtil $op $zkHost $path $partitions"
+echo -e "${BGreen}Query ZooKeeper for topic offsets, params: ${BCyan}operation:${Cyan}$op ${BCyan}partitions:${Cyan}$partitions ${BCyan}zkHost:${Cyan}$zkHost ${BCyan}topic:${Cyan}$topic ${BCyan}consumer:${Cyan}$consumer ${BCyan}path:${Cyan}$path${Color_Off}"
+echo -e "${BGreen}Run:${Green}$CMD${Color_Off}"
+execute_withlog $CMD
+
 show_bannar finish

@@ -15,3 +15,4 @@
 # limitations under the License.
 
 samza-submit sample
+samza-submit metrics

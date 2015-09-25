@@ -16,4 +16,5 @@
 
 samza-submit extractfordistinctcount
 samza-submit distinctcount
+samza-submit metrics
 

@@ -74,7 +74,7 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
     val kafkaInputs = (1 to params.threads).map{_ =>
       println(s"Create kafka input, args:$kafkaParams")
       KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams,
-        Map(params.topic -> 1), storageLevel)
+        Map(params.topic -> params.totalParallel / params.threads), storageLevel)
     }
 
     ssc.union(kafkaInputs)
