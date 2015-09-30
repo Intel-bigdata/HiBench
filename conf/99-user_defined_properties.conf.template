@@ -9,7 +9,7 @@ hibench.hadoop.home		/PATH/TO/YOUR/HADOOP/ROOT
 hibench.spark.home		/PATH/TO/YOUR/SPARK/ROOT
 
 # HDFS master
-hibench.hdfs.master		/URL/TO/YOUR/HDFS
+hibench.hdfs.master		/HDFS_URL/TO/YOUR/HDFS       # example: hdfs://<hdfs_name_node_ip>:<hdfs_name_node_port>
 
 # Spark master
 #   standalone mode: `spark://xxx:7077`
