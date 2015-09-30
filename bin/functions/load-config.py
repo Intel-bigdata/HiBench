@@ -328,7 +328,7 @@ def generate_optional_value():  # get some critical values from environment or m
             HibenchConf['hibench.slaves.hostnames'] = 'localhost'     # localhost as slaves
             HibenchConfRef['hibench.masters.hostnames'] = HibenchConfRef['hibench.slaves.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
         elif spark_master.startswith("spark"):   # spark standalone mode
-            HibenchConf['hibench.masters.hostnames'] = spark_master[:8].split(":")[0]
+            HibenchConf['hibench.masters.hostnames'] = spark_master[8:].split(":")[0]
             HibenchConfRef['hibench.masters.hostnames'] =  "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
             try:
                 log(spark_master, HibenchConf['hibench.masters.hostnames'])
