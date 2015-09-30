@@ -349,15 +349,21 @@ def generate_optional_value():  # get some critical values from environment or m
                 # parse yarn resource manager from hadoop conf
                 yarn_site_file = os.path.join(HibenchConf["hibench.hadoop.configure.dir"], "yarn-site.xml")
                 with open(yarn_site_file) as f:
-                    match=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
-                    if match:
-                        resourcemanager_hostname = match[0][0]
+                    match_address=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+                    #match_hostname=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+		    if match_address:
+                        resourcemanager_hostname = match_address[0][0]
                         HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
                         HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
-                    else:
+                    elif re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read()):
+                        match_hostname=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+			resourcemanager_hostname = match_hostname[0][0]
+                        HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
+                        HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
+		    else:
                         assert 0, "Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file"
             except Exception as e:
-                assert 0, "Get workers from spark master's web UI page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
+                assert 0, "Get workers from yarn web UI page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
 
     # reset hostnames according to gethostbyaddr
     names = set(HibenchConf['hibench.masters.hostnames'].split() + HibenchConf['hibench.slaves.hostnames'].split())
