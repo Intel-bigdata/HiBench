@@ -8,8 +8,8 @@ hibench.hadoop.home		/PATH/TO/YOUR/HADOOP/ROOT
 # Spark home
 hibench.spark.home		/PATH/TO/YOUR/SPARK/ROOT
 
-# HDFS master
-hibench.hdfs.master		/URL/TO/YOUR/HDFS
+# HDFS master, set according to hdfs-site.xml
+hibench.hdfs.master		hdfs://HOSTNAME:HDFSPORT
 
 # Spark master
 #   standalone mode: `spark://xxx:7077`
@@ -89,6 +89,10 @@ hibench.compress.profile	 	disable
 # Compression codec profile selection:	 snappy, lzo, default
 hibench.compress.codec.profile		snappy
 
-# Samza workload selection
-# Select workload for samza: Must be one of the followings: identify, wordcount
-samza.workload.name			identify
+# Streaming settings
+#-------------------
+# Available benchname: identity sample project grep wordcount distinctcount statistics
+hibench.streamingbench.benchname        identity
+
+# data scale of streaming data
+hibench.streamingbench.scale.profile    ${hibench.scale.profile}
