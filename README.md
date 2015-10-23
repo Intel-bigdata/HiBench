@@ -127,7 +127,7 @@ Note:
       
      Note: Begin from HiBench V4.0, HiBench will need python 2.x(>=2.6) .
 
-2. HiBench Configurations.
+2. HiBench Configurations.(#hibenchconf)
 
      For minimum requirements: create & edit `conf/99-user_defined_properties.conf`：
      
@@ -229,7 +229,7 @@ Note:
 
 5. HiBench setup 
 
-     Same as [step.2][Getting Started Without StreamingBench] in previous section.
+     Same as #hibenchconf.
 
      Streaming workloads is defined in `conf/99-user_defined_properties.conf`, in `hibench.streamingbench.benchname`. You may set it to a value of following: `identity`, `sample`, `project`, `grep`, `wordcount`, `distinctcount` and `statistics`.
 
