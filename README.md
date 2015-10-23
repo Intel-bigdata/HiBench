@@ -184,7 +184,7 @@ Note:
 
      Sometimes you may need to clean up the data inside zookeeper. First stop the server, then run "rm -rf /path/to/zookeeper/datadir" to clean the data dir. The directory is defined in your config file.
      
-2. Kafka setup
+3. Kafka setup
 
      When configuring Kafka and topic count, we need to ensure disk won't become bottleneck. It is suggested to start several brokers in each kafka node, and configure each broker several disks. Different brokers in the same node may share disks but have their own directories in the same disk. Our topic count is 16 for each kafka node, that is, if the kafka cluster contains only 1 kafka node, then we create topics with 16 partitions. For environment with 3 kafka nodes, we create topics with 48 partitions.
 
@@ -198,7 +198,7 @@ Note:
 
      Same with ZooKeeper, you may need to clean old data that's located in disks of kafka brokers. Just `rm -rf <all_data_path>` in all your kafka nodes and directories.
 
-3. Spark setup
+4. Spark setup
 
      All spark streaming related parameters can be defined in `conf/99-user_defined_properties.conf`.
 
@@ -212,7 +212,7 @@ Note:
 
      Spark streaming can be deployed as YARN mode or standalone mode. For YARN mode, just set `hibench.spark.master` to `yarn-client`. For standalone mode, set it to `spark://spark_master_ip:port` and run `sbin/start-master.sh` in your spark home.
 
-4. Storm setup
+5. Storm setup
 
      The conf file is `conf/storm.yaml`. Basically we configure following params:
 
@@ -227,7 +227,7 @@ Note:
      Run `bin/storm nimbus` to start nimbus and `bin/storm ui` to setup storm ui
      Run `bin/storm supervisor` to start storm supervisors
 
-5. HiBench setup 
+6. HiBench setup 
 
      Same as [step.2 in previous section](#hibenchconf).
 
@@ -254,18 +254,15 @@ Note:
 
      Note: For SparkStreaming, receiver mode (Spark version >= 1.4). The first run will always fail. You'll need to wait a few more minutes, running `prepare/zkUtils.sh` to ensure the topic has be created. Then re-run the workload again. For Spark version == 1.3, it'll be OK.
 
-5. View the report:
+7. View the report:
    
-   Goto `<HiBench_Root>/report` to check for the final report:
-      - `report/hibench.report`: Overall report about all workloads.
-      - `report/<workload>/<language APIs>/bench.log`: Raw logs on client side.
-      - `report/<workload>/<language APIs>/monitor.html`: System utilization monitor results.
-      - `report/<workload>/<language APIs>/conf/<workload>.conf`: Generated environment variable configurations for this workload.
-      - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/sparkbench.conf`: Generated configuration for this workloads, which is used for mapping to environment variable.
-      - `report/<workload>/<language APIs>/conf/sparkbench/<workload>/spark.conf`: Generated configuration for spark.
+   Same as [step.4 in previous section](#viewreport)
       
-   Note, the throughput and lattency of each batch is printed to terminal during running streaming work endlessly. For SparkStreaming, press ctrl+c will stop the works. For Storm & Trident, you'll need to execute `storm/bin/stop.sh` to stop the works. For Samza, you'll have to kill all applications in YARN manually, or restart YARN.
+   However, the streamingbench is very different with nonstreaming workloads. Streaming workloads will collect throughput and lattency endlessly and print to terminal directly and log to `report/<workload>/<language APIs>/bench.log`.
 
+8. Stop the streaming workloads:
+
+   For SparkStreaming press `ctrl+c` will stop the works. For Storm & Trident, you'll need to execute `storm/bin/stop.sh` to stop the works. For Samza, currently you'll have to kill all applications in YARN manually, or restart YARN cluster directly.
 
 ---
 ### Advanced Configurations ###
