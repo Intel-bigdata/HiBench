@@ -128,6 +128,7 @@ HiBenchEnvPropMapping=dict(
     STREAMING_DATA1_LENGTH="hibench.streamingbench.datagen.data1.length",
     STREAMING_DATA2_SAMPLE_DIR="hibench.streamingbench.datagen.data2_samples.dir",
     STREAMING_DATA2_CLUSTER_DIR="hibench.streamingbench.datagen.data2_cluster.dir",
+    STREAMING_PARTITIONS="hibench.streamingbench.partitions",
     DATA_GEN_JAR="hibench.streamingbench.datagen.jar",
     
     STREAMING_DATAGEN_MODE="hibench.streamingbench.prepare.mode",

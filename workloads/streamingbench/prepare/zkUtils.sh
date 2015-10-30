@@ -27,7 +27,7 @@ printFullLog
 op=${1:-ls}
 
 # number of partitions
-partitions=$(($YARN_NUM_EXECUTORS*$YARN_EXECUTOR_CORES))
+partitions=${STREAMING_PARTITIONS}
 
 # zkHost address:port
 zkHost=$STREAMING_ZKADDR

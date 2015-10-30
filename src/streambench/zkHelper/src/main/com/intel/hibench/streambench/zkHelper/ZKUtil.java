@@ -30,16 +30,16 @@ public class ZKUtil {
 	public void resetOffsetToBegin(String path,int partitionCount,String newOffset){
 		OffsetResetUpdater<String> update=new OffsetResetUpdater<String>(newOffset);
 		for(int i=0;i<partitionCount;i++){
-			String pathi=path+i;
+			String pathi = path + "/" + i;
 			zkClient.updateDataSerialized(pathi, update);
 		}
 	}
 	
 	public void lsOffsets(String path,int partitionCount){
 		for(int i=0;i<partitionCount;i++){
-			String pathi=path+"/"+i;
+			String pathi = path + "/" + i;
 			System.out.println("Path:"+pathi);
-			Object res=zkClient.readData(pathi);
+			Object res = zkClient.readData(pathi);
 			System.out.println("Partition:"+i+"  offset:"+res);
 		}
 	}

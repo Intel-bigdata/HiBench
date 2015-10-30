@@ -112,7 +112,6 @@
         <module>sparkbench</module>
         <module>pegasus</module>
         <module>autogen</module>
-        <module>streambench</module>
     </modules>
 
     <profiles>
@@ -159,6 +158,10 @@
             <activation>
                 <property><name>!spark1.2</name></property>
             </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
         </profile>
         <profile>
             <id>spark1.4</id>
@@ -170,6 +173,10 @@
             <activation>
                 <property><name>spark1.4</name></property>
             </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
         </profile>
 	<profile>
             <id>spark1.5</id>
@@ -181,6 +188,10 @@
             <activation>
                 <property><name>spark1.5</name></property>
             </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
         </profile>
     </profiles>
 </project>
