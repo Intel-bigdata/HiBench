@@ -88,3 +88,33 @@ hibench.scale.profile  	      	        large
 hibench.compress.profile	 	disable
 # Compression codec profile selection:	 snappy, lzo, default
 hibench.compress.codec.profile		snappy
+
+# Streaming settings
+#-------------------
+# Available benchname: identity sample project grep wordcount distinctcount statistics
+hibench.streamingbench.benchname	identity
+
+# data scale of streaming data
+hibench.streamingbench.scale.profile    ${hibench.scale.profile}
+
+# zookeeper host:port of kafka cluster
+#example         lv-dev:9092
+hibench.streamingbench.zookeeper.host	HOSTNAME:HOSTPORT
+
+# Kafka broker lists, used for direct mode, written in mode "host:port,host:port,..."
+#example         lv-dev:9092
+hibench.streamingbench.brokerList	HOSTNAME:HOSTPORT
+
+# Storm home
+hibench.streamingbench.storm.home	/PATH/TO/STORM/HOME
+
+# Kafka home
+hibench.streamingbench.kafka.home	/PATH/TO/KAFKA/HOME
+
+#Cluster config
+# nimbus of storm cluster
+#example         lv-dev:9092
+hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
+
+# partition size settings
+hibench.streamingbench.partitions	1

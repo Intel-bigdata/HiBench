@@ -18,6 +18,7 @@
 Mapping from properties to environment variable names
 """
 HiBenchEnvPropMappingMandatory=dict(
+    JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     SPARK_HOME="hibench.spark.home",
     HDFS_MASTER="hibench.hdfs.master",
@@ -111,6 +112,44 @@ HiBenchEnvPropMapping=dict(
     WT_FILE_SIZE="hibench.dfsioe.write.file_size",
     MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
+
+    # For streaming bench
+    # zkHelper
+    STREAMING_ZKHELPER_JAR="hibench.streamingbench.zkhelper.jar",
+    # prepare
+    STREAMING_TOPIC_NAME="hibench.streamingbench.topic_name",
+    STREAMING_KAFKA_HOME="hibench.streamingbench.kafka.home",
+    STREAMING_ZKADDR="hibench.streamingbench.zookeeper.host",
+    STREAMING_CONSUMER_GROUP="hibench.streamingbench.consumer_group",
+    STREAMING_DATA_SCALE_FACTOR="hibench.streamingbench.datagen.scale_factor",
+    STREAMING_DATA_DIR="hibench.streamingbench.datagen.dir",
+    STREAMING_DATA1_NAME="hibench.streamingbench.datagen.data1.name",
+    STREAMING_DATA1_DIR="hibench.streamingbench.datagen.data1.dir",
+    STREAMING_DATA1_LENGTH="hibench.streamingbench.datagen.data1.length",
+    STREAMING_DATA2_SAMPLE_DIR="hibench.streamingbench.datagen.data2_samples.dir",
+    STREAMING_DATA2_CLUSTER_DIR="hibench.streamingbench.datagen.data2_cluster.dir",
+    STREAMING_PARTITIONS="hibench.streamingbench.partitions",
+    DATA_GEN_JAR="hibench.streamingbench.datagen.jar",
+    
+    STREAMING_DATAGEN_MODE="hibench.streamingbench.prepare.mode",
+    STREAMING_DATAGEN_RECORDS="hibench.streamingbench.prepare.push.records",
+
+    # sparkstreaming
+    STREAMINGBENCH_JARS="hibench.streamingbench.jars",
+    STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
+    STORM_BIN_HOME="hibench.streamingbench.storm.bin",
+    STREAMING_BENCHNAME="hibench.streamingbench.benchname",
+
+    # samza
+    STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",
+    STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_internal.statistics.kafka.input.name",
+    STREAMING_SAMZA_DISTINCOUNT_INTERNAL_TOPIC="samza_internal.distinctcount.kafka.input.name",
+    SAMZA_PARTITIONS="samza_internal.partitions",
+    SAMZA_REPLICATION_FACTOR="samza.task.checkpoint.replication.factor",
+
+    STREAMING_SAMZA_PACKAGE_LOCAL_PATH="samza_internal.yarn.package.path",
+    STREAMING_SAMZA_PACKAGE_HDFS_PATH="samza.yarn.package.path",
+    
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])

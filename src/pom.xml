@@ -21,7 +21,7 @@
 	<mahout.version>0.9</mahout.version>
 	<uncommons-maths.version>1.2.2a</uncommons-maths.version>
 	<junit.version>3.8.1</junit.version>
-	<hadoop.mr2.version>2.2.0</hadoop.mr2.version>
+	<hadoop.mr2.version>2.4.0</hadoop.mr2.version>
 	<hadoop.mr1.version>1.2.1</hadoop.mr1.version>
 	<scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
 	<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
@@ -29,6 +29,9 @@
 	<maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
 	<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
 	<download-maven-plugin.version>1.2.0</download-maven-plugin.version>
+	<jetty.version>8.1.14.v20131031</jetty.version>
+	<scalatest.version>2.2.1</scalatest.version>
+	<scalacheck.version>1.11.3</scalacheck.version>
     </properties>
 
     <repositories>
@@ -36,7 +39,7 @@
             <id>central</id>
             <!-- This should be at top, it makes maven try the central repo first and then others and hence faster dep resolution -->
             <name>Maven Repository</name>
-            <url>https://repo1.maven.org/maven2</url>
+	    <url>https://repo1.maven.org/maven2</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -55,7 +58,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
         <repository>
             <id>scala-tools.org</id>
             <name>Scala-tools Maven 2 Repository</name>
@@ -156,18 +158,40 @@
             <activation>
                 <property><name>!spark1.2</name></property>
             </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
         </profile>
         <profile>
             <id>spark1.4</id>
             <properties>
                 <env>spark1.4</env>
-                <spark.version>1.4.0-SNAPSHOT</spark.version>
+                <spark.version>1.4.0</spark.version>
                 <spark.bin.version>1.4</spark.bin.version>
             </properties>
             <activation>
                 <property><name>spark1.4</name></property>
             </activation>
-        </profile>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
 
+        </profile>
+	<profile>
+            <id>spark1.5</id>
+            <properties>
+                <env>spark1.5</env>
+                <spark.version>1.5.0</spark.version>
+                <spark.bin.version>1.5</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>spark1.5</name></property>
+            </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
+        </profile>
     </profiles>
 </project>
