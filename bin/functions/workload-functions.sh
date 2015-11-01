@@ -53,6 +53,10 @@ function show_bannar(){		# print bannar
 function timestamp(){		# get current timestamp
     sec=`date +%s`
     nanosec=`date +%N`
+    re='^[0-9]+$'
+    if ! [[ $nanosec =~ $re ]] ; then
+	$nanosec=0
+    fi
     tmp=`expr $sec \* 1000 `
     msec=`expr $nanosec / 1000000 `
     echo `expr $tmp + $msec`

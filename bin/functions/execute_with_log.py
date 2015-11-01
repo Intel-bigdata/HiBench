@@ -77,7 +77,9 @@ def execute(workload_result_file, command_lines):
     count = 100
     last_time=0
     log_file = open(workload_result_file, 'w')
-    while True:
+    # see http://stackoverflow.com/a/4417735/1442961
+    lines_iterator = iter(proc.stdout.readline, b"")
+    for line in lines_iterator:
         count += 1
         if count > 100 or time()-last_time>1: # refresh terminal size for 100 lines or each seconds
             count, last_time = 0, time()
@@ -85,14 +87,13 @@ def execute(workload_result_file, command_lines):
             width -= 1
 
         try:
-            line = proc.stdout.readline().rstrip()
+            line = line.rstrip()
             log_file.write(line+"\n")
             log_file.flush()
         except KeyboardInterrupt:
             proc.terminate()
             break
         line = line.decode('utf-8')
-        if not line: break
         line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
