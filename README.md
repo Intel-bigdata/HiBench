@@ -78,16 +78,6 @@ Note:
 
     Enhanced DFSIO tests the HDFS throughput of the Hadoop cluster by generating a large number of tasks performing writes and reads simultaneously. It measures the average I/O rate of each map task, the average throughput of each map task, and the aggregated throughput of HDFS cluster. Note: this benchmark doesn't have Spark corresponding implementation.
 
-<<<<<<< HEAD
-**Supported hadoop/spark release:**
-
-  - Apache release of Hadoop 1.x and Hadoop 2.x
-  - CDH4/CDH5 release of MR1 and MR2.
-  - HDP2.3
-  - Spark1.2
-  - Spark1.3
- Note : No version of CDH supports SparkSQL. Please download SparkSQL from Apache-spark official release page if you are using it.
-=======
   **Streaming based Micro benchmarks:**
 
 12. Streaming (streamingbench)
@@ -123,7 +113,6 @@ Note:
   - Spark1.2 - 1.5
   - Storm 0.9.3
   - Samza 0.8.0
->>>>>>> lvsoft-refactory-doc
 
 ---
 ### Getting Started Without StreamingBench ###
