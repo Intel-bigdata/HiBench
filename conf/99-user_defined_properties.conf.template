@@ -92,7 +92,6 @@ hibench.compress.codec.profile		snappy
 # Streaming settings
 #-------------------
 # Available benchname: identity sample project grep wordcount distinctcount statistics
-<<<<<<< HEAD
 hibench.streamingbench.benchname	identity
 
 # data scale of streaming data
@@ -119,9 +118,3 @@ hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
 
 # partition size settings
 hibench.streamingbench.partitions	1
-=======
-hibench.streamingbench.benchname        identity
-
-# data scale of streaming data
-hibench.streamingbench.scale.profile    ${hibench.scale.profile}
->>>>>>> lvsoft-refactory-doc
