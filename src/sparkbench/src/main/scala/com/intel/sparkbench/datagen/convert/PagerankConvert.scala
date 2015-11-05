@@ -41,8 +41,7 @@ object PagerankConvert{
         "%s  %s".format(elements_tuple(0), elements_tuple(1))
     }
 
-    data.repartition(parallel)
-    data.saveAsTextFile(output_name)
+    data.repartition(parallel).saveAsTextFile(output_name)
     sc.stop()
   }
 }
