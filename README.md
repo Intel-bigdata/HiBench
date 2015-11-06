@@ -5,6 +5,7 @@
 - Current version: 5.0
 - Release date: 2015-10-12
 - Contact: [Lv Qi](mailto:qi.lv@intel.com), [Grace Huang](mailto:jie.huang@intel.com), [Jiangang Duan] (mailto:jiangang.duan@intel.com)
+  (To ask a question or report an issue, please use Github Issues)
 - Homepage: https://github.com/intel-hadoop/HiBench
 
 - Contents:
