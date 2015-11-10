@@ -53,7 +53,8 @@ service spark-history-server restart
 ${SPARK_HOME}/sbin/stop-all.sh
 ${SPARK_HOME}/sbin/start-all.sh
 
-echo "#=======================================================#"
-echo "      ALL services started                               "
-echo "#=======================================================#"
-
+echo "#======================================================================#"
+echo "       Now you can run all workload by:                                 "
+echo "                                                                        "
+echo "         ${HIBENCH_HOME}/bin/run-all.sh         "
+echo "#======================================================================#"

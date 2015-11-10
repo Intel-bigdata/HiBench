@@ -37,7 +37,6 @@ if [ $? == 1 ]; then
     exit 1;
 fi
 
-WL_NAME=wordcount
-# run HiBench workload example
+# run HiBench workload wordcount as an example
 # Format: sudo docker run (-v "LocalLargeDiskDir:/usr/loal"-it) hibench-hadoop-spark /bin/bash /root/HiBench/workloads/<workload-name>/prepare/prepare.sh
-sudo docker run -ti hibench-docker /bin/bash -c '/root/HiBench/workloads/${WL_NAME}/prepare/prepare.sh && /root/HiBench/workloads/${WL_NAME}/mapreduce/bin/run.sh'
+sudo docker run -ti hibench-docker /bin/bash -c '${HIBENCH_HOME}/workloads/wordcount/prepare/prepare.sh && ${HIBENCH_HOME}/workloads/wordcount/mapreduce/bin/run.sh'

@@ -43,6 +43,8 @@ PROJECT DIRECTORIES
 |  >---- Dockerfile
 |  |
 |  #---- conf
+|  |
+|  #---- scripts
 | 
 | 
 #---- CDH-docker
@@ -50,7 +52,9 @@ PROJECT DIRECTORIES
 |  #---- Dockerfile
 |  |
 |  #---- conf
-| 
+|  |
+|  #---- scripts
+|
 |
 #---- scripts
    |

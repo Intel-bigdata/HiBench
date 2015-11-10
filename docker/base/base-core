@@ -113,10 +113,11 @@ ENV PATH $PATH:/usr/local/apache-maven/bin
 ENV HIBENCH_HOME /root/HiBench
 
 # download right version of HiBench
-RUN wget https://github.com/intel-hadoop/HiBench/archive/v${HIBENCH_VERSION}-branch.zip
-RUN unzip v${HIBENCH_VERSION}-branch.zip -d /root/
+RUN wget https://github.com/intel-hadoop/HiBench/archive/HiBench-${HIBENCH_VERSION}.zip
+RUN unzip HiBench-${HIBENCH_VERSION}.zip -d /root/
 RUN mv /root/HiBench* ${HIBENCH_HOME}
-RUN rm -f v${HIBENCH_VERSION}-branch.zip
+RUN rm -f HiBench-${HIBENCH_VERSION}.zip
 COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
-RUN $HIBENCH_HOME/bin/build-all.sh
+# start building HiBench
+RUN ${HIBENCH_HOME}/bin/build-all.sh
 

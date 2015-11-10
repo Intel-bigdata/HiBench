@@ -43,12 +43,8 @@ ${HADOOP_HOME}/sbin/start-yarn.sh
 # restart spark
 ${SPARK_HOME}/sbin/start-all.sh
 
-# build HiBench
-echo "Start building HiBench ..."
-/root/HiBench-${HIBENCH_VERSION}-branch/bin/build-all.sh
-
 echo "#======================================================================#"
 echo "       Now you can run all workload by:                                 "
 echo "                                                                        "
-echo "         /root/HiBench-${HIBENCH_VERSION}-branch/bin/run-all.sh         "
+echo "         ${HIBENCH_HOME}/bin/run-all.sh         "
 echo "#======================================================================#"
