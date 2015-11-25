@@ -55,9 +55,9 @@ public class StartPeriodic {
 
         if(benchName.contains("statistics")){
             isNumericData = true;
-            reader = files.loadDataFromFile(dataFile2, dataFile1Offset);
+            reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
         }else
-            reader = files.loadDataFromFile(dataFile1, dataFile2Offset);
+            reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
 
         NewKafkaConnector con=new NewKafkaConnector(brokerList, cl);
 		
