@@ -26,38 +26,52 @@ import java.util.ArrayList;
 //Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
 public class StartNew {
 
-	public static void main(String[] args){
+  private static String benchName;
+  private static String HDFSMaster;
+  private static String dataFile1;
+  private static long dataFile1Offset;
+  private static String dataFile2;
+  private static long dataFile2Offset;
 
-        if(args.length < 5){
-            System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
-            System.exit(1);
-        }
+  public static void main(String[] args) {
 
-        ConfigLoader cl = new ConfigLoader(args[0]);
+    if (args.length < 5) {
+      System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
+      System.exit(1);
+    }
 
-        String benchName  = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
-        String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
-        String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
-        String HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
-		long totalCount   = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
-        String dataFile1        = args[1];
-        long dataFile1Offset    = Long.parseLong(args[2]);
-        String dataFile2        = args[3];
-        long dataFile2Offset    = Long.parseLong(args[4]);
+    ConfigLoader cl = new ConfigLoader(args[0]);
 
-		BufferedReader reader;
-        boolean isNumericData = false;
-        FileDataGenNew files = new FileDataGenNew(HDFSMaster);
+    benchName = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
+    String topic = cl.getPropertiy("hibench.streamingbench.topic_name");
+    String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
+    HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
+    long totalCount = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
+    dataFile1 = args[1];
+    dataFile1Offset = Long.parseLong(args[2]);
+    dataFile2 = args[3];
+    dataFile2Offset = Long.parseLong(args[4]);
 
-        if(benchName.contains("statistics")){
-            isNumericData = true;
-            reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
-		}else
-			reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
+    BufferedReader reader;
+    boolean isNumericData = false;
+    FileDataGenNew files = new FileDataGenNew(HDFSMaster);
 
-		NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
+    if (benchName.contains("statistics")) {
+      isNumericData = true;
+    }
 
-		con.publishData(reader, topic, totalCount, isNumericData);
-        con.close();
-	}
+    NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
+
+    con.publishData(getReader(), topic, totalCount, isNumericData);
+    con.close();
+  }
+
+  public static BufferedReader getReader() {
+    FileDataGenNew files = new FileDataGenNew(HDFSMaster);
+    if (benchName.contains("statistics")) {
+      return files.loadDataFromFile(dataFile2, dataFile2Offset);
+    } else {
+      return files.loadDataFromFile(dataFile1, dataFile1Offset);
+    }
+  }
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import com.intel.hibench.streambench.utils.ConfigLoader;
+
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -47,8 +48,6 @@ public class NewKafkaConnector {
   }
 
   public long publishData(BufferedReader reader, String topic, long size, boolean isNumericData) {
-    // size=-1: read all from reader
-    // size>0: read upto size bytes
     long start = System.currentTimeMillis();
     long bytes = 0;
 
@@ -155,11 +154,6 @@ public class NewKafkaConnector {
     }
     String result = sb.toString();
     return String.format("%s%n", result.substring(0, result.length() - 1));
-  }
-
-  public void publishData(BufferedReader reader, String topic, boolean isNumericData) {
-    publishData(reader, topic, -1, isNumericData);
-    producer.close();
   }
 
   public long publishDataSlice(BufferedReader reader, String topic, long size, boolean isNumericData) {

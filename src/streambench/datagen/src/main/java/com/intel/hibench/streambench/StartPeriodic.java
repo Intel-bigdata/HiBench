@@ -20,87 +20,95 @@ package com.intel.hibench.streambench;
 import com.intel.hibench.streambench.utils.ConfigLoader;
 
 import java.io.BufferedReader;
-import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class StartPeriodic {
 
-	public static void main(String[] args){
+  private static String benchName;
+  private static String HDFSMaster;
+  private static String dataFile1;
+  private static long dataFile1Offset;
+  private static String dataFile2;
+  private static long dataFile2Offset;
 
-        if (args.length < 5){
-            System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
-            System.exit(1);
-        }
+  public static void main(String[] args) {
 
-        ConfigLoader cl = new ConfigLoader(args[0]);
-
-		String benchName  = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
-		String topic      = cl.getPropertiy("hibench.streamingbench.topic_name");
-		String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
-		int recordPerInterval   = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-		int intervalSpan        = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
-		int totalRound          = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
-        String HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
-        String dataFile1        = args[1];
-        long dataFile1Offset    = Long.parseLong(args[2]);
-        String dataFile2        = args[3];
-        long dataFile2Offset    = Long.parseLong(args[4]);
-
-        BufferedReader reader = null;
-        boolean isNumericData = false;
-        FileDataGenNew files = new FileDataGenNew(HDFSMaster);
-
-        if(benchName.contains("statistics")){
-            isNumericData = true;
-            reader = files.loadDataFromFile(dataFile2, dataFile2Offset);
-        }else
-            reader = files.loadDataFromFile(dataFile1, dataFile1Offset);
-
-        NewKafkaConnector con=new NewKafkaConnector(brokerList, cl);
-		
-		Timer timer=new Timer();
-		timer.schedule(new SendTask(totalRound, recordPerInterval, con, reader, topic, isNumericData), 0, intervalSpan);
-        System.out.println("Timer scheduled.");
+    if (args.length < 5) {
+      System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
+      System.exit(1);
     }
-	
-	static class SendTask extends TimerTask{
-		int leftTimes;
-		int recordCount;
-		int totalTimes;
-		NewKafkaConnector kafkaCon;
-		BufferedReader reader;
-		String topic;
-		long totalBytes;
-        boolean isNumericData;
-		
-		public SendTask(int times,int count, NewKafkaConnector con, BufferedReader reader,String topic, boolean isNumericData){
-			leftTimes   = times;
-			recordCount = count;
-			totalTimes  = times;
-			kafkaCon    = con;
-			this.reader = reader;
-			this.topic  = topic;
-			totalBytes  = 0;
-            this.isNumericData = isNumericData;
-		}
 
-		@Override
-		public void run() {
-            System.out.println("Task run, remains:" + leftTimes);
-			if(leftTimes>0){
-				long thisSize = kafkaCon.publishDataSlice(reader, topic, recordCount, isNumericData);
-				totalBytes += thisSize;
-				leftTimes--;
-			}else{
-				System.out.println("Time's up! Total bytes sent:" + totalBytes);
-				kafkaCon.close();
-				System.exit(0);
-			}
-		}
-	}
-	
-	
+    ConfigLoader cl = new ConfigLoader(args[0]);
+
+    benchName = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
+    String topic = cl.getPropertiy("hibench.streamingbench.topic_name");
+    String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
+    int recordPerInterval = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
+    int intervalSpan = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
+    int totalRound = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
+    HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
+    dataFile1 = args[1];
+    dataFile1Offset = Long.parseLong(args[2]);
+    dataFile2 = args[3];
+    dataFile2Offset = Long.parseLong(args[4]);
+
+    BufferedReader reader = null;
+    boolean isNumericData = false;
+
+
+    if (benchName.contains("statistics")) {
+      isNumericData = true;
+    }
+
+    NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
+
+    Timer timer = new Timer();
+    timer.schedule(new SendTask(totalRound, recordPerInterval, con, topic, isNumericData), 0, intervalSpan);
+    System.out.println("Timer scheduled.");
+  }
+
+  public static BufferedReader getReader() {
+    FileDataGenNew files = new FileDataGenNew(HDFSMaster);
+    if (benchName.contains("statistics")) {
+      return files.loadDataFromFile(dataFile2, dataFile2Offset);
+    } else {
+      return files.loadDataFromFile(dataFile1, dataFile1Offset);
+    }
+  }
+
+  static class SendTask extends TimerTask {
+    int leftTimes;
+    int recordCount;
+    int totalTimes;
+    NewKafkaConnector kafkaCon;
+    String topic;
+    long totalBytes;
+    boolean isNumericData;
+
+    public SendTask(int times, int count, NewKafkaConnector con, String topic, boolean isNumericData) {
+      leftTimes = times;
+      recordCount = count;
+      totalTimes = times;
+      kafkaCon = con;
+      this.topic = topic;
+      totalBytes = 0;
+      this.isNumericData = isNumericData;
+    }
+
+    @Override
+    public void run() {
+      System.out.println("Task run, remains:" + leftTimes);
+      if (leftTimes > 0) {
+        long thisSize = kafkaCon.publishDataSlice(getReader(), topic, recordCount, isNumericData);
+        totalBytes += thisSize;
+        leftTimes--;
+      } else {
+        System.out.println("Time's up! Total bytes sent:" + totalBytes);
+        kafkaCon.close();
+        System.exit(0);
+      }
+    }
+  }
 }

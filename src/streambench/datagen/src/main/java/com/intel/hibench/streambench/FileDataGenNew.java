@@ -25,63 +25,63 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
 
 public class FileDataGenNew {
-    Configuration fsConf = new Configuration();
+  Configuration fsConf = new Configuration();
 
-    FileDataGenNew (String HDFSMaster){
-        fsConf.set("fs.default.name", HDFSMaster);
+  FileDataGenNew(String HDFSMaster) {
+    fsConf.set("fs.default.name", HDFSMaster);
+  }
+
+  public BufferedReader loadDataFromFile(String filepath, long offset) {
+    try {
+      Path pt = new Path(filepath);
+      FileSystem fs = FileSystem.get(fsConf);
+      InputStreamReader isr;
+      if (fs.isDirectory(pt)) { // multiple parts
+        isr = new InputStreamReader(OpenMultiplePartsWithOffset(fs, pt, offset));
+      } else {  // single file
+        FSDataInputStream fileHandler = fs.open(pt);
+        if (offset > 0) fileHandler.seek(offset);
+        isr = new InputStreamReader(fileHandler);
+      }
+
+      BufferedReader reader = new BufferedReader(isr);
+      if (offset > 0) reader.readLine(); // skip first line in case of seek
+      return reader;
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+    return null;
+  }
 
-	public BufferedReader loadDataFromFile(String filepath, long offset){
-		try {
-            Path pt = new Path(filepath);
-            FileSystem fs = FileSystem.get(fsConf);
-            InputStreamReader isr;
-            if (fs.isDirectory(pt)) { // multiple parts
-                isr = new InputStreamReader(OpenMultiplePartsWithOffset(fs, pt, offset));
-            } else {  // single file
-                FSDataInputStream fileHandler = fs.open(pt);
-                if (offset>0) fileHandler.seek(offset);
-                isr = new InputStreamReader(fileHandler);
-            }
+  private InputStream OpenMultiplePartsWithOffset(FileSystem fs, Path pt, long offset) throws IOException {
+    System.out.println("Opening files, path:" + pt + " offset:" + offset);
+    RemoteIterator<LocatedFileStatus> rit = fs.listFiles(pt, false);
+    Vector<FSDataInputStream> fileHandleList = new Vector<FSDataInputStream>();
+    while (rit.hasNext()) {
+      Path path = rit.next().getPath();
+      String filename = path.toString().substring(path.getParent().toString().length(), path.toString().length());
 
-			BufferedReader reader = new BufferedReader(isr);
-            if (offset>0) reader.readLine(); // skip first line in case of seek
-			return reader;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-        assert false: "Should not reach here!";
-        return null;
-	}
-
-    private InputStream OpenMultiplePartsWithOffset(FileSystem fs, Path pt, long offset) throws IOException {
-        RemoteIterator<LocatedFileStatus> rit = fs.listFiles(pt, false);
-        Vector<FSDataInputStream> fileHandleList= new Vector<FSDataInputStream>();
-        while (rit.hasNext()) {
-            Path path = rit.next().getPath();
-            String filename = path.toString().substring(path.getParent().toString().length(), path.toString().length());
-
-            if (filename.startsWith("/part-")) {
-                long filesize = fs.getFileStatus(path).getLen();
-                if (offset < filesize) {
-                    FSDataInputStream handle = fs.open(path);
-                    if (offset>0) {
-                        handle.seek(offset);
-                    }
-                    fileHandleList.add(handle);
-                }
-                offset -= filesize;
-            }
+      if (filename.startsWith("/part-")) {
+        long filesize = fs.getFileStatus(path).getLen();
+        if (offset < filesize) {
+          FSDataInputStream handle = fs.open(path);
+          if (offset > 0) {
+            handle.seek(offset);
+          }
+          fileHandleList.add(handle);
         }
-        if (fileHandleList.size()==1) return fileHandleList.get(0);
-        else if (fileHandleList.size()>1){
-            Enumeration<FSDataInputStream> enu = fileHandleList.elements();
-            return new SequenceInputStream(enu);
-        } else {
-            System.err.println("Error, no source file loaded. run genSeedDataset.sh fisrt!");
-            return null;
-        }
+        offset -= filesize;
+      }
     }
+    if (fileHandleList.size() == 1) return fileHandleList.get(0);
+    else if (fileHandleList.size() > 1) {
+      Enumeration<FSDataInputStream> enu = fileHandleList.elements();
+      return new SequenceInputStream(enu);
+    } else {
+      System.err.println("Error, no source file loaded. run genSeedDataset.sh first!");
+      return null;
+    }
+  }
 }
