@@ -38,10 +38,11 @@ hibench.spark.master		yarn-client
 
 # `hibench.spark.version` is used to choose which sparkbench workload
 # jar. Mostly situation it'll be auto probed. Please override if spark
-# version is not probed correctly. 
-# Note, supported values: `spark1.2` or `spark1.3`
+# version is not probed correctly. For spark version after 1.5, please
+# set it to spark1.5
+# Note, supported values: `spark1.2` to `spark1.5`
 
-#hibench.spark.version          spark1.3
+#hibench.spark.version          spark1.5
 
 #======================================================
 # Optional settings
@@ -98,11 +99,11 @@ hibench.streamingbench.benchname	identity
 hibench.streamingbench.scale.profile    ${hibench.scale.profile}
 
 # zookeeper host:port of kafka cluster
-#example         lv-dev:9092
+#example         hostname:9092
 hibench.streamingbench.zookeeper.host	HOSTNAME:HOSTPORT
 
 # Kafka broker lists, used for direct mode, written in mode "host:port,host:port,..."
-#example         lv-dev:9092
+#example         hostname:9092
 hibench.streamingbench.brokerList	HOSTNAME:HOSTPORT
 
 # Storm home
@@ -113,7 +114,7 @@ hibench.streamingbench.kafka.home	/PATH/TO/KAFKA/HOME
 
 #Cluster config
 # nimbus of storm cluster
-#example         lv-dev:9092
+#example         hostname:9092
 hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
 
 # partition size settings
