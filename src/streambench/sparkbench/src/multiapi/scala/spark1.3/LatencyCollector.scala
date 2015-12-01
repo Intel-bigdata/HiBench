@@ -69,8 +69,8 @@ class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends Stre
         BenchLogUtil.logMsg("Consumed time=" + totalTime + "s")
         BenchLogUtil.logMsg("Avg latency/batchInterval=" + avgLatencyAdjust + "ms")
         BenchLogUtil.logMsg("Avg records/sec=" + recordThroughput + "records/s")
-        ssc.stop(true, true)
-        System.exit(0)
+        // ssc.stop(true, true)
+        // System.exit(0)
       }
     }else if(!hasStarted){
       startTime = batchCompleted.batchInfo.submissionTime
