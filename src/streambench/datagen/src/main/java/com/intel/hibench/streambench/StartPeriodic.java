@@ -53,11 +53,7 @@ public class StartPeriodic {
     dataFile1Offset = Long.parseLong(args[2]);
     dataFile2 = args[3];
     dataFile2Offset = Long.parseLong(args[4]);
-
-    BufferedReader reader = null;
     boolean isNumericData = false;
-
-
     if (benchName.contains("statistics")) {
       isNumericData = true;
     }
@@ -84,7 +80,7 @@ public class StartPeriodic {
     int totalTimes;
     NewKafkaConnector kafkaCon;
     String topic;
-    long totalBytes;
+    long totalRecords;
     boolean isNumericData;
 
     public SendTask(int times, int count, NewKafkaConnector con, String topic, boolean isNumericData) {
@@ -93,7 +89,7 @@ public class StartPeriodic {
       totalTimes = times;
       kafkaCon = con;
       this.topic = topic;
-      totalBytes = 0;
+      totalRecords = 0;
       this.isNumericData = isNumericData;
     }
 
@@ -101,11 +97,14 @@ public class StartPeriodic {
     public void run() {
       System.out.println("Task run, remains:" + leftTimes);
       if (leftTimes > 0) {
-        long thisSize = kafkaCon.publishDataSlice(getReader(), topic, recordCount, isNumericData);
-        totalBytes += thisSize;
+        long recordsSent = 0L;
+        while (recordsSent < recordCount) {
+        recordsSent += kafkaCon.sendRecords(getReader(), topic, recordCount - recordsSent, isNumericData);
+        }
+        totalRecords += recordsSent;
         leftTimes--;
       } else {
-        System.out.println("Time's up! Total bytes sent:" + totalBytes);
+        System.out.println("Time's up! Total records sent:" + totalRecords);
         kafkaCon.close();
         System.exit(0);
       }

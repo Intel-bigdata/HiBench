@@ -47,68 +47,6 @@ public class NewKafkaConnector {
     Data1Length = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.datagen.data1.length"));
   }
 
-  public long publishData(BufferedReader reader, String topic, long size, boolean isNumericData) {
-    long start = System.currentTimeMillis();
-    long bytes = 0;
-
-    Callback callback = new Callback() {
-      public void onCompletion(RecordMetadata metadata, Exception e) {
-        if (e != null)
-          e.printStackTrace();
-      }
-    };
-
-    ByteArrayOutputStream ous = new ByteArrayOutputStream();
-    try {
-      while (true) {
-        for (int i = 0; i < 1000; i++) {  // read and accumulate 1000 lines top
-          String line = reader.readLine();
-          if (line == null) break;
-
-          if (isNumericData) {
-            ous.write(parseNumeric(line).getBytes());
-          } else {
-            ous.write(parseUserVisitTable(line, Data1Length).getBytes());
-          }
-
-          if ((size > 0) && (ous.size() >= size)) { // reach the size threshold, let's sent
-            break;
-          }
-        }
-        long ous_size = ous.size();
-        if (ous_size == 0) {
-          System.out.println("No more data from source.");
-          break; // no more data got, let's break
-        }
-        ProducerRecord record = new ProducerRecord(topic, ous.toByteArray());
-
-        bytes += ous_size;
-        producer.send(record, callback);
-        System.out.println("Sent one record, size = " + ous_size);
-        ous.reset();
-
-        if (size > 0) {
-          size -= ous_size;
-          if (size <= 0) {
-            break; // all data are read, let's break
-          }
-        }
-      }
-      ous.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    long end = System.currentTimeMillis();
-    System.out.println("Bytes sent: " + bytes);
-    System.out.println("Time consumed(sec):" + (end - start) / 1000.0);
-    double seconds = (double) (end - start) / (double) 1000;
-    double throughput = ((double) bytes / seconds) / 1000000;
-    System.out.println("Throughput: " + throughput + "MB/s");
-
-    return bytes;
-  }
-
   private String parseUserVisitTable(String line, int MaximumLength) {
     // raw uservisit table format:
     // 0	227.209.164.46,nbizrgdziebsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,1991-06-10,0.115967035,Mozilla/5.0 (iPhone; U; CPU like Mac OS X)AppleWebKit/420.1 (KHTML like Gecko) Version/3.0 Mobile/4A93Safari/419.3,YEM,YEM-AR,snowdrops,1
@@ -156,8 +94,57 @@ public class NewKafkaConnector {
     return String.format("%s%n", result.substring(0, result.length() - 1));
   }
 
-  public long publishDataSlice(BufferedReader reader, String topic, long size, boolean isNumericData) {
-    return publishData(reader, topic, size, isNumericData);
+  /**
+   * Returns the actual number of sent records
+   */
+  public long sendRecords(BufferedReader reader, String topic, long totalRecord, boolean isNumericData) {
+    long start = System.currentTimeMillis();
+    long bytesSent = 0L;
+    long recordsSent = 0L;
+
+    Callback callback = new Callback() {
+      public void onCompletion(RecordMetadata metadata, Exception e) {
+        if (e != null)
+          e.printStackTrace();
+      }
+    };
+
+    ByteArrayOutputStream ous = new ByteArrayOutputStream();
+    try {
+      while (recordsSent < totalRecord) {
+        String line = reader.readLine();
+        if (line == null) {
+          break;
+        }
+        if (isNumericData) {
+          ous.write(parseNumeric(line).getBytes());
+        } else {
+          ous.write(parseUserVisitTable(line, Data1Length).getBytes());
+        }
+        if (ous.size() == 0) {
+          break; // no more data got, let's break
+        }
+        ProducerRecord record = new ProducerRecord(topic, ous.toByteArray());
+        producer.send(record, callback);
+
+        recordsSent ++;
+        bytesSent += ous.size();
+        ous.reset();
+      }
+      ous.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    long end = System.currentTimeMillis();
+    System.out.println("Records sent: " + recordsSent);
+    System.out.println("Bytes sent: " + bytesSent);
+    System.out.println("Time consumed(sec):" + (end - start) / 1000.0);
+    double seconds = (double) (end - start) / (double) 1000;
+    double throughput = ((double) bytesSent / seconds) / 1000000;
+    System.out.println("Throughput: " + throughput + "MB/s");
+
+    return recordsSent;
   }
 
   public void close() {

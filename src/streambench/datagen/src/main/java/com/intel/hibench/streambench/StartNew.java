@@ -20,8 +20,6 @@ package com.intel.hibench.streambench;
 import com.intel.hibench.streambench.utils.ConfigLoader;
 
 import java.io.BufferedReader;
-import java.io.Reader;
-import java.util.ArrayList;
 
 //Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
 public class StartNew {
@@ -34,7 +32,6 @@ public class StartNew {
   private static long dataFile2Offset;
 
   public static void main(String[] args) {
-
     if (args.length < 5) {
       System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
       System.exit(1);
@@ -51,18 +48,18 @@ public class StartNew {
     dataFile1Offset = Long.parseLong(args[2]);
     dataFile2 = args[3];
     dataFile2Offset = Long.parseLong(args[4]);
-
-    BufferedReader reader;
     boolean isNumericData = false;
-    FileDataGenNew files = new FileDataGenNew(HDFSMaster);
-
     if (benchName.contains("statistics")) {
       isNumericData = true;
     }
 
     NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
 
-    con.publishData(getReader(), topic, totalCount, isNumericData);
+    long recordsSent = 0L;
+     while (recordsSent < totalCount) {
+      recordsSent += con.sendRecords(getReader(), topic, totalCount - recordsSent, isNumericData);
+    }
+
     con.close();
   }
 
