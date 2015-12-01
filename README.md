@@ -116,7 +116,7 @@ Note:
 
 ---
 ### Getting Started ###
-1. [Getting Started Without StreamingBench](https://github.com/intel-hadoop/HiBench/wiki/Getting-Started-Without-StreamingBench)
+1. [Getting Started](https://github.com/intel-hadoop/HiBench/wiki/Getting-Started)
 2. [Getting Started for StreamingBench](https://github.com/intel-hadoop/HiBench/wiki/Getting-Started-for-StreamingBench)
 
 ### [Advanced Configurations](https://github.com/intel-hadoop/HiBench/wiki/Advanced-Configurations) ###
