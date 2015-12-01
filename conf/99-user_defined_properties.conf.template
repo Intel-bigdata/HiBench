@@ -99,7 +99,7 @@ hibench.streamingbench.benchname	identity
 hibench.streamingbench.scale.profile    ${hibench.scale.profile}
 
 # zookeeper host:port of kafka cluster
-#example         hostname:9092
+#example         hostname:2181
 hibench.streamingbench.zookeeper.host	HOSTNAME:HOSTPORT
 
 # Kafka broker lists, used for direct mode, written in mode "host:port,host:port,..."
@@ -114,7 +114,6 @@ hibench.streamingbench.kafka.home	/PATH/TO/KAFKA/HOME
 
 #Cluster config
 # nimbus of storm cluster
-#example         hostname:9092
 hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
 
 # partition size settings
