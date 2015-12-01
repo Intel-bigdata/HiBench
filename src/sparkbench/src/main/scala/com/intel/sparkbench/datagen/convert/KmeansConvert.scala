@@ -39,12 +39,11 @@ object KmeansConvert{
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](input_path)
-    data.repartition(parallel)
     data.map { case (k, v) =>
       var vector: Array[Double] = new Array[Double](v.get().size)
       for (i <- 0 until v.get().size) vector(i) = v.get().get(i)
       vector.mkString(" ")
-    }.saveAsTextFile(output_name)
+    }.repartition(parallel).saveAsTextFile(output_name)
     sc.stop()
   }
 }

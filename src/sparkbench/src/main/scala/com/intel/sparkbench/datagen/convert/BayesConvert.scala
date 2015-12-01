@@ -40,7 +40,6 @@ object BayesConvert{
 
     val data = sc.sequenceFile[Text, Text](input_path).map{case(k, v) => (k.toString, v.toString)}
 
-    data.repartition(parallel)
     val wordcount = data.flatMap{case(key, doc) => doc.split(" ")}
                         .map(word => (word, 1))
                         .reduceByKey(_ + _)
@@ -67,7 +66,7 @@ object BayesConvert{
       // label index1:value1 index2:value2 ...
       key.substring(6) + " " + sorted_doc_vector.mkString(" ")
     }
-    vector.saveAsTextFile(output_vector_name)
+    vector.repartition(parallel).saveAsTextFile(output_vector_name)
     sc.stop()
   }
 }
