@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.intel.hibench</groupId>
         <artifactId>hibench</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sparkbench</artifactId>
     <packaging>jar</packaging>
     <groupId>com.intel.sparkbench</groupId>
-    <version>4.0-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <name>Sparkbench</name>
     <url>https://github.com/Intel-bigdata/Sparkbench</url>
 
