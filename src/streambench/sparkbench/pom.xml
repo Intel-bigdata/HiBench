@@ -225,8 +225,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
 	<version>${maven-assembly-plugin.version}</version>
 	<configuration>
-	  <!-- <finalName>${project.build.finalName}-MR${sparkbench.mr.version}-spark${spark.bin.version}</finalName> -->
-	  <finalName>${project.build.finalName}</finalName>
+	  <finalName>${project.build.finalName}-spark${spark.bin.version}</finalName>
 	  <descriptorRefs>
 	    <descriptorRef>jar-with-dependencies</descriptorRef>
 	  </descriptorRefs>
