@@ -37,6 +37,19 @@ done
 cp jars/*.jar target/                       && \
 rm -rf jars
 
+cd $DIR/src/streambench/sparkbench && \
+( mkdir jars | true )
+for spark_version in 1.3 1.4 1.5; do
+        cp target/*-jar-with-dependencies.jar jars
+        mvn clean package -D spark$spark_version
+        if [ $? -ne 0 ]; then
+                echo "Build failed for spark$spark_version, please check!"
+                exit 1
+        fi
+done
+cp jars/*.jar target/ && \
+rm -rf jars
+
 result=$?
 cd $CURDIR
 
