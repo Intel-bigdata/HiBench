@@ -22,6 +22,8 @@ import com.intel.hibench.streambench.spark.util._
 import com.intel.hibench.streambench.spark.microbench._
 
 object RunBench {
+  var reportDir = ""
+
   def main(args: Array[String]) {
     this.run(args)
   }
@@ -48,6 +50,8 @@ object RunBench {
     val directMode = conf.getPropertiy("hibench.streamingbench.direct_mode").toBoolean
     val brokerList = if (directMode) conf.getPropertiy("hibench.streamingbench.brokerList") else ""
     val totalParallel = conf.getPropertiy("hibench.yarn.executor.num").toInt * conf.getPropertiy("hibench.yarn.executor.cores").toInt
+
+    this.reportDir = conf.getPropertiy("hibench.report.dir")
 
     val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList, totalParallel)
     println(s"params:$param")

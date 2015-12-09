@@ -19,6 +19,7 @@ package com.intel.hibench.streambench.spark.util
 
 import org.apache.spark.Logging
 import org.apache.log4j.{Level, Logger}
+import com.intel.hibench.streambench.spark.RunBench
 
 object BenchLogUtil extends Logging{
   def setLogLevel(){
@@ -30,7 +31,7 @@ object BenchLogUtil extends Logging{
 	}
   }
   
-  val file=new java.io.File("/tmp/benchlog.txt")
+  val file=new java.io.File(RunBench.reportDir + "/streamingbench/spark/streambenchlog.txt")
   val out=new java.io.PrintWriter(file)
   
   def logMsg(msg:String) {
