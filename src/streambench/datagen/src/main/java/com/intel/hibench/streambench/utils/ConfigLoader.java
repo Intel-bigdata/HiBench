@@ -60,7 +60,7 @@ public class ConfigLoader {
         }
     }
 
-    public String getPropertiy(String key){
+    public String getProperty(String key){
         if (store.containsKey(key))
             return (String) store.get(key);
         else {

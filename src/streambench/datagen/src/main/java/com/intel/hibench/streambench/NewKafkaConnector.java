@@ -44,7 +44,7 @@ public class NewKafkaConnector {
     props.setProperty(ProducerConfig.METADATA_FETCH_TIMEOUT_CONFIG, Integer.toString(5 * 1000));
     props.setProperty(ProducerConfig.REQUEST_TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
     producer = new KafkaProducer(props);
-    Data1Length = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.datagen.data1.length"));
+    Data1Length = Integer.parseInt(cl.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
 
   private String parseUserVisitTable(String line, int MaximumLength) {
