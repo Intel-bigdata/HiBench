@@ -39,11 +39,11 @@ public class StartNew {
 
     ConfigLoader cl = new ConfigLoader(args[0]);
 
-    benchName = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
-    String topic = cl.getPropertiy("hibench.streamingbench.topic_name");
-    String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
-    HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
-    long totalCount = Long.parseLong(cl.getPropertiy("hibench.streamingbench.prepare.push.records"));
+    benchName = cl.getProperty("hibench.streamingbench.benchname").toLowerCase();
+    String topic = cl.getProperty("hibench.streamingbench.topic_name");
+    String brokerList = cl.getProperty("hibench.streamingbench.brokerList");
+    HDFSMaster = cl.getProperty("hibench.hdfs.master");
+    long totalCount = Long.parseLong(cl.getProperty("hibench.streamingbench.prepare.push.records"));
     dataFile1 = args[1];
     dataFile1Offset = Long.parseLong(args[2]);
     dataFile2 = args[3];

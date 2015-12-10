@@ -42,13 +42,13 @@ public class StartPeriodic {
 
     ConfigLoader cl = new ConfigLoader(args[0]);
 
-    benchName = cl.getPropertiy("hibench.streamingbench.benchname").toLowerCase();
-    String topic = cl.getPropertiy("hibench.streamingbench.topic_name");
-    String brokerList = cl.getPropertiy("hibench.streamingbench.brokerList");
-    int recordPerInterval = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-    int intervalSpan = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.intervalSpan"));
-    int totalRound = Integer.parseInt(cl.getPropertiy("hibench.streamingbench.prepare.periodic.totalRound"));
-    HDFSMaster = cl.getPropertiy("hibench.hdfs.master");
+    benchName = cl.getProperty("hibench.streamingbench.benchname").toLowerCase();
+    String topic = cl.getProperty("hibench.streamingbench.topic_name");
+    String brokerList = cl.getProperty("hibench.streamingbench.brokerList");
+    int recordPerInterval = Integer.parseInt(cl.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
+    int intervalSpan = Integer.parseInt(cl.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+    int totalRound = Integer.parseInt(cl.getProperty("hibench.streamingbench.prepare.periodic.totalRound"));
+    HDFSMaster = cl.getProperty("hibench.hdfs.master");
     dataFile1 = args[1];
     dataFile1Offset = Long.parseLong(args[2]);
     dataFile2 = args[3];
