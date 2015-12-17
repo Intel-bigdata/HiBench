@@ -23,6 +23,7 @@ import com.intel.hibench.streambench.spark.microbench._
 
 object RunBench {
   var reportDir = ""
+  var counts = 0L;
 
   def main(args: Array[String]) {
     this.run(args)
@@ -52,6 +53,7 @@ object RunBench {
     val totalParallel = conf.getProperty("hibench.yarn.executor.num").toInt * conf.getProperty("hibench.yarn.executor.cores").toInt
 
     this.reportDir = conf.getProperty("hibench.report.dir")
+    this.counts = recordCount;
 
     val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList, totalParallel)
     println(s"params:$param")

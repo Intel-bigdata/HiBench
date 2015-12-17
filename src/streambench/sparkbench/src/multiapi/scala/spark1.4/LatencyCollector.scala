@@ -21,8 +21,15 @@ import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
+import com.intel.hibench.streambench.spark.RunBench
 
-class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends StreamingListener {
+class StopContextThread(ssc: StreamingContext) extends Runnable {
+  def run {
+    ssc.stop(true, true)
+  }
+}
+
+class LatencyListener(ssc: StreamingContext, params: ParamEntity, thread: Thread) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -38,9 +45,10 @@ class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends Strea
     var recordThisBatch = batchInfo.numRecords
 
     totalRecords += recordThisBatch
-    BenchLogUtil.logMsg("LatencyController: total records:" + totalRecords)
+    BenchLogUtil.logMsg("LatencyController:    this batch: " + recordThisBatch)
+    BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords)
 
-    if (totalRecords == prevCount) {
+    if (totalRecords >= RunBench.counts) {
       if (hasStarted) {
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
@@ -57,8 +65,7 @@ class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends Strea
         BenchLogUtil.logMsg("Consumed time = " + totalTime + " s")
         BenchLogUtil.logMsg("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
         BenchLogUtil.logMsg("Avg records/sec = " + recordThroughput + " records/s")
-        // ssc.stop(true,true)
-        // System.exit(0)
+        if (!thread.isAlive) thread.start
       }
     } else if (!hasStarted) {
       startTime = batchCompleted.batchInfo.submissionTime
