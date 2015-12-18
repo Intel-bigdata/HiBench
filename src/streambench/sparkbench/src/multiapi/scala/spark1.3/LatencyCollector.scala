@@ -29,7 +29,7 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
-class LatencyListener(ssc: StreamingContext, params: ParamEntity, thread: Thread) extends StreamingListener {
+class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -38,6 +38,8 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity, thread: Thread
   var hasStarted=false
   var batchCount=0
   var totalRecords=0L
+
+  var thread: Thread = new Thread(new StopContextThread(ssc))
 
   override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit = {
     val clazz:Class[_] = Class.forName("org.apache.spark.streaming.scheduler.ReceivedBlockInfo")
@@ -56,12 +58,15 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity, thread: Thread
         }
       }
     }
-    totalRecords += recordThisBatch
-    BenchLogUtil.logMsg("LatencyController:    this batch: " + recordThisBatch)
-    BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords + " Receivers: " + map.size)
+
+    if (!thread.isAlive) {
+      totalRecords += recordThisBatch
+      BenchLogUtil.logMsg("LatencyController:    this batch: " + recordThisBatch)
+      BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords + " Receivers: " + map.size)
+    }
 
     if (totalRecords >= RunBench.counts) {
-      if(hasStarted){
+      if(hasStarted && !thread.isAlive){
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
         val totalTime = (endTime-startTime).toDouble / 1000
@@ -77,7 +82,7 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity, thread: Thread
         BenchLogUtil.logMsg("Consumed time = " + totalTime + " s")
         BenchLogUtil.logMsg("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
         BenchLogUtil.logMsg("Avg records/sec = " + recordThroughput + " records/s")
-        if (!thread.isAlive) thread.start
+        thread.start
       }
     }else if(!hasStarted){
       startTime = batchCompleted.batchInfo.submissionTime

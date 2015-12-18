@@ -44,8 +44,7 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
       ssc.checkpoint(params.path)
     }
 
-    val thread = new Thread(new StopContextThread(ssc))
-    val listener = new LatencyListener(ssc, params, thread)
+    val listener = new LatencyListener(ssc, params)
     ssc.addStreamingListener(listener)
 
     var lines:DStream[String] = null
