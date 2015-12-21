@@ -21,7 +21,6 @@ import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
-import com.intel.hibench.streambench.spark.RunBench
 
 class StopContextThread(ssc: StreamingContext) extends Runnable {
   def run {
@@ -39,7 +38,7 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends Stream
   var batchCount=0
   var totalRecords=0L
 
-  var thread: Thread = new Thread(new StopContextThread(ssc))
+  val thread: Thread = new Thread(new StopContextThread(ssc))
 
   override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit = {
     val clazz:Class[_] = Class.forName("org.apache.spark.streaming.scheduler.ReceivedBlockInfo")
@@ -65,7 +64,7 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends Stream
       BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords + " Receivers: " + map.size)
     }
 
-    if (totalRecords >= RunBench.counts) {
+    if (totalRecords >= params.recordCount) {
       if(hasStarted && !thread.isAlive){
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
