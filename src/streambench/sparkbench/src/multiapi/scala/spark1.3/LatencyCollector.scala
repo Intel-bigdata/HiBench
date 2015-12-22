@@ -22,7 +22,13 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
 
-class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends StreamingListener {
+class StopContextThread(ssc: StreamingContext) extends Runnable {
+  def run {
+    ssc.stop(true, true)
+  }
+}
+
+class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -31,6 +37,8 @@ class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends Stre
   var hasStarted=false
   var batchCount=0
   var totalRecords=0L
+
+  val thread: Thread = new Thread(new StopContextThread(ssc))
 
   override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit = {
     val clazz:Class[_] = Class.forName("org.apache.spark.streaming.scheduler.ReceivedBlockInfo")
@@ -49,11 +57,15 @@ class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends Stre
         }
       }
     }
-    totalRecords += recordThisBatch
-    BenchLogUtil.logMsg("LatencyController: total records:" + totalRecords + " Receivers:"+map.size)
 
-    if(totalRecords == prevCount){
-      if(hasStarted){
+    if (!thread.isAlive) {
+      totalRecords += recordThisBatch
+      BenchLogUtil.logMsg("LatencyController:    this batch: " + recordThisBatch)
+      BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords + " Receivers: " + map.size)
+    }
+
+    if (totalRecords >= params.recordCount) {
+      if(hasStarted && !thread.isAlive){
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
         val totalTime = (endTime-startTime).toDouble / 1000
@@ -64,13 +76,12 @@ class LatencyListener(val ssc:StreamingContext, params:ParamEntity) extends Stre
 
         val avgLatencyAdjust = avgLatency + params.batchInterval.toDouble * 500
         val recordThroughput = params.recordCount / totalTime
-        BenchLogUtil.logMsg("Batch count=" + batchCount)
-        BenchLogUtil.logMsg("Total processing delay=" + totalDelay + "ms")
-        BenchLogUtil.logMsg("Consumed time=" + totalTime + "s")
-        BenchLogUtil.logMsg("Avg latency/batchInterval=" + avgLatencyAdjust + "ms")
-        BenchLogUtil.logMsg("Avg records/sec=" + recordThroughput + "records/s")
-        // ssc.stop(true, true)
-        // System.exit(0)
+        BenchLogUtil.logMsg("Batch count = " + batchCount)
+        BenchLogUtil.logMsg("Total processing delay = " + totalDelay + " ms")
+        BenchLogUtil.logMsg("Consumed time = " + totalTime + " s")
+        BenchLogUtil.logMsg("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
+        BenchLogUtil.logMsg("Avg records/sec = " + recordThroughput + " records/s")
+        thread.start
       }
     }else if(!hasStarted){
       startTime = batchCompleted.batchInfo.submissionTime

@@ -22,7 +22,13 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
 
-class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends StreamingListener {
+class StopContextThread(ssc: StreamingContext) extends Runnable {
+  def run {
+    ssc.stop(true, true)
+  }
+}
+
+class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends StreamingListener {
 
   var startTime=0L
   var endTime=0L
@@ -32,16 +38,21 @@ class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends Strea
   var batchCount=0
   var totalRecords=0L
 
+  val thread: Thread = new Thread(new StopContextThread(ssc))
+
   override def onBatchCompleted(batchCompleted: StreamingListenerBatchCompleted): Unit={
     val batchInfo = batchCompleted.batchInfo
     val prevCount=totalRecords
     var recordThisBatch = batchInfo.numRecords
 
-    totalRecords += recordThisBatch
-    BenchLogUtil.logMsg("LatencyController: total records:" + totalRecords)
+    if (!thread.isAlive) {
+      totalRecords += recordThisBatch
+      BenchLogUtil.logMsg("LatencyController:    this batch: " + recordThisBatch)
+      BenchLogUtil.logMsg("LatencyController: total records: " + totalRecords)
+    }
 
-    if (totalRecords == prevCount) {
-      if (hasStarted) {
+    if (totalRecords >= params.recordCount) {
+      if (hasStarted && !thread.isAlive) {
         //not receiving any data more, finish
         endTime = System.currentTimeMillis()
         val totalTime = (endTime-startTime).toDouble/1000
@@ -57,8 +68,7 @@ class LatencyListener(val ssc:StreamingContext,params:ParamEntity) extends Strea
         BenchLogUtil.logMsg("Consumed time = " + totalTime + " s")
         BenchLogUtil.logMsg("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
         BenchLogUtil.logMsg("Avg records/sec = " + recordThroughput + " records/s")
-        // ssc.stop(true,true)
-        // System.exit(0)
+        thread.start
       }
     } else if (!hasStarted) {
       startTime = batchCompleted.batchInfo.submissionTime
