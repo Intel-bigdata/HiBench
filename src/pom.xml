@@ -193,5 +193,20 @@
 	    </modules>
 
         </profile>
+	<profile>
+            <id>spark1.6</id>
+            <properties>
+                <env>spark1.6</env>
+                <spark.version>1.6.0</spark.version>
+                <spark.bin.version>1.6</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>spark1.6</name></property>
+            </activation>
+	    <modules>
+	      <module>streambench</module>
+	    </modules>
+
+        </profile>
     </profiles>
 </project>

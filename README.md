@@ -110,7 +110,7 @@ Note:
 
   - Apache release of Hadoop 1.x and Hadoop 2.x
   - CDH4/CDH5 release of MR1 and MR2.
-  - Spark1.2 - 1.5
+  - Spark1.2 - 1.6
   - Storm 0.9.3
   - Samza 0.8.0
 
