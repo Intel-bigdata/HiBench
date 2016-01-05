@@ -443,14 +443,14 @@ def generate_optional_value():  # get some critical values from environment or m
                 # parse yarn resource manager from hadoop conf
                 yarn_site_file = os.path.join(HibenchConf["hibench.hadoop.configure.dir"], "yarn-site.xml")
                 with open(yarn_site_file) as f:
-                    match_address=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
-                    #match_hostname=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+                    file_content = f.read()
+                    match_address=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.address\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)?\<\/value\>", file_content)
+                    match_hostname=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)?\<\/value\>", file_content)
 		    if match_address:
                         resourcemanager_hostname = match_address[0][0]
                         HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
                         HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
-                    elif re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read()):
-                        match_hostname=re.findall("\<property\>\s*\<name\>\s*yarn.resourcemanager.hostname\s*\<\/name\>\s*\<value\>([a-zA-Z\-\._0-9]+)(:\d+)\<\/value\>", f.read())
+                    elif match_hostname:
 			resourcemanager_hostname = match_hostname[0][0]
                         HibenchConf['hibench.masters.hostnames'] = resourcemanager_hostname
                         HibenchConfRef['hibench.masters.hostnames'] = "Parsed from "+ yarn_site_file
