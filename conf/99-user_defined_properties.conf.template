@@ -38,11 +38,11 @@ hibench.spark.master		yarn-client
 
 # `hibench.spark.version` is used to choose which sparkbench workload
 # jar. Mostly situation it'll be auto probed. Please override if spark
-# version is not probed correctly. For spark version after 1.5, please
-# set it to spark1.5
-# Note, supported values: `spark1.2` to `spark1.5`
+# version is not probed correctly. For spark version after 1.6, please
+# set it to spark1.6
+# Note, supported values: `spark1.2` to `spark1.6`
 
-#hibench.spark.version          spark1.5
+#hibench.spark.version          spark1.6
 
 #======================================================
 # Optional settings
