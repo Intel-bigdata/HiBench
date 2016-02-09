@@ -5,11 +5,14 @@
 # Hadoop home
 hibench.hadoop.home		/PATH/TO/YOUR/HADOOP/ROOT
 
+# Hadoop MR home
+hibench.hadoop.mapreduce.home   /PATH/TO/YOUR/HADOOP-MAPREDUCE/ROOT
+
 # Spark home
 hibench.spark.home		/PATH/TO/YOUR/SPARK/ROOT
 
 # HDFS master, set according to hdfs-site.xml
-hibench.hdfs.master		hdfs://HOSTNAME:HDFSPORT
+hibench.hdfs.master		hdfs://HOSTNAME:HDFSPORT(8020)
 
 # Spark master
 #   standalone mode: `spark://xxx:7077`
@@ -53,11 +56,11 @@ hibench.spark.master		yarn-client
 
 # execute parallelism settings
 hibench.default.map.parallelism		12
-hibench.default.shuffle.parallelism	6	
+hibench.default.shuffle.parallelism	6
 
 # YARN resource configuration
-hibench.yarn.executor.num	4
-hibench.yarn.executor.cores	4
+hibench.yarn.executor.num	3
+hibench.yarn.executor.cores	3
 
 # Spark only properties
 #----------------------
@@ -71,7 +74,7 @@ spark.rdd.compress            false
 # compression codec: lz4, lzf, snappy, put class path here accordingly.
 spark.shuffle.compress		false
 spark.broadcast.compress	false
-spark.io.compression.codec    org.apache.spark.io.SnappyCompressionCodec 
+spark.io.compression.codec    org.apache.spark.io.SnappyCompressionCodec
 
 # Akka
 spark.akka.frameSize          1000
