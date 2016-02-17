@@ -40,8 +40,7 @@ run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh            
     -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS"    \
     -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS" \
     ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_read.txt                  \
-    -tputFile ${WORKLOAD_RESULT_FOLDER}/throughput_read.csv                       \
-    -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
+    -tputFile ${WORKLOAD_RESULT_FOLDER}/throughput_read.csv 
 
 END_TIME=`timestamp`
 export HADOOP_OPTS="$OLD_HADOOP_OPTS"
