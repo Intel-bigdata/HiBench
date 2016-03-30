@@ -20,9 +20,9 @@
  */
 package org.apache.spark.examples.mllib;
 
-import java.util.regex.Pattern;
-
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.mahout.clustering.kmeans.Kluster;
 import org.apache.mahout.math.VectorWritable;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -41,37 +41,25 @@ import scala.Tuple2;
  */
 public final class JavaKMeans {
 
-  private static class ParsePoint implements Function<String, Vector> {
-    private static final Pattern SPACE = Pattern.compile(" ");
-
-    @Override
-    public Vector call(String line) {
-      String[] tok = SPACE.split(line);
-      double[] point = new double[tok.length];
-      for (int i = 0; i < tok.length; ++i) {
-        point[i] = Double.parseDouble(tok[i]);
-      }
-      return Vectors.dense(point);
-    }
-  }
-
   public static void main(String[] args) {
-    if (args.length < 3) {
+    if (args.length < 4) {
       System.err.println(
-        "Usage: JavaKMeans <input_file> <k> <max_iterations> [<runs>]");
+        "Usage: JavaKMeans <input_file> <input_cluster> <k> <max_iterations> [<runs>]");
       System.exit(1);
     }
     String inputFile = args[0];
-    int k = Integer.parseInt(args[1]);
-    int iterations = Integer.parseInt(args[2]);
+    String inputCluster = args[1];
+    int k = Integer.parseInt(args[2]);
+    int iterations = Integer.parseInt(args[3]);
     int runs = 1;
 
-    if (args.length >= 4) {
-      runs = Integer.parseInt(args[3]);
+    if (args.length >= 5) {
+      runs = Integer.parseInt(args[4]);
     }
     SparkConf sparkConf = new SparkConf().setAppName("JavaKMeans");
     JavaSparkContext sc = new JavaSparkContext(sparkConf);
 
+    // Load input points
     JavaPairRDD<LongWritable, VectorWritable> data = sc.sequenceFile(inputFile,
                 LongWritable.class, VectorWritable.class);
 
@@ -87,7 +75,28 @@ public final class JavaKMeans {
         }
     });
 
-    KMeansModel model = KMeans.train(points.rdd(), k, iterations, runs, KMeans.K_MEANS_PARALLEL());
+    // Load initial centroids
+    JavaPairRDD<Text, Kluster> clusters = sc.sequenceFile(inputCluster, Text.class, Kluster.class);
+    JavaRDD<Vector> centroids = clusters.map(new Function<Tuple2<Text, Kluster>, Vector>() {
+      @Override
+      public Vector call(Tuple2<Text, Kluster> e) {
+        org.apache.mahout.math.Vector centroid = e._2().getCenter();
+        double[] v = new double[centroid.size()];
+        for (int i = 0; i < centroid.size(); ++i) {
+          v[i] = centroid.get(i);
+        }
+        return Vectors.dense(v);
+      }
+    });
+
+    // Train model
+    KMeansModel initModel = new KMeansModel(centroids.collect());
+    KMeansModel model = new KMeans()
+        .setK(k)
+        .setMaxIterations(iterations)
+        .setRuns(runs)
+        .setInitialModel(initModel)
+        .run(points.rdd());
 
     System.out.println("Cluster centers:");
     for (Vector center : model.clusterCenters()) {

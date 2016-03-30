@@ -27,7 +27,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-run-spark-job org.apache.spark.examples.mllib.JavaKMeans $INPUT_HDFS/samples $K $MAX_ITERATION
+run-spark-job org.apache.spark.examples.mllib.JavaKMeans $INPUT_HDFS/samples $INPUT_HDFS/cluster $K $MAX_ITERATION
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
@@ -38,5 +38,5 @@ leave_bench
 
 # run bench
 #run-spark-job org.apache.spark.examples.mllib.JavaKMeans $INPUT_HDFS $K $MAX_ITERATION || exit 1
-#$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.JavaKMeans --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} $INPUT_HDFS $K $MAX_ITERATION 
+#$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.JavaKMeans --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} $INPUT_HDFS/samples $INPUT_HDFS/cluster $K $MAX_ITERATION
 
