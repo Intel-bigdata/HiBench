@@ -27,7 +27,7 @@ HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_join.hive
 prepare-sql-join ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
-SIZE=`dir_size $INPUT_HDFS/uservisits`
+SIZE=`dir_size $INPUT_HDFS`
 rmr-hdfs $OUTPUT_HDFS
 run-spark-job com.intel.sparkbench.sql.JavaSparkSQLBench JavaJoin ${HIVEBENCH_SQL_FILE}
 
