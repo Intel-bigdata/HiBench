@@ -43,7 +43,7 @@ END_TIME=`timestamp`
 stop-monitor $MONITOR_PID
 
 sleep 5
-SIZE=`dir_size $OUTPUT_HDFS`
+SIZE=`dir_size $INPUT_HDFS`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE:-}
 show_bannar finish
