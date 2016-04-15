@@ -67,8 +67,11 @@ public final class JavaTeraSort {
             if (o1 == null) return -1;
             if (o2 == null) return 1;
             for (i=0; i< (o1.length<o2.length?o1.length:o2.length); i++){
-                if (o1[i] < o2[i]) return -1;
-                else if (o1[i] > o2[i]) return 1;
+                int a = o1[i] & 0xff;
+                int b = o2[i] & 0xff;
+                if (a != b) {
+                  return a - b;
+                }
             }
             return o1.length - o2.length;
         }
