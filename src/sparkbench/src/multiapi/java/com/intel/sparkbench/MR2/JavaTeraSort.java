@@ -51,7 +51,7 @@ public final class JavaTeraSort {
     JavaPairRDD<byte[], byte[]> words = lines.mapToPair(new PairFunction<Tuple2<Text, Text>, byte[], byte[]>() {
         @Override
         public Tuple2<byte[], byte[]> call(Tuple2<Text, Text> e) throws Exception {
-            return new Tuple2<byte[], byte[]>(e._1().getBytes(), e._2().getBytes());
+            return new Tuple2<byte[], byte[]>(e._1().copyBytes(), e._2().copyBytes());
         }
     });
 
