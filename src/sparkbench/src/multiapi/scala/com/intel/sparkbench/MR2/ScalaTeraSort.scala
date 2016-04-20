@@ -43,7 +43,9 @@ object ScalaTeraSort {
     val io = new IOCommon(sc)
 
     //val file = io.load[String](args(0), Some("Text"))
-    val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0)).map{case (k,v)=>(k.getBytes, v.getBytes)}
+    val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0)).map {
+      case (k,v) => (k.copyBytes, v.copyBytes)
+    }
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reducer  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt
