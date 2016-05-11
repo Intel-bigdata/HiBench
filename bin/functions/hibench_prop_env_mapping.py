@@ -112,6 +112,9 @@ HiBenchEnvPropMapping=dict(
     WT_FILE_SIZE="hibench.dfsioe.write.file_size",
     MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
+    # For NWeight
+    MODEL_INPUT="hibench.nweight.model_path",
+    EDGES="hibench.workload.edges",
 
     # For streaming bench
     # zkHelper
