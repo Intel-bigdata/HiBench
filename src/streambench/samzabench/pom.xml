@@ -102,6 +102,11 @@
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
     </dependency>
+    <dependency>
+      <groupId>com.intel.hibench.streambench</groupId>
+      <artifactId>streaming-bench-common_0.1</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <repositories>

@@ -26,6 +26,7 @@
     </repositories>
    
     <modules>
+      <module>common</module>
       <module>datagen</module>
       <module>zkHelper</module>
       <module>sparkbench</module>
