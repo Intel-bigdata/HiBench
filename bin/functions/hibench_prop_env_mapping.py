@@ -140,6 +140,11 @@ HiBenchEnvPropMapping=dict(
     STORM_BIN_HOME="hibench.streamingbench.storm.bin",
     STREAMING_BENCHNAME="hibench.streamingbench.benchname",
 
+    # gearpump
+    GEARPUMP_HOME="hibench.streamingbench.gearpump.home",
+    STREAMBENCH_GEARPUMP_JAR="hibench.streamingbench.gearpump.jar",
+    STREAMBENCH_GEARPUMP_EXECUTORS="hibench.streamingbench.gearpump.executors",
+
     # samza
     STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",
     STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_internal.statistics.kafka.input.name",

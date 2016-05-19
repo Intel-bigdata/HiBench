@@ -32,5 +32,6 @@
       <module>sparkbench</module>
       <module>stormbench</module>
       <module>samzabench</module>
+      <module>gearpumpbench</module>
     </modules>
 </project>

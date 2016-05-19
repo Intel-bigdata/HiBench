@@ -14,7 +14,6 @@
 
   <groupId>com.intel.RPCcloud</groupId>
   <artifactId>streaming-bench-samza</artifactId>
-  <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Streaming Benchmark Samza</name>
 
@@ -104,7 +103,7 @@
     </dependency>
     <dependency>
       <groupId>com.intel.hibench.streambench</groupId>
-      <artifactId>streaming-bench-common_0.1</artifactId>
+      <artifactId>streaming-bench-common</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

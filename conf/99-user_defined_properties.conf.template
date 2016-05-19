@@ -118,3 +118,8 @@ hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
 
 # partition size settings
 hibench.streamingbench.partitions	1
+
+## gearpump bench conf
+hibench.streamingbench.gearpump.home  /PATH/TO/GEARPUMP/HOME
+hibench.streamingbench.gearpump.executors  1
+hibench.streamingbench.gearpump.parallelism  1
