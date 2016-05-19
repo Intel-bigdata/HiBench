@@ -93,6 +93,11 @@
       <artifactId>libthrift</artifactId>
       <version>0.9.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.intel.hibench.streambench</groupId>
+      <artifactId>streaming-bench-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
