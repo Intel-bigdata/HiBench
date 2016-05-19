@@ -38,7 +38,7 @@ object NWeightDataGenerator {
       println(s"Total Records: $totalNumRecords")
     } else {
       System.err.println(
-        s"Usage: $NWeightDataGenerator <MODEL_PATH> <OUTPUT_PATH> <NUM_RECORDS> <NUM_PARTITIONS>"
+        s"Usage: $NWeightDataGenerator <MODEL_PATH> <OUTPUT_PATH> <NUM_RECORDS>"
       )
       System.exit(1)
     }
