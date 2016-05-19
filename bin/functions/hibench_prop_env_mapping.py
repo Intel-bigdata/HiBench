@@ -140,6 +140,10 @@ HiBenchEnvPropMapping=dict(
     STORM_BIN_HOME="hibench.streamingbench.storm.bin",
     STREAMING_BENCHNAME="hibench.streamingbench.benchname",
 
+    # flinkstreaming
+    FLINK_HOME="hibench.streamingbench.flink.home"
+    STREAMBENCH_FLINK_JAR="hibench.streamingbench.flink.jar"
+
     # samza
     STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",
     STREAMING_SAMZA_STATISTICS_INTERNAL_TOPIC="samza_internal.statistics.kafka.input.name",

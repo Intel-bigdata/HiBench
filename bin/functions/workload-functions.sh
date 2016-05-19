@@ -280,6 +280,12 @@ function run-storm-job(){
     execute_withlog $CMD
 }
 
+function run-flink-job(){
+    CMD="${FLINK_HOME}/bin/flink run ${STREAMBENCH_FLINK_JAR} $@"
+    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
+
 function run-hadoop-job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
