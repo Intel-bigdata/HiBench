@@ -24,7 +24,7 @@
         <connection>git@github.com:apache/flink.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/flink.git</developerConnection>
     </scm>
-
+ 
     <dependencies>
         <dependency>
             <groupId>org.apache.flink</groupId>
