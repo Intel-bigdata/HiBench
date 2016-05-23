@@ -31,5 +31,6 @@
       <module>sparkbench</module>
       <module>stormbench</module>
       <module>samzabench</module>
+      <module>flinkbench</module>
     </modules>
 </project>
