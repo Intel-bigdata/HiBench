@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.flink;
+package com.intel.flinkbench.util;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

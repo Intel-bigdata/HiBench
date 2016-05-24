@@ -282,7 +282,7 @@ function run-storm-job(){
 
 function run-flink-job(){
     CMD="${FLINK_HOME}/bin/flink run ${STREAMBENCH_FLINK_JAR} $@"
-    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+    echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 

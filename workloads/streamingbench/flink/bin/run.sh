@@ -28,7 +28,7 @@ cd ${workload_folder}
 printFullLog
 
 START_TIME=`timestamp`
-run-storm-job com.intel.hibench.streambench.flink.RunBench ${SPARKBENCH_PROPERTIES_FILES}
+run-flink-job com.intel.hibench.streambench.flink.RunBench
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

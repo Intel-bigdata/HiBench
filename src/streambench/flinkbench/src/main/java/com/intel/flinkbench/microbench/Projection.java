@@ -15,8 +15,22 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.flink.microbench;
+package com.intel.flinkbench.microbench;
 
-public class Identity {
-    
+import com.intel.flinkbench.datasource.StreamBase;
+import com.intel.flinkbench.util.FlinkBenchConfig;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+public class Projection extends StreamBase {
+
+    @Override
+    public void processStream(FlinkBenchConfig config) throws Exception {
+        createDataStream(config);
+        DataStream<String> dataStream = getDataStream();
+        final int fieldIndex = config.fieldIndex;
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        dataStream.project(fieldIndex);
+        env.execute("Projection job.");
+    }
 }
