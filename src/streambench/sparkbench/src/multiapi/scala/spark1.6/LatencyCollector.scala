@@ -21,6 +21,7 @@ import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 import com.intel.hibench.streambench.spark.util._
+import com.intel.hibench.streambench.common.LogUtil
 
 class StopContextThread(ssc: StreamingContext) extends Runnable {
   def run {
@@ -68,6 +69,8 @@ class LatencyListener(ssc: StreamingContext, params: ParamEntity) extends Stream
         BenchLogUtil.logMsg("Consumed time = " + totalTime + " s")
         BenchLogUtil.logMsg("Avg latency/batchInterval = " + avgLatencyAdjust + " ms")
         BenchLogUtil.logMsg("Avg records/sec = " + recordThroughput + " records/s")
+        LogUtil.logThroughput(f"$recordThroughput%1.1f")
+        LogUtil.logLatency(f"$avgLatencyAdjust%1.1f")
         thread.start
       }
     } else if (!hasStarted) {

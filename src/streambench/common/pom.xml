@@ -41,10 +41,70 @@
       <artifactId>log4j-core</artifactId>
       <version>2.5</version>
     </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.5</version>
+    </dependency>
   </dependencies>
 
   <build>
-    <outputDirectory>target/scala-${scala.binary.version}/classes</outputDirectory>
-    <testOutputDirectory>target/scala-${scala.binary.version}/test-classes</testOutputDirectory>
+    <sourceDirectory>src/main</sourceDirectory>
+    <plugins>
+      <plugin>
+	<groupId>net.alchim31.maven</groupId>
+	<artifactId>scala-maven-plugin</artifactId>
+	<configuration>
+	  <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+	  <scalaVersion>${scala.version}</scalaVersion>
+	</configuration>
+	<executions>
+	  <execution>
+	    <id>scala-compile-first</id>
+	    <phase>process-resources</phase>
+	    <goals>
+	      <goal>add-source</goal>
+	      <goal>compile</goal>
+	    </goals>
+	  </execution>
+	  <execution>
+	    <id>scala-test-compile</id>
+	    <phase>process-test-resources</phase>
+	    <goals>
+	      <goal>testCompile</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${maven-assembly-plugin.version}</version>
+	<configuration>
+	  <finalName>${project.build.finalName}</finalName>
+	  <descriptorRefs>
+	    <descriptorRef>jar-with-dependencies</descriptorRef>
+	  </descriptorRefs>
+	</configuration>
+	<executions>
+	  <execution>
+	    <id>make-assembly</id>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>single</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>
   </build>
 </project>

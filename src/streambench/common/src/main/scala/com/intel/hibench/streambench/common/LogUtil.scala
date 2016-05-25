@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streaming.common
+package com.intel.hibench.streambench.common
 
-import org.apache.logging4j.simple.SimpleLogger
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+class LogUtil {}
 
 object LogUtil {
-  val logger = new SimpleLogger()  
+  val logger = LoggerFactory.getLogger(classOf[LogUtil])  
 
-  def logThrouphput = {}
+  def logThroughput(thp: String) = {
+    logger.info("THP: " + thp);
+  }
 
-  def logLentency = {}
+  def logLatency(ltc: String) = {
+    logger.info("LTC: " + ltc);
+  }
 }
