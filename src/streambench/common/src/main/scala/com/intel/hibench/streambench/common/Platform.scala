@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.common
 
-import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
-import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.StreamingContext
 
-class IdentityJob(subClassParams:ParamEntity, logger: Logger)
-  extends RunBenchJobWithInit(subClassParams, logger) {
+object Platform extends Enumeration{
 
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    lines.foreachRDD(rdd => rdd.foreach( _ => Unit ))
-  }
+  type Platform = Value
+
+  val Spark = Value("Spark")
+  val Flink = Value("Flink")
+  val Storm = Value("Storm")
+  val Samza = Value("Samza")
+  val Gearpump = Value("Gearpump")
 }
+

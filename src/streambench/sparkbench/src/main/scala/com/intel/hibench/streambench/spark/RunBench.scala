@@ -17,8 +17,8 @@
 
 package com.intel.hibench.streambench.spark
 
+import com.intel.hibench.streambench.common.{TestCase, Platform, TempLogger}
 import com.intel.hibench.streambench.spark.entity.ParamEntity
-import com.intel.hibench.streambench.spark.util._
 import com.intel.hibench.streambench.spark.microbench._
 
 object RunBench {
@@ -29,10 +29,6 @@ object RunBench {
   }
 
   def run(args: Array[String]) {
-    if (args.length < 1) {
-      BenchLogUtil.handleError("Usage: RunBench <ConfigFile>")
-    }
-
     val conf = new ConfigLoader(args(0))
 
     val benchName = conf.getProperty("hibench.streamingbench.benchname")
@@ -53,38 +49,48 @@ object RunBench {
 
     this.reportDir = conf.getProperty("hibench.report.dir")
 
+    val logPath = reportDir + "/streamingbench/spark/streambenchlog.txt"
+    val Spark = Platform.Spark
+
     val param = ParamEntity(master, benchName, batchInterval, zkHost, consumerGroup, topic, kafkaThreads, recordCount, copies, testWAL, path, debug, directMode, brokerList, totalParallel)
     println(s"params:$param")
     benchName match {
       case "project" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.Project)
         val fieldIndex = conf.getProperty("hibench.streamingbench.field_index").toInt
         val separator = conf.getProperty("hibench.streamingbench.separator")
-        val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator)
+        val ProjectTest = new StreamProjectionJob(param, fieldIndex, separator, logger)
         ProjectTest.run()
       case "sample" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.Sample )
         val prob = conf.getProperty("hibench.streamingbench.prob").toDouble
-        val SampleTest = new SampleStreamJob(param, prob)
+        val SampleTest = new SampleStreamJob(param, prob, logger)
         SampleTest.run()
       case "statistics" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.Statistics)
         val fieldIndex = conf.getProperty("hibench.streamingbench.field_index").toInt
         val separator = conf.getProperty("hibench.streamingbench.separator")
-        val numericCalc = new NumericCalcJob(param, fieldIndex, separator)
+        val numericCalc = new NumericCalcJob(param, fieldIndex, separator, logger)
         numericCalc.run()
       case "wordcount" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.WordCount)
         val separator = conf.getProperty("hibench.streamingbench.separator")
-        val wordCount = new Wordcount(param, separator)
+        val wordCount = new Wordcount(param, separator, logger)
         wordCount.run()
       case "grep" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.Grep)
         val pattern = conf.getProperty("hibench.streamingbench.pattern")
-        val GrepStream = new GrepStreamJob(param, pattern)
+        val GrepStream = new GrepStreamJob(param, pattern, logger)
         GrepStream.run()
       case "distinctcount" =>
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.DistinctCount)
         val fieldIndex = conf.getProperty("hibench.streamingbench.field_index").toInt
         val separator = conf.getProperty("hibench.streamingbench.separator")
-        val distinct = new DistinctCountJob(param, fieldIndex, separator)
+        val distinct = new DistinctCountJob(param, fieldIndex, separator, logger)
         distinct.run()
       case _ =>
-        val emptyTest = new IdentityJob(param)
+        val logger = new TempLogger(logPath, Platform.Spark, TestCase.Identity)
+        val emptyTest = new IdentityJob(param, logger)
         emptyTest.run()
     }
   }
