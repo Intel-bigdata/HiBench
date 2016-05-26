@@ -17,19 +17,29 @@
 
 package com.intel.hibench.streambench.common
 
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class LogUtil {}
+class Logger (platForm: Platform.Platform, testCase: TestCase.TestCase) {
+  private val logger = LoggerFactory.getLogger(prefix)
 
-object LogUtil {
-  val logger = LoggerFactory.getLogger(classOf[LogUtil])  
+  val prefix = s"${platForm}-${testCase}"
 
-  def logThroughput(thp: String) = {
-    logger.info("THP: " + thp);
+  def logThroughput(throughput: String) = {
+    logger.info(s"${prefix}: Throughput: ${throughput}")
   }
 
-  def logLatency(ltc: String) = {
-    logger.info("LTC: " + ltc);
+  def logAvgLatency (time: String) = {
+    logger.info(s"${prefix}: Average Latency: ${time}")
   }
+
+  def logLatency(recordNum: Int, time: String) = {
+    logger.info(s"${prefix}: Latency: ${time} of ${recordNum} records")
+  }
+
+  def logConfig(name: String, value: String) = {
+    logger.info(s"${prefix}: Config: ${name}=${value}")
+  }
+
+  //N.B: All log printed by logMsg will not be shown in fininal report
+  def logMsg(msg: String) = logger.info(s"${prefix}: Message: ${msg}")
 }

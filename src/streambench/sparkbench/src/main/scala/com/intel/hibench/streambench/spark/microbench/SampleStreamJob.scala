@@ -17,9 +17,9 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
-import com.intel.hibench.streambench.spark.util.BenchLogUtil
 import org.apache.spark.streaming.StreamingContext
 
 object ThreadLocalRandom extends Serializable{
@@ -30,8 +30,8 @@ object ThreadLocalRandom extends Serializable{
   def current = localRandom.get
 }
 
-class SampleStreamJob(subClassParams:ParamEntity, probability:Double)
-  extends RunBenchJobWithInit(subClassParams) {
+class SampleStreamJob(subClassParams:ParamEntity, probability:Double, logger: Logger)
+  extends RunBenchJobWithInit(subClassParams, logger) {
 
   override def processStreamData(lines:DStream[String], ssc:StreamingContext){
     val prob = probability
@@ -43,7 +43,7 @@ class SampleStreamJob(subClassParams:ParamEntity, probability:Double)
       var totalCount = 0L
       samples.foreachRDD(rdd => {
         totalCount += rdd.count()
-        BenchLogUtil.logMsg("Current sample count:"+totalCount)
+        logger.logMsg("Current sample count:"+totalCount)
       })
     }else{
       samples.foreachRDD(rdd => rdd.foreach( _ => Unit ))
