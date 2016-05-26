@@ -14,26 +14,31 @@ class TempLogger(logPath: String, platForm: Platform.Platform, testCase: TestCas
   val out = new PrintWriter(file)
 
   override def logThroughput(throughput: String) = {
-    val msg = s"${prefix}: Throughput: ${throughput}"
-    logMsg(msg)
+    val msg = s"${prefix}: Throughput: ${throughput} records/s"
+    doLog(msg)
   }
 
   override def logAvgLatency (time: String) = {
-    val msg =s"${prefix}: Average Latency: ${time}"
-    logMsg(msg)
+    val msg =s"${prefix}: Average Latency: ${time} ms"
+    doLog(msg)
   }
 
-  override def logLatency(recordNum: Int, time: String) = {
-    val msg = s"${prefix}: Latency: ${time} of ${recordNum} records"
-    logMsg(msg)
+  override def logLatency(recordNum: Long, time: String) = {
+    val msg = s"${prefix}: Latency: ${time} ms of ${recordNum} records"
+    doLog(msg)
   }
 
   override def logConfig(name: String, value: String) = {
     val msg = s"${prefix}: Config: ${name}=${value}"
-    logMsg(msg)
+    doLog(msg)
   }
 
-  override def logMsg(msg:String) {
+  override def logMsg(msg0: String) = {
+    val msg = s"${prefix}: Message: ${msg0}"
+    doLog(msg)
+  }
+
+  def doLog(msg:String) {
     out.println(msg)
     out.flush()
     System.out.println(msg)
