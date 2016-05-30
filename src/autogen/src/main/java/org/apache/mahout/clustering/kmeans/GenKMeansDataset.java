@@ -600,7 +600,7 @@ public class GenKMeansDataset extends Configured implements Tool {
         jobConf.set("mapred.output.compression.type", compressType);
         jobConf.set("mapred.output.compression.codec", compressCodec);
         LOG.info("mapred.output.compression.codec=" + jobConf.get("mapred.output.compression.codec"));
-        FileSystem fs = FileSystem.get(jobConf);
+        FileSystem fs = FileSystem.get(new Path(sampleDir).toUri(), jobConf);
 
         sp.setFileSystem(fs, jobConf);
 
