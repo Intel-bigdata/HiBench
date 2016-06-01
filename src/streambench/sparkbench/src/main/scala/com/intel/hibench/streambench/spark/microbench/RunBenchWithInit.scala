@@ -49,11 +49,12 @@ class RunBenchJobWithInit(params:ParamEntity, logger: Logger) extends SpoutTops 
     ssc.addStreamingListener(listener)
 
     var lines:DStream[String] = null
-    if (params.directMode)
+    if (params.directMode) {
       lines = createDirectStream(ssc).map(_._2)
-    else
+      logger.logConfig("spark.streaming.kafka.maxRatePerPartition", conf.get("spark.streaming.kafka.maxRatePerPartition"))
+    } else {
       lines = createStream(ssc).map(_._2)
-
+    }
     processStreamData(lines, ssc)
 
     ssc.start()
