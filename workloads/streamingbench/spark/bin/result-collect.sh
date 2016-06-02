@@ -17,24 +17,30 @@
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
-log_file="report/streamingbench/spark/streambenchlog.txt"
-log_file=$workload_root/../../$log_file
+log_dir="report/streamingbench/spark"
+log_dir=$workload_root/../../$log_dir
 
-if [ ! -f $log_file ]; then
-  echo "Input file not found"
+platform="\(Spark\|Storm\|Samza\|Gearpump\|Flink\)-.*"
+metric="\(Throughput\|Average Latency\|Latency\|Config\)"
+pattern="^"$platform": "$metric": .*$"
+
+if [ ! -d $log_dir ]; then
+  echo "Directory not found"
   exit 1
 fi
 
-# Platform-Workload Throughput avgLatency config latency...
+echo "Platform-Workload, Throughput(records/s), AvgLatency(ms), Configuration, BatchLatency(ms), BatchRecordCount(records)"
+
 last_workload=""
-throughput=""
-avg_latency=""
 config=""
 latency_list=""
 
 while read line
 do
   workload=`echo $line | awk '{split($0, a, ": "); print a[1]}'`
+  type=`echo $line | awk '{split($0, a, ": "); print a[2]}'`
+  msg=`echo $line | awk '{split($0, a, ": "); print a[3]}'`
+
   if [ "$workload" != "$last_workload" ]; then
     if [ "$last_workload" != "" ]; then
       out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
@@ -46,19 +52,22 @@ do
     fi
     last_workload=$workload
   fi
-  type=`echo $line | awk '{split($0, a, ": "); print a[2]}'`
-  if [ "$type" == "Message" ]; then
-    continue
-  fi
-  msg=`echo $line | awk '{split($0, a, ": "); print a[3]}'`
+
   case $type in
-    "Latency")  latency_list=$latency_list`echo $msg | awk '{split($0, a, " "); print ", "a[1]", "a[4]}'`;;
     "Throughput") throughput=`echo $msg | awk '{print $1}'` ;;
     "Average Latency") avg_latency=`echo $msg | awk '{print $1}'` ;;
-    "Config") config=`echo $msg | awk '{print $1}'` ;;
-    *) echo "Unknown type" ;;
+    "Config")
+      if [ "$config" != "" ]; then
+        config=$config"; "`echo $msg | awk '{print $1}'`
+      else
+        config=`echo $msg | awk '{print $1}'`
+      fi ;;
+    "Latency") latency_list=$latency_list`echo $msg | awk '{split($0, a, " "); print ", "a[1]", "a[4]}'`;;
+    *) ;;
   esac
-done < $log_file
+done < <(find $log_dir -type f ! -name bench.log | xargs cat | grep -e "$pattern")
 
-out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
-echo $out_line
+if [ "$last_workload" != "" ]; then
+  out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
+  echo $out_line
+fi
