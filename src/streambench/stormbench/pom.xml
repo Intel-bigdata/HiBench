@@ -10,7 +10,6 @@
 
   <groupId>com.intel.hibench.streambench</groupId>
   <artifactId>streaming-bench-storm</artifactId>
-  <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Streaming Benchmark Storm</name>
 
