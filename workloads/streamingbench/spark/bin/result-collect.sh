@@ -20,15 +20,17 @@ workload_root=${workload_folder}/../..
 log_dir="report/streamingbench/spark"
 log_dir=$workload_root/../../$log_dir
 
-platform="\(Spark\|Storm\|Samza\|Gearpump\|Flink\)-.*"
-metric="\(Throughput\|Average Latency\|Latency\|Config\)"
-pattern="^"$platform": "$metric": .*$"
+# use regular expression to match sentences
+platform="(Spark|Storm|Samza|Gearpump|Flink])-(.*)"
+metric="(Throughput|Average Latency|Latency|Config)"
+pattern="^"$platform": "$metric": (.*)$"
 
 if [ ! -d $log_dir ]; then
   echo "Directory not found"
   exit 1
 fi
 
+# echo the header of the table
 echo "Platform-Workload, Throughput(records/s), AvgLatency(ms), Configuration, BatchLatency(ms), BatchRecordCount(records)"
 
 last_workload=""
@@ -37,36 +39,43 @@ latency_list=""
 
 while read line
 do
-  workload=`echo $line | awk '{split($0, a, ": "); print a[1]}'`
-  type=`echo $line | awk '{split($0, a, ": "); print a[2]}'`
-  msg=`echo $line | awk '{split($0, a, ": "); print a[3]}'`
+  if [[ $line =~ $pattern ]]; then
+    workload=${BASH_REMATCH[1]}"-"${BASH_REMATCH[2]}
+    type=${BASH_REMATCH[3]}
+    msg=${BASH_REMATCH[4]}
 
-  if [ "$workload" != "$last_workload" ]; then
-    if [ "$last_workload" != "" ]; then
-      out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
-      throughput=""
-      avg_latency=""
-      config=""
-      latency_list=""
-      echo $out_line
+    # when workload changes, echo the line of last workload
+    if [ "$workload" != "$last_workload" ]; then
+      if [ "$last_workload" != "" ]; then
+        out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
+        throughput=""
+        avg_latency=""
+        config=""
+        latency_list=""
+        echo $out_line
+      fi
+      last_workload=$workload
     fi
-    last_workload=$workload
+
+    # different parse logic for different workload types
+    case $type in
+      "Throughput") throughput=`echo $msg | awk '{print $1}'` ;;
+      "Average Latency") avg_latency=`echo $msg | awk '{print $1}'` ;;
+      "Config")
+        if [ "$config" != "" ]; then
+          # using semicolon to seperate multiple configurations
+          config=$config"; "`echo $msg | awk '{print $1}'`
+        else
+          config=`echo $msg | awk '{print $1}'`
+        fi ;;
+      "Latency") latency_list=$latency_list`echo $msg | awk '{split($0, a, " "); print ", "a[1]", "a[4]}'`;;
+      *) ;;
+    esac
   fi
+# input all files inside the log directory except bench.log
+done < <(find $log_dir -type f ! -name bench.log | xargs cat)
 
-  case $type in
-    "Throughput") throughput=`echo $msg | awk '{print $1}'` ;;
-    "Average Latency") avg_latency=`echo $msg | awk '{print $1}'` ;;
-    "Config")
-      if [ "$config" != "" ]; then
-        config=$config"; "`echo $msg | awk '{print $1}'`
-      else
-        config=`echo $msg | awk '{print $1}'`
-      fi ;;
-    "Latency") latency_list=$latency_list`echo $msg | awk '{split($0, a, " "); print ", "a[1]", "a[4]}'`;;
-    *) ;;
-  esac
-done < <(find $log_dir -type f ! -name bench.log | xargs cat | grep -e "$pattern")
-
+# echo the line of the workload in the end
 if [ "$last_workload" != "" ]; then
   out_line=$last_workload", "$throughput", "$avg_latency", "$config$latency_list
   echo $out_line
