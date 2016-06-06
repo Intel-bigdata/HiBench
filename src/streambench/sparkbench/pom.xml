@@ -17,7 +17,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.intel.hibench</groupId>
@@ -183,68 +183,68 @@
     <testOutputDirectory>target/scala-${scala.binary.version}/test-classes</testOutputDirectory>
     <plugins>
       <plugin>
-	<groupId>net.alchim31.maven</groupId>
-	<artifactId>scala-maven-plugin</artifactId>
-	<configuration>
-	  <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
-	  <scalaVersion>${scala.version}</scalaVersion>
-	</configuration>
-	<executions>
-	  <execution>
-	    <id>scala-compile-first</id>
-	    <phase>process-resources</phase>
-	    <goals>
-	      <goal>add-source</goal>
-	      <goal>compile</goal>
-	    </goals>
-	  </execution>
-	  <execution>
-	    <id>scala-test-compile</id>
-	    <phase>process-test-resources</phase>
-	    <goals>
-	      <goal>testCompile</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <configuration>
+          <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+          <scalaVersion>${scala.version}</scalaVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scala-compile-first</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>scala-test-compile</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
-       <plugin>
-	 <groupId>org.codehaus.mojo</groupId>
-	 <artifactId>build-helper-maven-plugin</artifactId>
-	 <version>${build-helper-maven-plugin.version}</version>
-	 <executions>
-	   <execution>
-	     <id>add-source</id>
-	     <phase>generate-sources</phase>
-	     <goals>
-	       <goal>add-source</goal>
-	     </goals>
-	     <configuration>
-	       <sources>
-		 <source>src/multiapi/scala/spark${spark.bin.version}/</source>
-	       </sources>
-	     </configuration>
-	   </execution>
-	 </executions>
-       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>${build-helper-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/multiapi/scala/spark${spark.bin.version}/</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-	<version>${maven-assembly-plugin.version}</version>
-	<configuration>
-	  <finalName>${project.build.finalName}-spark${spark.bin.version}</finalName>
-	  <descriptorRefs>
-	    <descriptorRef>jar-with-dependencies</descriptorRef>
-	  </descriptorRefs>
-	</configuration>
-	<executions>
-	  <execution>
-	    <id>make-assembly</id>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>single</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <version>${maven-assembly-plugin.version}</version>
+        <configuration>
+          <finalName>${project.build.finalName}-spark${spark.bin.version}</finalName>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

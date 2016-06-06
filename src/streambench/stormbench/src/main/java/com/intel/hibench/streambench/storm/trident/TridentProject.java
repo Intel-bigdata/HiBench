@@ -17,9 +17,9 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import backtype.storm.tuple.Fields;
-import storm.trident.TridentTopology;
-import storm.kafka.trident.*;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.kafka.trident.*;
 
 import com.intel.hibench.streambench.storm.util.*;
 import com.intel.hibench.streambench.storm.spout.*;

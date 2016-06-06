@@ -17,11 +17,11 @@
 
 package com.intel.hibench.streambench.storm.spout;
 
-import backtype.storm.topology.base.BaseRichSpout;
-import backtype.storm.Config;
-import storm.kafka.*;
-import backtype.storm.spout.SchemeAsMultiScheme;
-import storm.kafka.trident.*;
+import org.apache.storm.topology.base.BaseRichSpout;
+import org.apache.storm.Config;
+import org.apache.storm.kafka.*;
+import org.apache.storm.spout.SchemeAsMultiScheme;
+import org.apache.storm.kafka.trident.*;
 
 public class KafkaSpoutFactory{
   
@@ -30,7 +30,7 @@ public class KafkaSpoutFactory{
     SpoutConfig spoutConfig = new SpoutConfig(brokerHosts,topic,"/"+consumerGroup,consumerGroup); 
     spoutConfig.scheme=new SchemeAsMultiScheme(new StringScheme());
     //spoutConfig.stateUpdateIntervalMs = 1000;
-	spoutConfig.forceFromStart=readFromStart;
+	//spoutConfig.forceFromStart=readFromStart;
     KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
 	return kafkaSpout;
   }
@@ -41,7 +41,7 @@ public class KafkaSpoutFactory{
 	TridentKafkaConfig tridentKafkaConfig = new TridentKafkaConfig(brokerHosts,topic,consumerGroup);
     tridentKafkaConfig.fetchSizeBytes = 10*1024;
     tridentKafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-    tridentKafkaConfig.forceFromStart = readFromStart;
+    //tridentKafkaConfig.forceFromStart = readFromStart;
     OpaqueTridentKafkaSpout opaqueTridentKafkaSpout = new OpaqueTridentKafkaSpout(tridentKafkaConfig);
 	return opaqueTridentKafkaSpout;
   }

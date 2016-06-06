@@ -19,17 +19,17 @@ package com.intel.hibench.streambench.storm.trident;
 
 import java.io.Serializable;
 
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Values;
 
 import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import storm.trident.TridentTopology;
-import storm.trident.operation.*;
-import storm.trident.testing.MemoryMapState;
-import storm.trident.tuple.TridentTuple;
-import storm.kafka.trident.*;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.*;
+import org.apache.storm.trident.testing.MemoryMapState;
+import org.apache.storm.trident.tuple.TridentTuple;
+import org.apache.storm.kafka.trident.*;
 
 
 class Numeric implements Serializable {
