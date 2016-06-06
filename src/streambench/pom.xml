@@ -31,7 +31,7 @@
     <module>zkHelper</module>
     <module>sparkbench</module>
     <module>stormbench</module>
-
+    <module>gearpumpbench</module>
     <!--
       <module>samzabench</module>
     -->

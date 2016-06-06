@@ -280,6 +280,12 @@ function run-storm-job(){
     execute_withlog $CMD
 }
 
+function run-gearpump-app(){
+    CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
+    echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
+
 function run-hadoop-job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
