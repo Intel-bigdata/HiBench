@@ -17,11 +17,10 @@
 
 package com.intel.hibench.streambench.storm.spout;
 
-import backtype.storm.topology.base.BaseRichSpout;
-import com.intel.hibench.streambench.storm.util.*;
-import java.io.*;
-import java.util.*;
-import storm.kafka.trident.*;
+import org.apache.storm.topology.base.BaseRichSpout;
+import com.intel.hibench.streambench.storm.util.BenchLogUtil;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.kafka.trident.*;
 
 public class ConstructSpoutUtil{
 

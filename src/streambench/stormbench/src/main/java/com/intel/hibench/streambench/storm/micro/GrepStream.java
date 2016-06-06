@@ -17,17 +17,12 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import backtype.storm.topology.base.*;
-import backtype.storm.topology.*;
-import backtype.storm.tuple.*;
-import storm.kafka.*;
+import org.apache.storm.topology.base.*;
+import org.apache.storm.topology.*;
+import org.apache.storm.tuple.*;
 
-import com.intel.hibench.streambench.storm.*;
 import com.intel.hibench.streambench.storm.util.*;
 import com.intel.hibench.streambench.storm.topologies.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class GrepStream extends SingleSpoutTops{
   

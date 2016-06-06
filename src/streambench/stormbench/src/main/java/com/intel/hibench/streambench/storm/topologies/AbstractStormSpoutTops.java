@@ -17,8 +17,8 @@
 
 package com.intel.hibench.streambench.storm.topologies;
 
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.topology.base.BaseRichSpout;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseRichSpout;
 import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 
