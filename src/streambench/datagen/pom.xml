@@ -30,12 +30,12 @@
   <groupId>com.intel.hibench.streambench</groupId>
   <artifactId>datagen</artifactId>
   <version>0.2</version>
-  <name>Data Generation Tool for Streaming Benchmark</name>
+  <name>Streaming Benchmark Data Generation Tool</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
-      <version>0.8.2.0</version>
+      <version>0.8.2.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
