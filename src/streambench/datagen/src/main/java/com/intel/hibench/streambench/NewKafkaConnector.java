@@ -39,10 +39,10 @@ public class NewKafkaConnector {
 
   public NewKafkaConnector(String brokerList, ConfigLoader cl) {
     Properties props = new Properties();
-    props.setProperty(ProducerConfig.REQUIRED_ACKS_CONFIG, "1");
-    props.setProperty(ProducerConfig.BROKER_LIST_CONFIG, brokerList);
+    props.setProperty(ProducerConfig.ACKS_CONFIG, "1");
+    props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
     props.setProperty(ProducerConfig.METADATA_FETCH_TIMEOUT_CONFIG, Integer.toString(5 * 1000));
-    props.setProperty(ProducerConfig.REQUEST_TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
+    props.setProperty(ProducerConfig.TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
     producer = new KafkaProducer(props);
     Data1Length = Integer.parseInt(cl.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
@@ -124,7 +124,7 @@ public class NewKafkaConnector {
         if (ous.size() == 0) {
           break; // no more data got, let's break
         }
-        ProducerRecord record = new ProducerRecord(topic, ous.toByteArray());
+        ProducerRecord record = new ProducerRecord(topic, System.currentTimeMillis(), ous.toByteArray());
         producer.send(record, callback);
 
         recordsSent ++;
