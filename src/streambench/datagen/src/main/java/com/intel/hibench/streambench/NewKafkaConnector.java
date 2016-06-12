@@ -43,6 +43,8 @@ public class NewKafkaConnector {
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
     props.setProperty(ProducerConfig.METADATA_FETCH_TIMEOUT_CONFIG, Integer.toString(5 * 1000));
     props.setProperty(ProducerConfig.TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
     producer = new KafkaProducer(props);
     Data1Length = Integer.parseInt(cl.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
@@ -124,7 +126,8 @@ public class NewKafkaConnector {
         if (ous.size() == 0) {
           break; // no more data got, let's break
         }
-        ProducerRecord record = new ProducerRecord(topic, System.currentTimeMillis(), ous.toByteArray());
+        ProducerRecord record = new ProducerRecord(topic,
+            Long.toString(System.currentTimeMillis()), ous.toByteArray());
         producer.send(record, callback);
 
         recordsSent ++;
