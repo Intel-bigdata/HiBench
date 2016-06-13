@@ -22,7 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.intel.hibench.streambench.utils.ConfigLoader;
+import com.intel.hibench.streambench.common.ConfigLoader;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -30,14 +30,14 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-public class NewKafkaConnector {
+public class KafkaConnector {
 
   KafkaProducer producer;
   private static final int MAXIMUM_NUMERIC_COLUMNS = 2048; // assume maximum dimension of k means data is 2048. Should be large enough.
   private Integer[] NumericData = new Integer[MAXIMUM_NUMERIC_COLUMNS];
   private int Data1Length;
 
-  public NewKafkaConnector(String brokerList, ConfigLoader cl) {
+  public KafkaConnector(String brokerList, ConfigLoader cl) {
     Properties props = new Properties();
     props.setProperty(ProducerConfig.ACKS_CONFIG, "1");
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);

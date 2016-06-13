@@ -19,11 +19,10 @@ package com.intel.hibench.streambench;
 
 import com.intel.hibench.streambench.common.ConfigLoader;
 
-import java.io.BufferedReader;
+import java.util.Timer;
+import java.util.TimerTask;
 
-//Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
-public class StartNew {
-
+public class DataGenerator {
   private static String benchName;
   private static String HDFSMaster;
 
@@ -39,40 +38,33 @@ public class StartNew {
       System.exit(1);
     }
 
+    // initialize variable from configuration and input parameters.
     ConfigLoader configLoader = new ConfigLoader(args[0]);
 
     benchName = configLoader.getProperty("hibench.streamingbench.benchname").toLowerCase();
     HDFSMaster = configLoader.getProperty("hibench.hdfs.master");
 
+    userVisitsFile = args[1];
+    userVisitsFileOffset = Long.parseLong(args[2]);
+    userVisitsFile = args[1];
+    userVisitsFileOffset = Long.parseLong(args[2]);
+
     String topic = configLoader.getProperty("hibench.streamingbench.topic_name");
-    String brokerList = configLoader.getProperty("hibench.streamingbench.brokerList");
-
+    long recordPerInterval = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
     long totalCount = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.push.records"));
-    userVisitsFile = args[1];
-    userVisitsFileOffset = Long.parseLong(args[2]);
-    userVisitsFile = args[1];
-    userVisitsFileOffset = Long.parseLong(args[2]);
-    boolean isNumericData = false;
-    if (benchName.contains("statistics")) {
-      isNumericData = true;
-    }
+    int intervalSpan = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+    int totalRound = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.prepare.periodic.totalRound"));
 
-    KafkaConnector con = new KafkaConnector(brokerList, configLoader);
-
-    long recordsSent = 0L;
-     while (recordsSent < totalCount) {
-      recordsSent += con.sendRecords(getReader(), topic, totalCount - recordsSent, isNumericData);
-    }
-
-    con.close();
-  }
-
-  public static BufferedReader getReader() {
-    FileDataGenNew files = new FileDataGenNew(HDFSMaster);
-    if (benchName.contains("statistics")) {
-      return files.loadDataFromFile(kMeansFile, kMeansFileOffset);
+    // instantiate KafkaSender
+    KafkaSender sender;
+    if(benchName.contains("statistics")) {
+      sender = new KafkaSender(kMeansFile, kMeansFileOffset, configLoader);
     } else {
-      return files.loadDataFromFile(userVisitsFile, userVisitsFileOffset);
+      sender = new KafkaSender(userVisitsFile, userVisitsFileOffset, configLoader);
     }
+
+    Timer timer = new Timer();
+    timer.schedule(new RecordSendTask(sender, topic, recordPerInterval, totalRound, totalCount), intervalSpan);
+    System.out.println("Timer scheduled, interval is " + intervalSpan + " ms");
   }
 }
