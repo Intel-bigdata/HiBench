@@ -26,6 +26,7 @@ import java.util.Properties;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Syncable;
 import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
  * KafkaSender hold an kafka producer. It gets content from input parameter, generates records and
@@ -35,6 +36,7 @@ public class KafkaSender {
   String sourcePath;
   Configuration dfsConf;
   KafkaProducer producer;
+  StringSerializer serializer = new StringSerializer();
 
   // offset of file input stream. Currently it's fixed, which means same records will be sent
   // out on very batch.
@@ -74,7 +76,10 @@ public class KafkaSender {
 
   // send content to Kafka
   public long send (String topic, long totalRecords) {
+    long startTime = System.currentTimeMillis();
+
     long sentRecords = 0L;
+    long sentBytes = 0L;
     BufferedReader reader = SourceFileReader.getReader(dfsConf, sourcePath, offset);
 
     try {
@@ -87,14 +92,28 @@ public class KafkaSender {
         ProducerRecord record = new ProducerRecord(topic, currentTime, line);
         producer.send(record, callback);
 
+        // Key and Value will be serialized twice.
+        // 1. in producer.send method
+        // 2. explicitly serialize here to count byte size.
+        byte[] keyByte = serializer.serialize(topic, currentTime);
+        byte[] valueByte = serializer.serialize(topic, line);
+
         //update counter
         sentRecords ++;
+        sentBytes = sentBytes + keyByte.length + valueByte.length;
       }
     } catch (IOException e) {
       System.err.println("Failed read records from Path: " + sourcePath);
       e.printStackTrace();
     }
+
+    // print out useful info
+    long endTime = System.currentTimeMillis();
+    double timeCost = (double) (endTime - startTime) / 1000;
+    double throughput = (double) (sentBytes / timeCost) / 1000000;
     System.out.println("sent " + sentRecords + " records to Kafka topic: " + topic);
+    System.out.println("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
+
     return sentRecords;
   }
 

@@ -64,7 +64,10 @@ public class DataGenerator {
     }
 
     Timer timer = new Timer();
-    timer.schedule(new RecordSendTask(sender, topic, recordPerInterval, totalRound, totalCount), intervalSpan);
+    timer.schedule(new RecordSendTask(sender, topic, recordPerInterval, totalRound, totalCount), 0, intervalSpan);
+    System.out.println("TotalRound: " + recordPerInterval);
+    System.out.println("TotalRecord: " + totalCount);
+    System.out.println("TotalRound: " + totalRound);
     System.out.println("Timer scheduled, interval is " + intervalSpan + " ms");
   }
 }
