@@ -28,6 +28,7 @@
   <groupId>com.intel.hibench.streambench</groupId>
   <artifactId>streaming-bench-common</artifactId>
   <packaging>jar</packaging>
+  <version>5.0-SNAPSHOT</version>
   <name>Streaming Benchmark Common</name>
 
   <dependencies>

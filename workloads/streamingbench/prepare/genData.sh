@@ -34,14 +34,8 @@ JVM_OPTS="-Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcM
 
 printFullLog
 
-if [ "$STREAMING_DATAGEN_MODE" == "push" ]; then
-	    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartNew $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
-	    echo -e "${BGreen}Sending streaming data to kafka, concurrently: ${Green}$CMD${Color_Off}"
-	    execute_withlog $CMD
-else
-    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartPeriodic $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
-    echo -e "${BGreen}Sending streaming data to kafka, periodically: ${Green}$CMD${Color_Off}"
-    execute_withlog $CMD
-fi
+CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.DataGenerator $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
+echo -e "${BGreen}Sending streaming data to kafka, periodically: ${Green}$CMD${Color_Off}"
+execute_withlog $CMD
 
 show_bannar finish

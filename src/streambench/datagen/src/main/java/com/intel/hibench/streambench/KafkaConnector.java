@@ -22,7 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.intel.hibench.streambench.utils.ConfigLoader;
+import com.intel.hibench.streambench.common.ConfigLoader;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -30,19 +30,21 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-public class NewKafkaConnector {
+public class KafkaConnector {
 
   KafkaProducer producer;
   private static final int MAXIMUM_NUMERIC_COLUMNS = 2048; // assume maximum dimension of k means data is 2048. Should be large enough.
   private Integer[] NumericData = new Integer[MAXIMUM_NUMERIC_COLUMNS];
   private int Data1Length;
 
-  public NewKafkaConnector(String brokerList, ConfigLoader cl) {
+  public KafkaConnector(String brokerList, ConfigLoader cl) {
     Properties props = new Properties();
     props.setProperty(ProducerConfig.ACKS_CONFIG, "1");
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
     props.setProperty(ProducerConfig.METADATA_FETCH_TIMEOUT_CONFIG, Integer.toString(5 * 1000));
     props.setProperty(ProducerConfig.TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArraySerializer");
     producer = new KafkaProducer(props);
     Data1Length = Integer.parseInt(cl.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
@@ -124,7 +126,8 @@ public class NewKafkaConnector {
         if (ous.size() == 0) {
           break; // no more data got, let's break
         }
-        ProducerRecord record = new ProducerRecord(topic, System.currentTimeMillis(), ous.toByteArray());
+        ProducerRecord record = new ProducerRecord(topic,
+            Long.toString(System.currentTimeMillis()), ous.toByteArray());
         producer.send(record, callback);
 
         recordsSent ++;
