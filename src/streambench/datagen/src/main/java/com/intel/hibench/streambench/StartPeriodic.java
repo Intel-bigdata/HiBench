@@ -23,7 +23,10 @@ import java.io.BufferedReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 public class StartPeriodic {
 
   private static String benchName;
@@ -32,6 +35,7 @@ public class StartPeriodic {
   private static long dataFile1Offset;
   private static String dataFile2;
   private static long dataFile2Offset;
+
 
   public static void main(String[] args) {
 

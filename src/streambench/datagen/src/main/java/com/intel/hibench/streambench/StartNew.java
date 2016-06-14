@@ -21,6 +21,10 @@ import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.io.BufferedReader;
 
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 //Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
 public class StartNew {
 
