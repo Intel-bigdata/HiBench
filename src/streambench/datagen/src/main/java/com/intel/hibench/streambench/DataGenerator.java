@@ -20,11 +20,9 @@ package com.intel.hibench.streambench;
 import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class DataGenerator {
   private static String benchName;
-  private static String HDFSMaster;
 
   private static String userVisitsFile;
   private static long userVisitsFileOffset;
@@ -42,12 +40,11 @@ public class DataGenerator {
     ConfigLoader configLoader = new ConfigLoader(args[0]);
 
     benchName = configLoader.getProperty("hibench.streamingbench.benchname").toLowerCase();
-    HDFSMaster = configLoader.getProperty("hibench.hdfs.master");
 
     userVisitsFile = args[1];
     userVisitsFileOffset = Long.parseLong(args[2]);
-    userVisitsFile = args[1];
-    userVisitsFileOffset = Long.parseLong(args[2]);
+    kMeansFile = args[3];
+    kMeansFileOffset = Long.parseLong(args[4]);
 
     String topic = configLoader.getProperty("hibench.streamingbench.topic_name");
     long recordPerInterval = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
@@ -65,7 +62,8 @@ public class DataGenerator {
 
     Timer timer = new Timer();
     timer.schedule(new RecordSendTask(sender, topic, recordPerInterval, totalRound, totalCount), 0, intervalSpan);
-    System.out.println("TotalRound: " + recordPerInterval);
+
+    System.out.println("Record Per Round: " + recordPerInterval);
     System.out.println("TotalRecord: " + totalCount);
     System.out.println("TotalRound: " + totalRound);
     System.out.println("Timer scheduled, interval is " + intervalSpan + " ms");

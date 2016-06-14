@@ -30,6 +30,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 public class KafkaConnector {
 
   KafkaProducer producer;

@@ -24,6 +24,10 @@ import java.util.Vector;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
 
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 public class FileDataGenNew {
   Configuration fsConf = new Configuration();
 
