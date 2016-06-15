@@ -17,43 +17,51 @@
 
 package com.intel.hibench.streambench;
 
-import com.intel.hibench.streambench.utils.ConfigLoader;
+import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.io.BufferedReader;
 
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 //Data generators are deployed in different nodes and run by launching them near simultaneously in different nodes.
 public class StartNew {
 
   private static String benchName;
   private static String HDFSMaster;
-  private static String dataFile1;
-  private static long dataFile1Offset;
-  private static String dataFile2;
-  private static long dataFile2Offset;
+
+  private static String userVisitsFile;
+  private static long userVisitsFileOffset;
+
+  private static String kMeansFile;
+  private static long kMeansFileOffset;
 
   public static void main(String[] args) {
     if (args.length < 5) {
-      System.err.println("args: <ConfigFile> <DATA_FILE1> <DATA_FILE1_OFFSET> <DATA_FILE2> <DATA_FILE2_OFFSET> need to be specified!");
+      System.err.println("args: <ConfigFile> <userVisitsFile> <userVisitsFileOffset> <kMeansFile> <kMeansFileOffset> need to be specified!");
       System.exit(1);
     }
 
-    ConfigLoader cl = new ConfigLoader(args[0]);
+    ConfigLoader configLoader = new ConfigLoader(args[0]);
 
-    benchName = cl.getProperty("hibench.streamingbench.benchname").toLowerCase();
-    String topic = cl.getProperty("hibench.streamingbench.topic_name");
-    String brokerList = cl.getProperty("hibench.streamingbench.brokerList");
-    HDFSMaster = cl.getProperty("hibench.hdfs.master");
-    long totalCount = Long.parseLong(cl.getProperty("hibench.streamingbench.prepare.push.records"));
-    dataFile1 = args[1];
-    dataFile1Offset = Long.parseLong(args[2]);
-    dataFile2 = args[3];
-    dataFile2Offset = Long.parseLong(args[4]);
+    benchName = configLoader.getProperty("hibench.streamingbench.benchname").toLowerCase();
+    HDFSMaster = configLoader.getProperty("hibench.hdfs.master");
+
+    String topic = configLoader.getProperty("hibench.streamingbench.topic_name");
+    String brokerList = configLoader.getProperty("hibench.streamingbench.brokerList");
+
+    long totalCount = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.push.records"));
+    userVisitsFile = args[1];
+    userVisitsFileOffset = Long.parseLong(args[2]);
+    userVisitsFile = args[1];
+    userVisitsFileOffset = Long.parseLong(args[2]);
     boolean isNumericData = false;
     if (benchName.contains("statistics")) {
       isNumericData = true;
     }
 
-    NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
+    KafkaConnector con = new KafkaConnector(brokerList, configLoader);
 
     long recordsSent = 0L;
      while (recordsSent < totalCount) {
@@ -66,9 +74,9 @@ public class StartNew {
   public static BufferedReader getReader() {
     FileDataGenNew files = new FileDataGenNew(HDFSMaster);
     if (benchName.contains("statistics")) {
-      return files.loadDataFromFile(dataFile2, dataFile2Offset);
+      return files.loadDataFromFile(kMeansFile, kMeansFileOffset);
     } else {
-      return files.loadDataFromFile(dataFile1, dataFile1Offset);
+      return files.loadDataFromFile(userVisitsFile, userVisitsFileOffset);
     }
   }
 }

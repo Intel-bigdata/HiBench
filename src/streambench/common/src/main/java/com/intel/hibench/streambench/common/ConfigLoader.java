@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.utils;
+package com.intel.hibench.streambench.common;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

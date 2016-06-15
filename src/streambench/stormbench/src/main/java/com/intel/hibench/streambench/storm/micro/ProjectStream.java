@@ -17,7 +17,7 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import backtype.storm.topology.*;
+import org.apache.storm.topology.*;
 
 import com.intel.hibench.streambench.storm.util.*;
 import com.intel.hibench.streambench.storm.topologies.*;

@@ -17,13 +17,10 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
-import com.intel.hibench.streambench.spark.metrics.LatencyListener
 import org.apache.spark.streaming.StreamingContext
-import com.intel.hibench.streambench.spark.util.BenchLogUtil
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import scala.collection.mutable.Map
 
 object MapPool {
@@ -37,8 +34,8 @@ object MapPool {
   }
 }
 
-class Wordcount(subClassParams:ParamEntity,separator:String)
-  extends RunBenchJobWithInit(subClassParams){
+class Wordcount(subClassParams: ParamEntity, separator: String, logger: Logger)
+  extends RunBenchJobWithInit(subClassParams, logger){
 
   override def processStreamData(lines:DStream[String],ssc:StreamingContext){
     val sep = separator

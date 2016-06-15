@@ -1,36 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-      <groupId>com.intel.hibench</groupId>
-      <artifactId>hibench</artifactId>
-      <version>5.0-SNAPSHOT</version>
-    </parent>
-
+  <parent>
     <groupId>com.intel.hibench</groupId>
-    <artifactId>streambench</artifactId>
+    <artifactId>hibench</artifactId>
     <version>5.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Streamingbench</name> 
+  </parent>
 
-    <repositories>
-      <repository>
-	<id>github-releases</id>
-	<url>http://oss.sonatype.org/content/repositories/github-releases/</url>
-      </repository>
-      <repository>
-	<id>clojars.org</id>
-	<url>http://clojars.org/repo</url>
-      </repository>
-    </repositories>
-   
-    <modules>
-      <module>datagen</module>
-      <module>zkHelper</module>
-      <module>sparkbench</module>
-      <module>stormbench</module>
+  <groupId>com.intel.hibench</groupId>
+  <artifactId>streambench</artifactId>
+  <version>5.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Streamingbench</name>
+
+  <repositories>
+    <repository>
+      <id>github-releases</id>
+      <url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+    </repository>
+    <repository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+    </repository>
+  </repositories>
+
+  <modules>
+    <module>common</module>
+    <module>datagen</module>
+    <module>zkHelper</module>
+    <module>sparkbench</module>
+    <module>stormbench</module>
+    <module>gearpumpbench</module>
+    <!--
       <module>samzabench</module>
-      <module>flinkbench</module>
-    </modules>
+    -->
+  </modules>
 </project>

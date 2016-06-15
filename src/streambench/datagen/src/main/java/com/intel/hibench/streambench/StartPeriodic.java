@@ -17,13 +17,16 @@
 
 package com.intel.hibench.streambench;
 
-import com.intel.hibench.streambench.utils.ConfigLoader;
+import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.io.BufferedReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * @deprecated replace by DataGenerator
+ */
+@Deprecated
 public class StartPeriodic {
 
   private static String benchName;
@@ -32,6 +35,7 @@ public class StartPeriodic {
   private static long dataFile1Offset;
   private static String dataFile2;
   private static long dataFile2Offset;
+
 
   public static void main(String[] args) {
 
@@ -58,7 +62,7 @@ public class StartPeriodic {
       isNumericData = true;
     }
 
-    NewKafkaConnector con = new NewKafkaConnector(brokerList, cl);
+    KafkaConnector con = new KafkaConnector(brokerList, cl);
 
     Timer timer = new Timer();
     timer.schedule(new SendTask(totalRound, recordPerInterval, con, topic, isNumericData), 0, intervalSpan);
@@ -78,12 +82,12 @@ public class StartPeriodic {
     int leftTimes;
     int recordCount;
     int totalTimes;
-    NewKafkaConnector kafkaCon;
+    KafkaConnector kafkaCon;
     String topic;
     long totalRecords;
     boolean isNumericData;
 
-    public SendTask(int times, int count, NewKafkaConnector con, String topic, boolean isNumericData) {
+    public SendTask(int times, int count, KafkaConnector con, String topic, boolean isNumericData) {
       leftTimes = times;
       recordCount = count;
       totalTimes = times;

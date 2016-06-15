@@ -17,6 +17,7 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds,StreamingContext}
@@ -27,7 +28,7 @@ import com.intel.hibench.streambench.spark.metrics._
 import org.apache.spark.storage.StorageLevel
 import kafka.serializer.StringDecoder
 
-class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
+class RunBenchJobWithInit(params:ParamEntity, logger: Logger) extends SpoutTops {
 
   def run(){
     val conf = new SparkConf().setMaster(params.master)
@@ -44,15 +45,16 @@ class RunBenchJobWithInit(params:ParamEntity) extends SpoutTops {
       ssc.checkpoint(params.path)
     }
 
-    val listener = new LatencyListener(ssc, params)
+    val listener = new LatencyListener(ssc, params, logger)
     ssc.addStreamingListener(listener)
 
     var lines:DStream[String] = null
-    if (params.directMode)
+    if (params.directMode) {
       lines = createDirectStream(ssc).map(_._2)
-    else
+      logger.logConfig("spark.streaming.kafka.maxRatePerPartition", conf.get("spark.streaming.kafka.maxRatePerPartition"))
+    } else {
       lines = createStream(ssc).map(_._2)
-
+    }
     processStreamData(lines, ssc)
 
     ssc.start()

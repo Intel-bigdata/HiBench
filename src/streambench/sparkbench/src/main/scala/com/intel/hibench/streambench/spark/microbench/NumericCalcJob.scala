@@ -17,11 +17,10 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
-import com.intel.hibench.streambench.spark.metrics.LatencyListener
 import org.apache.spark.streaming.StreamingContext
-import com.intel.hibench.streambench.spark.util.BenchLogUtil
 
 case class MultiReducer(var max: Long, var min: Long, var sum: Long, var count: Long) extends Serializable {
   def this() = this(0, Int.MaxValue, 0, 0)
@@ -43,8 +42,8 @@ case class MultiReducer(var max: Long, var min: Long, var sum: Long, var count: 
   }
 }
 
-class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: String)
-  extends RunBenchJobWithInit(subClassParams) {
+class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: String, logger: Logger)
+  extends RunBenchJobWithInit(subClassParams, logger) {
 
   var history_statistics = new MultiReducer()
 
@@ -67,10 +66,10 @@ class NumericCalcJob(subClassParams: ParamEntity, fieldIndex: Int, separator: St
       //var cur = numbers.aggregate(zero)((v, x) => v.reduceValue(x), (v1, v2) => v1.reduce(v2))
       history_statistics.reduce(cur)
 
-      BenchLogUtil.logMsg("Current max: " + history_statistics.max)
-      BenchLogUtil.logMsg("Current min: " + history_statistics.min)
-      BenchLogUtil.logMsg("Current sum: " + history_statistics.sum)
-      BenchLogUtil.logMsg("Current total: " + history_statistics.count)
+      logger.logMsg("Current max: " + history_statistics.max)
+      logger.logMsg("Current min: " + history_statistics.min)
+      logger.logMsg("Current sum: " + history_statistics.sum)
+      logger.logMsg("Current total: " + history_statistics.count)
 
     })
   }

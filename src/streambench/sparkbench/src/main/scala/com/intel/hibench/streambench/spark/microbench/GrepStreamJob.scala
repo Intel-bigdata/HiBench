@@ -17,14 +17,16 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
-import com.intel.hibench.streambench.spark.util.BenchLogUtil
 
-class GrepStreamJob(subClassParams:ParamEntity,patternStr:String) extends RunBenchJobWithInit(subClassParams){
+class GrepStreamJob(subClassParams: ParamEntity, patternStr: String, logger: Logger)
+  extends RunBenchJobWithInit(subClassParams, logger) {
+
   override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    BenchLogUtil.logMsg("In GrepStreamJob")
+    logger.logMsg("In GrepStreamJob")
     val pattern=patternStr
     val debug=subClassParams.debug
     val matches=lines.filter(_.contains(pattern))

@@ -280,9 +280,9 @@ function run-storm-job(){
     execute_withlog $CMD
 }
 
-function run-flink-job(){
-    CMD="${FLINK_HOME}/bin/flink run ${STREAMBENCH_FLINK_JAR} $@"
-    echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
+function run-gearpump-app(){
+    CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
+    echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 

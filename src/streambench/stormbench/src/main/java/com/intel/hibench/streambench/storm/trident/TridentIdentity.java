@@ -17,13 +17,13 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import backtype.storm.tuple.*;
+import org.apache.storm.tuple.*;
 
-import storm.trident.TridentTopology;
-import storm.trident.operation.BaseFunction;
-import storm.trident.operation.TridentCollector;
-import storm.trident.tuple.TridentTuple;
-import storm.kafka.trident.*;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.BaseFunction;
+import org.apache.storm.trident.operation.TridentCollector;
+import org.apache.storm.trident.tuple.TridentTuple;
+import org.apache.storm.kafka.trident.*;
 
 import com.intel.hibench.streambench.storm.util.*;
 import com.intel.hibench.streambench.storm.spout.*;

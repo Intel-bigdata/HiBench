@@ -17,13 +17,10 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
-import com.intel.hibench.streambench.spark.util.BenchLogUtil
-import org.apache.spark.streaming.StreamingContext._
-
-import scala.collection.mutable.ArrayBuffer
 
 object SetPool {
   private var iset: Set[String] = _
@@ -38,7 +35,8 @@ object SetPool {
   }
 }
 
-class DistinctCountJob (subClassParams:ParamEntity, fieldIndex:Int, separator:String) extends RunBenchJobWithInit(subClassParams) {
+class DistinctCountJob (subClassParams:ParamEntity, fieldIndex:Int, separator:String, logger: Logger)
+  extends RunBenchJobWithInit(subClassParams, logger) {
 
   override def processStreamData(lines:DStream[String], ssc:StreamingContext) {
     val index = fieldIndex

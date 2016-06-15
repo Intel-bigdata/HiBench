@@ -17,8 +17,8 @@
 
 package com.intel.hibench.streambench.storm.topologies;
 
-import backtype.storm.*;
-import storm.trident.TridentTopology;
+import org.apache.storm.*;
+import org.apache.storm.trident.TridentTopology;
 
 import com.intel.hibench.streambench.storm.util.*;
 
