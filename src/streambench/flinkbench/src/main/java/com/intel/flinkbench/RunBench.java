@@ -19,7 +19,7 @@ package com.intel.flinkbench;
 
 import com.intel.flinkbench.microbench.*;
 import com.intel.flinkbench.util.BenchLogUtil;
-import com.intel.flinkbench.util.ConfigLoader;
+import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 
 public class RunBench {

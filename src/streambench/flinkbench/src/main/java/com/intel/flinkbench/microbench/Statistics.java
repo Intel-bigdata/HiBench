@@ -20,6 +20,7 @@ package com.intel.flinkbench.microbench;
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import com.intel.flinkbench.util.BenchLogUtil;
@@ -43,13 +44,13 @@ public class Statistics extends StreamBase{
     @Override
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
-        DataStream<String> dataStream = getDataStream();
+        DataStream<Tuple2<String, String>> dataStream = getDataStream();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         dataStream
-                .map(new MapFunction<String, Long>() {
+                .map(new MapFunction<Tuple2<String, String>, Long>() {
                     @Override
-                    public Long map(String value) {
-                        Long longValue = Long.parseLong(value);
+                    public Long map(Tuple2<String, String> value) {
+                        Long longValue = Long.parseLong(value.f0);
                         reduce(longValue);
                         BenchLogUtil.logMsg("current max record: " + max);
                         BenchLogUtil.logMsg("current min record: " + min);

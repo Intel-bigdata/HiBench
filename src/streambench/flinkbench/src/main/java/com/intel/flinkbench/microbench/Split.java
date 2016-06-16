@@ -20,6 +20,7 @@ package com.intel.flinkbench.microbench;
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -31,13 +32,13 @@ public class Split extends StreamBase {
         final String seperator = config.separator;
         createDataStream(config);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStream<String> dataStream = getDataStream();
-        dataStream.flatMap(new FlatMapFunction<String, String>() {
+        DataStream<Tuple2<String, String>> dataStream = getDataStream();
+        dataStream.flatMap(new FlatMapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
             @Override
-            public void flatMap(String value, Collector<String> out)
+            public void flatMap(Tuple2<String, String> value, Collector<Tuple2<String, String>> out)
                     throws Exception {
-                for(String word: value.split(seperator)){
-                    out.collect(word);
+                for(String word: value.f1.split(seperator)){
+                    out.collect(new Tuple2<String, String>(value.f0, word));
                 }
             }
         });

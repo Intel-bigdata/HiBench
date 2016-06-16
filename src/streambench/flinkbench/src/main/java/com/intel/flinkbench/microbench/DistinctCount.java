@@ -35,15 +35,15 @@ public class DistinctCount extends StreamBase {
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
         final String seperator = config.separator;
-        DataStream<String> dataStream = getDataStream();
+        DataStream<Tuple2<String, String>> dataStream = getDataStream();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         dataStream
-                .flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
+                .flatMap(new FlatMapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
                     @Override
-                    public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
-                        for (String word : sentence.split(seperator)) {
+                    public void flatMap(Tuple2<String, String> sentence, Collector<Tuple2<String, Tuple2<String, Integer>>> out) throws Exception {
+                        for (String word : sentence.f1.split(seperator)) {
                             map.add(word);
-                            out.collect(new Tuple2<String, Integer>(word, 1));
+                            out.collect(new Tuple2<String, Tuple2<String, Integer>>(sentence.f0, new Tuple2<String, Integer>(word, 1)));
                         }
                     }
                 });

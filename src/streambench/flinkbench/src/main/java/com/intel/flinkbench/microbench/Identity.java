@@ -20,6 +20,7 @@ package com.intel.flinkbench.microbench;
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -29,15 +30,16 @@ public class Identity extends StreamBase {
    public void processStream(FlinkBenchConfig config) throws Exception{
 
        createDataStream(config);
-       DataStream<String> messageStream = getDataStream();
+       DataStream<Tuple2<String, String>> messageStream = getDataStream();
        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-       messageStream.map(new MapFunction<String, String>() {
+       messageStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
                              @Override
-                             public String map(String value) throws Exception {
+                             public Tuple2<String, String> map(Tuple2<String, String> value) throws Exception {
                                  return value;
                              }
                          });
-       env.execute();
+       messageStream.forward();
+       env.execute("Identity job");
    }
     
 }

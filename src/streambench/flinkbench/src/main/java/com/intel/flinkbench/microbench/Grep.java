@@ -20,6 +20,7 @@ package com.intel.flinkbench.microbench;
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -28,14 +29,14 @@ public class Grep extends StreamBase {
     @Override
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
-        DataStream<String> dataStream = getDataStream();
+        DataStream<Tuple2<String, String>> dataStream = getDataStream();
         final String patternStr = config.pattern;
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         dataStream
-                .filter(new FilterFunction<String>() {
+                .filter(new FilterFunction<Tuple2<String, String>>() {
                     @Override
-                    public boolean filter(String s) throws Exception {
-                        return s.contains(patternStr);
+                    public boolean filter(Tuple2<String, String> s) throws Exception {
+                        return s.f1.contains(patternStr);
                     }
                 });
         env.execute("grep job.");

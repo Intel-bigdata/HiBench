@@ -30,7 +30,7 @@ public class WordCount extends StreamBase {
     @Override
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
-        DataStream<String> dataStream = getDataStream();
+        DataStream<Tuple2<String, String>> dataStream = getDataStream();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         dataStream
                 .flatMap(new Splitter())
@@ -39,11 +39,11 @@ public class WordCount extends StreamBase {
                 .print();
     }
 
-    public static class Splitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
+    public static class Splitter implements FlatMapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>> {
         @Override
-        public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
-            for (String word : sentence.split(" ")) {
-                out.collect(new Tuple2<String, Integer>(word, 1));
+        public void flatMap(Tuple2<String, String> sentence, Collector<Tuple2<String, Tuple2<String, Integer>>> out) throws Exception {
+            for (String word : sentence.f1.split(" ")) {
+                out.collect(new Tuple2<String, Tuple2<String, Integer>>(sentence.f0, new Tuple2<String, Integer>(word, 1)));
             }
         }
     }

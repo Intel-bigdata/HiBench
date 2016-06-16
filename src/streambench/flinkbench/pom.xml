@@ -62,6 +62,12 @@
             <scope>test</scope>
             <version>${scalacheck.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.intel.hibench.streambench</groupId>
+            <artifactId>streaming-bench-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

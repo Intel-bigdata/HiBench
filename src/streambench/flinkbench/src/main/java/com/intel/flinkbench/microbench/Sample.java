@@ -20,6 +20,7 @@ package com.intel.flinkbench.microbench;
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -29,14 +30,14 @@ public class Sample extends StreamBase {
     public void processStream(FlinkBenchConfig config) throws Exception{
         final double prob = config.prob;
         createDataStream(config);
-        DataStream<String> messageStream = getDataStream();
+        DataStream<Tuple2<String, String>> messageStream = getDataStream();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        messageStream.filter(new FilterFunction<String>() {
+        messageStream.filter(new FilterFunction<Tuple2<String, String>>() {
             @Override
-            public boolean filter(String s) throws Exception {
+            public boolean filter(Tuple2<String, String> s) throws Exception {
                 return Math.random() < prob;
             }
         });
-        env.execute();
+        env.execute("sampling job");
     }
 }
