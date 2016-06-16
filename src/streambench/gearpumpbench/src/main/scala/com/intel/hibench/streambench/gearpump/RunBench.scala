@@ -16,9 +16,10 @@
  */
 package com.intel.hibench.streambench.gearpump
 
-import com.intel.hibench.streambench.common.{ConfigLoader, Platform, TempLogger}
+import com.intel.hibench.streambench.common.metrics.{LatencyReporter, KafkaReporter}
+import com.intel.hibench.streambench.common.ConfigLoader
 import com.intel.hibench.streambench.gearpump.application._
-import com.intel.hibench.streambench.gearpump.source.{KafkaSourceProvider, InMemorySourceProvider}
+import com.intel.hibench.streambench.gearpump.source.KafkaSourceProvider
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.cluster.client.ClientContext
@@ -45,12 +46,11 @@ object RunBench {
       case _ => new IdentityApp(gearConf)
     }
 
-    val reportDir = confLoader.getProperty("hibench.report.dir")
-    val logPath = reportDir + "/streamingbench/gearpump/streambenchlog.txt"
-    val logger = new TempLogger(logPath, Platform.Gearpump, benchmark.benchName)
-
-    val benchConf = UserConfig.empty.withValue(GearpumpConfig.BENCHCONFIG, gearConf)
-    val appId = context.submit(benchmark.application(benchConf))
+    val reporter = getReporter(confLoader)
+    val benchConf = UserConfig.empty
+        .withValue(GearpumpConfig.BENCH_CONFIG, gearConf)
+        .withValue(GearpumpConfig.BENCH_LATENCY_REPORTER, reporter)
+    context.submit(benchmark.application(benchConf))
     context.close()
   }
 
@@ -61,13 +61,8 @@ object RunBench {
     val consumerGroup = conf.getProperty("hibench.streamingbench.consumer_group")
     val kafkaPartitions = conf.getProperty("hibench.streamingbench.partitions").toInt
     val parallelism = conf.getProperty("hibench.streamingbench.gearpump.parallelism").toInt
-    val kafkaThreads = conf.getProperty("hibench.streamingbench.receiver_nodes").toInt
     val recordCount = conf.getProperty("hibench.streamingbench.record_count").toLong
-    val copies = conf.getProperty("hibench.streamingbench.copies").toInt
-    val debug = conf.getProperty("hibench.streamingbench.debug").toBoolean
-    val directMode = conf.getProperty("hibench.streamingbench.direct_mode").toBoolean
-    val brokerList = if (directMode) conf.getProperty("hibench.streamingbench.brokerList") else ""
-
+    val brokerList = conf.getProperty("hibench.streamingbench.brokerList")
     val pattern = conf.getProperty("hibench.streamingbench.pattern")
     val fieldIndex = conf.getProperty("hibench.streamingbench.field_index").toInt
     val separator = conf.getProperty("hibench.streamingbench.separator")
@@ -75,5 +70,14 @@ object RunBench {
 
     GearpumpConfig(benchName, zkHost, brokerList, consumerGroup, topic, kafkaPartitions,
       recordCount, parallelism, pattern, fieldIndex, separator, prob)
+  }
+
+  private def getReporter(conf: ConfigLoader): LatencyReporter = {
+    val topic = conf.getProperty("hibench.streamingbench.topic_name")
+    val brokerList = conf.getProperty("hibench.streamingbench.brokerList")
+    val recordPerInterval = conf.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval").toLong
+    val intervalSpan: Int = conf.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan").toInt
+    val reporterTopic = s"gearpump_${topic}_${recordPerInterval}_${intervalSpan}_${System.currentTimeMillis()}"
+    new KafkaReporter(reporterTopic, brokerList)
   }
 }

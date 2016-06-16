@@ -16,5 +16,7 @@ case class GearpumpConfig(
 )
 
 object GearpumpConfig {
-  final val BENCHCONFIG = "gearpump.bench.config"
+
+  val BENCH_CONFIG = "gearpump.bench.config"
+  val BENCH_LATENCY_REPORTER = "gearpump.bench.latency.reporter"
 }

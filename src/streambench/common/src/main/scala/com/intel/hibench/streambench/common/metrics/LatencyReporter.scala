@@ -14,23 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.hibench.streambench.gearpump.task
+package com.intel.hibench.streambench.common.metrics
 
-import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
-import org.apache.gearpump.Message
-import org.apache.gearpump.cluster.UserConfig
-import org.apache.gearpump.streaming.task.{Task, TaskContext}
+trait LatencyReporter extends java.io.Serializable {
 
-import scala.util.Random
+  def report(latency: Long): Unit
 
-class Sample(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
-  private val probability = benchConf.prob
-  private val random = new Random()
-
-  override def onNext(msg: Message): Unit = {
-    if (random.nextDouble() <= probability) {
-      taskContext.output(msg)
-    }
-  }
 }

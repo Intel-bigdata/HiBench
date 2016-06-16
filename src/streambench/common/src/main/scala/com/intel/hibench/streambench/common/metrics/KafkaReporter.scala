@@ -14,23 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.hibench.streambench.gearpump.task
+package com.intel.hibench.streambench.common.metrics
 
-import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
-import org.apache.gearpump.Message
-import org.apache.gearpump.cluster.UserConfig
-import org.apache.gearpump.streaming.task.{Task, TaskContext}
+import java.util.Properties
 
-import scala.util.Random
+import org.apache.kafka.clients.producer.{ProducerRecord, KafkaProducer}
+import org.apache.kafka.common.serialization.StringSerializer
 
-class Sample(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
-  private val probability = benchConf.prob
-  private val random = new Random()
+class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyReporter {
 
-  override def onNext(msg: Message): Unit = {
-    if (random.nextDouble() <= probability) {
-      taskContext.output(msg)
-    }
+  private val props = new Properties()
+  props.put("bootstrap.servers", bootstrapServers)
+  private lazy val producer = new KafkaProducer(props, new StringSerializer, new StringSerializer)
+
+  override def report(latency: Long): Unit = {
+    producer.send(new ProducerRecord[String, String](topic, 0, null, s"$latency"))
   }
+
 }
