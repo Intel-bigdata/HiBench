@@ -17,44 +17,42 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Values;
-
-import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.streambench.storm.util.BenchLogUtil;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
 import org.apache.storm.trident.operation.BaseFunction;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.tuple.TridentTuple;
-import org.apache.storm.kafka.trident.*;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Values;
 
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TridentWordcount extends SingleTridentSpoutTops {
-  
-  public TridentWordcount(StormBenchConfig config){
+
+  public TridentWordcount(StormBenchConfig config) {
     super(config);
   }
 
   @Override
-  public void setTopology(TridentTopology topology) {
-    OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
+  public TridentTopology createTopology() {
+    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
 
-    topology
-      .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new Split(config.separator), new Fields("words"))
-      .parallelismHint(config.spoutThreads)
-      .partitionBy(new Fields("words"))
-      .each(new Fields("words"), new WordCount(), new Fields("word", "count"))
-      .parallelismHint(config.workerCount)
-      ;
+    TridentTopology topology = new TridentTopology();
+    topology.newStream("bg0", spout)
+            .each(spout.getOutputFields(), new Split(config.separator), new Fields("words"))
+            .parallelismHint(config.spoutThreads)
+            .partitionBy(new Fields("words"))
+            .each(new Fields("words"), new WordCount(), new Fields("word", "count"))
+            .parallelismHint(config.workerCount);
+    return topology;
   }
 
-  public static class Split extends BaseFunction {
+  private static class Split extends BaseFunction {
     String separator;
 
     public Split(String separator) {
@@ -70,7 +68,7 @@ public class TridentWordcount extends SingleTridentSpoutTops {
     }
   }
 
-  public static class WordCount extends BaseFunction {
+  private static class WordCount extends BaseFunction {
     Map<String, Integer> counts = new HashMap<String, Integer>();
 
     @Override

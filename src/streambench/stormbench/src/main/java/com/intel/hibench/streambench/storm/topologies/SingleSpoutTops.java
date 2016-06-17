@@ -17,37 +17,43 @@
 
 package com.intel.hibench.streambench.storm.topologies;
 
-import org.apache.storm.topology.*;
-import org.apache.storm.*;
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.Config;
+import org.apache.storm.StormSubmitter;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseRichSpout;
 
-import com.intel.hibench.streambench.storm.util.*;
+public abstract class SingleSpoutTops {
 
-public class SingleSpoutTops extends AbstractStormSpoutTops {
+  protected StormBenchConfig config;
 
-    public SingleSpoutTops(StormBenchConfig c) {
-        super(c);
+  public SingleSpoutTops(StormBenchConfig config) {
+    this.config = config;
+  }
+
+  public void run() throws Exception {
+    StormSubmitter.submitTopology(config.benchName, getConf(), getBuilder().createTopology());
+  }
+
+  private Config getConf() {
+    Config conf = new Config();
+    conf.setNumWorkers(config.workerCount);
+    if (!config.ackon) {
+      conf.setNumAckers(0);
     }
+    return conf;
+  }
 
-    public void run() throws Exception {
-        StormSubmitter.submitTopology(config.benchName, getConf(), getBuilder().createTopology());
-    }
+  public TopologyBuilder getBuilder() {
+    TopologyBuilder builder = new TopologyBuilder();
+    BaseRichSpout spout = KafkaSpoutFactory.getSpout(config);
+    builder.setSpout("spout", spout, config.spoutThreads);
+    setBolts(builder);
+    return builder;
+  }
 
-    public Config getConf() {
-        Config conf = new Config();
-        conf.setMaxTaskParallelism(200);
-        conf.put("topology.spout.max.batch.size", 64 * 1024);
-        conf.setNumWorkers(config.workerCount);
-        if (!config.ackon)
-            conf.setNumAckers(0);
-        return conf;
-    }
-
-    public TopologyBuilder getBuilder() {
-        TopologyBuilder builder = new TopologyBuilder();
-        setSpout(builder);
-        setBolt(builder);
-        return builder;
-    }
+  public abstract void setBolts(TopologyBuilder builder);
 
 
 }

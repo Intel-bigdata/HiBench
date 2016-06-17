@@ -17,40 +17,43 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import org.apache.storm.topology.base.*;
-import org.apache.storm.topology.*;
-import org.apache.storm.tuple.*;
+import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 
-import com.intel.hibench.streambench.storm.util.*;
-import com.intel.hibench.streambench.storm.topologies.*;
+public class GrepStream extends SingleSpoutTops {
 
-public class GrepStream extends SingleSpoutTops{
-  
   public GrepStream(StormBenchConfig config) {
-	  super(config);
+    super(config);
   }
-  
-  public void setBolt(TopologyBuilder builder){
-      builder.setBolt("grepAndPrint",new GrepBolt(config.pattern),config.boltThreads).shuffleGrouping("spout");
+
+  @Override
+  public void setBolts(TopologyBuilder builder) {
+    builder.setBolt("grepAndPrint", new GrepBolt(config.pattern), config.boltThreads)
+            .shuffleGrouping("spout");
   }
-  
-  public static class GrepBolt extends BaseBasicBolt{
-	  private String pattern;
-	  
-	  public GrepBolt(String p){
-	    pattern=p;
-	  }
-	  
-	  public void execute(Tuple tuple, BasicOutputCollector collector) {
-		String val=tuple.getString(0);
-		if(val.contains(pattern)){
-		  collector.emit(new Values(val));
-		  //BenchLogUtil.logMsg("Matched:"+val);
-		}
-	  }
-	  
-	  public void declareOutputFields(OutputFieldsDeclarer ofd) {
-	  }
-	}
+
+  private static class GrepBolt extends BaseBasicBolt {
+    private String pattern;
+
+    public GrepBolt(String p) {
+      pattern = p;
+    }
+
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
+      String val = tuple.getString(0);
+      if (val.contains(pattern)) {
+        collector.emit(new Values(val));
+      }
+    }
+
+    public void declareOutputFields(OutputFieldsDeclarer ofd) {
+    }
+  }
 
 }
