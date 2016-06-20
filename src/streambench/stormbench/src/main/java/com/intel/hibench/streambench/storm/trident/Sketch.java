@@ -18,10 +18,10 @@
 package com.intel.hibench.streambench.storm.trident;
 
 
-import org.apache.storm.tuple.Values;
 import org.apache.storm.trident.operation.BaseFunction;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.tuple.TridentTuple;
+import org.apache.storm.tuple.Values;
 
 public class Sketch extends BaseFunction {
   private int fieldIndex;
@@ -33,10 +33,10 @@ public class Sketch extends BaseFunction {
   }
 
   @Override
-  public void execute(TridentTuple tuple, TridentCollector collector){
+  public void execute(TridentTuple tuple, TridentCollector collector) {
     String record = tuple.getString(0);
     String[] fields = record.split(separator);
-    if (fields.length > fieldIndex) 
+    if (fields.length > fieldIndex)
       collector.emit(new Values(fields[fieldIndex]));
   }
 }

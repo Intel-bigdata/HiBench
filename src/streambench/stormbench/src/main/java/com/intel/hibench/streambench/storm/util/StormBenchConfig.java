@@ -1,6 +1,6 @@
 package com.intel.hibench.streambench.storm.util;
 
-public class StormBenchConfig{
+public class StormBenchConfig {
   public String nimbus;
   public int nimbusAPIPort;
   public String zkHost;
@@ -14,7 +14,7 @@ public class StormBenchConfig{
   public boolean readFromStart;
   public boolean ackon;
   public int nimbusContactInterval;
-  
+
   //Following are fields that are benchmark specific
   public String separator;
   public int fieldIndex;

@@ -17,37 +17,30 @@
 
 package com.intel.hibench.streambench.storm.topologies;
 
-import org.apache.storm.*;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.Config;
+import org.apache.storm.StormSubmitter;
 import org.apache.storm.trident.TridentTopology;
 
-import com.intel.hibench.streambench.storm.util.*;
+public abstract class SingleTridentSpoutTops {
 
-public class SingleTridentSpoutTops extends AbstractTridentSpoutTops {
+  protected StormBenchConfig config;
 
-    protected StormBenchConfig config;
+  public SingleTridentSpoutTops(StormBenchConfig config) {
+    this.config = config;
+  }
 
-    public SingleTridentSpoutTops(StormBenchConfig c) {
-        this.config = c;
-    }
+  public void run() throws Exception {
+    StormSubmitter.submitTopology(config.benchName, getConf(), createTopology().build());
+  }
 
-    public void run() throws Exception {
-        StormSubmitter.submitTopology(config.benchName, getConf(), createTridentTopology().build());
-    }
+  private Config getConf() {
+    Config conf = new Config();
+    conf.setNumWorkers(config.workerCount);
+    if (!config.ackon)
+      conf.setNumAckers(0);
+    return conf;
+  }
 
-    public Config getConf() {
-        Config conf = new Config();
-        conf.setMaxTaskParallelism(200);
-        conf.put("topology.spout.max.batch.size", 64 * 1024);
-        conf.setNumWorkers(config.workerCount);
-        if (!config.ackon)
-            conf.setNumAckers(0);
-        return conf;
-    }
-
-    public TridentTopology createTridentTopology() {
-        TridentTopology topology = new TridentTopology();
-        setTopology(topology);
-        return topology;
-    }
-
+  public abstract TridentTopology createTopology();
 }
