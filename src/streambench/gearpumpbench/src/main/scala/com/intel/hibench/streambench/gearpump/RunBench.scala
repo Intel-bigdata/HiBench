@@ -18,7 +18,6 @@ package com.intel.hibench.streambench.gearpump
 
 import com.intel.hibench.streambench.common.{ConfigLoader, Platform, TempLogger}
 import com.intel.hibench.streambench.gearpump.application._
-import com.intel.hibench.streambench.gearpump.metrics.MetricsReporter
 import com.intel.hibench.streambench.gearpump.source.{KafkaSourceProvider, InMemorySourceProvider}
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
 import org.apache.gearpump.cluster.UserConfig
@@ -52,8 +51,6 @@ object RunBench {
 
     val benchConf = UserConfig.empty.withValue(GearpumpConfig.BENCHCONFIG, gearConf)
     val appId = context.submit(benchmark.application(benchConf))
-    val metricsReporter = new MetricsReporter(appId, context, logger, gearConf.recordCount)
-    metricsReporter.reportMetrics()
     context.close()
   }
 
