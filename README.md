@@ -3,7 +3,7 @@
 
 
 - Current version: 5.0
-- Release date: 2015-10-12
+- Release date: 2015-10-12 (Spark 2.0.0 support added 15th of June 2016)
 - Homepage: https://github.com/intel-hadoop/HiBench
 - To ask a question or report an issue, please use Github Issues
 
@@ -110,7 +110,7 @@ Note:
 
   - Apache release of Hadoop 1.x and Hadoop 2.x
   - CDH4/CDH5 release of MR1 and MR2.
-  - Spark1.2 - 1.6
+  - Spark1.2 - 2.0
   - Storm 0.9.3
   - Samza 0.8.0
 

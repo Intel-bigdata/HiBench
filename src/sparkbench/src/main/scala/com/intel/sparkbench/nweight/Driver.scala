@@ -4,7 +4,7 @@ import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.scheduler.{JobLogger, StatsReportListener}
+import org.apache.spark.scheduler.StatsReportListener
 
 import com.esotericsoftware.kryo.{Kryo, Serializer => KSerializer}
 import com.esotericsoftware.kryo.io.{Input => KryoInput, Output => KryoOutput}
@@ -64,7 +64,6 @@ object NWeight extends Serializable{
       sparkConf.setAppName("NWeightPregel")
     val sc = new SparkContext(sparkConf)
  
-    sc.addSparkListener(new JobLogger)
     sc.addSparkListener(new StatsReportListener)
 
     if (model.toLowerCase == "graphx") {

@@ -16,9 +16,22 @@
 
     <repositories>
       <repository>
+        <id>central</id>
+         <name>Maven Repository</name>
+         <url>https://repo1.maven.org/maven2</url>
+         <releases>
+           <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+      </repository>
+     <!--
+      <repository>
 	<id>github-releases</id>
 	<url>http://oss.sonatype.org/content/repositories/github-releases/</url>
       </repository>
+      -->
       <repository>
 	<id>clojars.org</id>
 	<url>http://clojars.org/repo</url>

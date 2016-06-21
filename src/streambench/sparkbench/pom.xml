@@ -50,41 +50,33 @@
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-bagel_${scala.binary.version}</artifactId>
-      <version>${spark.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
       <artifactId>spark-graphx_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-twitter_${scala.binary.version}</artifactId>
+      <artifactId>spark-streaming-kafka-0-8-assembly_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
-      <version>${spark.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming-flume_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
+   <!--
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming-zeromq_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
+  
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming-mqtt_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
-    </dependency>
+   -->
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase</artifactId>
@@ -102,18 +94,13 @@
     </dependency>
     <dependency>
       <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.10</artifactId>
-      <version>0.8.1</version>
+      <artifactId>kafka_2.11</artifactId>
+      <version>0.8.2.2</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>${jetty.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.twitter</groupId>
-      <artifactId>algebird-core_${scala.binary.version}</artifactId>
-      <version>0.1.11</version>
     </dependency>
     <dependency>
       <groupId>org.scalatest</groupId>

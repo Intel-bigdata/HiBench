@@ -40,9 +40,9 @@ hibench.spark.master		yarn-client
 # jar. Mostly situation it'll be auto probed. Please override if spark
 # version is not probed correctly. For spark version after 1.6, please
 # set it to spark1.6
-# Note, supported values: `spark1.2` to `spark1.6`
+# Note, supported values: `spark1.2` to `spark2.0`
 
-#hibench.spark.version          spark1.6
+#hibench.spark.version          spark2.0
 
 #======================================================
 # Optional settings

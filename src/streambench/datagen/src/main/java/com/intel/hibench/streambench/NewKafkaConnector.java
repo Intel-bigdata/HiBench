@@ -39,10 +39,10 @@ public class NewKafkaConnector {
 
   public NewKafkaConnector(String brokerList, ConfigLoader cl) {
     Properties props = new Properties();
-    props.setProperty(ProducerConfig.REQUIRED_ACKS_CONFIG, "1");
-    props.setProperty(ProducerConfig.BROKER_LIST_CONFIG, brokerList);
-    props.setProperty(ProducerConfig.METADATA_FETCH_TIMEOUT_CONFIG, Integer.toString(5 * 1000));
-    props.setProperty(ProducerConfig.REQUEST_TIMEOUT_CONFIG, Integer.toString(Integer.MAX_VALUE));
+    props.put("request.required.acks", "1");
+    props.put("metadata.broker.list", brokerList);
+    props.put("metadata.fetch.timeout.ms", Integer.toString(5 * 1000));
+    props.put("request.timeout.ms", Integer.toString(Integer.MAX_VALUE));
     producer = new KafkaProducer(props);
     Data1Length = Integer.parseInt(cl.getProperty("hibench.streamingbench.datagen.data1.length"));
   }

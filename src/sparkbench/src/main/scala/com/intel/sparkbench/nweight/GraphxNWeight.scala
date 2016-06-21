@@ -19,25 +19,27 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
 
 object GraphxNWeight extends Serializable{
 
-  def mapF(edge: EdgeTriplet[SizedPriorityQueue, Double]) = {
-    val m = new Long2DoubleOpenHashMap()
-    val w1 = edge.attr
+  /* This needs to return an EdgeContext for aggregateMessages */
+  def mapFunction(edge: EdgeContext[SizedPriorityQueue, Double, Long2DoubleOpenHashMap]) = {
+    /* This code produces an edge triple */
+    val theMap = new Long2DoubleOpenHashMap()
+    val edgeAttribute = edge.attr
     val id = edge.srcId
     edge.dstAttr.foreach{ case (target, wn) =>
       if (target != id)
-        m.put(target, wn*w1)
+        theMap.put(target, wn * edgeAttribute)
     }
-    Iterator((id, m))
+    Iterator((id, theMap))
   }
 
-  def reduceF(c1: Long2DoubleOpenHashMap, c2: Long2DoubleOpenHashMap) = {
+  def reduceFunction(c1: Long2DoubleOpenHashMap, c2: Long2DoubleOpenHashMap) = {
     c2.long2DoubleEntrySet()
       .fastIterator()
       .foreach(pair => c1.put(pair.getLongKey(), c1.get(pair.getLongKey()) + pair.getDoubleValue()))
     c1
   }
 
-  def updateF (id: VertexId, vdata: SizedPriorityQueue, msg: Option[Long2DoubleOpenHashMap]) = {
+  def updateFunction(id: VertexId, vdata: SizedPriorityQueue, msg: Option[Long2DoubleOpenHashMap]) = {
     vdata.clear()
     val weightMap = msg.orNull
     if (weightMap != null) {
@@ -78,8 +80,10 @@ object GraphxNWeight extends Serializable{
 
     var msg: RDD[(VertexId, Long2DoubleOpenHashMap)] = null
     for (i <- 2 to step) {
-      msg = g.mapReduceTriplets(mapF _, reduceF _, Some(g.vertices , EdgeDirection.In))
-      g = g.outerJoinVertices(msg)(updateF _).persist(storageLevel)
+
+//      msg = g.mapReduceTriplets(mapFunction _, reduceFunction _, Some(g.vertices , EdgeDirection.In))
+      msg = g.aggregateMessages(mapFunction _, reduceFunction _, TripletFields.Src)
+      g = g.outerJoinVertices(msg)(updateFunction _).persist(storageLevel)
     }
 
     g.vertices.map { case (vid, vdata) => 
