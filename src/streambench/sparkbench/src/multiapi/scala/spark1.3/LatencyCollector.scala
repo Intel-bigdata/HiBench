@@ -18,7 +18,7 @@
 package com.intel.hibench.streambench.spark.metrics
 
 import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
 
@@ -28,7 +28,7 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
-class LatencyListener(ssc: StreamingContext, params: ParamEntity, logger: Logger) extends StreamingListener {
+class LatencyListener(ssc: StreamingContext, params: SparkBenchConfig, logger: Logger) extends StreamingListener {
 
   var startTime = 0L
   var endTime = 0L

@@ -15,26 +15,34 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.spark.application
 
 import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 
-class GrepStreamJob(subClassParams: ParamEntity, patternStr: String, logger: Logger)
-  extends RunBenchJobWithInit(subClassParams, logger) {
+object ThreadLocalRandom extends Serializable{
+  private val localRandom = new ThreadLocal[util.Random] {
+    override protected def initialValue() = new util.Random
+  }
 
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    logger.logMsg("In GrepStreamJob")
-    val pattern=patternStr
-    val debug=subClassParams.debug
-    val matches=lines.filter(_.contains(pattern))
+  def current = localRandom.get
+}
 
-    if(debug){
-      matches.print()
+class Sample(config:SparkBenchConfig, logger: Logger, probability:Double)
+  extends BenchRunnerBase(config, logger) {
+
+  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+
+    val samples = lines.filter( _=> {
+      ThreadLocalRandom.current.nextDouble() < probability
+    })
+    val debug = config.debugMode
+    if(config.debugMode){
+      samples.print()
     }else{
-      matches.foreachRDD( rdd => rdd.foreach( _ => Unit ))
+      samples.foreachRDD(rdd => rdd.foreach( _ => Unit ))
     }
   }
 }
