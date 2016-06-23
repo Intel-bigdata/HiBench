@@ -27,7 +27,7 @@ public class Utils {
         Map<String, String> map = new HashMap<String, String>();
         Field[] fields = config.getClass().getFields();
         for (Field f : fields) {
-            map.put(f.getName(), (String)f.get(config));
+            map.put(f.getName(), f.get(config).toString());
         }
         return map;
     }

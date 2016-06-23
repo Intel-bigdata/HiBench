@@ -12,6 +12,7 @@ import com.intel.flinkbench.util.FlinkBenchConfig;
 import com.intel.flinkbench.util.Utils;
 
 import java.util.Map;
+import java.util.Properties;
 
 public abstract class StreamBase {
     private DataStream<Tuple2<String, String>> dataStream;
@@ -27,6 +28,10 @@ public abstract class StreamBase {
         ParameterTool flinkBenchmarkParams = ParameterTool.fromMap(conf);
         KeyedDeserializationSchema<Tuple2<String, String>> schema = new TypeInformationKeyValueSerializationSchema<String, String>(String.class, String.class, env.getConfig());
 
+        Properties properties = flinkBenchmarkParams.getProperties();
+        properties.setProperty("zookeeper.connect", "localhost:2181");
+        properties.setProperty("group.id", "HiBench");
+        properties.setProperty("bootstrap.servers", "localhost:9092");
         this.dataStream = env.addSource(new FlinkKafkaConsumer08<Tuple2<String, String>>(
                         config.topic,
                         schema,

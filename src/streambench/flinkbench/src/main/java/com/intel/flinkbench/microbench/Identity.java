@@ -41,5 +41,4 @@ public class Identity extends StreamBase {
        messageStream.forward();
        env.execute("Identity job");
    }
-    
 }
