@@ -137,7 +137,7 @@
       <activation>
         <activeByDefault>true</activeByDefault>
         <property>
-          <name>MR1</name>
+          <name>MR2</name>
         </property>
       </activation>
     </profile>
