@@ -18,7 +18,7 @@ set -u
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
 
-SPARK_HOME=$(grep 'hibench.spark.home' "${DIR}/conf/99-user_defined_properties.conf" | awk 'END{print $2}')
+HADOOP_HOME=$(grep 'hibench.hadoop.home' "${DIR}/conf/99-user_defined_properties.conf" | awk 'END{print $2}')
 
 . ${DIR}/bin/functions/color.sh
 
@@ -40,7 +40,7 @@ for benchmark in `cat $DIR/conf/benchmarks.lst`; do
     fi
 
     # Drop buffer cache before starting a test.
-    for slave in $(cat ${SPARK_HOME}/conf/slaves); do
+    for slave in $(cat ${HADOOP_HOME}/etc/hadoop/slaves); do
         ssh ${slave} "sudo sh -c 'free && sync && echo 3 > /proc/sys/vm/drop_caches && free'"
     done
 
