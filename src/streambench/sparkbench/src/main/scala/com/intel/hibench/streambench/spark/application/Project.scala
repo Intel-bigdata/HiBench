@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.common.{UserVisitParser, Logger}
+import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 
-class IdentityJob(subClassParams:ParamEntity, logger: Logger)
-  extends RunBenchJobWithInit(subClassParams, logger) {
+class Project(config: SparkBenchConfig, logger: Logger)
+  extends BenchRunnerBase(config, logger) {
 
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    lines.foreachRDD(rdd => rdd.foreach( _ => Unit ))
+  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+
+    val userVisitInfo = lines.map{ case (time, line) =>
+      UserVisitParser.parse(line)
+    }
+
+    if(config.debugMode){
+      userVisitInfo.print()
+    } else {
+      userVisitInfo.foreachRDD(rdd => rdd.foreach(_ => Unit))
+    }
   }
+
 }

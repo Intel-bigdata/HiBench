@@ -15,13 +15,22 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.common;
 
-import org.apache.spark.streaming.StreamingContext
-import org.apache.spark.streaming.dstream.DStream
+public class KMeansData {
+  long id;
+  double[] data;
 
-trait SpoutTops {
-  def processStreamData(lines:DStream[String],ssc:StreamingContext){
+  public KMeansData(long id, double[] data) {
+    this.id = id;
+    this.data = data;
+  }
 
+  public double[] getData() {
+    return data;
+  }
+
+  public long getId() {
+    return id;
   }
 }

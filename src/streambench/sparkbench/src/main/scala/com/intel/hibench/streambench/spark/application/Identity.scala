@@ -15,39 +15,22 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.spark.application
 
 import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.spark.util.SparkBenchConfig
+
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 
-object ThreadLocalRandom extends Serializable{
-  private val localRandom = new ThreadLocal[util.Random] {
-    override protected def initialValue() = new util.Random
-  }
+class Identity(config:SparkBenchConfig, logger: Logger)
+  extends BenchRunnerBase(config, logger) {
 
-  def current = localRandom.get
-}
-
-class SampleStreamJob(subClassParams:ParamEntity, probability:Double, logger: Logger)
-  extends RunBenchJobWithInit(subClassParams, logger) {
-
-  override def processStreamData(lines:DStream[String], ssc:StreamingContext){
-    val prob = probability
-    val samples = lines.filter( _=> {
-      ThreadLocalRandom.current.nextDouble() < prob
-    })
-    val debug = subClassParams.debug
-    if(debug){
-      var totalCount = 0L
-      samples.foreachRDD(rdd => {
-        totalCount += rdd.count()
-        logger.logMsg("Current sample count:"+totalCount)
-      })
-    }else{
-      samples.foreachRDD(rdd => rdd.foreach( _ => Unit ))
+  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+    if (config.debugMode) {
+      lines.print()
+    } else {
+      lines.foreachRDD(rdd => rdd.foreach(_ => Unit))
     }
-
   }
 }

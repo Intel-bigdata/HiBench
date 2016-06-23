@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.spark.microbench
+package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.Logger
-import com.intel.hibench.streambench.spark.entity.ParamEntity
+import com.intel.hibench.streambench.common.{UserVisitParser, Logger}
+import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 
-class StreamProjectionJob(subClassParams: ParamEntity, fieldIndex: Int, separator: String, logger: Logger)
-  extends RunBenchJobWithInit(subClassParams, logger) {
-  
-  override def processStreamData(lines:DStream[String],ssc:StreamingContext){
-    val sep   = separator
-    val index = fieldIndex
-    val debug = subClassParams.debug
-    lines.foreachRDD(rdd => {
-      val fields = rdd.flatMap(line => {
-        val splits = line.trim.split(sep)
-        if(index < splits.length)
-          Iterator(splits(index))
-        else
-          Iterator.empty
-      })
-      fields.foreach(rdd => rdd.foreach( _ => Unit ))
-      if(debug)
-        logger.logMsg(fields.collect().mkString("\n"))
-    })
-  }
+class Grep(config: SparkBenchConfig, logger: Logger, pattern: String)
+  extends BenchRunnerBase(config, logger) {
 
+  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+    val matched = lines.filter(_._2.contains(pattern))
+
+    if(config.debugMode){
+      matched.print()
+    }else{
+      matched.foreachRDD( rdd => rdd.foreach( _ => Unit ))
+    }
+  }
 }
