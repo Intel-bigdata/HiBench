@@ -14,23 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.hibench.streambench.gearpump.task
+package com.intel.hibench.streambench.common.metrics
 
-import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
-import org.apache.gearpump.Message
-import org.apache.gearpump.cluster.UserConfig
-import org.apache.gearpump.streaming.task.{Task, TaskContext}
+object MetricsReader extends App {
 
-import scala.util.Random
-
-class Sample(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
-  private val probability = benchConf.prob
-  private val random = new Random()
-
-  override def onNext(msg: Message): Unit = {
-    if (random.nextDouble() <= probability) {
-      taskContext.output(msg)
-    }
+  if (args.length < 3) {
+    System.err.println("args: <zookeeperConnect> <topic> <outputFile> need to be specified!")
+    System.exit(1)
   }
+
+  val zookeeperConnect = args(0)
+  val topic = args(1)
+  val kafkaConsumer = new KafkaConsumer(zookeeperConnect, topic, 0)
+
+  val outputFile = args(2)
+  val latencyCollector = new KafkaCollector(topic, kafkaConsumer, outputFile)
+  latencyCollector.start()
 }

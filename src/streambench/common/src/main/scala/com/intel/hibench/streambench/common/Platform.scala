@@ -18,7 +18,7 @@
 package com.intel.hibench.streambench.common
 
 
-object Platform extends Enumeration{
+object Platform extends Enumeration {
 
   type Platform = Value
 
