@@ -30,9 +30,9 @@ public class Sample extends StreamBase {
     public void processStream(FlinkBenchConfig config) throws Exception{
         final double prob = config.prob;
         createDataStream(config);
-        DataStream<Tuple2<String, String>> messageStream = getDataStream();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        messageStream.filter(new FilterFunction<Tuple2<String, String>>() {
+        DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+        dataStream.filter(new FilterFunction<Tuple2<String, String>>() {
             @Override
             public boolean filter(Tuple2<String, String> s) throws Exception {
                 return Math.random() < prob;

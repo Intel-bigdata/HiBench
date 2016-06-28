@@ -30,15 +30,15 @@ public class Identity extends StreamBase {
    public void processStream(FlinkBenchConfig config) throws Exception{
 
        createDataStream(config);
-       DataStream<Tuple2<String, String>> messageStream = getDataStream();
-       StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-       messageStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
-                             @Override
-                             public Tuple2<String, String> map(Tuple2<String, String> value) throws Exception {
-                                 return value;
-                             }
-                         });
-       messageStream.forward();
+       final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+       
+       DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+       dataStream.map((new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
+           @Override
+           public Tuple2<String, String> map(Tuple2<String, String> value) throws Exception {
+               return value;
+           }
+       }));
        env.execute("Identity job");
    }
 }

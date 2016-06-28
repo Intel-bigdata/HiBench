@@ -29,9 +29,9 @@ public class Grep extends StreamBase {
     @Override
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
-        DataStream<Tuple2<String, String>> dataStream = getDataStream();
-        final String patternStr = config.pattern;
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+        final String patternStr = config.pattern;
         dataStream
                 .filter(new FilterFunction<Tuple2<String, String>>() {
                     @Override

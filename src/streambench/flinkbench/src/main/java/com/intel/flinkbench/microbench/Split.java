@@ -32,7 +32,7 @@ public class Split extends StreamBase {
         final String seperator = config.separator;
         createDataStream(config);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStream<Tuple2<String, String>> dataStream = getDataStream();
+        DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
         dataStream.flatMap(new FlatMapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
             @Override
             public void flatMap(Tuple2<String, String> value, Collector<Tuple2<String, String>> out)

@@ -28,9 +28,9 @@ public class Projection extends StreamBase {
     @Override
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
-        DataStream<Tuple2<String, String>> dataStream = getDataStream();
-        final int fieldIndex = config.fieldIndex;
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+        final int fieldIndex = config.fieldIndex;
         dataStream.project(fieldIndex);
         env.execute("Projection job.");
     }

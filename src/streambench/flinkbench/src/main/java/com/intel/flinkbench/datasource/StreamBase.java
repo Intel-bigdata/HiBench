@@ -1,41 +1,49 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.intel.flinkbench.datasource;
 
-
+import com.intel.flinkbench.util.StringTupleSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer08;
-import org.apache.flink.streaming.util.serialization.*;
 
 import com.intel.flinkbench.util.FlinkBenchConfig;
-import com.intel.flinkbench.util.Utils;
 
-import java.util.Map;
 import java.util.Properties;
 
 public abstract class StreamBase {
-    private DataStream<Tuple2<String, String>> dataStream;
     
-    public DataStream<Tuple2<String, String>> getDataStream() {
+    private SourceFunction<Tuple2<String, String>> dataStream;
+    
+    public SourceFunction<Tuple2<String, String>> getDataStream() {
         return this.dataStream;
     }
     
     public void createDataStream(FlinkBenchConfig config) throws Exception{
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        Map<String, String> conf = Utils.readAndParseConfig(config);
-        ParameterTool flinkBenchmarkParams = ParameterTool.fromMap(conf);
-        KeyedDeserializationSchema<Tuple2<String, String>> schema = new TypeInformationKeyValueSerializationSchema<String, String>(String.class, String.class, env.getConfig());
-
-        Properties properties = flinkBenchmarkParams.getProperties();
-        properties.setProperty("zookeeper.connect", "localhost:2181");
-        properties.setProperty("group.id", "HiBench");
-        properties.setProperty("bootstrap.servers", "localhost:9092");
-        this.dataStream = env.addSource(new FlinkKafkaConsumer08<Tuple2<String, String>>(
+        Properties properties = new Properties();
+        properties.setProperty("zookeeper.connect", config.zkHost);
+        properties.setProperty("group.id", config.consumerGroup);
+        properties.setProperty("bootstrap.servers", config.master);
+        this.dataStream = new FlinkKafkaConsumer08<Tuple2<String, String>>(
                         config.topic,
-                        schema,
-                        flinkBenchmarkParams.getProperties()));
+                        new StringTupleSchema(),
+                        properties);
     }
     public abstract void processStream(FlinkBenchConfig config) throws Exception;
     

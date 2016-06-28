@@ -35,8 +35,9 @@ public class DistinctCount extends StreamBase {
     public void processStream(FlinkBenchConfig config) throws Exception {
         createDataStream(config);
         final String seperator = config.separator;
-        DataStream<Tuple2<String, String>> dataStream = getDataStream();
+        
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
         dataStream
                 .flatMap(new FlatMapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
                     @Override

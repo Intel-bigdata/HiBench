@@ -35,13 +35,10 @@
 
     <properties>
         <flinkVersion>1.1-SNAPSHOT</flinkVersion>
-        <scala.version>2.11.8</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
         <jackson.version>2.4.2</jackson.version>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-core</artifactId>
@@ -71,34 +68,7 @@
     </dependencies>
 
     <build>
-        <outputDirectory>target/scala-${scala.binary.version}/classes</outputDirectory>
-        <testOutputDirectory>target/scala-${scala.binary.version}/test-classes</testOutputDirectory>
         <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <configuration>
-                    <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
-                    <scalaVersion>${scala.version}</scalaVersion>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>scala-compile-first</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>scala-test-compile</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>${maven-assembly-plugin.version}</version>
@@ -119,5 +89,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

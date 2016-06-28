@@ -36,7 +36,7 @@ public class RunBench {
 
         ConfigLoader cl = new ConfigLoader(args[0]);
 
-        conf.master = cl.getProperty("hibench.streamingbench.master");
+        conf.master = cl.getProperty("hibench.streamingbench.brokerList");
         conf.zkHost = cl.getProperty("hibench.streamingbench.zookeeper.host");
         conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.worker_count"));
         conf.benchName = cl.getProperty("hibench.streamingbench.benchname");
