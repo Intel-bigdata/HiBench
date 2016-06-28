@@ -17,7 +17,7 @@
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
-echo $workload_root
+echo "workload root: " + $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
 enter_bench StormStreamingBench ${workload_root} ${workload_folder}

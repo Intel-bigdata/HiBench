@@ -22,7 +22,7 @@ import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
 class Numeric(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCHCONFIG).get
+  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
   private val fieldIndex = benchConf.fieldIndex
   private val separator = benchConf.separator
   private var max: Long = 0

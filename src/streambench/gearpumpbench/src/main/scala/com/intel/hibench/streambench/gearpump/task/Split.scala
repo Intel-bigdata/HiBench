@@ -22,7 +22,7 @@ import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
 class Split(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCHCONFIG).get
+  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
   private val separator = benchConf.separator
   import taskContext.output
 

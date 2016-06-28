@@ -19,16 +19,15 @@ package com.intel.hibench.streambench.common
 
 import org.slf4j.LoggerFactory
 
-class Logger (platForm: Platform.Platform, testCase: TestCase.TestCase) {
-  private val logger = LoggerFactory.getLogger(classOf[Logger])
-
+class Logger(platForm: Platform.Platform, testCase: TestCase.TestCase) {
   val prefix = s"${platForm}-${testCase}"
+  private val logger = LoggerFactory.getLogger(classOf[Logger])
 
   def logThroughput(throughput: String) = {
     logger.info(s"${prefix}: Throughput: ${throughput} records/s")
   }
 
-  def logAvgLatency (time: String) = {
+  def logAvgLatency(time: String) = {
     logger.info(s"${prefix}: Average Latency: ${time} ms")
   }
 

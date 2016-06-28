@@ -17,13 +17,12 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import org.apache.storm.tuple.Fields;
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
+import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.kafka.trident.*;
-
-import com.intel.hibench.streambench.storm.util.*;
-import com.intel.hibench.streambench.storm.spout.*;
-import com.intel.hibench.streambench.storm.topologies.*;
+import org.apache.storm.tuple.Fields;
 
 public class TridentProject extends SingleTridentSpoutTops {
 
@@ -32,13 +31,15 @@ public class TridentProject extends SingleTridentSpoutTops {
   }
 
   @Override
-  public void setTopology(TridentTopology topology) {
-    OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
+  public TridentTopology createTopology() {
+    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
 
-    topology
-      .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new Sketch(config.fieldIndex, config.separator), new Fields("field"))
-      .parallelismHint(config.workerCount);
+    TridentTopology topology = new TridentTopology();
+    topology.newStream("bg0", spout)
+            .each(spout.getOutputFields(), new Sketch(config.fieldIndex, config.separator),
+                    new Fields("field"))
+            .parallelismHint(config.workerCount);
+    return topology;
   }
 
 }

@@ -20,30 +20,29 @@ package com.intel.hibench.streambench.storm.micro;
 import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
-import org.apache.storm.tuple.Fields;
 
-public class ProjectStreamBolt extends BaseBasicBolt{
-	private int fieldIndex;
-	private String separator;
-	
-	public ProjectStreamBolt(int fieldIndex, String separator){
-		this.fieldIndex=fieldIndex;
-		this.separator=separator;
-	}
-	
-	public void execute(Tuple tuple, BasicOutputCollector collector) {
-		String record=tuple.getString(0);
-		String[] fields=record.split(separator);
-		if(fields.length>fieldIndex){
-		  //BenchLogUtil.logMsg(fields[fieldIndex]);
-		  collector.emit(new Values(fields[fieldIndex]));
-		}
-			
-	  }
-	
-	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-	  declarer.declare(new Fields("field"));
-	}
+public class ProjectStreamBolt extends BaseBasicBolt {
+  private int fieldIndex;
+  private String separator;
+
+  public ProjectStreamBolt(int fieldIndex, String separator) {
+    this.fieldIndex = fieldIndex;
+    this.separator = separator;
+  }
+
+  public void execute(Tuple tuple, BasicOutputCollector collector) {
+    String record = tuple.getString(0);
+    String[] fields = record.split(separator);
+    if (fields.length > fieldIndex) {
+      collector.emit(new Values(fields[fieldIndex]));
+    }
+
+  }
+
+  public void declareOutputFields(OutputFieldsDeclarer declarer) {
+    declarer.declare(new Fields("field"));
+  }
 }

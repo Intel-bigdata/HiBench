@@ -1,14 +1,14 @@
 package com.intel.hibench.streambench.common
 
-import java.io.{PrintWriter, File}
+import java.io.{File, PrintWriter}
 
 /**
-  * N.B. This file is just a temp workaround during script developing. Remove it when release!!!
-  *
-  * This logger will add messages into given path.
-  */
+ * N.B. This file is just a temp workaround during script developing. Remove it when release!!!
+ *
+ * This logger will add messages into given path.
+ */
 class TempLogger(logPath: String, platForm: Platform.Platform, testCase: TestCase.TestCase)
-  extends Logger(platForm, testCase){
+    extends Logger(platForm, testCase) {
 
   val file = new File(logPath)
   val out = new PrintWriter(file)
@@ -18,8 +18,8 @@ class TempLogger(logPath: String, platForm: Platform.Platform, testCase: TestCas
     doLog(msg)
   }
 
-  override def logAvgLatency (time: String) = {
-    val msg =s"${prefix}: Average Latency: ${time} ms"
+  override def logAvgLatency(time: String) = {
+    val msg = s"${prefix}: Average Latency: ${time} ms"
     doLog(msg)
   }
 
@@ -38,13 +38,13 @@ class TempLogger(logPath: String, platForm: Platform.Platform, testCase: TestCas
     doLog(msg)
   }
 
-  def doLog(msg:String) {
+  def doLog(msg: String) {
     out.println(msg)
     out.flush()
     System.out.println(msg)
   }
 
-  def handleError(msg:String){
+  def handleError(msg: String) {
     System.err.println(msg)
     System.exit(1)
   }

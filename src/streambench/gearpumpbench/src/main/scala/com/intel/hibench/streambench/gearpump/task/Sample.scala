@@ -24,7 +24,7 @@ import org.apache.gearpump.streaming.task.{Task, TaskContext}
 import scala.util.Random
 
 class Sample(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCHCONFIG).get
+  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
   private val probability = benchConf.prob
   private val random = new Random()
 

@@ -17,37 +17,36 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Values;
-
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
+import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
 import org.apache.storm.trident.operation.BaseFunction;
 import org.apache.storm.trident.operation.TridentCollector;
-
 import org.apache.storm.trident.tuple.TridentTuple;
-import org.apache.storm.kafka.trident.*;
-
-import com.intel.hibench.streambench.storm.util.*;
-import com.intel.hibench.streambench.storm.spout.*;
-import com.intel.hibench.streambench.storm.topologies.*;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Values;
 
 public class TridentGrep extends SingleTridentSpoutTops {
-  
-  public TridentGrep(StormBenchConfig config){
+
+  public TridentGrep(StormBenchConfig config) {
     super(config);
   }
 
   @Override
-  public void setTopology(TridentTopology topology) {
-    OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
+  public TridentTopology createTopology() {
+    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
 
-    topology
-      .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new Grep(config.pattern), new Fields("tuple"))
-      .parallelismHint(config.workerCount);
+    TridentTopology topology = new TridentTopology();
+
+    topology.newStream("bg0", spout)
+            .each(spout.getOutputFields(), new Grep(config.pattern), new Fields("tuple"))
+            .parallelismHint(config.workerCount);
+    return topology;
   }
 
-  public static class Grep extends BaseFunction {
+  private static class Grep extends BaseFunction {
     private String pattern;
 
     public Grep(String pattern) {
@@ -55,10 +54,9 @@ public class TridentGrep extends SingleTridentSpoutTops {
     }
 
     @Override
-    public void execute(TridentTuple tuple, TridentCollector collector){
+    public void execute(TridentTuple tuple, TridentCollector collector) {
       String val = tuple.getString(0);
       if (val.contains(pattern))
-        // BenchLogUtil.logMsg(val);
         collector.emit(new Values(val));
     }
   }

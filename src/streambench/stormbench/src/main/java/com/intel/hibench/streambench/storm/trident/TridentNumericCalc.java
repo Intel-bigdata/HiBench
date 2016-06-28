@@ -17,81 +17,45 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import java.io.Serializable;
-
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
+import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.BaseFunction;
+import org.apache.storm.trident.operation.CombinerAggregator;
+import org.apache.storm.trident.operation.TridentCollector;
+import org.apache.storm.trident.testing.MemoryMapState;
+import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 
-import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
-import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
-import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.trident.operation.*;
-import org.apache.storm.trident.testing.MemoryMapState;
-import org.apache.storm.trident.tuple.TridentTuple;
-import org.apache.storm.kafka.trident.*;
+import java.io.Serializable;
 
 
-class Numeric implements Serializable {
-  public Long max = 0L;
-  public Long min = 10000L;
-  public Long sum = 0L;
-  public Long count = 0L;
-  public Numeric() {}
-  public Numeric(Long max, Long min, Long sum, Long count) {
-    this.max = max;
-    this.min = min;
-    this.sum = sum;
-    this.count = count;
-  }
-}
 
-class NumericCalc implements CombinerAggregator<Numeric>, Serializable {
-
-  @Override
-  public Numeric init(TridentTuple tuple) {
-    if (tuple.contains("number")) {
-      Long val = tuple.getLong(0);
-      return new Numeric(val, val, val, 1L);
-    }
-    return new Numeric();
-  }
-
-  @Override
-  public Numeric combine(Numeric val1, Numeric val2) {
-    if (val1.max < val2.max) val1.max = val2.max;
-    if (val1.min > val2.min) val1.min = val2.min;
-    val1.sum += val2.sum;
-    val1.count += val2.count;
-    System.out.println(val1.max + " " + val1.min + " " + val1.sum + " " + val1.count);
-    return val1;
-  }
-
-  @Override
-  public Numeric zero() {
-    return new Numeric();
-  }
-}
 
 public class TridentNumericCalc extends SingleTridentSpoutTops implements Serializable {
 
-  public TridentNumericCalc(StormBenchConfig config){
+  public TridentNumericCalc(StormBenchConfig config) {
     super(config);
   }
 
   @Override
-  public void setTopology(TridentTopology topology) {
-    OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
+  public TridentTopology createTopology() {
+    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
 
-    topology
-      .newStream("bg0", spout)
-      .parallelismHint(config.spoutThreads)
-      .each(spout.getOutputFields(), new Trim(config.separator, config.fieldIndex), new Fields("number"))
-      .persistentAggregate(new MemoryMapState.Factory(), new Fields("number"), new NumericCalc(), new Fields("res"))
-      ;
+    TridentTopology topology = new TridentTopology();
+    topology.newStream("bg0", spout)
+            .parallelismHint(config.spoutThreads)
+            .each(spout.getOutputFields(), new Trim(config.separator, config.fieldIndex),
+                    new Fields("number"))
+            .persistentAggregate(new MemoryMapState.Factory(),
+                    new Fields("number"), new NumericCalc(), new Fields("res"));
+    return topology;
   }
 
-  public static class Trim extends BaseFunction {
+  private static class Trim extends BaseFunction {
     String separator;
     int fieldIndex;
 
@@ -111,4 +75,47 @@ public class TridentNumericCalc extends SingleTridentSpoutTops implements Serial
     }
   }
 
+  private static class Numeric implements Serializable {
+    public Long max = 0L;
+    public Long min = 10000L;
+    public Long sum = 0L;
+    public Long count = 0L;
+
+    public Numeric() {
+    }
+
+    public Numeric(Long max, Long min, Long sum, Long count) {
+      this.max = max;
+      this.min = min;
+      this.sum = sum;
+      this.count = count;
+    }
+  }
+
+  private static class NumericCalc implements CombinerAggregator<Numeric>, Serializable {
+
+    @Override
+    public Numeric init(TridentTuple tuple) {
+      if (tuple.contains("number")) {
+        Long val = tuple.getLong(0);
+        return new Numeric(val, val, val, 1L);
+      }
+      return new Numeric();
+    }
+
+    @Override
+    public Numeric combine(Numeric val1, Numeric val2) {
+      if (val1.max < val2.max) val1.max = val2.max;
+      if (val1.min > val2.min) val1.min = val2.min;
+      val1.sum += val2.sum;
+      val1.count += val2.count;
+      System.out.println(val1.max + " " + val1.min + " " + val1.sum + " " + val1.count);
+      return val1;
+    }
+
+    @Override
+    public Numeric zero() {
+      return new Numeric();
+    }
+  }
 }

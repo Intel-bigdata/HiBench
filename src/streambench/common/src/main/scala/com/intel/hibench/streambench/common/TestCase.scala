@@ -18,7 +18,7 @@
 package com.intel.hibench.streambench.common
 
 
-object TestCase extends Enumeration{
+object TestCase extends Enumeration {
 
   type TestCase = Value
 

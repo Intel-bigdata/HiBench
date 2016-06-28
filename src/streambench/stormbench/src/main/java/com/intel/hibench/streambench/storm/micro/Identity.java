@@ -17,28 +17,32 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import org.apache.storm.topology.base.*;
-import org.apache.storm.topology.*;
-import org.apache.storm.tuple.*;
+import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 
-import com.intel.hibench.streambench.storm.util.*;
-import com.intel.hibench.streambench.storm.topologies.*;
 
+public class Identity extends SingleSpoutTops {
 
-public class Identity extends SingleSpoutTops{
-  
-  public Identity(StormBenchConfig config){
+  public Identity(StormBenchConfig config) {
     super(config);
   }
-  
-  public void setBolt(TopologyBuilder builder){
-	  builder.setBolt("identity",new IdentityBolt(), config.boltThreads).shuffleGrouping("spout");
+
+  @Override
+  public void setBolts(TopologyBuilder builder) {
+    builder.setBolt("identity", new IdentityBolt(), config.boltThreads).shuffleGrouping("spout");
   }
-  
-  public static class IdentityBolt extends BaseBasicBolt {
+
+  private static class IdentityBolt extends BaseBasicBolt {
 
     @Override
-    public void execute(Tuple tuple, BasicOutputCollector collector){
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
       collector.emit(new Values(tuple.getValues()));
     }
 

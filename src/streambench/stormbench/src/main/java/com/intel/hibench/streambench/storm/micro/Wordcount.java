@@ -17,46 +17,72 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import org.apache.storm.topology.base.*;
-import org.apache.storm.topology.*;
-import org.apache.storm.tuple.*;
-
-import com.intel.hibench.streambench.storm.util.*;
-import com.intel.hibench.streambench.storm.topologies.*;
+import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.TopologyBuilder;
+import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Fields;
+import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Wordcount extends SingleSpoutTops{
+public class Wordcount extends SingleSpoutTops {
 
-    public Wordcount(StormBenchConfig config){
-        super(config);
+  public Wordcount(StormBenchConfig config) {
+    super(config);
+  }
+
+  @Override
+  public void setBolts(TopologyBuilder builder) {
+    builder.setBolt("split", new SplitStreamBolt(config.separator),
+            config.boltThreads).shuffleGrouping("spout");
+    builder.setBolt("count", new WordCountBolt(),
+            config.boltThreads).fieldsGrouping("split", new Fields("word"));
+  }
+
+  private static class WordCountBolt extends BaseBasicBolt {
+    Map<String, Integer> counts = new HashMap<String, Integer>();
+
+    @Override
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
+      String word = tuple.getString(0);
+      Integer count = counts.get(word);
+      if (count == null)
+        count = 0;
+      count++;
+      counts.put(word, count);
+      //BenchLogUtil.logMsg("Word:"+word+"  count:"+count);
+      collector.emit(new Values(word, count));
     }
 
-    public void setBolt(TopologyBuilder builder){
-        builder.setBolt("split",new SplitStreamBolt(config.separator),config.boltThreads).shuffleGrouping("spout");
-        builder.setBolt("count",new WordCountBolt(), config.boltThreads).fieldsGrouping("split", new Fields("word"));
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+      declarer.declare(new Fields("word", "count"));
+    }
+  }
+
+  private static class SplitStreamBolt extends BaseBasicBolt {
+    private String separator;
+
+    public SplitStreamBolt(String separator) {
+      this.separator = separator;
     }
 
-    public static class WordCountBolt extends BaseBasicBolt {
-        Map<String, Integer> counts = new HashMap<String, Integer>();
-
-        @Override
-        public void execute(Tuple tuple, BasicOutputCollector collector){
-            String word = tuple.getString(0);
-            Integer count = counts.get(word);
-            if (count == null)
-                count = 0;
-            count++;
-            counts.put(word, count);
-            //BenchLogUtil.logMsg("Word:"+word+"  count:"+count);
-            collector.emit(new Values(word, count));
-        }
-
-        @Override
-        public void declareOutputFields(OutputFieldsDeclarer declarer) {
-            declarer.declare(new Fields("word", "count"));
-        }
+    public void execute(Tuple tuple, BasicOutputCollector collector) {
+      String record = tuple.getString(0);
+      String[] fields = record.split(separator);
+      for (String s : fields) {
+        collector.emit(new Values(s));
+      }
     }
+
+    public void declareOutputFields(OutputFieldsDeclarer declarer) {
+      declarer.declare(new Fields("word"));
+    }
+  }
 
 }

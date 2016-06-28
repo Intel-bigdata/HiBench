@@ -135,8 +135,9 @@
         <sparkbench.mr.version>2</sparkbench.mr.version>
       </properties>
       <activation>
+        <activeByDefault>true</activeByDefault>
         <property>
-          <name>!MR1</name>
+          <name>MR2</name>
         </property>
       </activation>
     </profile>
@@ -163,7 +164,7 @@
       </properties>
       <activation>
         <property>
-          <name>!spark1.2</name>
+          <name>spark1.3</name>
         </property>
       </activation>
       <modules>
@@ -213,6 +214,7 @@
         <spark.bin.version>1.6</spark.bin.version>
       </properties>
       <activation>
+        <activeByDefault>true</activeByDefault>
         <property>
           <name>spark1.6</name>
         </property>

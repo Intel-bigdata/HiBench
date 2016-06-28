@@ -16,13 +16,18 @@
  */
 package com.intel.hibench.streambench.gearpump.source
 
+import java.util.Properties
+
 import akka.actor.ActorSystem
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
+import com.twitter.bijection.Injection
+import org.apache.gearpump.Message
 import org.apache.gearpump.streaming.Processor
-import org.apache.gearpump.streaming.kafka.lib.StringMessageDecoder
-import org.apache.gearpump.streaming.kafka.{KafkaSource, KafkaStorageFactory}
-import org.apache.gearpump.streaming.source.{DefaultTimeStampFilter, DataSourceProcessor}
+import org.apache.gearpump.streaming.kafka.KafkaSource
+import org.apache.gearpump.streaming.kafka.util.KafkaConfig
+import org.apache.gearpump.streaming.source.DataSourceProcessor
 import org.apache.gearpump.streaming.task.Task
+import org.apache.gearpump.streaming.transaction.api.MessageDecoder
 
 class KafkaSourceProvider(implicit actorSystem: ActorSystem) extends SourceProvider{
   override def getSourceProcessor(conf: GearpumpConfig): Processor[_ <: Task] = {
@@ -30,9 +35,19 @@ class KafkaSourceProvider(implicit actorSystem: ActorSystem) extends SourceProvi
   }
 
   private def getKafkaSource(zkConnect: String, bootstrapServers: String, topic: String, parallelism: Int): Processor[_ <: Task] = {
-    val offsetStorageFactory = new KafkaStorageFactory(zkConnect, bootstrapServers)
-    val kafkaSource = new KafkaSource(topic, zkConnect,
-      offsetStorageFactory, new StringMessageDecoder, new DefaultTimeStampFilter)
+    val props = new Properties
+    props.put(KafkaConfig.ZOOKEEPER_CONNECT_CONFIG, zkConnect)
+    props.put(KafkaConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+    props.put(KafkaConfig.MESSAGE_DECODER_CLASS_CONFIG, classOf[KeyValueDecoder])
+
+    val kafkaSource = new KafkaSource(topic, props)
     DataSourceProcessor(kafkaSource, parallelism)
+  }
+}
+
+class KeyValueDecoder extends MessageDecoder {
+  override def fromBytes(key: Array[Byte], value: Array[Byte]): Message = {
+    Message(Injection.invert[String, Array[Byte]](value).get,
+      Injection.invert[String, Array[Byte]](key).get.toLong)
   }
 }
