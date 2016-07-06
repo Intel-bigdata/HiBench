@@ -16,8 +16,10 @@
  */
 package com.intel.hibench.streambench.common.metrics
 
-trait LatencyReporter extends java.io.Serializable {
+object MetricsUtil {
 
-  def report(startTime: Long, endTime: Long): Unit
+  def getTopic(topic: String, recordPerInterval: Long, intervalSpan: Int): String = {
+    s"${topic}_${recordPerInterval}_${intervalSpan}_${System.currentTimeMillis()}"
+  }
 
 }
