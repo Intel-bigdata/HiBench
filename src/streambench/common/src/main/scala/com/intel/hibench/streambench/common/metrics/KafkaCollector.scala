@@ -17,32 +17,67 @@
 
 package com.intel.hibench.streambench.common.metrics
 
-import java.io.File
+import java.io.{FileWriter, File}
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-import com.codahale.metrics.{ConsoleReporter, CsvReporter, MetricRegistry}
-import org.apache.logging.log4j.core.util.FileUtils
+import com.codahale.metrics.{CsvReporter, MetricRegistry}
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String) extends LatencyCollector {
+class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String, sleepTime: Long) extends LatencyCollector {
+
+  private var minTime = Long.MaxValue
+  private var maxTime = 0L
+  private var count = 0L
+  private val registry = new MetricRegistry
+  private val histogram = registry.histogram(name)
+  private val reporter = CsvReporter.forRegistry(registry)
+      .formatFor(Locale.US)
+      .convertRatesTo(TimeUnit.SECONDS)
+      .convertDurationsTo(TimeUnit.MILLISECONDS)
+      .build(new File(outputFile))
 
   def start(): Unit = {
-    val registry = new MetricRegistry
-    val histogram = registry.histogram(name)
-    val reporter = CsvReporter.forRegistry(registry)
-        .convertRatesTo(TimeUnit.SECONDS)
-        .convertDurationsTo(TimeUnit.MILLISECONDS)
-        .build(new File(outputFile))
     reporter.start(1, TimeUnit.SECONDS)
+
     while (consumer.hasNext) {
-      val latency = new String(consumer.next(), "UTF-8").toLong
-      histogram.update(latency)
+      val times = new String(consumer.next(), "UTF-8").split(":")
+      val startTime = times(0).toLong
+      val endTime = times(1).toLong
+
+      updateLatency(startTime, endTime)
+      updateThroughput(startTime, endTime)
     }
+
     // wait for metrics to write out
-    Thread.sleep(10000)
+    Thread.sleep(sleepTime)
+
+
+    val throughputFile = new File(outputFile, name + ".csv")
+    val outputWriter = new FileWriter(throughputFile, true)
+    outputWriter.append(s"Throughput: ${count * 1.0 / (maxTime - minTime)}")
+    outputWriter.close()
+
     reporter.close()
     consumer.close()
+  }
+
+  private def updateLatency(startTime: Long, endTime: Long): Unit = {
+    histogram.update(endTime - startTime)
+
+  }
+
+  private def updateThroughput(startTime: Long ,endTime: Long): Unit = {
+    count += 1
+
+    if (startTime < minTime) {
+      minTime = startTime
+    }
+
+    if (endTime > maxTime) {
+      maxTime = endTime
+    }
+
   }
 
 }
