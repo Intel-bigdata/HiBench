@@ -28,7 +28,7 @@ cd ${workload_folder}
 printFullLog
 
 START_TIME=`timestamp`
-run-flink-job -c com.intel.hibench.streambench.flink.RunBench
+run-flink-job -c com.intel.flinkbench.RunBench
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput

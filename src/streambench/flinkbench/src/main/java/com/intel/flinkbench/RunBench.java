@@ -21,6 +21,8 @@ import com.intel.flinkbench.microbench.*;
 import com.intel.flinkbench.util.BenchLogUtil;
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.flinkbench.util.FlinkBenchConfig;
+import com.intel.hibench.streambench.common.metrics.MetricsUtil;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 
 public class RunBench {
     public static void main(String[] args) throws Exception {
@@ -35,6 +37,8 @@ public class RunBench {
         FlinkBenchConfig conf = new FlinkBenchConfig();
 
         ConfigLoader cl = new ConfigLoader(args[0]);
+        
+        KafkaReporter reporter = getReporter(cl);
 
         conf.master = cl.getProperty("hibench.streamingbench.brokerList");
         conf.zkHost = cl.getProperty("hibench.streamingbench.zookeeper.host");
@@ -54,7 +58,7 @@ public class RunBench {
             wordCount.processStream(conf);
         } else if (benchName.equals("identity")) {
             Identity identity = new Identity();
-            identity.processStream(conf);
+            identity.processStream(reporter, conf);
         } else if (benchName.equals("sample")) {
             conf.prob = Double.parseDouble(cl.getProperty("hibench.streamingbench.prob"));
             Sample sample = new Sample();
@@ -75,5 +79,14 @@ public class RunBench {
             Statistics numeric = new Statistics();
             numeric.processStream(conf);
         }
+    }
+
+    private static KafkaReporter getReporter(ConfigLoader config) {
+        String topic = config.getProperty("hibench.streamingbench.topic_name");
+        String brokerList = config.getProperty("hibench.streamingbench.brokerList");
+        long recordPerInterval = Long.parseLong(config.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
+        int intervalSpan = Integer.parseInt(config.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+        String reporterTopic = MetricsUtil.getTopic(topic, recordPerInterval, intervalSpan);
+        return new KafkaReporter(reporterTopic, brokerList);
     }
 }
