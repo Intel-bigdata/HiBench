@@ -5,7 +5,7 @@ import org.apache.spark.storage.StorageLevel
 case class SparkBenchConfig (
   // Spark
   master: String,
-  appName: String,
+  benchName: String,
   batchInterval: Int,
   receiverNumber: Int,
   copies: Int,
@@ -16,14 +16,16 @@ case class SparkBenchConfig (
   // Kafka
   zkHost: String,
   consumerGroup: String,
-  topic: String,
+  sourceTopic: String,
+  reporterTopic: String,
   brokerList: String,
 
 
   // Hibench
   recordCount: Long,   // it's used in listener to terminate the application
   debugMode: Boolean,
-  coreNumber: Int) {
+  coreNumber: Int,
+  sampleProbability: Double) {
 
 
   def storageLevel = copies match {

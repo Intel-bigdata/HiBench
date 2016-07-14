@@ -17,31 +17,40 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.{UserVisitParser, Logger}
+import com.intel.hibench.streambench.common.UserVisitParser
+import com.intel.hibench.streambench.common.metrics.KafkaReporter
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.{StateSpec, State, StreamingContext}
+import org.apache.spark.streaming.{StateSpec, State}
 
-class WordCount(config: SparkBenchConfig, logger: Logger)
-  extends BenchRunnerBase(config, logger){
+class WordCount() extends BenchBase {
 
-  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
-    val mappingFunc = (word: String, one: Option[Int], state: State[Int]) => {
-      val sum = one.getOrElse(0) + state.getOption.getOrElse(0)
-      state.update(sum)
-      (word, sum)
-    }
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig) = {
+    val reportTopic = config.reporterTopic
+    val brokerList = config.brokerList
 
-    val parsedLine: DStream[(String, Int)] = lines.map(line => {
+    val parsedLine: DStream[(String, (Int, Long))] = lines.map(line => {
       val userVisit = UserVisitParser.parse(line._2)
-      (userVisit.getIp, 1)
+      (userVisit.getIp, (1, line._1))
     })
 
-    val wordCount = parsedLine.mapWithState(StateSpec.function(mappingFunc)).stateSnapshots()
-    if(config.debugMode) {
-      wordCount.print()
-    } else {
-      wordCount.foreachRDD(rdd => rdd.foreach(_ => Unit))
+    val mappingFunc = (word: String, one: Option[(Int, Long)], state: State[Int]) => {
+      if (!one.isDefined) {
+        throw new Exception("input value is not defined. It should not happen as we don't use timeout function.")
+      }
+      val sum = one.get._1 + state.getOption.getOrElse(0)
+      state.update(sum)
+      (word, (sum, one.get._2))
     }
+
+    val wordCount = parsedLine.mapWithState(StateSpec.function(mappingFunc))
+
+    wordCount.foreachRDD(rdd => rdd.foreachPartition(partLines => {
+      val reporter = new KafkaReporter(reportTopic, brokerList)
+      partLines.map { case (word, (sum, inTime)) =>
+        reporter.report(inTime, System.currentTimeMillis())
+        if (config.debugMode) println(inTime + ", " + word + ":" + sum)
+      }
+    }))
   }
 }

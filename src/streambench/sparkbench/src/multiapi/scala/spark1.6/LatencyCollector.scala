@@ -17,7 +17,6 @@
 
 package com.intel.hibench.streambench.spark.metrics
 
-import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._
@@ -28,7 +27,7 @@ class StopContextThread(ssc: StreamingContext) extends Runnable {
   }
 }
 
-class LatencyListener(ssc: StreamingContext, params: SparkBenchConfig, logger: Logger) extends StreamingListener {
+class LatencyListener(ssc: StreamingContext, params: SparkBenchConfig) extends StreamingListener {
 
   var startTime = 0L
   var endTime = 0L
@@ -52,13 +51,13 @@ class LatencyListener(ssc: StreamingContext, params: SparkBenchConfig, logger: L
 
     if (hasStarted && !thread.isAlive) {
       totalRecords += recordThisBatch
-      logger.logMsg("LatencyController:    this batch: " + recordThisBatch)
-      logger.logMsg("LatencyController: total records: " + totalRecords)
+      println("LatencyController:    this batch: " + recordThisBatch)
+      println("LatencyController: total records: " + totalRecords)
       batchCompleted.batchInfo.processingDelay match {
         case Some(value) => {
           totalDelay += value * recordThisBatch
           val valueAdjust = value + params.batchInterval.toInt * 500
-          logger.logLatency(recordThisBatch, s"$valueAdjust")
+          // logger.logLatency(recordThisBatch, s"$valueAdjust")
         }
         case None =>  //Nothing
       }
@@ -73,15 +72,13 @@ class LatencyListener(ssc: StreamingContext, params: SparkBenchConfig, logger: L
         //This is weighted avg of every batch process time. The weight is records processed int the batch
         val avgLatency = totalDelay / totalRecords
         if (avgLatency > params.batchInterval * 1000)
-          logger.logMsg("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
+          println("WARNING:SPARK CLUSTER IN UNSTABLE STATE. TRY REDUCE INPUT SPEED")
 
         val recordThroughput = totalRecords / totalTime
         val avgLatencyAdjust = avgLatency + params.batchInterval.toInt * 500
-        logger.logMsg("Batch count: " + batchCount)
-        logger.logMsg("Record count: " + totalRecords)
-        logger.logMsg("Consumed time: " + totalTime + " s")
-        logger.logThroughput(s"$recordThroughput")
-        logger.logAvgLatency(s"$avgLatencyAdjust")
+        println("Batch count: " + batchCount)
+        println("Record count: " + totalRecords)
+        println("Consumed time: " + totalTime + " s")
         thread.start
       }
     }

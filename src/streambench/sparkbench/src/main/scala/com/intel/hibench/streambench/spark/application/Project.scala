@@ -17,25 +17,24 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.{UserVisitParser, Logger}
+import com.intel.hibench.streambench.common.UserVisitParser
+import com.intel.hibench.streambench.common.metrics.KafkaReporter
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.StreamingContext
 
-class Project(config: SparkBenchConfig, logger: Logger)
-  extends BenchRunnerBase(config, logger) {
+class Project() extends BenchBase {
 
-  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit = {
+    val reportTopic = config.reporterTopic
+    val brokerList = config.brokerList
 
-    val userVisitInfo = lines.map{ case (time, line) =>
-      UserVisitParser.parse(line)
-    }
-
-    if(config.debugMode){
-      userVisitInfo.print()
-    } else {
-      userVisitInfo.foreachRDD(rdd => rdd.foreach(_ => Unit))
-    }
+    lines.foreachRDD(rdd => rdd.foreachPartition(partLines => {
+      val reporter = new KafkaReporter(reportTopic, brokerList)
+      val userVisitInfo = partLines.map { case (inTime, content) =>
+        UserVisitParser.parse(content)
+        reporter.report(inTime, System.currentTimeMillis())
+        if (config.debugMode) println(inTime + ", " + content)
+      }
+    }))
   }
-
 }
