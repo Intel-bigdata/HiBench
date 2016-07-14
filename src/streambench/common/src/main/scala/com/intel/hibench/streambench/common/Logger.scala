@@ -19,6 +19,10 @@ package com.intel.hibench.streambench.common
 
 import org.slf4j.LoggerFactory
 
+/**
+  * @deprecated replace by LatencyReporter
+  */
+@deprecated
 class Logger(platForm: Platform.Platform, testCase: TestCase.TestCase) {
   val prefix = s"${platForm}-${testCase}"
   private val logger = LoggerFactory.getLogger(classOf[Logger])

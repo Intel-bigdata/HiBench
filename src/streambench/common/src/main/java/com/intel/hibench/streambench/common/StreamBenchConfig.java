@@ -53,7 +53,13 @@ public class StreamBenchConfig {
   public static String SAMPLE_PROBABILITY = "hibench.streamingbench.prob";
 
 
+  // =====================================
+  // Prepare Related Conf
+  // =====================================
+  // TODO: rename prepare to dataGen
+  public static String PREPARE_RECORD_PRE_INTERVAL = "hibench.streamingbench.batch_interval";
 
+  public static String PREPARE_INTERVAL_SPAN = "hibench.streamingbench.prepare.periodic.intervalSpan";
 
   // =====================================
   // Spark Streaming Related Conf

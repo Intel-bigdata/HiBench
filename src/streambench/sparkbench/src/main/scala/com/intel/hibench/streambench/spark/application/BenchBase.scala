@@ -22,18 +22,9 @@ import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 
 import org.apache.spark.streaming.dstream.DStream
 
-class Identity() extends BenchBase {
-
-  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit = {
-    val reportTopic = config.reporterTopic
-    val brokerList = config.brokerList
-
-    lines.foreachRDD(rdd => rdd.foreachPartition( partLines => {
-      val reporter = new KafkaReporter(reportTopic, brokerList)
-      partLines.foreach{ case (inTime , content) =>
-        reporter.report(inTime, System.currentTimeMillis())
-        if(config.debugMode) println(inTime + ", " + content)
-      }
-    }))
-  }
+/**
+  * The base class of all test cases in spark. The sub class need to implement "process" method
+  */
+trait BenchBase {
+  def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit
 }

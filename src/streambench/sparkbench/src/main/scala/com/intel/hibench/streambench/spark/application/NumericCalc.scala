@@ -17,10 +17,9 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.{KMeansDataParser, Logger}
+import com.intel.hibench.streambench.common.KMeansDataParser
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.StreamingContext
 
 case class MultiReducer(val max: Double, val min: Double, val sum: Double, val count: Long) {
   def this() = this(0, Int.MaxValue, 0, 0)
@@ -41,12 +40,12 @@ case class MultiReducer(val max: Double, val min: Double, val sum: Double, val c
   }
 }
 
-class NumericCalc(config: SparkBenchConfig, logger: Logger)
-  extends BenchRunnerBase(config, logger) {
+// TODO: Rework this test case and apply KafkaReporter
+class NumericCalc() extends BenchBase {
 
   var history_statistics: MultiReducer = new MultiReducer()
 
-  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit = {
     val reducers = lines.map{ case (time, line) =>
       val data = KMeansDataParser.parse(line).getData
       val value = data(0)
@@ -58,10 +57,10 @@ class NumericCalc(config: SparkBenchConfig, logger: Logger)
       val currentReducer = rdd.fold(zero)((left, right) => left.reduce(right))
       history_statistics = history_statistics.reduce(currentReducer)
 
-      logger.logMsg("Current max: " + currentReducer.max)
-      logger.logMsg("Current min: " + currentReducer.min)
-      logger.logMsg("Current sum: " + currentReducer.sum)
-      logger.logMsg("Current total: " + currentReducer.count)
+      println("Current max: " + currentReducer.max)
+      println("Current min: " + currentReducer.min)
+      println("Current sum: " + currentReducer.sum)
+      println("Current total: " + currentReducer.count)
     })
   }
 }

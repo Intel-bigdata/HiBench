@@ -17,15 +17,17 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.{UserVisitParser, Logger}
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.StreamingContext
 
-class Grep(config: SparkBenchConfig, logger: Logger, pattern: String)
-  extends BenchRunnerBase(config, logger) {
+/**
+  * @deprecated don't need this test case anymore
+  */
+@deprecated
+class Grep(pattern: String) extends BenchBase {
 
-  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig) = {
     val matched = lines.filter(_._2.contains(pattern))
 
     if(config.debugMode){

@@ -18,19 +18,22 @@
 package com.intel.hibench.streambench.spark
 
 import com.intel.hibench.common.HiBenchConf
-import com.intel.hibench.streambench.common.{ConfigLoader, Platform, StreamBenchConfig, TestCase, TempLogger}
+import com.intel.hibench.streambench.common.metrics.{KafkaReporter, MetricsUtil, LatencyReporter}
+import com.intel.hibench.streambench.common.{ConfigLoader, StreamBenchConfig, TempLogger}
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import com.intel.hibench.streambench.spark.application._
+import kafka.serializer.StringDecoder
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.dstream.DStream
+import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-
+/**
+  * The entry point of Spark Streaming benchmark
+  */
 object RunBench {
-  type LogType = TempLogger
 
   def main(args: Array[String]) {
-    this.run(args)
-  }
-
-  def run(args: Array[String]) {
     val conf = new ConfigLoader(args(0))
 
     // Load configuration
@@ -49,53 +52,73 @@ object RunBench {
     val consumerGroup = conf.getProperty(StreamBenchConfig.CONSUMER_GROUP)
     val brokerList = if (directMode) conf.getProperty(StreamBenchConfig.BROKER_LIST) else ""
     val debugMode = conf.getProperty(StreamBenchConfig.DEBUG_MODE).toBoolean
+    val recordPerInterval = conf.getProperty(StreamBenchConfig.PREPARE_RECORD_PRE_INTERVAL).toLong
+    val intervalSpan: Int = conf.getProperty(StreamBenchConfig.PREPARE_INTERVAL_SPAN).toInt
 
     // val separator = conf.getProperty(StreamBenchConfig.SEPARATOR)
     val recordCount = conf.getProperty("hibench.streamingbench.record_count").toLong
     val coreNumber = conf.getProperty("hibench.yarn.executor.num").toInt * conf.getProperty("hibench.yarn.executor.cores").toInt
 
-    val logPath = reportDir + "/streamingbench/spark/streambenchlog.txt"
+    // val logPath = reportDir + "/streamingbench/spark/streambenchlog.txt"
+    val reporterTopic = MetricsUtil.getTopic(topic, recordPerInterval, intervalSpan)
+    println("Reporter Topic" + reporterTopic)
 
+    val probability = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble
     // init SparkBenchConfig, it will be passed into every test case
     val config = SparkBenchConfig(master, benchName, batchInterval, receiverNumber, copies,
-        enableWAL, checkPointPath, directMode, zkHost, consumerGroup, topic, brokerList,
-        recordCount, debugMode, coreNumber)
+      enableWAL, checkPointPath, directMode, zkHost, consumerGroup, topic, reporterTopic,
+      brokerList, recordCount, debugMode, coreNumber, probability)
 
-    benchName match {
-      case "identity" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.Identity)
-        val identity = new Identity(config, logger)
-        identity.run()
-      case "project" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.Project)
-        val project = new Project(config, logger)
-        project.run()
-      case "sample" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.Sample )
-        val probability = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble
-        val sample = new Sample(config, logger, probability)
-        sample.run()
-      case "wordcount" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.WordCount)
-        val wordCount = new WordCount(config, logger)
-        wordCount.run()
-      case "grep" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.Grep)
-        val pattern = conf.getProperty(StreamBenchConfig.GREP_PATTERN)
-        val grep = new Grep(config, logger, pattern)
-        grep.run()
-      case "distinctcount" =>
-        val logger = new LogType(logPath, Platform.Spark, TestCase.DistinctCount)
-        val distinctCount = new DistinctCount(config, logger)
-        distinctCount.run()
+    run(config)
+  }
+
+  private def run(config: SparkBenchConfig) {
+
+    // select test case based on given benchName
+    val testCase : BenchBase = config.benchName match {
+      case "identity" => new Identity()
+      case "project" => new Project()
+      case "wordcount" => new WordCount()
+      case "distinctcount" => new DistinctCount()
+      case "sample" => new Sample(config.sampleProbability)
+//      case "grep" =>
+//        val pattern = conf.getProperty(StreamBenchConfig.GREP_PATTERN)
+//        new Grep(config, pattern)
       case "statistics" =>
         // This test case will consume KMeansData instead of UserVisit as other test case
-        val logger = new LogType(logPath, Platform.Spark, TestCase.Statistics)
-        val numericCalc = new NumericCalc(config, logger)
-        numericCalc.run()
+        new NumericCalc()
       case other =>
-        System.err.println(s"test case ${other} are not supported")
-        System.exit(-1)
+        throw new Exception(s"test case ${other} is not supported")
     }
+
+    // defind streaming context
+    val conf = new SparkConf().setMaster(config.master).setAppName(config.benchName)
+    val ssc = new StreamingContext(conf, Seconds(config.batchInterval))
+    ssc.checkpoint(config.checkpointPath)
+
+    // add listener to collect static information.
+    // val listener = new LatencyListener(ssc, config)
+    // ssc.addStreamingListener(listener)
+
+    val lines: DStream[(String, String)] = if (config.directMode) {
+      // direct mode with low level Kafka API
+      KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
+        ssc, config.kafkaParams, Set(config.sourceTopic))
+
+    } else {
+      // receiver mode with high level Kafka API
+      val kafkaInputs = (1 to config.receiverNumber).map{ _ =>
+        KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](
+          ssc, config.kafkaParams, Map(config.sourceTopic -> config.threadsPerReceiver), config.storageLevel)
+      }
+      ssc.union(kafkaInputs)
+    }
+
+    // convent key from String to Long, it stands for event creation time.
+    val parsedLines = lines.map{ case (k, v) => (k.toLong, v) }
+    testCase.process(parsedLines, config)
+
+    ssc.start()
+    ssc.awaitTermination()
   }
 }

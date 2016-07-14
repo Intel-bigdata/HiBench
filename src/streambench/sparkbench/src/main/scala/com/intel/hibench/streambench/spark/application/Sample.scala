@@ -17,23 +17,26 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.StreamingContext
 
 object ThreadLocalRandom extends Serializable{
+
   private val localRandom = new ThreadLocal[util.Random] {
     override protected def initialValue() = new util.Random
   }
 
   def current = localRandom.get
+
 }
 
-class Sample(config:SparkBenchConfig, logger: Logger, probability:Double)
-  extends BenchRunnerBase(config, logger) {
+/**
+  * @deprecated don't need this test case anymore.
+  */
+@deprecated
+class Sample(probability:Double)  extends BenchBase {
 
-  override def process(ssc: StreamingContext, lines: DStream[(Long, String)]) {
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig) = {
 
     val samples = lines.filter( _=> {
       ThreadLocalRandom.current.nextDouble() < probability
