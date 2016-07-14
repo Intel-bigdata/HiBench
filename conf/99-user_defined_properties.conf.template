@@ -109,6 +109,9 @@ hibench.streamingbench.brokerList	HOSTNAME:HOSTPORT
 # Storm home
 hibench.streamingbench.storm.home	/PATH/TO/STORM/HOME
 
+# Flink home
+hibench.streamingbench.flink.home	/PATH/TO/FLINK/HOME
+
 # Kafka home
 hibench.streamingbench.kafka.home	/PATH/TO/KAFKA/HOME
 

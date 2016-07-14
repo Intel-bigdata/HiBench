@@ -17,10 +17,11 @@
 
 package com.intel.flinkbench.datasource;
 
-import com.intel.flinkbench.util.StringTupleSchema;
+import com.intel.flinkbench.util.KeyedTupleSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer08;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 
 import com.intel.flinkbench.util.FlinkBenchConfig;
 
@@ -42,9 +43,10 @@ public abstract class StreamBase {
         properties.setProperty("bootstrap.servers", config.master);
         this.dataStream = new FlinkKafkaConsumer08<Tuple2<String, String>>(
                         config.topic,
-                        new StringTupleSchema(),
+                        new KeyedTupleSchema(),
                         properties);
     }
-    public abstract void processStream(FlinkBenchConfig config) throws Exception;
+    public void processStream(FlinkBenchConfig config) throws Exception {}
+    public void processStream(KafkaReporter kafkaReporter, FlinkBenchConfig config) throws Exception {}
     
 }
