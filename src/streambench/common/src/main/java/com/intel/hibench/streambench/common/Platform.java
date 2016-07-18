@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.common
+package com.intel.hibench.streambench.common;
 
+public enum Platform {
 
-object Platform extends Enumeration {
+  SPARK("Spark"),
+  FLINK("flink"),
+  STORM("storm"),
+  GEARPUMP("gearpump"),
+  SAMZA("samza");
 
-  type Platform = Value
+  private final String platform;
 
-  val Spark = Value("Spark")
-  val Flink = Value("Flink")
-  val Storm = Value("Storm")
-  val Samza = Value("Samza")
-  val Gearpump = Value("Gearpump")
+  Platform(String platform) {
+    this.platform = platform;
+  }
+
 }
-

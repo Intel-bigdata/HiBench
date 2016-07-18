@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import com.codahale.metrics.{CsvReporter, MetricRegistry}
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String, sleepTime: Long) extends LatencyCollector {
+class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String) extends LatencyCollector {
 
   private var minTime = Long.MaxValue
   private var maxTime = 0L
@@ -40,6 +40,7 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String, 
   def start(): Unit = {
     reporter.start(1, TimeUnit.SECONDS)
 
+    println("start collecting metrics from kafka topic " + name)
     while (consumer.hasNext) {
       val times = new String(consumer.next(), "UTF-8").split(":")
       val startTime = times(0).toLong
@@ -49,14 +50,19 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String, 
       updateThroughput(startTime, endTime)
     }
 
-    // wait for metrics to write out
-    Thread.sleep(sleepTime)
-
-
     val throughputFile = new File(outputFile, name + ".csv")
     val outputWriter = new FileWriter(throughputFile, true)
     outputWriter.append(s"Throughput: ${count * 1.0 / (maxTime - minTime)}")
     outputWriter.close()
+
+    val path = throughputFile.getCanonicalPath
+    println(s"written out metrics to $path")
+
+
+    import scala.sys.process._
+    while(!Seq("tail", "-n", "1", path).!!.contains("Throughput")) {
+      Thread.sleep(1000)
+    }
 
     reporter.close()
     consumer.close()

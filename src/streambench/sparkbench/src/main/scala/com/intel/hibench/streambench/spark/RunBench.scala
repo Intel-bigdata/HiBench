@@ -19,7 +19,7 @@ package com.intel.hibench.streambench.spark
 
 import com.intel.hibench.common.HiBenchConf
 import com.intel.hibench.streambench.common.metrics.{KafkaReporter, MetricsUtil, LatencyReporter}
-import com.intel.hibench.streambench.common.{ConfigLoader, StreamBenchConfig, TempLogger}
+import com.intel.hibench.streambench.common.{Platform, ConfigLoader, StreamBenchConfig, TempLogger}
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import com.intel.hibench.streambench.spark.application._
 import kafka.serializer.StringDecoder
@@ -60,7 +60,7 @@ object RunBench {
     val coreNumber = conf.getProperty("hibench.yarn.executor.num").toInt * conf.getProperty("hibench.yarn.executor.cores").toInt
 
     // val logPath = reportDir + "/streamingbench/spark/streambenchlog.txt"
-    val reporterTopic = MetricsUtil.getTopic(topic, recordPerInterval, intervalSpan)
+    val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, recordPerInterval, intervalSpan)
     println("Reporter Topic" + reporterTopic)
 
     val probability = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble
