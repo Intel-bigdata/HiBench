@@ -18,6 +18,9 @@
 package com.intel.hibench.streambench.storm;
 
 import com.intel.hibench.streambench.common.ConfigLoader;
+import com.intel.hibench.streambench.common.Platform;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.storm.micro.*;
 import com.intel.hibench.streambench.storm.micro.NumericCalc;
 import com.intel.hibench.streambench.storm.trident.*;
@@ -54,6 +57,12 @@ public class RunBench {
     conf.readFromStart = Boolean.parseBoolean(cl.getProperty("hibench.streamingbench.storm.read_from_start"));
     conf.ackon = Boolean.parseBoolean(cl.getProperty("hibench.streamingbench.storm.ackon"));
     conf.nimbusContactInterval = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.nimbusContactInterval"));
+
+    String brokerList = cl.getProperty("hibench.streamingbench.brokerList");
+    long recordPerInterval = Long.parseLong(cl.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
+    int intervalSpan = Integer.parseInt(cl.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+    String reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, recordPerInterval, intervalSpan);
+    conf.latencyReporter = new KafkaReporter(reporterTopic, brokerList);
 
     String benchName = conf.benchName;
 

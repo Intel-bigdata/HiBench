@@ -22,11 +22,6 @@ public class KeyedTupleSchema implements KeyedSerializationSchema<Tuple2<String,
     }
 
     @Override
-    public String getTargetTopic(Tuple2<String, String> element) {
-        return null; // we are never overriding the topic
-    }
-    
-    @Override
     public Tuple2<String, String> deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset) throws IOException {
         return new Tuple2<String, String>(new String(messageKey), new String(message));
     }

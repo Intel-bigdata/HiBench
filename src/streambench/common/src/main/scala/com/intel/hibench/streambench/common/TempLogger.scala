@@ -7,7 +7,7 @@ import java.io.{File, PrintWriter}
  *
  * This logger will add messages into given path.
  */
-class TempLogger(logPath: String, platForm: Platform.Platform, testCase: TestCase.TestCase)
+class TempLogger(logPath: String, platForm: Platform, testCase: TestCase.TestCase)
     extends Logger(platForm, testCase) {
 
   val file = new File(logPath)

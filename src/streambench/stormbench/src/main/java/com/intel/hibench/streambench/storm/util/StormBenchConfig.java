@@ -1,5 +1,9 @@
 package com.intel.hibench.streambench.storm.util;
 
+import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+
+import java.io.Serializable;
+
 public class StormBenchConfig {
   public String nimbus;
   public int nimbusAPIPort;
@@ -14,6 +18,7 @@ public class StormBenchConfig {
   public boolean readFromStart;
   public boolean ackon;
   public int nimbusContactInterval;
+  public LatencyReporter latencyReporter;
 
   //Following are fields that are benchmark specific
   public String separator;

@@ -17,7 +17,7 @@
 package com.intel.hibench.streambench.gearpump
 
 import com.intel.hibench.streambench.common.metrics.{MetricsUtil, LatencyReporter, KafkaReporter}
-import com.intel.hibench.streambench.common.ConfigLoader
+import com.intel.hibench.streambench.common.{Platform, ConfigLoader}
 import com.intel.hibench.streambench.gearpump.application._
 import com.intel.hibench.streambench.gearpump.source.KafkaSourceProvider
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
@@ -77,7 +77,7 @@ object RunBench {
     val brokerList = conf.getProperty("hibench.streamingbench.brokerList")
     val recordPerInterval = conf.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval").toLong
     val intervalSpan: Int = conf.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan").toInt
-    val reporterTopic = MetricsUtil.getTopic(topic, recordPerInterval, intervalSpan)
+    val reporterTopic = MetricsUtil.getTopic(Platform.GEARPUMP, topic, recordPerInterval, intervalSpan)
     new KafkaReporter(reporterTopic, brokerList)
   }
 }

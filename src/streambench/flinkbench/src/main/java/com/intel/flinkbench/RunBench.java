@@ -24,6 +24,8 @@ import com.intel.flinkbench.util.FlinkBenchConfig;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 
+import com.intel.hibench.streambench.common.Platform;
+
 public class RunBench {
     public static void main(String[] args) throws Exception {
         runAll(args);
@@ -86,7 +88,7 @@ public class RunBench {
         String brokerList = config.getProperty("hibench.streamingbench.brokerList");
         long recordPerInterval = Long.parseLong(config.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
         int intervalSpan = Integer.parseInt(config.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
-        String reporterTopic = MetricsUtil.getTopic(topic, recordPerInterval, intervalSpan);
+        String reporterTopic = MetricsUtil.getTopic(Platform.FLINK, topic, recordPerInterval, intervalSpan);
         return new KafkaReporter(reporterTopic, brokerList);
     }
 }
