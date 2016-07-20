@@ -36,6 +36,7 @@ public class KafkaSender {
   String sourcePath;
   Configuration dfsConf;
   KafkaProducer producer;
+  CachedData cachedData;
   StringSerializer serializer = new StringSerializer();
 
   // offset of file input stream. Currently it's fixed, which means same records will be sent
@@ -76,35 +77,30 @@ public class KafkaSender {
 
   // send content to Kafka
   public long send (String topic, long totalRecords) {
+    this.cachedData = CachedData.getInstance(sourcePath, dfsConf, offset, (int)totalRecords);
     long startTime = System.currentTimeMillis();
 
     long sentRecords = 0L;
     long sentBytes = 0L;
-    BufferedReader reader = SourceFileReader.getReader(dfsConf, sourcePath, offset);
 
-    try {
-      while (sentRecords < totalRecords) {
-        String line = reader.readLine();
-        if (line == null) {
-          break; // no more data from source files
-        }
-        String currentTime = Long.toString(System.currentTimeMillis());
-        ProducerRecord record = new ProducerRecord(topic, currentTime, line);
-        producer.send(record, callback);
-
-        // Key and Value will be serialized twice.
-        // 1. in producer.send method
-        // 2. explicitly serialize here to count byte size.
-        byte[] keyByte = serializer.serialize(topic, currentTime);
-        byte[] valueByte = serializer.serialize(topic, line);
-
-        //update counter
-        sentRecords ++;
-        sentBytes = sentBytes + keyByte.length + valueByte.length;
+    while (sentRecords < totalRecords) {
+      String line = cachedData.getRecord();
+      if (line == null) {
+        break; // no more data from source files
       }
-    } catch (IOException e) {
-      System.err.println("Failed read records from Path: " + sourcePath);
-      e.printStackTrace();
+      String currentTime = Long.toString(System.currentTimeMillis());
+      ProducerRecord record = new ProducerRecord(topic, currentTime, line);
+      producer.send(record, callback);
+
+      // Key and Value will be serialized twice.
+      // 1. in producer.send method
+      // 2. explicitly serialize here to count byte size.
+      byte[] keyByte = serializer.serialize(topic, currentTime);
+      byte[] valueByte = serializer.serialize(topic, line);
+
+      //update counter
+      sentRecords++;
+      sentBytes = sentBytes + keyByte.length + valueByte.length;
     }
 
     // print out useful info
