@@ -42,7 +42,7 @@ public class CachedData {
                                          Configuration dfsConf,
                                          long startOffset,
                                          int totalRecords) {
-        if(cachedData != null) {
+        if(cachedData == null) {
             synchronized (CachedData.class) {
                 if (cachedData == null) {
                     cachedData = new CachedData(sourcePath, dfsConf, startOffset, totalRecords);
