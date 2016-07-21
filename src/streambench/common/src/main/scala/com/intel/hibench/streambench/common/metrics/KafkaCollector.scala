@@ -18,27 +18,20 @@
 package com.intel.hibench.streambench.common.metrics
 
 import java.io.{FileWriter, File}
-import java.util.Locale
-import java.util.concurrent.TimeUnit
+import java.util.Date
 
-import com.codahale.metrics.{CsvReporter, MetricRegistry}
+import com.codahale.metrics.MetricRegistry
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String) extends LatencyCollector {
+class KafkaCollector(name: String, consumer: KafkaConsumer, outputDir: String) extends LatencyCollector {
 
   private var minTime = Long.MaxValue
   private var maxTime = 0L
   private var count = 0L
   private val registry = new MetricRegistry
   private val histogram = registry.histogram(name)
-  private val reporter = CsvReporter.forRegistry(registry)
-      .formatFor(Locale.US)
-      .convertRatesTo(TimeUnit.SECONDS)
-      .convertDurationsTo(TimeUnit.MILLISECONDS)
-      .build(new File(outputFile))
 
   def start(): Unit = {
-    reporter.start(1, TimeUnit.SECONDS)
 
     println("start collecting metrics from kafka topic " + name)
     while (consumer.hasNext) {
@@ -50,22 +43,8 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String) 
       updateThroughput(startTime, endTime)
     }
 
-    val throughputFile = new File(outputFile, name + ".csv")
-    val outputWriter = new FileWriter(throughputFile, true)
-    outputWriter.append(s"Throughput: ${count * 1.0 / (maxTime - minTime)}")
-    outputWriter.close()
-
-    val path = throughputFile.getCanonicalPath
-    println(s"written out metrics to $path")
-
-
-    import scala.sys.process._
-    while(!Seq("tail", "-n", "1", path).!!.contains("Throughput")) {
-      Thread.sleep(1000)
-    }
-
-    reporter.close()
     consumer.close()
+    report()
   }
 
   private def updateLatency(startTime: Long, endTime: Long): Unit = {
@@ -84,6 +63,47 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputFile: String) 
       maxTime = endTime
     }
 
+  }
+
+
+  private def report(): Unit = {
+    val outputFile = new File(outputDir, name + ".csv")
+    println(s"written out metrics to ${outputFile.getCanonicalPath}")
+    val header = "time,count,throughput(msgs/s),max_latency(ms),mean_latency(ms),min_latency(ms)," +
+        "stddev_latency(ms),p50_latency(ms),p75_latency(ms),p95_latency(ms),p98_latency(ms)," +
+        "p99_latency(ms),p999_latency(ms)\n"
+    val fileExists = outputFile.exists()
+    if (!fileExists) {
+      val parent = outputFile.getParentFile
+      if (!parent.exists()) {
+        parent.mkdirs()
+      }
+      outputFile.createNewFile()
+    }
+    val outputFileWriter = new FileWriter(outputFile, true)
+    if (!fileExists) {
+      outputFileWriter.append(header)
+    }
+    val time = new Date(System.currentTimeMillis()).toString
+    val count = histogram.getCount
+    val snapshot = histogram.getSnapshot
+    val throughput = count * 1000 / (maxTime - minTime)
+    outputFileWriter.append(s"$time,$count,$throughput," +
+        s"${formatDouble(snapshot.getMax)}," +
+        s"${formatDouble(snapshot.getMean)}," +
+        s"${formatDouble(snapshot.getMin)}," +
+        s"${formatDouble(snapshot.getStdDev)}," +
+        s"${formatDouble(snapshot.getMedian)}," +
+        s"${formatDouble(snapshot.get75thPercentile())}," +
+        s"${formatDouble(snapshot.get95thPercentile())}," +
+        s"${formatDouble(snapshot.get98thPercentile())}," +
+        s"${formatDouble(snapshot.get99thPercentile())}," +
+        s"${formatDouble(snapshot.get999thPercentile())}\n")
+    outputFileWriter.close()
+  }
+
+  private def formatDouble(d: Double): String = {
+    "%.3f".format(d)
   }
 
 }
