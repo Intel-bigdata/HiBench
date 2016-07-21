@@ -55,9 +55,9 @@ public class DataGenerator {
     // instantiate KafkaSender
     KafkaSender sender;
     if(benchName.contains("statistics")) {
-      sender = new KafkaSender(kMeansFile, kMeansFileOffset, configLoader);
+      sender = new KafkaSender(kMeansFile, kMeansFileOffset, configLoader, totalCount);
     } else {
-      sender = new KafkaSender(userVisitsFile, userVisitsFileOffset, configLoader);
+      sender = new KafkaSender(userVisitsFile, userVisitsFileOffset, configLoader, totalCount);
     }
 
     Timer timer = new Timer();

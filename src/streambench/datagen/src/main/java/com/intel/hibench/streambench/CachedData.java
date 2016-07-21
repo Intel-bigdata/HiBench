@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by liuxiany on 7/20/2016.
+ * Cache the total records in memory.
  */
 public class CachedData {
     private volatile static CachedData cachedData;
@@ -85,8 +85,8 @@ public class CachedData {
         }
     }
 
-    public synchronized String getRecord() {
-        int nextIndex = (index + 1) % totalRecords;
-        return data.get(nextIndex);
+    public String getRecord() {
+        index = (index + 1) % totalRecords;
+        return data.get(index);
     }
 }

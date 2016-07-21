@@ -44,7 +44,7 @@ public class KafkaSender {
   long offset;
 
   // constructor
-  public KafkaSender(String sourcePath, long startOffset, ConfigLoader configLoader) {
+  public KafkaSender(String sourcePath, long startOffset, ConfigLoader configLoader, long totalCount) {
     String brokerList = configLoader.getProperty("hibench.streamingbench.brokerList");
     String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
 
@@ -64,6 +64,7 @@ public class KafkaSender {
     this.dfsConf = new Configuration();
     dfsConf.set("fs.default.name", dfsMaster);
     this.offset = startOffset;
+    this.cachedData = CachedData.getInstance(sourcePath, dfsConf, offset, (int)totalCount);
   }
 
   // The callback function will be triggered when receive ack from kafka.
@@ -77,7 +78,6 @@ public class KafkaSender {
 
   // send content to Kafka
   public long send (String topic, long totalRecords) {
-    this.cachedData = CachedData.getInstance(sourcePath, dfsConf, offset, (int)totalRecords);
     long startTime = System.currentTimeMillis();
 
     long sentRecords = 0L;
