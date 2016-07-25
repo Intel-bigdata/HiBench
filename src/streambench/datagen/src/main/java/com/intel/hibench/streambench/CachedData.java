@@ -68,6 +68,9 @@ public class CachedData {
         init();
     }
 
+    /**
+     *  Cache the data from HDFS.
+     */
     private void init() {
         BufferedReader reader = SourceFileReader.getReader(dfsConf, sourcePath, startOffset);
         int sentRecords = 0;
@@ -86,6 +89,10 @@ public class CachedData {
         }
     }
 
+    /**
+     * Loop get record.
+     * @return the record.
+     */
     public String getRecord() {
         index = (index + 1) % totalRecords;
         return data.get(index);

@@ -59,9 +59,9 @@ public class KafkaSender {
     Properties props = new Properties();
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
     props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer");
+        "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer");
+        "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.setProperty(ProducerConfig.ACKS_CONFIG, "1");
     props.getProperty(ProducerConfig.CLIENT_ID_CONFIG, "hibench_data_generator");
 
@@ -100,7 +100,7 @@ public class KafkaSender {
       // 2. explicitly serialize here to count byte size.
       byte[] keyByte = serializer.serialize(topic, currentTime);
       byte[] valueByte = serializer.serialize(topic, line);
-      valueByte = fillArray(valueByte);
+      valueByte = fillArray(keyByte, valueByte);
 
       ProducerRecord serializedRecord = new ProducerRecord(topic, keyByte, valueByte);
       producer.send(serializedRecord, callback);
@@ -119,16 +119,26 @@ public class KafkaSender {
     return sentRecords;
   }
 
-  private byte[] fillArray(byte[] bytes) {
-    if (bytes.length > recordLength) {
-      return Arrays.copyOf(bytes, recordLength);
-    } else if (bytes.length < recordLength) {
-      byte[] occupied = new byte[recordLength];
-      System.arraycopy(bytes, 0, occupied, 0, bytes.length);
-      Arrays.fill(occupied, bytes.length, recordLength, (byte)0);
+  /**
+   * Cut or fill every record to an fixed length. The length is determined by the parameter of
+   *  "hibench.streamingbench.datagen.data1.length".
+   * @param key the byte array of key
+   * @param value  the byte array of value
+   * @return
+     */
+  private byte[] fillArray(byte[] key, byte[] value) {
+    int desiredLength = recordLength - key.length;
+    if (key.length > desiredLength) {
+      // cut it
+      return Arrays.copyOf(key, desiredLength);
+    } else if (key.length < desiredLength) {
+      // fill it with 0
+      byte[] occupied = new byte[desiredLength];
+      System.arraycopy(key, 0, occupied, 0, key.length);
+      Arrays.fill(occupied, key.length, desiredLength, (byte)0);
       return occupied;
     }
-    return bytes;
+    return value;
   }
 
   // close kafka producer
