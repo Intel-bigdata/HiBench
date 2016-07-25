@@ -63,6 +63,8 @@ public class StreamBenchConfig {
 
   public static String PREPARE_PUSH_RECORDS = "hibench.streamingbench.prepare.push.records";
 
+  public static String PREPARE_RECORD_COUNT = "hibench.streamingbench.record_count";
+
   // =====================================
   // Spark Streaming Related Conf
   // =====================================

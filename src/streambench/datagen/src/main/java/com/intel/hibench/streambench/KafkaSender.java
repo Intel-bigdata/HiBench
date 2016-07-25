@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
  * sends records to kafka.
  */
 public class KafkaSender {
-  final Logger logger = LoggerFactory.getLogger(KafkaSender.class);
 
   String sourcePath;
   int intervalSpan;
@@ -110,8 +109,8 @@ public class KafkaSender {
     // print out useful info
     double timeCost = (double) intervalSpan / 1000;
     double throughput = (double) (sentBytes / timeCost) / 1000000;
-    logger.info("sent " + sentRecords + " records to Kafka topic: " + topic);
-    logger.info("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
+    System.out.println("sent " + sentRecords + " records to Kafka topic: " + topic);
+    System.out.println("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
 
     return sentRecords;
   }

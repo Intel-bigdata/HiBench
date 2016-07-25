@@ -58,7 +58,7 @@ public class CachedData {
     private CachedData(String sourcePath, long startOffset, ConfigLoader configLoader){
 
         String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
-        this.totalRecords = (int) Long.parseLong(configLoader.getProperty(StreamBenchConfig.PREPARE_PUSH_RECORDS));
+        this.totalRecords = (int) Long.parseLong(configLoader.getProperty(StreamBenchConfig.PREPARE_RECORD_COUNT));
         this.recordLength = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.datagen.data1.length"));
         this.sourcePath = sourcePath;
         this.dfsConf = new Configuration();
