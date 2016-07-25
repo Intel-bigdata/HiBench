@@ -21,6 +21,7 @@ import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import com.intel.hibench.streambench.common.StreamBenchConfig;
@@ -39,7 +40,7 @@ public class KafkaSender {
 
   String sourcePath;
   int intervalSpan;
-  Configuration dfsConf;
+  int recordLength;
   KafkaProducer producer;
   CachedData cachedData;
   StringSerializer serializer = new StringSerializer();
@@ -69,6 +70,7 @@ public class KafkaSender {
     this.offset = startOffset;
     this.intervalSpan = intervalSpan;
     this.cachedData = CachedData.getInstance(sourcePath, offset, configLoader);
+    this.recordLength = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
 
   // The callback function will be triggered when receive ack from kafka.
@@ -92,14 +94,16 @@ public class KafkaSender {
         break; // no more data from source files
       }
       String currentTime = Long.toString(System.currentTimeMillis());
-      ProducerRecord record = new ProducerRecord(topic, currentTime, line);
-      producer.send(record, callback);
 
       // Key and Value will be serialized twice.
       // 1. in producer.send method
       // 2. explicitly serialize here to count byte size.
       byte[] keyByte = serializer.serialize(topic, currentTime);
       byte[] valueByte = serializer.serialize(topic, line);
+      valueByte = fillArray(valueByte);
+
+      ProducerRecord serializedRecord = new ProducerRecord(topic, keyByte, valueByte);
+      producer.send(serializedRecord, callback);
 
       //update counter
       sentRecords++;
@@ -113,6 +117,18 @@ public class KafkaSender {
     System.out.println("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
 
     return sentRecords;
+  }
+
+  private byte[] fillArray(byte[] bytes) {
+    if (bytes.length > recordLength) {
+      return Arrays.copyOf(bytes, recordLength);
+    } else if (bytes.length < recordLength) {
+      byte[] occupied = new byte[recordLength];
+      System.arraycopy(bytes, 0, occupied, 0, bytes.length);
+      Arrays.fill(occupied, bytes.length, recordLength, (byte)0);
+      return occupied;
+    }
+    return bytes;
   }
 
   // close kafka producer

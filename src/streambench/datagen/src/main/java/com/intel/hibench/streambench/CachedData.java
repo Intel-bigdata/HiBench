@@ -38,7 +38,6 @@ public class CachedData {
     private long startOffset;
     private int index;
     private int totalRecords;
-    private int recordLength;
     private List<String> data;
 
     public static CachedData getInstance(String sourcePath,
@@ -58,14 +57,13 @@ public class CachedData {
     private CachedData(String sourcePath, long startOffset, ConfigLoader configLoader){
 
         String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
-        this.totalRecords = (int) Long.parseLong(configLoader.getProperty(StreamBenchConfig.PREPARE_RECORD_COUNT));
-        this.recordLength = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.datagen.data1.length"));
+
         this.sourcePath = sourcePath;
         this.dfsConf = new Configuration();
         dfsConf.set("fs.default.name", dfsMaster);
         this.startOffset = startOffset;
         this.index = 0;
-        data = new ArrayList<String>(totalRecords);
+        data = new ArrayList<String>();
 
         init();
     }
@@ -74,20 +72,14 @@ public class CachedData {
         BufferedReader reader = SourceFileReader.getReader(dfsConf, sourcePath, startOffset);
         int sentRecords = 0;
 
+        String line = null;
         try {
-            while (sentRecords < totalRecords) {
-                String line = reader.readLine();
-                if (line == null) {
-                    break; // no more data from source files
-                }
-
-                if (line.length() < recordLength) {
-                   break;
-                }
-
-                data.add(line.substring(0, recordLength));
+            while ((line = reader.readLine()) != null) {
+                data.add(line);
                 sentRecords ++;
             }
+
+            this.totalRecords = sentRecords;
         } catch (IOException e) {
             System.err.println("Failed read records from Path: " + sourcePath);
             e.printStackTrace();
