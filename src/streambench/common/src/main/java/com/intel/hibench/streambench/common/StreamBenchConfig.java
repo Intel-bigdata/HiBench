@@ -61,6 +61,8 @@ public class StreamBenchConfig {
 
   public static String PREPARE_INTERVAL_SPAN = "hibench.streamingbench.prepare.periodic.intervalSpan";
 
+  public static String PREPARE_PUSH_RECORDS = "hibench.streamingbench.prepare.push.records";
+
   // =====================================
   // Spark Streaming Related Conf
   // =====================================

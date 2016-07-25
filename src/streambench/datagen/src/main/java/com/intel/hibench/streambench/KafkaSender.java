@@ -23,17 +23,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Properties;
 
+import com.intel.hibench.streambench.common.StreamBenchConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Syncable;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * KafkaSender hold an kafka producer. It gets content from input parameter, generates records and
  * sends records to kafka.
  */
 public class KafkaSender {
+  final Logger logger = LoggerFactory.getLogger(KafkaSender.class);
+
   String sourcePath;
+  int intervalSpan;
   Configuration dfsConf;
   KafkaProducer producer;
   CachedData cachedData;
@@ -44,9 +50,9 @@ public class KafkaSender {
   long offset;
 
   // constructor
-  public KafkaSender(String sourcePath, long startOffset, ConfigLoader configLoader, long totalCount) {
+  public KafkaSender(String sourcePath, long startOffset, ConfigLoader configLoader) {
     String brokerList = configLoader.getProperty("hibench.streamingbench.brokerList");
-    String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
+    int intervalSpan = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.PREPARE_INTERVAL_SPAN));
 
     // Details of KafkaProducerConfig could be find from:
     //   http://kafka.apache.org/documentation.html#producerconfigs
@@ -61,10 +67,9 @@ public class KafkaSender {
 
     this.producer = new KafkaProducer(props);
     this.sourcePath = sourcePath;
-    this.dfsConf = new Configuration();
-    dfsConf.set("fs.default.name", dfsMaster);
     this.offset = startOffset;
-    this.cachedData = CachedData.getInstance(sourcePath, dfsConf, offset, (int)totalCount);
+    this.intervalSpan = intervalSpan;
+    this.cachedData = CachedData.getInstance(sourcePath, offset, configLoader);
   }
 
   // The callback function will be triggered when receive ack from kafka.
@@ -78,7 +83,6 @@ public class KafkaSender {
 
   // send content to Kafka
   public long send (String topic, long totalRecords) {
-    long startTime = System.currentTimeMillis();
 
     long sentRecords = 0L;
     long sentBytes = 0L;
@@ -104,11 +108,10 @@ public class KafkaSender {
     }
 
     // print out useful info
-    long endTime = System.currentTimeMillis();
-    double timeCost = (double) (endTime - startTime) / 1000;
+    double timeCost = (double) intervalSpan / 1000;
     double throughput = (double) (sentBytes / timeCost) / 1000000;
-    System.out.println("sent " + sentRecords + " records to Kafka topic: " + topic);
-    System.out.println("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
+    logger.info("sent " + sentRecords + " records to Kafka topic: " + topic);
+    logger.info("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
 
     return sentRecords;
   }

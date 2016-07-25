@@ -17,6 +17,8 @@
 
 package com.intel.hibench.streambench;
 
+import com.intel.hibench.streambench.common.ConfigLoader;
+import com.intel.hibench.streambench.common.StreamBenchConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
@@ -36,29 +38,31 @@ public class CachedData {
     private long startOffset;
     private int index;
     private int totalRecords;
+    private int recordLength;
     private List<String> data;
 
     public static CachedData getInstance(String sourcePath,
-                                         Configuration dfsConf,
                                          long startOffset,
-                                         int totalRecords) {
+                                         ConfigLoader configLoader
+                                         ) {
         if(cachedData == null) {
             synchronized (CachedData.class) {
                 if (cachedData == null) {
-                    cachedData = new CachedData(sourcePath, dfsConf, startOffset, totalRecords);
+                    cachedData = new CachedData(sourcePath, startOffset, configLoader);
                 }
             }
         }
         return cachedData;
     }
 
-    private CachedData(String sourcePath,
-                            Configuration dfsConf,
-                            long startOffset,
-                            int totalRecords){
-        this.totalRecords = totalRecords;
+    private CachedData(String sourcePath, long startOffset, ConfigLoader configLoader){
+
+        String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
+        this.totalRecords = (int) Long.parseLong(configLoader.getProperty(StreamBenchConfig.PREPARE_PUSH_RECORDS));
+        this.recordLength = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.datagen.data1.length"));
         this.sourcePath = sourcePath;
-        this.dfsConf = dfsConf;
+        this.dfsConf = new Configuration();
+        dfsConf.set("fs.default.name", dfsMaster);
         this.startOffset = startOffset;
         this.index = 0;
         data = new ArrayList<String>(totalRecords);
@@ -76,7 +80,12 @@ public class CachedData {
                 if (line == null) {
                     break; // no more data from source files
                 }
-                data.add(line);
+
+                if (line.length() < recordLength) {
+                   break;
+                }
+
+                data.add(line.substring(0, recordLength));
                 sentRecords ++;
             }
         } catch (IOException e) {
