@@ -57,13 +57,9 @@ public class StreamBenchConfig {
   // Prepare Related Conf
   // =====================================
   // TODO: rename prepare to dataGen
-  public static String PREPARE_RECORD_PRE_INTERVAL = "hibench.streamingbench.batch_interval";
+  public static String PREPARE_RECORD_PRE_INTERVAL = "hibench.streamingbench.recordPerInterval";
 
   public static String PREPARE_INTERVAL_SPAN = "hibench.streamingbench.prepare.periodic.intervalSpan";
-
-  public static String PREPARE_PUSH_RECORDS = "hibench.streamingbench.prepare.push.records";
-
-  public static String PREPARE_RECORD_COUNT = "hibench.streamingbench.record_count";
 
   // =====================================
   // Spark Streaming Related Conf
