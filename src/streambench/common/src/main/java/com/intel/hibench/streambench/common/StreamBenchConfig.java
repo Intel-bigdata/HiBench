@@ -57,7 +57,7 @@ public class StreamBenchConfig {
   // Prepare Related Conf
   // =====================================
   // TODO: rename prepare to dataGen
-  public static String PREPARE_RECORD_PRE_INTERVAL = "hibench.streamingbench.recordPerInterval";
+  public static String PREPARE_RECORD_PRE_INTERVAL = "hibench.streamingbench.prepare.periodic.recordPerInterval";
 
   public static String PREPARE_INTERVAL_SPAN = "hibench.streamingbench.prepare.periodic.intervalSpan";
 
