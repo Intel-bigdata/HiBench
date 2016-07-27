@@ -26,7 +26,7 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.streaming.{Milliseconds, Seconds, StreamingContext}
 
 /**
   * The entry point of Spark Streaming benchmark
@@ -93,7 +93,7 @@ object RunBench {
 
     // defind streaming context
     val conf = new SparkConf().setMaster(config.master).setAppName(config.benchName)
-    val ssc = new StreamingContext(conf, Seconds(config.batchInterval))
+    val ssc = new StreamingContext(conf, Milliseconds(config.batchInterval))
     ssc.checkpoint(config.checkpointPath)
 
     // add listener to collect static information.

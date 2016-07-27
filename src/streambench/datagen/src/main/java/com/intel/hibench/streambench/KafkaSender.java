@@ -21,21 +21,28 @@ import com.intel.hibench.streambench.common.ConfigLoader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
+import com.intel.hibench.streambench.common.StreamBenchConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Syncable;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * KafkaSender hold an kafka producer. It gets content from input parameter, generates records and
  * sends records to kafka.
  */
 public class KafkaSender {
+
   String sourcePath;
-  Configuration dfsConf;
+  int intervalSpan;
+  int recordLength;
   KafkaProducer producer;
+  CachedData cachedData;
   StringSerializer serializer = new StringSerializer();
 
   // offset of file input stream. Currently it's fixed, which means same records will be sent
@@ -45,24 +52,25 @@ public class KafkaSender {
   // constructor
   public KafkaSender(String sourcePath, long startOffset, ConfigLoader configLoader) {
     String brokerList = configLoader.getProperty("hibench.streamingbench.brokerList");
-    String dfsMaster = configLoader.getProperty("hibench.hdfs.master");
+    int intervalSpan = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.PREPARE_INTERVAL_SPAN));
 
     // Details of KafkaProducerConfig could be find from:
     //   http://kafka.apache.org/documentation.html#producerconfigs
     Properties props = new Properties();
     props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
     props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer");
+        "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-        "org.apache.kafka.common.serialization.StringSerializer");
+        "org.apache.kafka.common.serialization.ByteArraySerializer");
     props.setProperty(ProducerConfig.ACKS_CONFIG, "1");
     props.getProperty(ProducerConfig.CLIENT_ID_CONFIG, "hibench_data_generator");
 
     this.producer = new KafkaProducer(props);
     this.sourcePath = sourcePath;
-    this.dfsConf = new Configuration();
-    dfsConf.set("fs.default.name", dfsMaster);
     this.offset = startOffset;
+    this.intervalSpan = intervalSpan;
+    this.cachedData = CachedData.getInstance(sourcePath, offset, configLoader);
+    this.recordLength = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.datagen.data1.length"));
   }
 
   // The callback function will be triggered when receive ack from kafka.
@@ -76,45 +84,61 @@ public class KafkaSender {
 
   // send content to Kafka
   public long send (String topic, long totalRecords) {
-    long startTime = System.currentTimeMillis();
 
     long sentRecords = 0L;
     long sentBytes = 0L;
-    BufferedReader reader = SourceFileReader.getReader(dfsConf, sourcePath, offset);
 
-    try {
-      while (sentRecords < totalRecords) {
-        String line = reader.readLine();
-        if (line == null) {
-          break; // no more data from source files
-        }
-        String currentTime = Long.toString(System.currentTimeMillis());
-        ProducerRecord record = new ProducerRecord(topic, currentTime, line);
-        producer.send(record, callback);
-
-        // Key and Value will be serialized twice.
-        // 1. in producer.send method
-        // 2. explicitly serialize here to count byte size.
-        byte[] keyByte = serializer.serialize(topic, currentTime);
-        byte[] valueByte = serializer.serialize(topic, line);
-
-        //update counter
-        sentRecords ++;
-        sentBytes = sentBytes + keyByte.length + valueByte.length;
+    while (sentRecords < totalRecords) {
+      String line = cachedData.getRecord();
+      if (line == null) {
+        break; // no more data from source files
       }
-    } catch (IOException e) {
-      System.err.println("Failed read records from Path: " + sourcePath);
-      e.printStackTrace();
+      String currentTime = Long.toString(System.currentTimeMillis());
+
+      // Key and Value will be serialized twice.
+      // 1. in producer.send method
+      // 2. explicitly serialize here to count byte size.
+      byte[] keyByte = serializer.serialize(topic, currentTime);
+      byte[] valueByte = serializer.serialize(topic, line);
+      valueByte = fillArray(keyByte, valueByte);
+
+      ProducerRecord serializedRecord = new ProducerRecord(topic, keyByte, valueByte);
+      producer.send(serializedRecord, callback);
+
+      //update counter
+      sentRecords++;
+      sentBytes = sentBytes + keyByte.length + valueByte.length;
     }
 
     // print out useful info
-    long endTime = System.currentTimeMillis();
-    double timeCost = (double) (endTime - startTime) / 1000;
+    double timeCost = (double) intervalSpan / 1000;
     double throughput = (double) (sentBytes / timeCost) / 1000000;
     System.out.println("sent " + sentRecords + " records to Kafka topic: " + topic);
     System.out.println("totally sent " + sentBytes + " bytes in " + timeCost + " seconds (throughout: " + throughput + " MB/s)");
 
     return sentRecords;
+  }
+
+  /**
+   * Cut or fill every record to an fixed length. The length is determined by the parameter of
+   *  "hibench.streamingbench.datagen.data1.length".
+   * @param key the byte array of key
+   * @param value  the byte array of value
+   * @return
+     */
+  private byte[] fillArray(byte[] key, byte[] value) {
+    int desiredLength = recordLength - key.length;
+    if (key.length > desiredLength) {
+      // cut it
+      return Arrays.copyOf(key, desiredLength);
+    } else if (key.length < desiredLength) {
+      // fill it with 0
+      byte[] occupied = new byte[desiredLength];
+      System.arraycopy(key, 0, occupied, 0, key.length);
+      Arrays.fill(occupied, key.length, desiredLength, (byte)0);
+      return occupied;
+    }
+    return value;
   }
 
   // close kafka producer

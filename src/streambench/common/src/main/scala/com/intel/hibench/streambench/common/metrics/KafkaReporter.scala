@@ -25,10 +25,24 @@ class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyRepo
 
   private val props = new Properties()
   props.put("bootstrap.servers", bootstrapServers)
-  private lazy val producer = new KafkaProducer(props, new StringSerializer, new StringSerializer)
+  private lazy val producer = ProducerSingleton.getInstance(props)
 
   override def report(startTime: Long, endTime: Long): Unit = {
     producer.send(new ProducerRecord[String, String](topic, 0, null, s"$startTime:$endTime"))
   }
 
+}
+
+
+object ProducerSingleton {
+  private var instance : Option[KafkaProducer[String, String]] = None;
+
+  def getInstance (props: Properties) : KafkaProducer[String, String] = synchronized {
+    if (instance.isDefined) {
+      instance.get
+    } else {
+      instance = Some(new KafkaProducer(props, new StringSerializer, new StringSerializer))
+      instance.get
+    }
+  }
 }
