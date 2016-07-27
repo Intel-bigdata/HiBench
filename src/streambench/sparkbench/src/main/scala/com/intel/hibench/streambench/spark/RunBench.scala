@@ -77,13 +77,9 @@ object RunBench {
     // select test case based on given benchName
     val testCase : BenchBase = config.benchName match {
       case "identity" => new Identity()
+      case "repartition" => new Repartition()
       case "project" => new Project()
       case "wordcount" => new WordCount()
-      case "distinctcount" => new DistinctCount()
-      case "sample" => new Sample(config.sampleProbability)
-//      case "grep" =>
-//        val pattern = conf.getProperty(StreamBenchConfig.GREP_PATTERN)
-//        new Grep(config, pattern)
       case "statistics" =>
         // This test case will consume KMeansData instead of UserVisit as other test case
         new NumericCalc()
