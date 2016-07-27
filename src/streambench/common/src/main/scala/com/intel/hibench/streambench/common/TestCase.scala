@@ -29,4 +29,5 @@ object TestCase extends Enumeration {
   val Grep = Value("grep")
   val DistinctCount = Value("distinctCount")
   val Identity = Value("Identity")
+  val Repartition = Value("Repartition")
 }
