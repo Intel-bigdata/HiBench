@@ -41,6 +41,6 @@ public class Repartition extends StreamBase {
                 return value;
             }
         }));
-        env.execute("Identity job");
+        env.execute("Repartition job");
     }
 }
