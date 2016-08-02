@@ -27,7 +27,7 @@ import org.apache.gearpump.util.Graph
 import org.apache.gearpump.util.Graph._
 
 class ProjectStream(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
-  override val benchName = TestCase.Project
+  override val benchName = TestCase.PROJECT
 
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()

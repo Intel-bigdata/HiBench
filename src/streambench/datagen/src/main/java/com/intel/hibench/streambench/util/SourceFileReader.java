@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench;
+package com.intel.hibench.streambench.util;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;

@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
+package com.intel.hibench.streambench.common;
 
-package com.intel.hibench.common;
+public enum TestCase {
 
-/**
- * common configurations used in HiBench project are defined here. Later we plan to move this file
- * to higher project.
- */
-public class HiBenchConf {
-  // =====================================
-  // General Conf
-  // =====================================
-  // TODO: rename to "hibench.reportDir"
-  public static String REPORT_DIR = "hibench.report.dir";
+  // Do nothing with input events. It's useful to test the native schedule cost
+  IDENTITY("identity"),
 
-  // =====================================
-  // Spark Related Conf
-  // =====================================
-  public static String SPARK_MASTER = "hibench.spark.master";
+  // Repartition input events to ensure data shuffle happening
+  REPARTITION("repartition"),
+
+  // ====== Following TestCase hasn't been finalized ======
+  PROJECT("project"),
+
+  SAMPLE("sample"),
+
+  WORDCOUNT("wordcount"),
+
+  GREP("grep"),
+
+  DISTINCTCOUNT("distinctCount"),
+
+  STATISTICS("statistics");
+  // =========================================================
+
+  private String name;
+
+  TestCase(String name) {
+    this.name = name;
+  }
 }

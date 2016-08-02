@@ -17,7 +17,6 @@
 
 package com.intel.hibench.streambench.spark.metrics
 
-import com.intel.hibench.streambench.common.Logger
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.scheduler._

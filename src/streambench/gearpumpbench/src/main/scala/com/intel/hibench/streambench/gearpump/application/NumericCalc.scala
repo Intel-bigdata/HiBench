@@ -28,7 +28,7 @@ import org.apache.gearpump.util.Graph
 import org.apache.gearpump.util.Graph._
 
 class NumericCalc(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf)  {
-  override val benchName = TestCase.Statistics
+  override val benchName = TestCase.STATISTICS
 
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()

@@ -19,7 +19,7 @@ package com.intel.hibench.streambench.common;
 
 public enum Platform {
 
-  SPARK("Spark"),
+  SPARK("spark"),
   FLINK("flink"),
   STORM("storm"),
   GEARPUMP("gearpump"),
@@ -30,5 +30,4 @@ public enum Platform {
   Platform(String platform) {
     this.platform = platform;
   }
-
 }

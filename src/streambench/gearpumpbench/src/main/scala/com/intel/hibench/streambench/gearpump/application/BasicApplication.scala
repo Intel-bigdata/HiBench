@@ -16,7 +16,7 @@
  */
 package com.intel.hibench.streambench.gearpump.application
 
-import com.intel.hibench.streambench.common.TestCase.TestCase
+import com.intel.hibench.streambench.common.TestCase
 import com.intel.hibench.streambench.common.metrics.{KafkaReporter, LatencyReporter}
 import com.intel.hibench.streambench.gearpump.source.SourceProvider
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig

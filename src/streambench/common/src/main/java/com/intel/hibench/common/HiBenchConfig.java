@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.common
 
+package com.intel.hibench.common;
 
-object TestCase extends Enumeration {
+/**
+ * common configurations used in HiBench project are defined here. Later we plan to move this file
+ * to higher project.
+ */
+public class HiBenchConfig {
+  // =====================================
+  // General Conf
+  // =====================================
+  // TODO: rename to "hibench.reportDir"
+  public static String REPORT_DIR = "hibench.report.dir";
 
-  type TestCase = Value
+  // =====================================
+  // Spark Related Conf
+  // =====================================
+  public static String SPARK_MASTER = "hibench.spark.master";
 
-  val Project = Value("project")
-  val Sample = Value("sample")
-  val Statistics = Value("statistics")
-  val WordCount = Value("wordcount")
-  val Grep = Value("grep")
-  val DistinctCount = Value("distinctCount")
-  val Identity = Value("Identity")
-  val Repartition = Value("Repartition")
+  // =====================================
+  // DFS Related Conf
+  // =====================================
+  public static String DFS_MASTER = "hibench.dfs.master";
 }

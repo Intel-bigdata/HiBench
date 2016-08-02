@@ -27,7 +27,7 @@ import org.apache.gearpump.util.Graph
 import org.apache.gearpump.util.Graph._
 
 class IdentityApp(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
-  override val benchName = TestCase.Identity
+  override val benchName = TestCase.IDENTITY
 
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()
