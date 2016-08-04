@@ -23,6 +23,7 @@ import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.StreamBenchConfig;
 
 import com.intel.hibench.streambench.common.Platform;
 
@@ -42,36 +43,36 @@ public class RunBench {
         
         KafkaReporter reporter = getReporter(cl);
 
-        conf.master = cl.getProperty("hibench.streambench.brokerList");
-        conf.zkHost = cl.getProperty("hibench.streambench.zookeeper.host");
-        conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streambench.storm.worker_count"));
-        conf.benchName = cl.getProperty("hibench.streambench.benchname");
-        conf.topic = cl.getProperty("hibench.streambench.topic_name");
-        conf.consumerGroup = cl.getProperty("hibench.streambench.consumer_group");
+        conf.master = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+        conf.zkHost = cl.getProperty(StreamBenchConfig.ZK_HOST);
+        conf.benchName = cl.getProperty(StreamBenchConfig.TESTCASE);
+        conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
+        conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
         
         String benchName = conf.benchName;
 
         BenchLogUtil.logMsg("Benchmark starts.." + benchName +
                 "   Frameworks:" + "Flink");
 
+        //hard-code parameter for some testcases, not used in future
         if (benchName.equals("wordcount")) {
-            conf.separator = cl.getProperty("hibench.streambench.separator");
+            conf.separator = "\\s+";
             WordCount wordCount = new WordCount();
             wordCount.processStream(conf);
         } else if (benchName.equals("identity")) {
             Identity identity = new Identity();
             identity.processStream(reporter, conf);
         } else if (benchName.equals("sample")) {
-            conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
+            conf.prob = Double.parseDouble(cl.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY));
             Sample sample = new Sample();
             sample.processStream(conf);
         } else if (benchName.equals("project")) {
-            conf.separator = cl.getProperty("hibench.streambench.separator");
-            conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
+            conf.separator = "\\s+";
+            conf.fieldIndex = 1;
             Projection project = new Projection();
             project.processStream(conf);
         } else if (benchName.equals("grep")) {
-            conf.pattern = cl.getProperty("hibench.streambench.pattern");
+            conf.pattern = "abc";
             Grep grep = new Grep();
             grep.processStream(conf);
         } else if (benchName.equals("distinctcount")) {
