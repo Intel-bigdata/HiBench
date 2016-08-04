@@ -40,7 +40,7 @@ public class Identity extends StreamBase {
                kafkaReporter.report(Long.parseLong(value.f0), System.currentTimeMillis());
                return value;
            }
-       }));
+       })).setBufferTimeout(config.bufferTimeout);
        env.execute("Identity job");
    }
 }

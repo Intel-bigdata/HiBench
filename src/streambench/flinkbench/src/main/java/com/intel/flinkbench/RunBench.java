@@ -34,8 +34,8 @@ public class RunBench {
 
     public static void runAll(String[] args) throws Exception {
 
-        if (args.length < 2)
-            BenchLogUtil.handleError("Usage: RunBench <ConfigFile> <FrameworkName>");
+        if (args.length < 1)
+            BenchLogUtil.handleError("Usage: RunBench <ConfigFile>");
 
         FlinkBenchConfig conf = new FlinkBenchConfig();
 
@@ -43,42 +43,43 @@ public class RunBench {
         
         KafkaReporter reporter = getReporter(cl);
 
-        conf.master = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+        conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
         conf.zkHost = cl.getProperty(StreamBenchConfig.ZK_HOST);
-        conf.benchName = cl.getProperty(StreamBenchConfig.TESTCASE);
+        conf.testCase = cl.getProperty(StreamBenchConfig.TESTCASE);
         conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
         conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
+        conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
         
-        String benchName = conf.benchName;
+        String testCase = conf.testCase;
 
-        BenchLogUtil.logMsg("Benchmark starts.." + benchName +
+        BenchLogUtil.logMsg("Benchmark starts.." + testCase +
                 "   Frameworks:" + "Flink");
 
         //hard-code parameter for some testcases, not used in future
-        if (benchName.equals("wordcount")) {
+        if (testCase.equals("wordcount")) {
             conf.separator = "\\s+";
             WordCount wordCount = new WordCount();
             wordCount.processStream(conf);
-        } else if (benchName.equals("identity")) {
+        } else if (testCase.equals("identity")) {
             Identity identity = new Identity();
             identity.processStream(reporter, conf);
-        } else if (benchName.equals("sample")) {
+        } else if (testCase.equals("sample")) {
             conf.prob = Double.parseDouble(cl.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY));
             Sample sample = new Sample();
             sample.processStream(conf);
-        } else if (benchName.equals("project")) {
+        } else if (testCase.equals("project")) {
             conf.separator = "\\s+";
             conf.fieldIndex = 1;
             Projection project = new Projection();
             project.processStream(conf);
-        } else if (benchName.equals("grep")) {
+        } else if (testCase.equals("grep")) {
             conf.pattern = "abc";
             Grep grep = new Grep();
             grep.processStream(conf);
-        } else if (benchName.equals("distinctcount")) {
+        } else if (testCase.equals("distinctcount")) {
             DistinctCount distinct = new DistinctCount();
             distinct.processStream(conf);
-        } else if (benchName.equals("statistics")) {
+        } else if (testCase.equals("statistics")) {
             Statistics numeric = new Statistics();
             numeric.processStream(conf);
         }
