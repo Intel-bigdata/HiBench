@@ -68,4 +68,9 @@ public class StreamBenchConfig {
 
   public static String SPARK_RECEIVER_NUMBER = "hibench.streambench.spark.receiverNumber";
 
+  // ======================================
+  // Flink Related Conf
+  // ======================================
+  public static String FLINK_BUFFERTIMEOUT = "hibench.streambench.flink.bufferTimeout";
+
 }

@@ -20,12 +20,13 @@ package com.intel.flinkbench.util;
 public class FlinkBenchConfig {
     public String zkHost;
     public int workerCount;
-    public String benchName;
-    public String master;
+    public String testCase;
+    public String brokerList;
     public String topic;
     public String consumerGroup;
     public String separator;
     public int fieldIndex;
     public double prob;
     public String pattern;
+    public long bufferTimeout;
 }

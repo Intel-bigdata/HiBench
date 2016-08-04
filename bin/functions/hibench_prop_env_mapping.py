@@ -140,8 +140,10 @@ HiBenchEnvPropMapping=dict(
     STREAMBENCH_GEARPUMP_EXECUTORS="hibench.streambench.gearpump.executors",
     
     # flinkstreaming
+    HIBENCH_FLINK_MASTER="hibench.flink.master",
     FLINK_HOME="hibench.streambench.flink.home",
     STREAMBENCH_FLINK_JAR="hibench.streambench.flinkbench.jar",
+    STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
 
     # samza
     STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",

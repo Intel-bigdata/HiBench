@@ -40,7 +40,7 @@ public abstract class StreamBase {
         Properties properties = new Properties();
         properties.setProperty("zookeeper.connect", config.zkHost);
         properties.setProperty("group.id", config.consumerGroup);
-        properties.setProperty("bootstrap.servers", config.master);
+        properties.setProperty("bootstrap.servers", config.brokerList);
         this.dataStream = new FlinkKafkaConsumer08<Tuple2<String, String>>(
                         config.topic,
                         new KeyedTupleSchema(),
