@@ -54,7 +54,7 @@ object RunBench {
     val recordPerInterval = conf.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL).toLong
     val intervalSpan: Int = conf.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN).toInt
 
-    val coreNumber = conf.getProperty("hibench.yarn.executor.num").toInt * conf.getProperty("hibench.yarn.executor.cores").toInt
+    val coreNumber = conf.getProperty(HiBenchConfig.YARN_EXECUTOR_NUMBER).toInt * conf.getProperty(HiBenchConfig.YARN_EXECUTOR_CORES).toInt
 
     val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, recordPerInterval, intervalSpan)
     println("Reporter Topic" + reporterTopic)

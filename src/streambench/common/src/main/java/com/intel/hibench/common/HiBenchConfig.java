@@ -33,4 +33,11 @@ public class HiBenchConfig {
   // DFS Related Conf
   // =====================================
   public static String DFS_MASTER = "hibench.hdfs.master";
+
+  // =====================================
+  // YARN Related Conf
+  // =====================================
+  public static String YARN_EXECUTOR_NUMBER = "hibench.yarn.executor.num";
+
+  public static String YARN_EXECUTOR_CORES = "hibench.yarn.executor.cores";
 }
