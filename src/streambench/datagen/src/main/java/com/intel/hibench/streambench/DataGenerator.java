@@ -17,18 +17,15 @@
 
 package com.intel.hibench.streambench;
 
+import com.intel.hibench.common.HiBenchConfig;
 import com.intel.hibench.streambench.common.ConfigLoader;
+import com.intel.hibench.streambench.common.StreamBenchConfig;
+import com.intel.hibench.streambench.util.KafkaSender;
+import com.intel.hibench.streambench.util.RecordSendTask;
 
 import java.util.Timer;
 
 public class DataGenerator {
-  private static String benchName;
-
-  private static String userVisitsFile;
-  private static long userVisitsFileOffset;
-
-  private static String kMeansFile;
-  private static long kMeansFileOffset;
 
   public static void main(String[] args) {
     if (args.length < 5) {
@@ -39,33 +36,55 @@ public class DataGenerator {
     // initialize variable from configuration and input parameters.
     ConfigLoader configLoader = new ConfigLoader(args[0]);
 
-    benchName = configLoader.getProperty("hibench.streamingbench.benchname").toLowerCase();
+    String userVisitsFile = args[1];
+    long userVisitsFileOffset = Long.parseLong(args[2]);
+    String kMeansFile = args[3];
+    long kMeansFileOffset = Long.parseLong(args[4]);
 
-    userVisitsFile = args[1];
-    userVisitsFileOffset = Long.parseLong(args[2]);
-    kMeansFile = args[3];
-    kMeansFileOffset = Long.parseLong(args[4]);
+    // load properties from config file
+    String testCase = configLoader.getProperty(StreamBenchConfig.TESTCASE).toLowerCase();
+    String topic = configLoader.getProperty(StreamBenchConfig.KAFKA_TOPIC);
+    String brokerList = configLoader.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+    int intervalSpan = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
+    long recordsPerInterval = Long.parseLong(configLoader.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
+    long totalRecords = Long.parseLong(configLoader.getProperty(StreamBenchConfig.DATAGEN_TOTAL_RECORDS));
+    int totalRounds = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_TOTAL_ROUNDS));
+    int recordLength = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_RECORD_LENGTH));
+    String dfsMaster = configLoader.getProperty(HiBenchConfig.DFS_MASTER);
 
-    String topic = configLoader.getProperty("hibench.streamingbench.topic_name");
-    long recordPerInterval = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-    long totalCount = Long.parseLong(configLoader.getProperty("hibench.streamingbench.prepare.push.records"));
-    int intervalSpan = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
-    int totalRound = Integer.parseInt(configLoader.getProperty("hibench.streamingbench.prepare.periodic.totalRound"));
 
     // instantiate KafkaSender
     KafkaSender sender;
-    if(benchName.contains("statistics")) {
-      sender = new KafkaSender(kMeansFile, kMeansFileOffset, configLoader);
+    if(testCase.contains("statistics")) {
+      sender = new KafkaSender(brokerList, kMeansFile, kMeansFileOffset, dfsMaster, recordLength, intervalSpan);
     } else {
-      sender = new KafkaSender(userVisitsFile, userVisitsFileOffset, configLoader);
+      sender = new KafkaSender(brokerList, userVisitsFile, userVisitsFileOffset, dfsMaster, recordLength, intervalSpan);
     }
 
+    // Schedule timer task
     Timer timer = new Timer();
-    timer.schedule(new RecordSendTask(sender, topic, recordPerInterval, totalRound, totalCount), 0, intervalSpan);
+    timer.schedule(
+      new RecordSendTask(sender, topic, recordsPerInterval, totalRounds, totalRecords),
+      0, intervalSpan);
 
-    System.out.println("Record Per Round: " + recordPerInterval);
-    System.out.println("TotalRecord: " + totalCount);
-    System.out.println("TotalRound: " + totalRound);
-    System.out.println("Timer scheduled, interval is " + intervalSpan + " ms");
+    // Print out some basic information
+    System.out.println("============ StreamBench Data Generator ============");
+    System.out.println(" Interval Span       : " + intervalSpan + " ms");
+    System.out.println(" Record Per Interval : " + recordsPerInterval);
+    System.out.println(" Record Length       : " + recordLength + " bytes");
+
+    if(totalRecords == -1) {
+      System.out.println(" Total Records        : -1 [Infinity]");
+    } else {
+      System.out.println(" Total Records        : " + totalRecords);
+    }
+
+    if (totalRounds == -1) {
+      System.out.println(" Total Rounds         : -1 [Infinity]");
+    } else {
+      System.out.println(" Total Rounds         : " + totalRounds);
+    }
+
+    System.out.println("====================================================");
   }
 }

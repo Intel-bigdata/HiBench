@@ -22,7 +22,6 @@ case class SparkBenchConfig (
 
 
   // Hibench
-  recordCount: Long,   // it's used in listener to terminate the application
   debugMode: Boolean,
   coreNumber: Int,
   sampleProbability: Double) {

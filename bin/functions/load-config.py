@@ -239,9 +239,9 @@ def waterfall_config(force=False):         # replace "${xxx}" to its values
                     finish = False
         
         
-        wildcard_rules = [(key, HibenchConf[key]) for key in HibenchConf if "*" in key]
+        # wildcard_rules = [(key, HibenchConf[key]) for key in HibenchConf if "*" in key]
         # now, let's check wildcard replacement rules
-        for key, value in wildcard_rules:
+        # for key, value in wildcard_rules:
             # check if we found a rule like: aaa.*.ccc.*.ddd    ->   bbb.*.*
 
             # wildcard replacement is useful for samza conf, which
@@ -253,12 +253,12 @@ def waterfall_config(force=False):         # replace "${xxx}" to its values
             # switch the order of two wildcards, something like the
             # first wildcard in key to match the second wildcard in
             # value. I just don't think it'll be needed.
-            if not wildcard_replacement(key, value):     # not wildcard rules? re-add
+            # if not wildcard_replacement(key, value):     # not wildcard rules? re-add
                 HibenchConf[key] = value
-        if wildcard_rules:      # need try again
-            wildcard_rules = []
-        else: break
-
+        # if wildcard_rules:      # need try again
+        #    wildcard_rules = []
+        # else: break
+        break
     # all finished, remove values contains no_value_sign
     for key in [x for x in HibenchConf if no_value_sign in HibenchConf[x]]:
         del HibenchConf[key]

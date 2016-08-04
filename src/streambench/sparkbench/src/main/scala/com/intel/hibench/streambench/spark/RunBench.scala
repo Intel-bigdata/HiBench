@@ -17,9 +17,9 @@
 
 package com.intel.hibench.streambench.spark
 
-import com.intel.hibench.common.HiBenchConf
+import com.intel.hibench.common.HiBenchConfig
 import com.intel.hibench.streambench.common.metrics.{KafkaReporter, MetricsUtil, LatencyReporter}
-import com.intel.hibench.streambench.common.{Platform, ConfigLoader, StreamBenchConfig, TempLogger}
+import com.intel.hibench.streambench.common.{Platform, ConfigLoader, StreamBenchConfig}
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import com.intel.hibench.streambench.spark.application._
 import kafka.serializer.StringDecoder
@@ -37,8 +37,7 @@ object RunBench {
     val conf = new ConfigLoader(args(0))
 
     // Load configuration
-    val master = conf.getProperty(HiBenchConf.SPARK_MASTER)
-    val reportDir = conf.getProperty(HiBenchConf.REPORT_DIR)
+    val master = conf.getProperty(HiBenchConfig.SPARK_MASTER)
 
     val batchInterval = conf.getProperty(StreamBenchConfig.SPARK_BATCH_INTERVAL).toInt
     val receiverNumber = conf.getProperty(StreamBenchConfig.SPARK_RECEIVER_NUMBER).toInt
@@ -47,19 +46,16 @@ object RunBench {
     val checkPointPath = conf.getProperty(StreamBenchConfig.SPARK_CHECKPOINT_PATHL)
     val directMode = conf.getProperty(StreamBenchConfig.SPARK_USE_DIRECT_MODE).toBoolean
     val benchName = conf.getProperty(StreamBenchConfig.TESTCASE)
-    val topic = conf.getProperty(StreamBenchConfig.TOPIC)
+    val topic = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC)
     val zkHost = conf.getProperty(StreamBenchConfig.ZK_HOST)
     val consumerGroup = conf.getProperty(StreamBenchConfig.CONSUMER_GROUP)
-    val brokerList = if (directMode) conf.getProperty(StreamBenchConfig.BROKER_LIST) else ""
+    val brokerList = if (directMode) conf.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST) else ""
     val debugMode = conf.getProperty(StreamBenchConfig.DEBUG_MODE).toBoolean
-    val recordPerInterval = conf.getProperty(StreamBenchConfig.PREPARE_RECORD_PRE_INTERVAL).toLong
-    val intervalSpan: Int = conf.getProperty(StreamBenchConfig.PREPARE_INTERVAL_SPAN).toInt
+    val recordPerInterval = conf.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL).toLong
+    val intervalSpan: Int = conf.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN).toInt
 
-    // val separator = conf.getProperty(StreamBenchConfig.SEPARATOR)
-    val recordCount = conf.getProperty("hibench.streamingbench.record_count").toLong
-    val coreNumber = conf.getProperty("hibench.yarn.executor.num").toInt * conf.getProperty("hibench.yarn.executor.cores").toInt
+    val coreNumber = conf.getProperty(HiBenchConfig.YARN_EXECUTOR_NUMBER).toInt * conf.getProperty(HiBenchConfig.YARN_EXECUTOR_CORES).toInt
 
-    // val logPath = reportDir + "/streamingbench/spark/streambenchlog.txt"
     val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, recordPerInterval, intervalSpan)
     println("Reporter Topic" + reporterTopic)
 
@@ -67,7 +63,7 @@ object RunBench {
     // init SparkBenchConfig, it will be passed into every test case
     val config = SparkBenchConfig(master, benchName, batchInterval, receiverNumber, copies,
       enableWAL, checkPointPath, directMode, zkHost, consumerGroup, topic, reporterTopic,
-      brokerList, recordCount, debugMode, coreNumber, probability)
+      brokerList, debugMode, coreNumber, probability)
 
     run(config)
   }

@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.streambench.common;
 
-public enum Platform {
+package com.intel.hibench.common;
 
-  SPARK("spark"),
-  FLINK("flink"),
-  STORM("storm"),
-  GEARPUMP("gearpump"),
-  SAMZA("samza");
+/**
+ * common configurations used in HiBench project are defined here. Later we plan to move this file
+ * to higher project.
+ */
+public class HiBenchConfig {
 
-  private final String platform;
+  // =====================================
+  // Spark Related Conf
+  // =====================================
+  public static String SPARK_MASTER = "hibench.spark.master";
 
-  Platform(String platform) {
-    this.platform = platform;
-  }
+  // =====================================
+  // DFS Related Conf
+  // =====================================
+  public static String DFS_MASTER = "hibench.hdfs.master";
+
+  // =====================================
+  // YARN Related Conf
+  // =====================================
+  public static String YARN_EXECUTOR_NUMBER = "hibench.yarn.executor.num";
+
+  public static String YARN_EXECUTOR_CORES = "hibench.yarn.executor.cores";
 }

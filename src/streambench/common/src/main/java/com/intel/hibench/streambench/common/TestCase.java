@@ -17,17 +17,31 @@
 
 package com.intel.hibench.streambench.common;
 
-public enum Platform {
+public enum TestCase {
 
-  SPARK("spark"),
-  FLINK("flink"),
-  STORM("storm"),
-  GEARPUMP("gearpump"),
-  SAMZA("samza");
+  // Do nothing with input events. It's useful to test the native schedule cost
+  IDENTITY("identity"),
 
-  private final String platform;
+  // Repartition input events to ensure data shuffle happening
+  REPARTITION("repartition"),
 
-  Platform(String platform) {
-    this.platform = platform;
+  // ====== Following TestCase hasn't been finalized ======
+  PROJECT("project"),
+
+  SAMPLE("sample"),
+
+  WORDCOUNT("wordcount"),
+
+  GREP("grep"),
+
+  DISTINCTCOUNT("distinctCount"),
+
+  STATISTICS("statistics");
+  // =========================================================
+
+  private String name;
+
+  TestCase(String name) {
+    this.name = name;
   }
 }

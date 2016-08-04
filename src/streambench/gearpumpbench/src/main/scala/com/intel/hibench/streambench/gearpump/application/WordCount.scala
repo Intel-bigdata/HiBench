@@ -28,7 +28,7 @@ import org.apache.gearpump.util.Graph
 import org.apache.gearpump.util.Graph._
 
 class WordCount(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
-  override val benchName = TestCase.WordCount
+  override val benchName = TestCase.WORDCOUNT
 
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()
