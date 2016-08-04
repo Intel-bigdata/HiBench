@@ -85,10 +85,10 @@ public class RunBench {
     }
 
     private static KafkaReporter getReporter(ConfigLoader config) {
-        String topic = config.getProperty("hibench.streambench.topic_name");
-        String brokerList = config.getProperty("hibench.streambench.brokerList");
-        long recordPerInterval = Long.parseLong(config.getProperty("hibench.streambench.prepare.periodic.recordPerInterval"));
-        int intervalSpan = Integer.parseInt(config.getProperty("hibench.streambench.prepare.periodic.intervalSpan"));
+        String topic = config.getProperty(StreamBenchConfig.KAFKA_TOPIC);
+        String brokerList = config.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+        long recordPerInterval = Long.parseLong(config.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
+        int intervalSpan = Integer.parseInt(config.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
         String reporterTopic = MetricsUtil.getTopic(Platform.FLINK, topic, recordPerInterval, intervalSpan);
         return new KafkaReporter(reporterTopic, brokerList);
     }
