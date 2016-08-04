@@ -42,12 +42,12 @@ public class RunBench {
         
         KafkaReporter reporter = getReporter(cl);
 
-        conf.master = cl.getProperty("hibench.streamingbench.brokerList");
-        conf.zkHost = cl.getProperty("hibench.streamingbench.zookeeper.host");
-        conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.worker_count"));
-        conf.benchName = cl.getProperty("hibench.streamingbench.benchname");
-        conf.topic = cl.getProperty("hibench.streamingbench.topic_name");
-        conf.consumerGroup = cl.getProperty("hibench.streamingbench.consumer_group");
+        conf.master = cl.getProperty("hibench.streambench.brokerList");
+        conf.zkHost = cl.getProperty("hibench.streambench.zookeeper.host");
+        conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streambench.storm.worker_count"));
+        conf.benchName = cl.getProperty("hibench.streambench.benchname");
+        conf.topic = cl.getProperty("hibench.streambench.topic_name");
+        conf.consumerGroup = cl.getProperty("hibench.streambench.consumer_group");
         
         String benchName = conf.benchName;
 
@@ -55,23 +55,23 @@ public class RunBench {
                 "   Frameworks:" + "Flink");
 
         if (benchName.equals("wordcount")) {
-            conf.separator = cl.getProperty("hibench.streamingbench.separator");
+            conf.separator = cl.getProperty("hibench.streambench.separator");
             WordCount wordCount = new WordCount();
             wordCount.processStream(conf);
         } else if (benchName.equals("identity")) {
             Identity identity = new Identity();
             identity.processStream(reporter, conf);
         } else if (benchName.equals("sample")) {
-            conf.prob = Double.parseDouble(cl.getProperty("hibench.streamingbench.prob"));
+            conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
             Sample sample = new Sample();
             sample.processStream(conf);
         } else if (benchName.equals("project")) {
-            conf.separator = cl.getProperty("hibench.streamingbench.separator");
-            conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+            conf.separator = cl.getProperty("hibench.streambench.separator");
+            conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
             Projection project = new Projection();
             project.processStream(conf);
         } else if (benchName.equals("grep")) {
-            conf.pattern = cl.getProperty("hibench.streamingbench.pattern");
+            conf.pattern = cl.getProperty("hibench.streambench.pattern");
             Grep grep = new Grep();
             grep.processStream(conf);
         } else if (benchName.equals("distinctcount")) {
@@ -84,10 +84,10 @@ public class RunBench {
     }
 
     private static KafkaReporter getReporter(ConfigLoader config) {
-        String topic = config.getProperty("hibench.streamingbench.topic_name");
-        String brokerList = config.getProperty("hibench.streamingbench.brokerList");
-        long recordPerInterval = Long.parseLong(config.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-        int intervalSpan = Integer.parseInt(config.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+        String topic = config.getProperty("hibench.streambench.topic_name");
+        String brokerList = config.getProperty("hibench.streambench.brokerList");
+        long recordPerInterval = Long.parseLong(config.getProperty("hibench.streambench.prepare.periodic.recordPerInterval"));
+        int intervalSpan = Integer.parseInt(config.getProperty("hibench.streambench.prepare.periodic.intervalSpan"));
         String reporterTopic = MetricsUtil.getTopic(Platform.FLINK, topic, recordPerInterval, intervalSpan);
         return new KafkaReporter(reporterTopic, brokerList);
     }

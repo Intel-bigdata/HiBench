@@ -17,15 +17,23 @@
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
 workload_root=${workload_folder}/../..
-echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench StormStreamingBenchOperator ${workload_root} ${workload_folder}
-echo "=========stop trident benchmark $STREAMING_BENCHNAME========="
+enter_bench SamzaStreamingBench ${workload_root} ${workload_folder}
+show_bannar start
 
-${STORM_BIN_HOME}/storm kill $STREAMING_BENCHNAME
-echo "Wait 30 seconds... and need double confirm!"
-sleep 30
-echo "Double confirm the bench has been killed:"
-${STORM_BIN_HOME}/storm kill $STREAMING_BENCHNAME
-echo 'If got NotAliveException, the "$STREAMING_BENCHNAME" has been killed successfully.'
+SRC_DIR=${workload_root}/../../src/streambench/samzabench
+
+printFullLog
+
+function samza-submit() {
+    workload_name=$1
+    $workload_folder/run-one-workload.sh $workload_name
+}
+
+START_TIME=`timestamp`
+. $SRC_DIR/scripts/$STREAMING_TESTCASE.sh
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} 0 # FIXME, size should be throughput
+show_bannar finish

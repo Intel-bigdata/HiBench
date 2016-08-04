@@ -23,11 +23,6 @@ package com.intel.hibench.common;
  * to higher project.
  */
 public class HiBenchConfig {
-  // =====================================
-  // General Conf
-  // =====================================
-  // TODO: rename to "hibench.reportDir"
-  public static String REPORT_DIR = "hibench.report.dir";
 
   // =====================================
   // Spark Related Conf
@@ -37,5 +32,5 @@ public class HiBenchConfig {
   // =====================================
   // DFS Related Conf
   // =====================================
-  public static String DFS_MASTER = "hibench.dfs.master";
+  public static String DFS_MASTER = "hibench.hdfs.master";
 }

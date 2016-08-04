@@ -271,11 +271,11 @@ function run-spark-job() {
 }
 
 function run-streaming-job (){
-    run-spark-job --jars ${STREAMINGBENCH_JARS} $@
+    run-spark-job --jars ${STREAMBENCH_SPARK_JAR} $@
 }
 
 function run-storm-job(){
-    CMD="${STORM_BIN_HOME}/storm jar ${STREAMBENCH_STORM_JAR} $@"
+    CMD="${STORM_HOME}/bin/storm jar ${STREAMBENCH_STORM_JAR} $@"
     echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }

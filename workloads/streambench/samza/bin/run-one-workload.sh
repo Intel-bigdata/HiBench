@@ -23,7 +23,7 @@ workload_root=${workload_folder}/../..
 workload_basename=`basename ${workload_folder}`
 workload_dirname=`dirname ${workload_folder}`
 workload_name=$1
-enter_bench SamzaStreaming-$workload_name ${workload_root} ${workload_dirname}_$1/${workload_basename} hibench.streamingbench.benchname=$workload_name
+enter_bench SamzaStreaming-$workload_name ${workload_root} ${workload_dirname}_$1/${workload_basename} hibench.streambench.benchname=$workload_name
 show_bannar start
 
 SRC_DIR=${workload_root}/../../src/streambench/samzabench

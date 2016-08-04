@@ -26,32 +26,23 @@ public class StreamBenchConfig {
   // =====================================
   // General StreamBench Conf
   // =====================================
-  // TODO: rename to "hibench.streambench.testCase"
   public static String TESTCASE = "hibench.streambench.testCase";
 
-  // TODO: rename to "hibench.streambench.zkHost"
   public static String ZK_HOST = "hibench.streambench.zkHost";
 
-  // TODO: rename to "hibench.streambench.consumerGroup"
-  public static String CONSUMER_GROUP = "hibench.streambench.consumerGroup";
+  public static String CONSUMER_GROUP = "hibench.streambench.kafka.consumerGroup";
 
-  // TODO: rename to "hibench.streambench.topic"
   public static String KAFKA_TOPIC = "hibench.streambench.kafka.topic";
 
-  // TODO: rename to "hibench.streambench.brokerList"
   public static String KAFKA_BROKER_LIST = "hibench.streambench.kafka.brokerList";
 
-  // TODO: rename to "hibench.streambench.debugMode"
-  public static String DEBUG_MODE = "hibench.streambench.debug";
+  public static String DEBUG_MODE = "hibench.streambench.debugMode";
 
-  // TODO: rename to "hibench.streambench.sample.probability"
-  public static String SAMPLE_PROBABILITY = "hibench.streambench.prob";
-
+  public static String SAMPLE_PROBABILITY = "hibench.streambench.sampleProbability";
 
   // =====================================
-  // Prepare Related Conf
+  // Data Generator Related Conf
   // =====================================
-  // TODO: rename prepare to dataGen
   public static String DATAGEN_RECORDS_PRE_INTERVAL = "hibench.streambench.datagen.recordsPerInterval";
 
   public static String DATAGEN_INTERVAL_SPAN = "hibench.streambench.datagen.intervalSpan";
@@ -60,27 +51,21 @@ public class StreamBenchConfig {
 
   public static String DATAGEN_TOTAL_ROUNDS = "hibench.streambench.datagen.totalRounds";
 
-  public static String DATAGEN_RECORD_LENGTH = "hibench.streambench.recordLength";
+  public static String DATAGEN_RECORD_LENGTH = "hibench.streambench.datagen.recordLength";
 
   // =====================================
   // Spark Streaming Related Conf
   // =====================================
-  // TODO: rename to "hibench.streambench.spark.batchInterval"
-  public static String SPARK_BATCH_INTERVAL = "hibench.streambench.batch_interval";
+  public static String SPARK_BATCH_INTERVAL = "hibench.streambench.spark.batchInterval";
 
-  // TODO: rename to "hibench.streambench.spark.checkpointPath"
-  public static String SPARK_CHECKPOINT_PATHL = "hibench.streambench.checkpoint_path";
+  public static String SPARK_CHECKPOINT_PATHL = "hibench.streambench.spark.checkpointPath";
 
-  // TODO: rename to "hibench.streambench.spark.enableWAL"
-  public static String SPARK_ENABLE_WAL = "hibench.streambench.testWAL";
+  public static String SPARK_ENABLE_WAL = "hibench.streambench.spark.enableWAL";
 
-  // TODO: rename to "hibench.streambench.spark.useDirectMode"
-  public static String SPARK_USE_DIRECT_MODE = "hibench.streambench.direct_mode";
+  public static String SPARK_USE_DIRECT_MODE = "hibench.streambench.spark.useDirectMode";
 
-  // TODO: rename to "hibench.streambench.spark.receiverNumber"
-  public static String SPARK_RECEIVER_NUMBER = "hibench.streambench.receiver_nodes";
+  public static String SPARK_STORAGE_LEVEL = "hibench.streambench.spark.storageLevel";
 
-  // TODO: rename to "hibench.streambench.spark.storageLevel"
-  public static String SPARK_STORAGE_LEVEL = "hibench.streambench.copies";
+  public static String SPARK_RECEIVER_NUMBER = "hibench.streambench.spark.receiverNumber";
 
 }

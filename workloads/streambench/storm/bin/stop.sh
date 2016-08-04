@@ -16,33 +16,16 @@
 
 workload_folder=`dirname "$0"`
 workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/..
+workload_root=${workload_folder}/../..
+echo $workload_root
 . "${workload_root}/../../bin/functions/load-bench-config.sh"
 
-enter_bench StreamingBenchZkUtils ${workload_root} ${workload_folder}
-show_bannar start
-printFullLog
+enter_bench StormStreamingBenchOperator ${workload_root} ${workload_folder}
+echo "=========stop storm benchmark $STREAMING_TESTCASE========="
 
-# operation type
-op=${1:-ls}
-
-# number of partitions
-partitions=${STREAMING_PARTITIONS}
-
-# zkHost address:port
-zkHost=$STREAMING_ZKADDR
-
-# topic
-topic=$STREAMING_TOPIC_NAME
-
-# spark consumer name
-consumer=$STREAMING_CONSUMER_GROUP
-
-path=/consumers/$consumer/offsets/$topic
-
-CMD="$JAVA_BIN -cp $STREAMING_ZKHELPER_JAR com.intel.hibench.streambench.zkHelper.ZKUtil $op $zkHost $path $partitions"
-echo -e "${BGreen}Query ZooKeeper for topic offsets, params: ${BCyan}operation:${Cyan}$op ${BCyan}partitions:${Cyan}$partitions ${BCyan}zkHost:${Cyan}$zkHost ${BCyan}topic:${Cyan}$topic ${BCyan}consumer:${Cyan}$consumer ${BCyan}path:${Cyan}$path${Color_Off}"
-echo -e "${BGreen}Run:${Green}$CMD${Color_Off}"
-execute_withlog $CMD
-
-show_bannar finish
+${STORM_HOME}/bin/storm kill $STREAMING_TESTCASE
+echo "Wait 30 seconds... and need double confirm!"
+sleep 30
+echo "Double confirm the bench has been killed:"
+${STORM_HOME}/bin/storm kill $STREAMING_TESTCASE
+echo 'If got NotAliveException, the "$STREAMING_TESTCASE" has been killed successfully.'

@@ -26,22 +26,12 @@ DATA_GEN_DIR=${workload_root}/../../src/streambench/datagen
 DATA_FILE1=${STREAMING_DATA1_DIR}/uservisits
 DATA_FILE2=${STREAMING_DATA2_SAMPLE_DIR}
 
-#echo "=========begin gen stream data========="
-#echo "Topic:$topicName dataset:$app records:$records kafkaBrokers:$brokerList mode:$mode data_dir:$data_dir"
-
-
-JVM_OPTS="-Xmx256M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dkafka.logs.dir=bin/../logs -cp ${DATA_GEN_JAR}"
+JVM_OPTS="-Xmx1024M -server -XX:+UseCompressedOops -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dkafka.logs.dir=bin/../logs -cp ${DATA_GEN_JAR}"
 
 printFullLog
 
-if [ "$STREAMING_DATAGEN_MODE" == "push" ]; then
-	    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartNew $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
-	    echo -e "${BGreen}Sending streaming data to kafka, concurrently: ${Green}$CMD${Color_Off}"
-	    execute_withlog $CMD
-else
-    CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.StartPeriodic $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
-    echo -e "${BGreen}Sending streaming data to kafka, periodically: ${Green}$CMD${Color_Off}"
-    execute_withlog $CMD
-fi
+CMD="$JAVA_BIN $JVM_OPTS com.intel.hibench.streambench.DataGenerator $SPARKBENCH_PROPERTIES_FILES $DATA_FILE1 0 $DATA_FILE2 0"
+echo -e "${BGreen}Sending streaming data to kafka, periodically: ${Green}$CMD${Color_Off}"
+execute_withlog $CMD
 
 show_bannar finish

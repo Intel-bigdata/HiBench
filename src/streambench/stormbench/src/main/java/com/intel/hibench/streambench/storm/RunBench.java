@@ -44,23 +44,23 @@ public class RunBench {
     boolean TridentFramework = false;
     if (args[1].equals("trident")) TridentFramework = true;
 
-    conf.nimbus = cl.getProperty("hibench.streamingbench.storm.nimbus");
-    conf.nimbusAPIPort = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.nimbusAPIPort"));
-    conf.zkHost = cl.getProperty("hibench.streamingbench.zookeeper.host");
-    conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.worker_count"));
-    conf.spoutThreads = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.spout_threads"));
-    conf.boltThreads = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.bolt_threads"));
-    conf.benchName = cl.getProperty("hibench.streamingbench.benchname");
-    conf.recordCount = Long.parseLong(cl.getProperty("hibench.streamingbench.record_count"));
-    conf.topic = cl.getProperty("hibench.streamingbench.topic_name");
-    conf.consumerGroup = cl.getProperty("hibench.streamingbench.consumer_group");
-    conf.readFromStart = Boolean.parseBoolean(cl.getProperty("hibench.streamingbench.storm.read_from_start"));
-    conf.ackon = Boolean.parseBoolean(cl.getProperty("hibench.streamingbench.storm.ackon"));
-    conf.nimbusContactInterval = Integer.parseInt(cl.getProperty("hibench.streamingbench.storm.nimbusContactInterval"));
+    conf.nimbus = cl.getProperty("hibench.streambench.storm.nimbus");
+    conf.nimbusAPIPort = Integer.parseInt(cl.getProperty("hibench.streambench.storm.nimbusAPIPort"));
+    conf.zkHost = cl.getProperty("hibench.streambench.zookeeper.host");
+    conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streambench.storm.worker_count"));
+    conf.spoutThreads = Integer.parseInt(cl.getProperty("hibench.streambench.storm.spout_threads"));
+    conf.boltThreads = Integer.parseInt(cl.getProperty("hibench.streambench.storm.bolt_threads"));
+    conf.benchName = cl.getProperty("hibench.streambench.benchname");
+    conf.recordCount = Long.parseLong(cl.getProperty("hibench.streambench.record_count"));
+    conf.topic = cl.getProperty("hibench.streambench.topic_name");
+    conf.consumerGroup = cl.getProperty("hibench.streambench.consumer_group");
+    conf.readFromStart = Boolean.parseBoolean(cl.getProperty("hibench.streambench.storm.read_from_start"));
+    conf.ackon = Boolean.parseBoolean(cl.getProperty("hibench.streambench.storm.ackon"));
+    conf.nimbusContactInterval = Integer.parseInt(cl.getProperty("hibench.streambench.storm.nimbusContactInterval"));
 
-    String brokerList = cl.getProperty("hibench.streamingbench.brokerList");
-    long recordPerInterval = Long.parseLong(cl.getProperty("hibench.streamingbench.prepare.periodic.recordPerInterval"));
-    int intervalSpan = Integer.parseInt(cl.getProperty("hibench.streamingbench.prepare.periodic.intervalSpan"));
+    String brokerList = cl.getProperty("hibench.streambench.brokerList");
+    long recordPerInterval = Long.parseLong(cl.getProperty("hibench.streambench.prepare.periodic.recordPerInterval"));
+    int intervalSpan = Integer.parseInt(cl.getProperty("hibench.streambench.prepare.periodic.intervalSpan"));
     String reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, recordPerInterval, intervalSpan);
     conf.latencyReporter = new KafkaReporter(reporterTopic, brokerList);
 
@@ -71,33 +71,33 @@ public class RunBench {
 
     if (TridentFramework) { // For trident workloads
       if (benchName.equals("wordcount")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
+        conf.separator = cl.getProperty("hibench.streambench.separator");
         TridentWordcount wordcount = new TridentWordcount(conf);
         wordcount.run();
       } else if (benchName.equals("identity")) {
         TridentIdentity identity = new TridentIdentity(conf);
         identity.run();
       } else if (benchName.equals("sample")) {
-        conf.prob = Double.parseDouble(cl.getProperty("hibench.streamingbench.prob"));
+        conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
         TridentSample sample = new TridentSample(conf);
         sample.run();
       } else if (benchName.equals("project")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         TridentProject project = new TridentProject(conf);
         project.run();
       } else if (benchName.equals("grep")) {
-        conf.pattern = cl.getProperty("hibench.streamingbench.pattern");
+        conf.pattern = cl.getProperty("hibench.streambench.pattern");
         TridentGrep grep = new TridentGrep(conf);
         grep.run();
       } else if (benchName.equals("distinctcount")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         TridentDistinctCount distinct = new TridentDistinctCount(conf);
         distinct.run();
       } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         TridentNumericCalc numeric = new TridentNumericCalc(conf);
         numeric.run();
       }
@@ -106,35 +106,35 @@ public class RunBench {
         Identity identity = new Identity(conf);
         identity.run();
       } else if (benchName.equals("project")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         ProjectStream project = new ProjectStream(conf);
         project.run();
       } else if (benchName.equals("sample")) {
-        conf.prob = Double.parseDouble(cl.getProperty("hibench.streamingbench.prob"));
+        conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
         SampleStream sample = new SampleStream(conf);
         sample.run();
       } else if (benchName.equals("wordcount")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
+        conf.separator = cl.getProperty("hibench.streambench.separator");
         Wordcount wordcount = new Wordcount(conf);
         wordcount.run();
       } else if (benchName.equals("grep")) {
-        conf.pattern = cl.getProperty("hibench.streamingbench.pattern");
+        conf.pattern = cl.getProperty("hibench.streambench.pattern");
         GrepStream grep = new GrepStream(conf);
         grep.run();
       } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         NumericCalc numeric = new NumericCalc(conf);
         numeric.run();
       } else if (benchName.equals("distinctcount")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         DistinctCount distinct = new DistinctCount(conf);
         distinct.run();
       } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streamingbench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streamingbench.field_index"));
+        conf.separator = cl.getProperty("hibench.streambench.separator");
+        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
         NumericCalcSep numeric = new NumericCalcSep(conf);
         numeric.run();
       }
