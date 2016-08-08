@@ -49,6 +49,7 @@ public class RunBench {
         conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
         conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
         conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
+        conf.offsetReset = cl.getProperty(StreamBenchConfig.KAFKA_OFFSET_RESET);
         
         String testCase = conf.testCase;
 

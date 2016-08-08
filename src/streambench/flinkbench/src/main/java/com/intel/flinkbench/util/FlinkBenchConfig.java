@@ -29,4 +29,5 @@ public class FlinkBenchConfig {
     public double prob;
     public String pattern;
     public long bufferTimeout;
+    public String offsetReset;
 }
