@@ -25,7 +25,7 @@ class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyRepo
 
   private val props = new Properties()
   props.put("bootstrap.servers", bootstrapServers)
-  private lazy val producer = ProducerSingleton.getInstance(props)
+  private val producer = ProducerSingleton.getInstance(props)
 
   override def report(startTime: Long, endTime: Long): Unit = {
     producer.send(new ProducerRecord[String, String](topic, 0, null, s"$startTime:$endTime"))
