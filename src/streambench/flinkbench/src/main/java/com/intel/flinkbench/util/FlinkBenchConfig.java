@@ -17,7 +17,9 @@
 
 package com.intel.flinkbench.util;
 
-public class FlinkBenchConfig {
+import java.io.Serializable;
+
+public class FlinkBenchConfig implements Serializable{
     public String testCase;
 
     // Kafka related

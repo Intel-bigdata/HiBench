@@ -22,7 +22,6 @@ import com.intel.flinkbench.util.BenchLogUtil;
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.flinkbench.util.FlinkBenchConfig;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.StreamBenchConfig;
 
 import com.intel.hibench.streambench.common.Platform;
