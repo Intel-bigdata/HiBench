@@ -18,15 +18,22 @@
 package com.intel.flinkbench.util;
 
 public class FlinkBenchConfig {
-    public String zkHost;
-    public int workerCount;
     public String testCase;
+
+    // Kafka related
+    public String zkHost;
     public String brokerList;
     public String topic;
     public String consumerGroup;
+    public String offsetReset;
+    public String reportTopic;
+
     public String separator;
     public int fieldIndex;
     public double prob;
     public String pattern;
+
+    // Flink related
     public long bufferTimeout;
+
 }

@@ -28,19 +28,25 @@ import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 public class Identity extends StreamBase {
     
    @Override 
-   public void processStream(final KafkaReporter kafkaReporter, FlinkBenchConfig config) throws Exception{
+   public void processStream(final FlinkBenchConfig config) throws Exception{
 
-       createDataStream(config);
-       final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-       
-       DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
-       dataStream.map((new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
-           @Override
-           public Tuple2<String, String> map(Tuple2<String, String> value) throws Exception {
-               kafkaReporter.report(Long.parseLong(value.f0), System.currentTimeMillis());
-               return value;
-           }
-       })).setBufferTimeout(config.bufferTimeout);
-       env.execute("Identity job");
+     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+     env.setBufferTimeout(config.bufferTimeout);
+
+     createDataStream(config);
+     DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+
+     dataStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, String>>() {
+
+       @Override
+       public Tuple2<String, String> map(Tuple2<String, String> value) throws Exception {
+         KafkaReporter kafkaReporter = new KafkaReporter(config.reportTopic, config.brokerList);
+
+         kafkaReporter.report(Long.parseLong(value.f0), System.currentTimeMillis());
+         return value;
+       }
+     });
+
+     env.execute("Identity Job");
    }
 }

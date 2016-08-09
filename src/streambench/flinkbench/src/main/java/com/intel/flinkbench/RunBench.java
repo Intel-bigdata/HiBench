@@ -37,32 +37,32 @@ public class RunBench {
         if (args.length < 1)
             BenchLogUtil.handleError("Usage: RunBench <ConfigFile>");
 
-        FlinkBenchConfig conf = new FlinkBenchConfig();
-
         ConfigLoader cl = new ConfigLoader(args[0]);
-        
-        KafkaReporter reporter = getReporter(cl);
 
+        // Prepare configuration
+        FlinkBenchConfig conf = new FlinkBenchConfig();
         conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
         conf.zkHost = cl.getProperty(StreamBenchConfig.ZK_HOST);
         conf.testCase = cl.getProperty(StreamBenchConfig.TESTCASE);
         conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
         conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
         conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
-        
+        conf.offsetReset = cl.getProperty(StreamBenchConfig.KAFKA_OFFSET_RESET);
+
+        long recordsPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
+        int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
+        conf.reportTopic = MetricsUtil.getTopic(Platform.FLINK, conf.testCase, recordsPerInterval, intervalSpan);
+
+        // Main testcase logic
         String testCase = conf.testCase;
 
-        BenchLogUtil.logMsg("Benchmark starts.." + testCase +
-                "   Frameworks:" + "Flink");
-
-        //hard-code parameter for some testcases, not used in future
         if (testCase.equals("wordcount")) {
             conf.separator = "\\s+";
             WordCount wordCount = new WordCount();
             wordCount.processStream(conf);
         } else if (testCase.equals("identity")) {
             Identity identity = new Identity();
-            identity.processStream(reporter, conf);
+            identity.processStream(conf);
         } else if (testCase.equals("sample")) {
             conf.prob = Double.parseDouble(cl.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY));
             Sample sample = new Sample();
@@ -83,14 +83,5 @@ public class RunBench {
             Statistics numeric = new Statistics();
             numeric.processStream(conf);
         }
-    }
-
-    private static KafkaReporter getReporter(ConfigLoader config) {
-        String topic = config.getProperty(StreamBenchConfig.KAFKA_TOPIC);
-        String brokerList = config.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
-        long recordPerInterval = Long.parseLong(config.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
-        int intervalSpan = Integer.parseInt(config.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
-        String reporterTopic = MetricsUtil.getTopic(Platform.FLINK, topic, recordPerInterval, intervalSpan);
-        return new KafkaReporter(reporterTopic, brokerList);
     }
 }
