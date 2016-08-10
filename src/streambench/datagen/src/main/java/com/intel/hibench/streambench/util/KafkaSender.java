@@ -67,7 +67,7 @@ public class KafkaSender {
   };
 
   // send content to Kafka
-  public long send (String topic, long targetRecords) {
+  public long send (String topic, long targetRecords, boolean debugMode) {
 
     long sentRecords = 0L;
     long sentBytes = 0L;
@@ -89,12 +89,6 @@ public class KafkaSender {
       sentRecords++;
       sentBytes = sentBytes + keyByte.length + valueByte.length;
     }
-
-    // print out useful info
-    double timeCostInSeconds = (double) intervalSpan / 1000;
-    double throughput = (double) (sentBytes / timeCostInSeconds) / 1000000;
-    System.out.println("Sent " + sentRecords + " records to Kafka topic: " + topic);
-    System.out.println("Totally sent " + sentBytes + " bytes in " + timeCostInSeconds + " seconds (throughout: " + throughput + " MB/s)");
 
     return sentRecords;
   }
