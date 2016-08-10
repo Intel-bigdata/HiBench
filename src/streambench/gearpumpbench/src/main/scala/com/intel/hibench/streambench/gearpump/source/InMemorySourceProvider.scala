@@ -27,7 +27,7 @@ import org.apache.gearpump.streaming.task.StartTime
 
 class InMemorySourceProvider extends SourceProvider{
   override def getSourceProcessor(conf: GearpumpConfig): Processor[_ <: Task] = {
-    Processor[InMemorySourceTask](conf.partitions)
+    Processor[InMemorySourceTask](conf.parallelism)
   }
 }
 

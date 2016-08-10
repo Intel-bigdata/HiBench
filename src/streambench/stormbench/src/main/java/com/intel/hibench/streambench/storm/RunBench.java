@@ -19,6 +19,7 @@ package com.intel.hibench.streambench.storm;
 
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.hibench.streambench.common.Platform;
+import com.intel.hibench.streambench.common.StreamBenchConfig;
 import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.storm.micro.*;
@@ -44,23 +45,19 @@ public class RunBench {
     boolean TridentFramework = false;
     if (args[1].equals("trident")) TridentFramework = true;
 
-    conf.nimbus = cl.getProperty("hibench.streambench.storm.nimbus");
-    conf.nimbusAPIPort = Integer.parseInt(cl.getProperty("hibench.streambench.storm.nimbusAPIPort"));
-    conf.zkHost = cl.getProperty("hibench.streambench.zookeeper.host");
-    conf.workerCount = Integer.parseInt(cl.getProperty("hibench.streambench.storm.worker_count"));
-    conf.spoutThreads = Integer.parseInt(cl.getProperty("hibench.streambench.storm.spout_threads"));
-    conf.boltThreads = Integer.parseInt(cl.getProperty("hibench.streambench.storm.bolt_threads"));
-    conf.benchName = cl.getProperty("hibench.streambench.benchname");
-    conf.recordCount = Long.parseLong(cl.getProperty("hibench.streambench.record_count"));
-    conf.topic = cl.getProperty("hibench.streambench.topic_name");
-    conf.consumerGroup = cl.getProperty("hibench.streambench.consumer_group");
-    conf.readFromStart = Boolean.parseBoolean(cl.getProperty("hibench.streambench.storm.read_from_start"));
-    conf.ackon = Boolean.parseBoolean(cl.getProperty("hibench.streambench.storm.ackon"));
-    conf.nimbusContactInterval = Integer.parseInt(cl.getProperty("hibench.streambench.storm.nimbusContactInterval"));
+    conf.zkHost = cl.getProperty(StreamBenchConfig.ZK_HOST);
+    conf.workerCount = Integer.parseInt(cl.getProperty(StreamBenchConfig.STORM_WORKERCOUNT));
+    conf.spoutThreads = Integer.parseInt(cl.getProperty(StreamBenchConfig.STORM_SPOUT_THREADS));
+    conf.boltThreads = Integer.parseInt(cl.getProperty(StreamBenchConfig.STORM_BOLT_THREADS));
+    conf.benchName = cl.getProperty(StreamBenchConfig.TESTCASE);
+    conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
+    conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
+    conf.readFromStart = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_READ_FROM_START));
+    conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
 
-    String brokerList = cl.getProperty("hibench.streambench.brokerList");
-    long recordPerInterval = Long.parseLong(cl.getProperty("hibench.streambench.prepare.periodic.recordPerInterval"));
-    int intervalSpan = Integer.parseInt(cl.getProperty("hibench.streambench.prepare.periodic.intervalSpan"));
+    String brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+    long recordPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
+    int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
     String reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, recordPerInterval, intervalSpan);
     conf.latencyReporter = new KafkaReporter(reporterTopic, brokerList);
 
