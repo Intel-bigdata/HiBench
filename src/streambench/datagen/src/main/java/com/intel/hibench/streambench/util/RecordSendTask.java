@@ -22,6 +22,7 @@ import java.util.TimerTask;
 public class RecordSendTask extends TimerTask {
   KafkaSender sender;
   private String topic;
+  private boolean debugMode;
 
   private long recordsPerInterval; // Define how many records will be sent on each round
   private int totalRounds;         // Total times this task plan to run. -1 means run infinity
@@ -32,24 +33,30 @@ public class RecordSendTask extends TimerTask {
 
   // Constructors
   public RecordSendTask(KafkaSender sender, String topic,
-      long recordsPerInterval, int totalRounds, long totalRecords) {
+      long recordsPerInterval, int totalRounds, long totalRecords, boolean debugMode) {
 
     this.sender = sender;
     this.topic = topic;
     this.recordsPerInterval = recordsPerInterval;
     this.totalRounds = totalRounds;
     this.totalRecords = totalRecords;
+    this.debugMode = debugMode;
 
+    System.out.println(Thread.currentThread().getName() + " - starting generate data ... " +
+        recordsPerInterval);
   }
 
   @Override
   public void run() {
-    System.out.println("RecordSendTask run, " +
-        roundCounter + " round, " + recordsCounter + " records sent");
+    if (debugMode) {
+      String threadName = Thread.currentThread().getName();
+      System.out.println( threadName + " - RecordSendTask run, " +
+          roundCounter + " round, " + recordsCounter + " records sent");
+    }
 
     if (isRecordValid() && isRoundValid()) {
       // Send records to Kafka
-      long sentRecords = sender.send(topic, recordsPerInterval);
+      long sentRecords = sender.send(topic, recordsPerInterval, debugMode);
 
       // Update counter
       roundCounter++;

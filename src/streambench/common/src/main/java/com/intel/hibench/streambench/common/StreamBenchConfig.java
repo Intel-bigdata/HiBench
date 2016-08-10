@@ -55,6 +55,7 @@ public class StreamBenchConfig {
 
   public static String DATAGEN_RECORD_LENGTH = "hibench.streambench.datagen.recordLength";
 
+  public static String DATAGEN_PRODUCER_NUMBER = "hibench.streambench.datagen.producerNumber";
   // =====================================
   // Spark Streaming Related Conf
   // =====================================

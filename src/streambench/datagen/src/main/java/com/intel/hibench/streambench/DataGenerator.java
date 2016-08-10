@@ -20,10 +20,13 @@ package com.intel.hibench.streambench;
 import com.intel.hibench.common.HiBenchConfig;
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.hibench.streambench.common.StreamBenchConfig;
+import com.intel.hibench.streambench.util.DataGeneratorConfig;
 import com.intel.hibench.streambench.util.KafkaSender;
 import com.intel.hibench.streambench.util.RecordSendTask;
 
 import java.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DataGenerator {
 
@@ -51,28 +54,24 @@ public class DataGenerator {
     int totalRounds = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_TOTAL_ROUNDS));
     int recordLength = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_RECORD_LENGTH));
     String dfsMaster = configLoader.getProperty(HiBenchConfig.DFS_MASTER);
+    boolean debugMode = Boolean.getBoolean(configLoader.getProperty(StreamBenchConfig.DEBUG_MODE));
 
-
-    // instantiate KafkaSender
-    KafkaSender sender;
-    if(testCase.contains("statistics")) {
-      sender = new KafkaSender(brokerList, kMeansFile, kMeansFileOffset, dfsMaster, recordLength, intervalSpan);
-    } else {
-      sender = new KafkaSender(brokerList, userVisitsFile, userVisitsFileOffset, dfsMaster, recordLength, intervalSpan);
+    DataGeneratorConfig dataGeneratorConf = new DataGeneratorConfig(testCase, brokerList, kMeansFile, kMeansFileOffset,
+        userVisitsFile, userVisitsFileOffset, dfsMaster, recordLength, intervalSpan, topic, recordsPerInterval,
+        totalRounds, totalRecords, debugMode);
+    // Create thread pool and submit producer task
+    int producerNumber = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
+    ExecutorService pool = Executors.newFixedThreadPool(producerNumber);
+    for(int i = 0; i < producerNumber; i++) {
+      pool.execute(new DataGeneratorJob(dataGeneratorConf));
     }
-
-    // Schedule timer task
-    Timer timer = new Timer();
-    timer.schedule(
-      new RecordSendTask(sender, topic, recordsPerInterval, totalRounds, totalRecords),
-      0, intervalSpan);
 
     // Print out some basic information
     System.out.println("============ StreamBench Data Generator ============");
     System.out.println(" Interval Span       : " + intervalSpan + " ms");
     System.out.println(" Record Per Interval : " + recordsPerInterval);
     System.out.println(" Record Length       : " + recordLength + " bytes");
-
+    System.out.println(" Producer Number     : " + producerNumber);
     if(totalRecords == -1) {
       System.out.println(" Total Records        : -1 [Infinity]");
     } else {
@@ -84,7 +83,41 @@ public class DataGenerator {
     } else {
       System.out.println(" Total Rounds         : " + totalRounds);
     }
-
+    System.out.println(" Kafka Topic          : " + topic);
     System.out.println("====================================================");
+    System.out.println("Estimated Speed : ");
+    long recordsPreSecond = recordsPerInterval * 1000 * producerNumber / intervalSpan ;
+    System.out.println("    " + recordsPreSecond + " records/second");
+    double mbPreSecond = (double)recordsPreSecond * recordLength / 1000000;
+    System.out.println("    " + mbPreSecond + " Mb/second");
+    System.out.println("====================================================");
+  }
+
+  static class DataGeneratorJob implements Runnable {
+    DataGeneratorConfig conf;
+
+    // Constructor
+    public DataGeneratorJob(DataGeneratorConfig conf) {
+      this.conf = conf;
+    }
+
+    @Override
+    public void run() {
+      // instantiate KafkaSender
+      KafkaSender sender;
+      if(conf.getTestCase().contains("statistics")) {
+        sender = new KafkaSender(conf.getBrokerList(), conf.getkMeansFile(), conf.getkMeansFileOffset(),
+            conf.getDfsMaster(), conf.getRecordLength(), conf.getIntervalSpan());
+      } else {
+        sender = new KafkaSender(conf.getBrokerList(), conf.getUserVisitsFile(), conf.getUserVisitsFileOffset(),
+            conf.getDfsMaster(), conf.getRecordLength(), conf.getIntervalSpan());
+      }
+
+      // Schedule timer task
+      Timer timer = new Timer();
+      timer.schedule(
+          new RecordSendTask(sender, conf.getTopic(), conf.getRecordsPerInterval(),
+              conf.getTotalRounds(), conf.getTotalRecords(), conf.getDebugMode()), 0, conf.getIntervalSpan());
+    }
   }
 }
