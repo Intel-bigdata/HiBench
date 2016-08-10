@@ -42,8 +42,7 @@ public class RecordSendTask extends TimerTask {
     this.totalRecords = totalRecords;
     this.debugMode = debugMode;
 
-    System.out.println(Thread.currentThread().getName() + " - starting generate data ... " +
-        recordsPerInterval);
+    System.out.println(Thread.currentThread().getName() + " - starting generate data ... ");
   }
 
   @Override
