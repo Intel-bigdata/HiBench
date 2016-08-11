@@ -31,7 +31,7 @@ import org.apache.gearpump.streaming.transaction.api.MessageDecoder
 
 class KafkaSourceProvider(implicit actorSystem: ActorSystem) extends SourceProvider{
   override def getSourceProcessor(conf: GearpumpConfig): Processor[_ <: Task] = {
-    getKafkaSource(conf.zkHost, conf.brokerList, conf.topic, conf.partitions)
+    getKafkaSource(conf.zkHost, conf.brokerList, conf.topic, conf.parallelism)
   }
 
   private def getKafkaSource(zkConnect: String, bootstrapServers: String, topic: String, parallelism: Int): Processor[_ <: Task] = {

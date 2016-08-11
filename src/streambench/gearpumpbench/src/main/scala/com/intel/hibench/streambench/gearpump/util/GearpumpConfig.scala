@@ -6,13 +6,11 @@ case class GearpumpConfig(
   brokerList: String,
   consumerGroup: String,
   topic: String,
-  partitions: Int,
-  recordCount: Long,
   parallelism: Int,
-  pattern: String,
-  fieldIndex: Int,
-  separator: String,
-  prob: Double
+  prob: Double,
+  pattern: String = " ",
+  fieldIndex: Int = 0,
+  separator: String = "\\s+"
 )
 
 object GearpumpConfig {
