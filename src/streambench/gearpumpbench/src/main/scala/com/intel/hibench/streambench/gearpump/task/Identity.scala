@@ -16,16 +16,17 @@
  */
 package com.intel.hibench.streambench.gearpump.task
 
-import com.intel.hibench.streambench.common.metrics.LatencyReporter
+import com.intel.hibench.streambench.common.metrics.KafkaReporter
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
 class Identity(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val reporter = conf.getValue[LatencyReporter](GearpumpConfig.BENCH_LATENCY_REPORTER).get
+  private val benchConfig = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
 
   override def onNext(msg: Message): Unit = {
+    val reporter =  new KafkaReporter(benchConfig.reporterTopic, benchConfig.brokerList)
     taskContext.output(msg)
     reporter.report(msg.timestamp, System.currentTimeMillis())
   }

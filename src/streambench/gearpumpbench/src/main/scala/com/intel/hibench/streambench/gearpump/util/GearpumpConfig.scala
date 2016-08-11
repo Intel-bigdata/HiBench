@@ -8,6 +8,7 @@ case class GearpumpConfig(
   topic: String,
   parallelism: Int,
   prob: Double,
+  reporterTopic: String,
   pattern: String = " ",
   fieldIndex: Int = 0,
   separator: String = "\\s+"

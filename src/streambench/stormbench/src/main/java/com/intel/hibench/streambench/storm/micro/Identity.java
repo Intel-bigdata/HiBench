@@ -18,6 +18,7 @@
 package com.intel.hibench.streambench.storm.micro;
 
 import com.google.common.collect.ImmutableMap;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
@@ -38,20 +39,21 @@ public class Identity extends SingleSpoutTops {
 
   @Override
   public void setBolts(TopologyBuilder builder) {
-    builder.setBolt("identity", new IdentityBolt(config.latencyReporter),
-            config.boltThreads).shuffleGrouping("spout");
+    builder.setBolt("identity", new IdentityBolt(config),
+        config.boltThreads).shuffleGrouping("spout");
   }
 
   private static class IdentityBolt extends BaseBasicBolt {
 
-    private final LatencyReporter latencyReporter;
+    private final StormBenchConfig config;
 
-    public IdentityBolt(LatencyReporter latencyReporter) {
-      this.latencyReporter = latencyReporter;
+    public IdentityBolt(StormBenchConfig config) {
+      this.config = config;
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
+      final LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
       ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
       collector.emit(new Values(kv));
       latencyReporter.report(Long.parseLong(kv.keySet().iterator().next()), System.currentTimeMillis());
