@@ -52,7 +52,6 @@ public class RunBench {
     conf.benchName = cl.getProperty(StreamBenchConfig.TESTCASE);
     conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
     conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
-    conf.readFromStart = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_READ_FROM_START));
     conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
 
     conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);

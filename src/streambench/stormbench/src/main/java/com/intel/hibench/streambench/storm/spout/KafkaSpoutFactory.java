@@ -18,6 +18,7 @@
 package com.intel.hibench.streambench.storm.spout;
 
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import kafka.api.OffsetRequest;
 import org.apache.storm.kafka.*;
 import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.kafka.trident.TridentKafkaConfig;
@@ -28,12 +29,12 @@ public class KafkaSpoutFactory {
   public static BaseRichSpout getSpout(StormBenchConfig conf) {
     String topic = conf.topic;
     String consumerGroup = conf.consumerGroup;
-    boolean readFromStart = conf.readFromStart;
     String zkHost = conf.zkHost;
     BrokerHosts brokerHosts = new ZkHosts(zkHost);
     SpoutConfig spoutConfig = new SpoutConfig(brokerHosts, topic, "", consumerGroup);
     spoutConfig.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
-    spoutConfig.ignoreZkOffsets = readFromStart;
+    spoutConfig.ignoreZkOffsets = true;
+    spoutConfig.startOffsetTime = OffsetRequest.LatestTime();
     return new KafkaSpout(spoutConfig);
   }
 
@@ -41,13 +42,13 @@ public class KafkaSpoutFactory {
   public static OpaqueTridentKafkaSpout getTridentSpout(StormBenchConfig conf) {
     String topic = conf.topic;
     String consumerGroup = conf.consumerGroup;
-    boolean readFromStart = conf.readFromStart;
     String zkHost = conf.zkHost;
     BrokerHosts brokerHosts = new ZkHosts(zkHost);
     TridentKafkaConfig tridentKafkaConfig = new TridentKafkaConfig(brokerHosts, topic, consumerGroup);
     tridentKafkaConfig.fetchSizeBytes = 10 * 1024;
     tridentKafkaConfig.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
-    tridentKafkaConfig.ignoreZkOffsets = readFromStart;
+    tridentKafkaConfig.ignoreZkOffsets = true;
+    tridentKafkaConfig.startOffsetTime = OffsetRequest.LatestTime();
     return new OpaqueTridentKafkaSpout(tridentKafkaConfig);
   }
 
