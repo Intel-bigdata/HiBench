@@ -10,7 +10,6 @@ public class StormBenchConfig implements Serializable {
   public String benchName;
   public String topic;
   public String consumerGroup;
-  public boolean readFromStart;
   public boolean ackon;
   public double prob;
   public String brokerList;
