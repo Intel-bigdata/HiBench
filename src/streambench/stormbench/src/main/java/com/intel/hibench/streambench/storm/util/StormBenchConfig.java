@@ -1,10 +1,8 @@
 package com.intel.hibench.streambench.storm.util;
 
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
-
 import java.io.Serializable;
 
-public class StormBenchConfig {
+public class StormBenchConfig implements Serializable {
   public String zkHost;
   public int workerCount;
   public int spoutThreads;
@@ -15,7 +13,8 @@ public class StormBenchConfig {
   public boolean readFromStart;
   public boolean ackon;
   public double prob;
-  public LatencyReporter latencyReporter;
+  public String brokerList;
+  public String reporterTopic;
 
   //Following are fields that are benchmark specific
   public String separator = "\\s+";

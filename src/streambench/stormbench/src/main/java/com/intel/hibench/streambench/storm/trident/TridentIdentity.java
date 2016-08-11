@@ -18,6 +18,7 @@
 package com.intel.hibench.streambench.storm.trident;
 
 import com.google.common.collect.ImmutableMap;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
@@ -43,21 +44,22 @@ public class TridentIdentity extends SingleTridentSpoutTops {
     TridentTopology topology = new TridentTopology();
 
     topology.newStream("bg0", spout)
-            .each(spout.getOutputFields(), new Identity(config.latencyReporter),
+            .each(spout.getOutputFields(), new Identity(config),
                 new Fields("tuple"))
             .parallelismHint(config.workerCount);
     return topology;
   }
 
   private static class Identity extends BaseFunction {
-    private final LatencyReporter latencyReporter;
+    private final StormBenchConfig config;
 
-    public Identity(LatencyReporter reporter) {
-      this.latencyReporter = reporter;
+    public Identity(StormBenchConfig config) {
+      this.config = config;
     }
 
     @Override
     public void execute(TridentTuple tuple, TridentCollector collector) {
+      final LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
       ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
       collector.emit(new Values(kv));
       latencyReporter.report(Long.parseLong(kv.keySet().iterator().next()),
