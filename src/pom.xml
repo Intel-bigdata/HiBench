@@ -148,7 +148,7 @@
                 <property><name>!spark1.2</name></property>
             </activation>
 	    <modules>
-	     <!-- <module>streambench</module>-->
+	      <module>streambench</module>
 	    </modules>
 
         </profile>
@@ -163,7 +163,7 @@
                 <property><name>spark1.4</name></property>
             </activation>
 	    <modules>
-	      <!--<module>streambench</module>-->
+	      <module>streambench</module>
 	    </modules>
 
         </profile>
@@ -178,7 +178,7 @@
                 <property><name>spark1.5</name></property>
             </activation>
 	    <modules>
-	      <!--<module>streambench</module>-->
+	      <module>streambench</module>
 	    </modules>
 
         </profile>
@@ -193,11 +193,10 @@
                 <property><name>spark1.6</name></property>
             </activation>
 	    <modules>
-	      <!--<module>streambench</module>-->
+	      <module>streambench</module>
 	    </modules>
 
         </profile>
-
         <profile>
             <id>spark2.0</id>
             <properties>
