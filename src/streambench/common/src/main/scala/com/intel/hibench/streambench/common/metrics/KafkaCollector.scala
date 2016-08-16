@@ -48,8 +48,11 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputDir: String) e
   }
 
   private def updateLatency(startTime: Long, endTime: Long): Unit = {
-    histogram.update(endTime - startTime)
-
+    // TODO: remove this hack
+    // logically negative latency should not exit, but in fact it could happen when system time
+    // are not sync between clusters.
+    val latency = Math.max(0, endTime - startTime)
+    histogram.update(latency)
   }
 
   private def updateThroughput(startTime: Long ,endTime: Long): Unit = {
