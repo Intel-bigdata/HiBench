@@ -28,7 +28,7 @@
   </parent>
 
   <groupId>com.intel.hibench.streambench</groupId>
-  <artifactId>datagen</artifactId>
+  <artifactId>streaming-bench-datagen</artifactId>
   <version>0.2</version>
   <name>Streaming Benchmark Data Generation Tool</name>
 

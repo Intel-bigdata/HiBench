@@ -17,35 +17,23 @@
 
 package com.intel.hibench.streambench.spark.application
 
+import com.intel.hibench.streambench.common.UserVisitParser
+import com.intel.hibench.streambench.common.metrics.KafkaReporter
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import org.apache.spark.streaming.dstream.DStream
 
-object ThreadLocalRandom extends Serializable{
+class Aggregation extends BenchBase {
 
-  private val localRandom = new ThreadLocal[util.Random] {
-    override protected def initialValue() = new util.Random
-  }
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit = {
+    val reportTopic = config.reporterTopic
+    val brokerList = config.brokerList
 
-  def current = localRandom.get
+    lines.map(line => (line._1, UserVisitParser.parse(line._2))).reduce((value, result) => {
 
-}
-
-/**
-  * @deprecated don't need this test case anymore.
-  */
-@deprecated
-class Sample(probability:Double)  extends BenchBase {
-
-  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig) = {
-
-    val samples = lines.filter( _=> {
-      ThreadLocalRandom.current.nextDouble() < probability
+      val reporter = new KafkaReporter(reportTopic, brokerList)
+      reporter.report(value._1, System.currentTimeMillis())
+      if(config.debugMode) println(value._1 + ", " + value._2)
+      value
     })
-    val debug = config.debugMode
-    if(config.debugMode){
-      samples.print()
-    }else{
-      samples.foreachRDD(rdd => rdd.foreach( _ => Unit ))
-    }
   }
 }

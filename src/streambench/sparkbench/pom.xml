@@ -26,7 +26,7 @@
   </parent>
 
   <groupId>com.intel.hibench.streambench</groupId>
-  <artifactId>streaming-bench-spark_0.1</artifactId>
+  <artifactId>streaming-bench-spark</artifactId>
   <packaging>jar</packaging>
   <name>Streaming Benchmark Spark</name>
 

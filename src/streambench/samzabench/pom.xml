@@ -30,7 +30,7 @@
   </prerequisites>
 
   <groupId>com.intel.hibench.streambench</groupId>
-  <artifactId>streaming-bench-samza_0.1</artifactId>
+  <artifactId>streaming-bench-samza</artifactId>
   <packaging>jar</packaging>
   <name>Streaming Benchmark Samza</name>
 
@@ -120,7 +120,7 @@
     </dependency>
     <dependency>
       <groupId>com.intel.hibench.streambench</groupId>
-      <artifactId>streaming-bench-common_0.1</artifactId>
+      <artifactId>streaming-bench-common</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

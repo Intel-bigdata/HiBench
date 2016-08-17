@@ -18,15 +18,15 @@
 package com.intel.hibench.streambench.spark
 
 import com.intel.hibench.common.HiBenchConfig
-import com.intel.hibench.streambench.common.metrics.{KafkaReporter, MetricsUtil, LatencyReporter}
-import com.intel.hibench.streambench.common.{Platform, ConfigLoader, StreamBenchConfig}
+import com.intel.hibench.streambench.common.metrics.MetricsUtil
+import com.intel.hibench.streambench.common._
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
 import com.intel.hibench.streambench.spark.application._
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
-import org.apache.spark.streaming.{Milliseconds, Seconds, StreamingContext}
+import org.apache.spark.streaming.{Milliseconds, StreamingContext}
 
 /**
   * The entry point of Spark Streaming benchmark
@@ -43,7 +43,7 @@ object RunBench {
     val receiverNumber = conf.getProperty(StreamBenchConfig.SPARK_RECEIVER_NUMBER).toInt
     val copies = conf.getProperty(StreamBenchConfig.SPARK_STORAGE_LEVEL).toInt
     val enableWAL = conf.getProperty(StreamBenchConfig.SPARK_ENABLE_WAL).toBoolean
-    val checkPointPath = conf.getProperty(StreamBenchConfig.SPARK_CHECKPOINT_PATHL)
+    val checkPointPath = conf.getProperty(StreamBenchConfig.SPARK_CHECKPOINT_PATH)
     val directMode = conf.getProperty(StreamBenchConfig.SPARK_USE_DIRECT_MODE).toBoolean
     val benchName = conf.getProperty(StreamBenchConfig.TESTCASE)
     val topic = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC)
@@ -54,6 +54,9 @@ object RunBench {
     val recordPerInterval = conf.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL).toLong
     val intervalSpan: Int = conf.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN).toInt
 
+    val windowDuration: Long = conf.getProperty(StreamBenchConfig.FixWINDOW_DURATION).toLong
+    val windowSlideStep: Long = conf.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP).toLong
+
     val coreNumber = conf.getProperty(HiBenchConfig.YARN_EXECUTOR_NUMBER).toInt * conf.getProperty(HiBenchConfig.YARN_EXECUTOR_CORES).toInt
 
     val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, recordPerInterval, intervalSpan)
@@ -63,7 +66,7 @@ object RunBench {
     // init SparkBenchConfig, it will be passed into every test case
     val config = SparkBenchConfig(master, benchName, batchInterval, receiverNumber, copies,
       enableWAL, checkPointPath, directMode, zkHost, consumerGroup, topic, reporterTopic,
-      brokerList, debugMode, coreNumber, probability)
+      brokerList, debugMode, coreNumber, probability, windowDuration, windowSlideStep)
 
     run(config)
   }
@@ -71,14 +74,12 @@ object RunBench {
   private def run(config: SparkBenchConfig) {
 
     // select test case based on given benchName
-    val testCase : BenchBase = config.benchName match {
-      case "identity" => new Identity()
-      case "repartition" => new Repartition()
-      case "project" => new Project()
-      case "wordcount" => new WordCount()
-      case "statistics" =>
-        // This test case will consume KMeansData instead of UserVisit as other test case
-        new NumericCalc()
+    val testCase : BenchBase = TestCase.valueOf(config.benchName) match {
+      case TestCase.IDENTITY => new Identity()
+      case TestCase.REPARTITION => new Repartition()
+      case TestCase.WORDCOUNT => new WordCount()
+      case TestCase.AGGREGATION => new Aggregation()
+      case TestCase.FIXWINDOW => new FixWindow(config.windowDuration, config.windowSlideStep)
       case other =>
         throw new Exception(s"test case ${other} is not supported")
     }
@@ -87,10 +88,6 @@ object RunBench {
     val conf = new SparkConf().setMaster(config.master).setAppName(config.benchName)
     val ssc = new StreamingContext(conf, Milliseconds(config.batchInterval))
     ssc.checkpoint(config.checkpointPath)
-
-    // add listener to collect static information.
-    // val listener = new LatencyListener(ssc, config)
-    // ssc.addStreamingListener(listener)
 
     val lines: DStream[(String, String)] = if (config.directMode) {
       // direct mode with low level Kafka API

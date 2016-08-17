@@ -40,7 +40,15 @@ public class StreamBenchConfig {
 
   public static String DEBUG_MODE = "hibench.streambench.debugMode";
 
+  // =====================================
+  // TestCase related
+  // =====================================
+  // TODO: Once we remove all sample testcases, this config could be removed.
   public static String SAMPLE_PROBABILITY = "hibench.streambench.sampleProbability";
+
+  public static String FixWINDOW_DURATION = "hibench.streambench.fixWindowDuration";
+
+  public static String FixWINDOW_SLIDESTEP = "hibench.streambench.fixWindowSlidestep";
 
   // =====================================
   // Data Generator Related Conf
@@ -61,7 +69,7 @@ public class StreamBenchConfig {
   // =====================================
   public static String SPARK_BATCH_INTERVAL = "hibench.streambench.spark.batchInterval";
 
-  public static String SPARK_CHECKPOINT_PATHL = "hibench.streambench.spark.checkpointPath";
+  public static String SPARK_CHECKPOINT_PATH = "hibench.streambench.spark.checkpointPath";
 
   public static String SPARK_ENABLE_WAL = "hibench.streambench.spark.enableWAL";
 
