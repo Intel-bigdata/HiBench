@@ -48,9 +48,10 @@ public class RunBench {
         conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
         conf.offsetReset = cl.getProperty(StreamBenchConfig.KAFKA_OFFSET_RESET);
 
+        int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
         long recordsPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
         int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
-        conf.reportTopic = MetricsUtil.getTopic(Platform.FLINK, conf.testCase, recordsPerInterval, intervalSpan);
+        conf.reportTopic = MetricsUtil.getTopic(Platform.FLINK, conf.testCase, producerNum, recordsPerInterval, intervalSpan);
 
         // Main testcase logic
         String testCase = conf.testCase;

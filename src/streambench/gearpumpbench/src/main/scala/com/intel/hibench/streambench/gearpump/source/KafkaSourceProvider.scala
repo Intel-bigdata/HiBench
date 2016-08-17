@@ -39,6 +39,7 @@ class KafkaSourceProvider(implicit actorSystem: ActorSystem) extends SourceProvi
     props.put(KafkaConfig.ZOOKEEPER_CONNECT_CONFIG, zkConnect)
     props.put(KafkaConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
     props.put(KafkaConfig.MESSAGE_DECODER_CLASS_CONFIG, classOf[KeyValueDecoder])
+    props.put(KafkaConfig.CONSUMER_START_OFFSET_CONFIG, new java.lang.Long(-1))
 
     val kafkaSource = new KafkaSource(topic, props)
     DataSourceProcessor(kafkaSource, parallelism)

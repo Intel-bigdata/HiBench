@@ -37,8 +37,6 @@ public abstract class SingleTridentSpoutTops {
   private Config getConf() {
     Config conf = new Config();
     conf.setNumWorkers(config.workerCount);
-    if (!config.ackon)
-      conf.setNumAckers(0);
     return conf;
   }
 
