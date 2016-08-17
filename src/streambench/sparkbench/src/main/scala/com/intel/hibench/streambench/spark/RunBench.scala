@@ -56,7 +56,8 @@ object RunBench {
 
     val coreNumber = conf.getProperty(HiBenchConfig.YARN_EXECUTOR_NUMBER).toInt * conf.getProperty(HiBenchConfig.YARN_EXECUTOR_CORES).toInt
 
-    val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, recordPerInterval, intervalSpan)
+    val producerNum = conf.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER).toInt
+    val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, producerNum, recordPerInterval, intervalSpan)
     println("Reporter Topic" + reporterTopic)
 
     val probability = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble

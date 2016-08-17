@@ -20,16 +20,16 @@ package com.intel.hibench.streambench.common.metrics
 import java.io.{FileWriter, File}
 import java.util.Date
 
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.{UniformReservoir, Histogram}
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer, outputDir: String) extends LatencyCollector {
+class KafkaCollector(name: String, consumer: KafkaConsumer,
+                     outputDir: String, sampleNumber: Int) extends LatencyCollector {
 
   private var minTime = Long.MaxValue
   private var maxTime = 0L
   private var count = 0L
-  private val registry = new MetricRegistry
-  private val histogram = registry.histogram(name)
+  private val histogram = new Histogram(new UniformReservoir(sampleNumber))
 
   def start(): Unit = {
 

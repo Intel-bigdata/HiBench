@@ -55,9 +55,10 @@ public class RunBench {
     conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
 
     conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+    int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
     long recordPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
     int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
-    conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, recordPerInterval, intervalSpan);
+    conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, producerNum, recordPerInterval, intervalSpan);
     String benchName = conf.benchName;
 
     BenchLogUtil.logMsg("Benchmark starts... " + "  " + benchName +
