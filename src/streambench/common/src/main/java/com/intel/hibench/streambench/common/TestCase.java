@@ -25,12 +25,20 @@ public enum TestCase {
   // Repartition input events to ensure data shuffle happening
   REPARTITION("repartition"),
 
+  // Aggregation is the most common map reduce case.
+  AGGREGATION("aggregation"),
+
+  // Wordcount is used to test the performance of state operator
+  WORDCOUNT("wordcount"),
+
+  // FixWindow is used to test the performance of window operator
+  FIXWINDOW("fixwindow"),
+
+
   // ====== Following TestCase hasn't been finalized ======
   PROJECT("project"),
 
   SAMPLE("sample"),
-
-  WORDCOUNT("wordcount"),
 
   GREP("grep"),
 

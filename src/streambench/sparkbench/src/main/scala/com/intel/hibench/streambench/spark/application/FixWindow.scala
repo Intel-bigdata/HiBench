@@ -17,43 +17,23 @@
 
 package com.intel.hibench.streambench.spark.application
 
-import com.intel.hibench.streambench.common.UserVisitParser
 import com.intel.hibench.streambench.common.metrics.KafkaReporter
 import com.intel.hibench.streambench.spark.util.SparkBenchConfig
-
+import org.apache.spark.streaming.Duration
 import org.apache.spark.streaming.dstream.DStream
-import org.apache.spark.streaming.{StateSpec, State}
 
-/**
-  * @deprecated don't need this test case anymore
-  */
-@deprecated
-class DistinctCount() extends BenchBase {
+class FixWindow(duration: Long, slideStep: Long) extends BenchBase {
 
-  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig) = {
+  override def process(lines: DStream[(Long, String)], config: SparkBenchConfig): Unit = {
     val reportTopic = config.reporterTopic
     val brokerList = config.brokerList
 
-    val parsedLine: DStream[(String, (Int, Long))] = lines.map(line => {
-      val userVisit = UserVisitParser.parse(line._2)
-      (userVisit.getIp, (1, line._1))
-    })
-
-    val distinctFunc = (word: String, one: Option[(Int, Long)], state: State[Int]) => {
-      if (!one.isDefined) {
-        throw new Exception("input value is not defined. It should not happen as we don't use timeout function.")
-      }
-      state.update(1)
-      (word, (1, one.get._2))
-    }
-
-    val wordCount = parsedLine.mapWithState(StateSpec.function(distinctFunc))
-
-    wordCount.foreachRDD(rdd => rdd.foreachPartition(partLines => {
+    lines.window(Duration(duration), Duration(slideStep)).foreachRDD(rdd => rdd.foreachPartition( partLines => {
       val reporter = new KafkaReporter(reportTopic, brokerList)
-      partLines.map { case (word, (sum, inTime)) =>
+
+      partLines.foreach{ case (inTime , content) =>
         reporter.report(inTime, System.currentTimeMillis())
-        if (config.debugMode) println(inTime + ", " + word + ":" + sum)
+        if(config.debugMode) println(inTime + ", " + content)
       }
     }))
   }

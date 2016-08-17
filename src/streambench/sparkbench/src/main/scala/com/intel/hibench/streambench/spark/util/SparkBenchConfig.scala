@@ -24,8 +24,9 @@ case class SparkBenchConfig (
   // Hibench
   debugMode: Boolean,
   coreNumber: Int,
-  sampleProbability: Double) {
-
+  sampleProbability: Double,
+  windowDuration: Long,
+  windowSlideStep: Long) {
 
   def storageLevel = copies match {
     case 0 => StorageLevel.MEMORY_ONLY
