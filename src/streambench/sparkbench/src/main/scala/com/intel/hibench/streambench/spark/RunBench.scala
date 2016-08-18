@@ -79,7 +79,6 @@ object RunBench {
       case TestCase.IDENTITY => new Identity()
       case TestCase.REPARTITION => new Repartition()
       case TestCase.WORDCOUNT => new WordCount()
-      case TestCase.AGGREGATION => new Aggregation()
       case TestCase.FIXWINDOW => new FixWindow(config.windowDuration, config.windowSlideStep)
       case other =>
         throw new Exception(s"test case ${other} is not supported")

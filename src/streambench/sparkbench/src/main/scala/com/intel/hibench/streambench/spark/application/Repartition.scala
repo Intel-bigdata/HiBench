@@ -31,8 +31,11 @@ class Repartition() extends BenchBase {
     lines.repartition(config.coreNumber).foreachRDD(rdd => rdd.foreachPartition( partLines => {
       val reporter = new KafkaReporter(reportTopic, brokerList)
       partLines.foreach{ case (inTime , content) =>
-        reporter.report(inTime, System.currentTimeMillis())
-        if(config.debugMode) println(inTime + ", " + content)
+        val outTime = System.currentTimeMillis()
+        reporter.report(inTime,outTime)
+        if(config.debugMode) {
+          println("Event: " + inTime + ", " + outTime)
+        }
       }
     }))
   }

@@ -29,27 +29,31 @@ class WordCount() extends BenchBase {
     val reportTopic = config.reporterTopic
     val brokerList = config.brokerList
 
-    val parsedLine: DStream[(String, (Int, Long))] = lines.map(line => {
+    // Project Line to UserVisit, the output means "[Browser, [Strat Time, Count]]"
+    val parsedLine: DStream[(String, (Long, Int))] = lines.map(line => {
       val userVisit = UserVisitParser.parse(line._2)
-      (userVisit.getIp, (1, line._1))
+      (userVisit.getBrowser, (line._1, 1))
     })
 
-    val mappingFunc = (word: String, one: Option[(Int, Long)], state: State[Int]) => {
+    // Define state mapping function
+    val mappingFunc = (browser: String, one: Option[(Long, Int)], state: State[Int]) => {
       if (!one.isDefined) {
         throw new Exception("input value is not defined. It should not happen as we don't use timeout function.")
       }
-      val sum = one.get._1 + state.getOption.getOrElse(0)
+      val sum = one.get._2 + state.getOption.getOrElse(0)
       state.update(sum)
-      (word, (sum, one.get._2))
+      (browser, one.get._1)
     }
+
 
     val wordCount = parsedLine.mapWithState(StateSpec.function(mappingFunc))
 
     wordCount.foreachRDD(rdd => rdd.foreachPartition(partLines => {
       val reporter = new KafkaReporter(reportTopic, brokerList)
-      partLines.map { case (word, (sum, inTime)) =>
-        reporter.report(inTime, System.currentTimeMillis())
-        if (config.debugMode) println(inTime + ", " + word + ":" + sum)
+      partLines.map { case (word, inTime) =>
+        val outTime = System.currentTimeMillis()
+        reporter.report(inTime, outTime)
+        if (config.debugMode) println(word + ": " + inTime + ", " + outTime )
       }
     }))
   }
