@@ -61,6 +61,8 @@ object RunBench {
     val brokerList = conf.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST)
     val prob = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble
     val reporterTopic = getReporterTopic(conf)
+    val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
+    MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
     GearpumpConfig(benchName, zkHost, brokerList, consumerGroup, topic,
       parallelism, prob, reporterTopic)

@@ -38,6 +38,8 @@ public class StreamBenchConfig {
 
   public static String KAFKA_OFFSET_RESET = "hibench.streambench.kafka.offsetReset";
 
+  public static String KAFKA_TOPIC_PARTITIONS = "hibench.streambench.kafka.topicPartitions";
+
   public static String DEBUG_MODE = "hibench.streambench.debugMode";
 
   // =====================================
