@@ -21,56 +21,62 @@ import java.io.{FileWriter, File}
 import java.util.Date
 
 import com.codahale.metrics.{UniformReservoir, Histogram}
+import kafka.common.TopicAndPartition
+import kafka.utils.{ZKStringSerializer, ZkUtils}
+import org.I0Itec.zkclient.ZkClient
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer,
-                     outputDir: String, sampleNumber: Int) extends LatencyCollector {
 
-  private var minTime = Long.MaxValue
-  private var maxTime = 0L
-  private var count = 0L
+class KafkaCollector(zkConnect: String, metricsTopic: String,
+                     outputDir: String, sampleNumber: Int, desiredThreadNum: Int) extends LatencyCollector {
+
   private val histogram = new Histogram(new UniformReservoir(sampleNumber))
 
   def start(): Unit = {
 
-    println("start collecting metrics from kafka topic " + name)
-    while (consumer.hasNext) {
-      val times = new String(consumer.next(), "UTF-8").split(":")
-      val startTime = times(0).toLong
-      val endTime = times(1).toLong
+    val topicPartitions = getTopicAndPartitions(List(metricsTopic), zkConnect)
 
-      updateLatency(startTime, endTime)
-      updateThroughput(startTime, endTime)
+    val maxThreadNum = topicPartitions.length
+    val threadNum = if (desiredThreadNum > maxThreadNum) {
+      println(s"More threads than kafka partitions, throttled to $maxThreadNum")
+      maxThreadNum
+    } else {
+      desiredThreadNum
     }
 
-    consumer.close()
-    report()
+    val threads = topicPartitions.indices.groupBy(_ % threadNum).map{
+      case (_, indices) =>
+        new FetchThread(zkConnect, indices.map(topicPartitions), histogram)}
+
+    println("start collecting metrics from kafka topic " + metricsTopic)
+
+    threads.foreach(_.start)
+    threads.foreach(_.join())
+
+    val minTime = threads.map(_.getLatencyHistogram.getMinTime).min
+    val maxTime = threads.map(_.getLatencyHistogram.getMaxTime).max
+    val count = threads.map(_.getLatencyHistogram.getCount).sum
+
+    report(minTime, maxTime, count)
   }
 
-  private def updateLatency(startTime: Long, endTime: Long): Unit = {
-    // TODO: remove this hack
-    // logically negative latency should not exit, but in fact it could happen when system time
-    // are not sync between clusters.
-    val latency = Math.max(0, endTime - startTime)
-    histogram.update(latency)
-  }
-
-  private def updateThroughput(startTime: Long ,endTime: Long): Unit = {
-    count += 1
-
-    if (startTime < minTime) {
-      minTime = startTime
+  private def getTopicAndPartitions(topics: List[String], zkConnect: String): Array[TopicAndPartition] = {
+    val zkClient = new ZkClient(zkConnect, 6000, 6000, ZKStringSerializer)
+    try {
+      ZkUtils.getPartitionsForTopics(zkClient, topics).flatMap {
+        case (topic, partitions) => partitions.map(TopicAndPartition(topic, _))
+      }.toArray
+    } catch {
+      case e: Exception =>
+        throw e
+    } finally {
+      zkClient.close()
     }
-
-    if (endTime > maxTime) {
-      maxTime = endTime
-    }
-
   }
 
 
-  private def report(): Unit = {
-    val outputFile = new File(outputDir, name + ".csv")
+  private def report(minTime: Long, maxTime: Long, count: Long): Unit = {
+    val outputFile = new File(outputDir, metricsTopic + ".csv")
     println(s"written out metrics to ${outputFile.getCanonicalPath}")
     val header = "time,count,throughput(msgs/s),max_latency(ms),mean_latency(ms),min_latency(ms)," +
         "stddev_latency(ms),p50_latency(ms),p75_latency(ms),p95_latency(ms),p98_latency(ms)," +
@@ -110,3 +116,5 @@ class KafkaCollector(name: String, consumer: KafkaConsumer,
   }
 
 }
+
+
