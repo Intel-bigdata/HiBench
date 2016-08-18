@@ -48,7 +48,7 @@ public class StreamBenchConfig {
 
   public static String FixWINDOW_DURATION = "hibench.streambench.fixWindowDuration";
 
-  public static String FixWINDOW_SLIDESTEP = "hibench.streambench.fixWindowSlidestep";
+  public static String FixWINDOW_SLIDESTEP = "hibench.streambench.fixWindowSlideStep";
 
   // =====================================
   // Data Generator Related Conf
