@@ -52,4 +52,7 @@ public enum TestCase {
   TestCase(String name) {
     this.name = name;
   }
+
+  // Convert input name to uppercase and return related value of TestCase type
+  public static TestCase withValue(String name) {return TestCase.valueOf(name.toUpperCase()); }
 }

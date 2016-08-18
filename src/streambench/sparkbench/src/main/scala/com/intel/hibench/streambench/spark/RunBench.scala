@@ -75,7 +75,7 @@ object RunBench {
   private def run(config: SparkBenchConfig) {
 
     // select test case based on given benchName
-    val testCase : BenchBase = TestCase.valueOf(config.benchName) match {
+    val testCase : BenchBase = TestCase.withValue(config.benchName) match {
       case TestCase.IDENTITY => new Identity()
       case TestCase.REPARTITION => new Repartition()
       case TestCase.WORDCOUNT => new WordCount()
