@@ -16,19 +16,16 @@
  */
 package com.intel.hibench.streambench.gearpump.task
 
-import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
+import com.intel.hibench.streambench.common.UserVisitParser
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
 class Split(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
-  private val separator = benchConf.separator
   import taskContext.output
 
   override def onNext(msg: Message): Unit = {
-    msg.msg.asInstanceOf[String].split(separator).filter(_.nonEmpty).foreach { msg =>
-      output(new Message(msg, System.currentTimeMillis()))
-    }
+    val userVisit = UserVisitParser.parse(msg.msg.asInstanceOf[String])
+    output(new Message(userVisit.getBrowser, msg.timestamp))
   }
 }
