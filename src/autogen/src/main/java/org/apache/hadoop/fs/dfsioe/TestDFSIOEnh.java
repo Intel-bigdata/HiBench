@@ -93,14 +93,18 @@ public class TestDFSIOEnh extends Configured implements Tool {
   private static final String BASE_FILE_NAME = "test_io_";
   private static final String DEFAULT_RES_FILE_NAME = "TestDFSIOEnh_results.log";
 
-  private static String TEST_ROOT_DIR = System.getProperty("test.build.data","/benchmarks/TestDFSIO-Enh");
   private static Configuration fsConfig = new Configuration();
-  private static Path CONTROL_DIR = new Path(TEST_ROOT_DIR, "io_control");
-  protected static Path WRITE_DIR = new Path(TEST_ROOT_DIR, "io_write");
-  protected static Path READ_DIR = new Path(TEST_ROOT_DIR, "io_read");
-  private static Path DATA_DIR = new Path(TEST_ROOT_DIR, "io_data");
-  private static Path REPORT_DIR = new Path(TEST_ROOT_DIR, "reports");
-  private static Path REPORT_TMP = new Path(TEST_ROOT_DIR, "_merged_reports.txt");
+  
+  // NOTE: Access to these static variables have been replaced with a singleton config class, which gets the TEST_ROOT_DIR
+  //   from the job configuration (since it is not accessible via system properties)
+  // 
+  // private static String TEST_ROOT_DIR = System.getProperty("test.build.data","/benchmarks/TestDFSIO-Enh");
+  // private static Path CONTROL_DIR = new Path(TEST_ROOT_DIR, "io_control");
+  // protected static Path WRITE_DIR = new Path(TEST_ROOT_DIR, "io_write");
+  // protected static Path READ_DIR = new Path(TEST_ROOT_DIR, "io_read");
+  // private static Path DATA_DIR = new Path(TEST_ROOT_DIR, "io_data");
+  // private static Path REPORT_DIR = new Path(TEST_ROOT_DIR, "reports");
+  // private static Path REPORT_TMP = new Path(TEST_ROOT_DIR, "_merged_reports.txt");
 
 
   static{
@@ -206,7 +210,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 
         totalSize *= MEGA;
         OutputStream out;
-        out = fs.create(new Path(DATA_DIR, name), true, bufferSize);
+        out = fs.create(new Path(DfsioeConfig.getInstance().getDataDir(getConf()), name), true, bufferSize);
         stats.objSize = totalSize;        
         
         long lastTimeStamp=0;
@@ -257,15 +261,15 @@ public class TestDFSIOEnh extends Configured implements Tool {
   protected static void writeTest(FileSystem fs, Configuration fsConfig)
     throws IOException {
 
-    fs.delete(DATA_DIR, true);
-    fs.delete(WRITE_DIR, true);
+    fs.delete(DfsioeConfig.getInstance().getDataDir(fsConfig), true);
+    fs.delete(DfsioeConfig.getInstance().getWriteDir(fsConfig), true);
   
     //set write specific configurations
     JobConf job = new JobConf(fsConfig, TestDFSIOEnh.class);
     //should turn off speculative execution to avoid two attemps writing to the same file
     job.setMapSpeculativeExecution(false);
   
-    runIOTest(WriteMapperEnh.class, WRITE_DIR,job);
+    runIOTest(WriteMapperEnh.class, DfsioeConfig.getInstance().getWriteDir(fsConfig),job);
   }
  
  
@@ -286,7 +290,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 
         totalSize *= MEGA;
         // open file
-        DataInputStream in = fs.open(new Path(DATA_DIR, name));
+        DataInputStream in = fs.open(new Path(DfsioeConfig.getInstance().getDataDir(fsConfig), name));
         stats.objSize = totalSize;
 
         long lastTimeStamp = 0;
@@ -331,12 +335,12 @@ public class TestDFSIOEnh extends Configured implements Tool {
   }
 
   protected static void readTest(FileSystem fs,Configuration fsConfig) throws IOException {
-    fs.delete(READ_DIR, true);
+    fs.delete(DfsioeConfig.getInstance().getReadDir(fsConfig), true);
     //set read job specific configurations 
     JobConf job = new JobConf(fsConfig, TestDFSIOEnh.class);
     //turn on speculative execution to potentially improve performance.
     //job.setMapSpeculativeExecution(true);
-    runIOTest(ReadMapperEnh.class, READ_DIR,job);
+    runIOTest(ReadMapperEnh.class, DfsioeConfig.getInstance().getReadDir(fsConfig),job);
   }
 
   protected static void sequentialTest(
@@ -362,7 +366,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
                                  Path outputDir,
                                  JobConf job
                                  ) throws IOException {
-    FileInputFormat.setInputPaths(job, CONTROL_DIR);
+    FileInputFormat.setInputPaths(job, DfsioeConfig.getInstance().getControlDir(fsConfig));
     job.setInputFormat(SequenceFileInputFormat.class);
 
     job.setMapperClass(mapperClass);
@@ -633,11 +637,11 @@ public class TestDFSIOEnh extends Configured implements Tool {
                                         ) throws IOException {
     LOG.info("creating control file: "+fileSize+" mega bytes, "+nrFiles+" files");
 
-    fs.delete(CONTROL_DIR, true);
+    fs.delete(DfsioeConfig.getInstance().getControlDir(fsConfig), true);
 
     for(int i=0; i < nrFiles; i++) {
       String name = getFileName(i);
-      Path controlFile = new Path(CONTROL_DIR, "in_file_" + name);
+      Path controlFile = new Path(DfsioeConfig.getInstance().getControlDir(fsConfig), "in_file_" + name);
       SequenceFile.Writer writer = null;
       try {
         writer = SequenceFile.createWriter(fs, fsConfig, controlFile,
@@ -838,9 +842,9 @@ public class TestDFSIOEnh extends Configured implements Tool {
 		 long t1 = System.currentTimeMillis();
 		 Path reduceFile;
 		 if (testType == TEST_TYPE_WRITE)
-			 reduceFile = new Path(WRITE_DIR, "part-00000");
+			 reduceFile = new Path(DfsioeConfig.getInstance().getWriteDir(fsConfig), "part-00000");
 		 else
-			 reduceFile = new Path(READ_DIR, "part-00000");		
+			 reduceFile = new Path(DfsioeConfig.getInstance().getReadDir(fsConfig), "part-00000");		
 		
 		 int maxslot = (int)(execTime/plotInterval)+1;
 		 int[] concurrency = new int[maxslot+1];
@@ -923,7 +927,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 		 }
 		 
 		 try {
-			 fs.delete(REPORT_DIR, true);
+			 fs.delete(DfsioeConfig.getInstance().getReportDir(fsConfig), true);
 			 //set up env
 			 Configuration conf2 = new Configuration(fsConfig);
 			 conf2.setLong("ana_tStart", tStart);
@@ -940,17 +944,17 @@ public class TestDFSIOEnh extends Configured implements Tool {
 			 job.setOutputValueClass(Text.class);
 //			 job.setNumReduceTasks(1);
 			 org.apache.hadoop.mapreduce.lib.input.FileInputFormat.addInputPath(job, reduceFile);
-			 org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, REPORT_DIR);
+			 org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, DfsioeConfig.getInstance().getReportDir(fsConfig));
 			 job.waitForCompletion(true);
 		 } catch (InterruptedException e) {
 			 e.printStackTrace();
 		 } catch (ClassNotFoundException e) {
 			 e.printStackTrace();
 		 } finally {
-			 fs.delete(REPORT_TMP, true);
-			 FileUtil.copyMerge(fs, REPORT_DIR, fs, REPORT_TMP, false, fsConfig, null);
-			 LOG.info("remote report file " + REPORT_TMP + " merged.");
-			 BufferedReader lines = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(REPORT_TMP))));
+			 fs.delete(DfsioeConfig.getInstance().getReportTmp(fsConfig), true);
+			 FileUtil.copyMerge(fs, DfsioeConfig.getInstance().getReportDir(fsConfig), fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), false, fsConfig, null);
+			 LOG.info("remote report file " + DfsioeConfig.getInstance().getReportTmp(fsConfig) + " merged.");
+			 BufferedReader lines = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(DfsioeConfig.getInstance().getReportTmp(fsConfig)))));
 			 String line = null;
 			 while((line = lines.readLine()) != null) {
 				 StringTokenizer tokens = new StringTokenizer(line, " \t\n\r\f%");
@@ -964,7 +968,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 			 }
 			 lines.close();
 			 if (tputReportEach) {
-				 FileUtil.copy(fs, REPORT_TMP, new File(tputResFileName.split(".")[0]+"test_io_.csv"), false, fsConfig);
+				 FileUtil.copy(fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), new File(tputResFileName.split(".")[0]+"test_io_.csv"), false, fsConfig);
 				 LOG.info("*test_io_.csv fetched to local fs.");
 			 }
 			 //calculate the aggregated throughput
@@ -1028,9 +1032,9 @@ public class TestDFSIOEnh extends Configured implements Tool {
 	
 		 Path reduceFile;
 		 if (testType == TEST_TYPE_WRITE)
-			 reduceFile = new Path(WRITE_DIR, "part-00000");
+			 reduceFile = new Path(DfsioeConfig.getInstance().getWriteDir(fsConfig), "part-00000");
 		 else
-			 reduceFile = new Path(READ_DIR, "part-00000");
+			 reduceFile = new Path(DfsioeConfig.getInstance().getReadDir(fsConfig), "part-00000");
 	    
 	
 		 //long time = 0;
@@ -1132,7 +1136,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 
 	 private static void cleanup(FileSystem fs) throws IOException {
 		 LOG.info("Cleaning up test files");
-		 fs.delete(new Path(TEST_ROOT_DIR), true);
+		 fs.delete(new Path(DfsioeConfig.getInstance().getTestRootDir(fsConfig)), true);
 	 }
 
 }//end 
