@@ -48,7 +48,8 @@ public class RunBench {
         conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
         conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
         conf.offsetReset = cl.getProperty(StreamBenchConfig.KAFKA_OFFSET_RESET);
-        //conf.windowDuration = cl.getProperty(StreamBenchConfig)
+        conf.windowDuration = cl.getProperty(StreamBenchConfig.FixWINDOW_DURATION);
+        conf.windowSlideStep = cl.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP);
 
         int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
         long recordsPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
@@ -61,31 +62,17 @@ public class RunBench {
         String testCase = conf.testCase;
 
         if (testCase.equals("wordcount")) {
-            conf.separator = "\\s+";
             WordCount wordCount = new WordCount();
             wordCount.processStream(conf);
         } else if (testCase.equals("identity")) {
             Identity identity = new Identity();
             identity.processStream(conf);
-        } else if (testCase.equals("sample")) {
-            conf.prob = Double.parseDouble(cl.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY));
-            Sample sample = new Sample();
-            sample.processStream(conf);
-        } else if (testCase.equals("project")) {
-            conf.separator = "\\s+";
-            conf.fieldIndex = 1;
-            Projection project = new Projection();
-            project.processStream(conf);
-        } else if (testCase.equals("grep")) {
-            conf.pattern = "abc";
-            Grep grep = new Grep();
-            grep.processStream(conf);
-        } else if (testCase.equals("distinctcount")) {
-            DistinctCount distinct = new DistinctCount();
-            distinct.processStream(conf);
-        } else if (testCase.equals("statistics")) {
-            Statistics numeric = new Statistics();
-            numeric.processStream(conf);
+        } else if (testCase.equals("repartition")) {
+            Repartition repartition = new Repartition();
+            repartition.processStream(conf);
+        } else if (testCase.equals("fixwindow")) {
+            FixedWindow window = new FixedWindow();
+            window.processStream(conf);
         }
     }
 }

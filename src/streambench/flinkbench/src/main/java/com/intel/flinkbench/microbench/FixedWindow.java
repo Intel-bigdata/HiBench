@@ -21,6 +21,8 @@ public class FixedWindow extends StreamBase{
 
         createDataStream(config);
         DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
+        long windowDuration = Long.parseLong(config.windowDuration);
+        long windowSlideStep = Long.parseLong(config.windowSlideStep);
 
         dataStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
 
@@ -32,7 +34,7 @@ public class FixedWindow extends StreamBase{
             }
         })
                 .keyBy(0)
-                .timeWindow(Time.minutes(1), Time.seconds(30))
+                .timeWindow(Time.seconds(windowDuration), Time.seconds(windowSlideStep))
                 .reduce(new ReduceFunction<Tuple2<String, Tuple2<String, Integer>>>() {
                     @Override
                     public Tuple2<String, Tuple2<String, Integer>> reduce(Tuple2<String, Tuple2<String, Integer>> v1, Tuple2<String, Tuple2<String, Integer>> v2) throws Exception {
