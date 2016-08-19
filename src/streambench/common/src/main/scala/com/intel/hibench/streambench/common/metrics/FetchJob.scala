@@ -12,7 +12,7 @@ class FetchJob(zkConnect: String, topic: String, partition: Int,
     val result = new FetchJobResult()
     val consumer = new KafkaConsumer(zkConnect, topic, partition)
     while (consumer.hasNext) {
-      val times = new String(consumer.next(), "UTF-8")
+      val times = new String(consumer.next(), "UTF-8").split(":")
       val startTime = times(0).toLong
       val endTime = times(1).toLong
       histogram.update(endTime - startTime)
