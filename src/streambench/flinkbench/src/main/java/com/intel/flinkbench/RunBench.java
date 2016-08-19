@@ -47,6 +47,7 @@ public class RunBench {
         conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
         conf.bufferTimeout = Long.parseLong(cl.getProperty(StreamBenchConfig.FLINK_BUFFERTIMEOUT));
         conf.offsetReset = cl.getProperty(StreamBenchConfig.KAFKA_OFFSET_RESET);
+        //conf.windowDuration = cl.getProperty(StreamBenchConfig)
 
         long recordsPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
         int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));

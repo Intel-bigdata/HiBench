@@ -34,6 +34,8 @@ public class FlinkBenchConfig implements Serializable{
     public int fieldIndex;
     public double prob;
     public String pattern;
+    public String windowDuration;
+    public String windowSlideStep;
 
     // Flink related
     public long bufferTimeout;
