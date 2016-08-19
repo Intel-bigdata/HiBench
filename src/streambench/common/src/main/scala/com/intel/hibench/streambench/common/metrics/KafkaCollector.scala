@@ -19,56 +19,50 @@ package com.intel.hibench.streambench.common.metrics
 
 import java.io.{FileWriter, File}
 import java.util.Date
+import java.util.concurrent.{TimeUnit, Future, Executors}
 
 import com.codahale.metrics.{UniformReservoir, Histogram}
-import kafka.common.TopicAndPartition
 import kafka.utils.{ZKStringSerializer, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
 
+import scala.collection.mutable.ArrayBuffer
 
 
 class KafkaCollector(zkConnect: String, metricsTopic: String,
-                     outputDir: String, sampleNumber: Int, desiredThreadNum: Int) extends LatencyCollector {
+    outputDir: String, sampleNumber: Int, desiredThreadNum: Int) extends LatencyCollector {
 
   private val histogram = new Histogram(new UniformReservoir(sampleNumber))
+  private val threadPool = Executors.newFixedThreadPool(desiredThreadNum)
+  private val fetchResults = ArrayBuffer.empty[Future[FetchJobResult]]
 
   def start(): Unit = {
+    val partitions = getPartitions(metricsTopic, zkConnect)
 
-    val topicPartitions = getTopicAndPartitions(List(metricsTopic), zkConnect)
+    println("start collecting metrics from kafka topic: " + metricsTopic)
 
-    val maxThreadNum = topicPartitions.length
-    val threadNum = if (desiredThreadNum > maxThreadNum) {
-      println(s"More threads than kafka partitions, throttled to $maxThreadNum")
-      maxThreadNum
-    } else {
-      desiredThreadNum
-    }
+    partitions.foreach(partition => {
+      val job = new FetchJob(zkConnect, metricsTopic, partition, histogram)
+      val fetchFeature = threadPool.submit(job)
+      fetchResults += fetchFeature
+    })
 
-    val threads = topicPartitions.indices.groupBy(_ % threadNum).map{
-      case (_, indices) =>
-        new FetchThread(zkConnect, indices.map(topicPartitions), histogram)}
+    threadPool.shutdown()
+    threadPool.awaitTermination(10, TimeUnit.MINUTES)
 
-    println("start collecting metrics from kafka topic " + metricsTopic)
+    val finalResults = fetchResults.map(_.get()).reduce((a, b) => {
+      val minTime = Math.min(a.minTime, b.minTime)
+      val maxTime = Math.max(a.maxTime, b.maxTime)
+      val count = a.count + b.count
+      new FetchJobResult(minTime, maxTime, count)
+    })
 
-    threads.foreach(_.start)
-    threads.foreach(_.join())
-
-    val minTime = threads.map(_.getLatencyHistogram.getMinTime).min
-    val maxTime = threads.map(_.getLatencyHistogram.getMaxTime).max
-    val count = threads.map(_.getLatencyHistogram.getCount).sum
-
-    report(minTime, maxTime, count)
+    report(finalResults.minTime, finalResults.maxTime, finalResults.count)
   }
 
-  private def getTopicAndPartitions(topics: List[String], zkConnect: String): Array[TopicAndPartition] = {
+  private def getPartitions(topic: String, zkConnect: String): Seq[Int] = {
     val zkClient = new ZkClient(zkConnect, 6000, 6000, ZKStringSerializer)
     try {
-      ZkUtils.getPartitionsForTopics(zkClient, topics).flatMap {
-        case (topic, partitions) => partitions.map(TopicAndPartition(topic, _))
-      }.toArray
-    } catch {
-      case e: Exception =>
-        throw e
+      ZkUtils.getPartitionsForTopics(zkClient, Seq(topic)).flatMap(_._2).toSeq
     } finally {
       zkClient.close()
     }
