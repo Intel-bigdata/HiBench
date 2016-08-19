@@ -18,16 +18,16 @@ package com.intel.hibench.streambench.common.metrics
 
 object MetricsReader extends App {
 
-  if (args.length < 3) {
-    System.err.println("args: <zookeeperConnect> <topic> <outputDir> need to be specified!")
+  if (args.length < 5) {
+    System.err.println("args: <zookeeperConnect> <topic> <outputDir> <sampleNumber> <threadNumber> need to be specified!")
     System.exit(1)
   }
 
   val zookeeperConnect = args(0)
   val topic = args(1)
-  val kafkaConsumer = new KafkaConsumer(zookeeperConnect, topic, 0)
-
   val outputDir = args(2)
-  val latencyCollector = new KafkaCollector(topic, kafkaConsumer, outputDir)
+  val sampleNum = args(3).toInt
+  val threadNum = args(4).toInt
+  val latencyCollector = new KafkaCollector(zookeeperConnect, topic, outputDir, sampleNum, threadNum)
   latencyCollector.start()
 }

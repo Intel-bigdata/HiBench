@@ -20,7 +20,6 @@ package com.intel.hibench.streambench.storm;
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.hibench.streambench.common.Platform;
 import com.intel.hibench.streambench.common.StreamBenchConfig;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.storm.micro.*;
 import com.intel.hibench.streambench.storm.micro.NumericCalc;
@@ -55,9 +54,12 @@ public class RunBench {
     conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
 
     conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
+    int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
     long recordPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
     int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
-    conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, recordPerInterval, intervalSpan);
+    conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, producerNum, recordPerInterval, intervalSpan);
+    int reportTopicPartitions = Integer.parseInt(cl.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS));
+    MetricsUtil.createTopic(conf.zkHost, conf.reporterTopic, reportTopicPartitions);
     String benchName = conf.benchName;
 
     BenchLogUtil.logMsg("Benchmark starts... " + "  " + benchName +

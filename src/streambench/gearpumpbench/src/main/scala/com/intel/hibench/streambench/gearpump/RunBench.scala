@@ -61,6 +61,8 @@ object RunBench {
     val brokerList = conf.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST)
     val prob = conf.getProperty(StreamBenchConfig.SAMPLE_PROBABILITY).toDouble
     val reporterTopic = getReporterTopic(conf)
+    val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
+    MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
     GearpumpConfig(benchName, zkHost, brokerList, consumerGroup, topic,
       parallelism, prob, reporterTopic)
@@ -68,8 +70,9 @@ object RunBench {
 
   private def getReporterTopic(conf: ConfigLoader): String = {
     val topic = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC)
+    val producerNum: Int = conf.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER).toInt
     val recordPerInterval = conf.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL).toLong
     val intervalSpan: Int = conf.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN).toInt
-    MetricsUtil.getTopic(Platform.GEARPUMP, topic, recordPerInterval, intervalSpan)
+    MetricsUtil.getTopic(Platform.GEARPUMP, topic, producerNum, recordPerInterval, intervalSpan)
   }
 }

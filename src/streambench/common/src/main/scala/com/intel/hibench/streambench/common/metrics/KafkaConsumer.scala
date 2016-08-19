@@ -26,10 +26,7 @@ import kafka.message.MessageAndOffset
 import kafka.utils.{ZKStringSerializer, ZkUtils, Utils}
 import org.I0Itec.zkclient.ZkClient
 
-class KafkaConsumer(
-    zookeeperConnect: String,
-    topic: String,
-    partition: Int) {
+class KafkaConsumer(zookeeperConnect: String, topic: String, partition: Int) {
 
   private val CLIENT_ID = "metrics_reader"
   private val props = new Properties()
@@ -70,9 +67,8 @@ class KafkaConsumer(
   }
 
   private def createConsumer: SimpleConsumer = {
+    val zkClient = new ZkClient(zookeeperConnect, 6000, 6000, ZKStringSerializer)
     try {
-      val zkClient = new ZkClient(zookeeperConnect)
-      zkClient.setZkSerializer(ZKStringSerializer)
       val leader = ZkUtils.getLeaderForPartition(zkClient, topic, partition)
           .getOrElse(throw new RuntimeException(
             s"leader not available for TopicAndPartition($topic, $partition)"))
@@ -83,6 +79,8 @@ class KafkaConsumer(
     } catch {
       case e: Exception =>
         throw e
+    } finally {
+      zkClient.close()
     }
   }
 

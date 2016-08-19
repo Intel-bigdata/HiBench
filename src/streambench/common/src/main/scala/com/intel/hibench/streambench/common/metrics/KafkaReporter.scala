@@ -29,9 +29,8 @@ class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyRepo
   private val producer = ProducerSingleton.getInstance(bootstrapServers)
 
   override def report(startTime: Long, endTime: Long): Unit = {
-    producer.send(new ProducerRecord[String, String](topic, 0, null, s"$startTime:$endTime"))
+    producer.send(new ProducerRecord[String, String](topic, null, s"$startTime:$endTime"))
   }
-
 }
 
 
@@ -48,4 +47,5 @@ object ProducerSingleton {
       instance.get
     }
   }
+
 }

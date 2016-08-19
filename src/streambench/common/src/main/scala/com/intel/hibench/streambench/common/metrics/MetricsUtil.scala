@@ -17,17 +17,34 @@
 package com.intel.hibench.streambench.common.metrics
 
 import com.intel.hibench.streambench.common.Platform
+import kafka.admin.AdminUtils
+import kafka.utils.ZKStringSerializer
+import org.I0Itec.zkclient.ZkClient
 
 object MetricsUtil {
 
   val TOPIC_CONF_FILE_NAME = "metrics_topic.conf"
 
-  def getTopic(platform: Platform, sourceTopic: String,
+  def getTopic(platform: Platform, sourceTopic: String, producerNum: Int,
                recordPerInterval: Long, intervalSpan: Int): String = {
-    val topic = s"${platform}_${sourceTopic}_${recordPerInterval}" +
+    val topic = s"${platform}_${sourceTopic}_${producerNum}_${recordPerInterval}" +
       s"_${intervalSpan}_${System.currentTimeMillis()}"
     println(s"metrics is being written to kafka topic $topic")
     topic
   }
 
+  def createTopic(zkConnect: String, topic: String, partitions: Int): Unit = {
+    val zkClient = new ZkClient(zkConnect, 6000, 6000, ZKStringSerializer)
+    try {
+      AdminUtils.createTopic(zkClient, topic, partitions, 1)
+      while (!AdminUtils.topicExists(zkClient, topic)) {
+        Thread.sleep(100)
+      }
+    } catch {
+      case e: Exception =>
+        throw e
+    } finally {
+      zkClient.close()
+    }
+  }
 }

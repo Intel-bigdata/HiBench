@@ -45,8 +45,8 @@ public class TridentIdentity extends SingleTridentSpoutTops {
 
     topology.newStream("bg0", spout)
             .each(spout.getOutputFields(), new Identity(config),
-                new Fields("tuple"))
-            .parallelismHint(config.workerCount);
+                    new Fields("tuple"))
+            .parallelismHint(config.boltThreads);
     return topology;
   }
 

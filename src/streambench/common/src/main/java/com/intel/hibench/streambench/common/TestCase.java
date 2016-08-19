@@ -25,12 +25,17 @@ public enum TestCase {
   // Repartition input events to ensure data shuffle happening
   REPARTITION("repartition"),
 
+  // Wordcount is used to test the performance of state operator
+  WORDCOUNT("wordcount"),
+
+  // FixWindow is used to test the performance of window operator
+  FIXWINDOW("fixwindow"),
+
+
   // ====== Following TestCase hasn't been finalized ======
   PROJECT("project"),
 
   SAMPLE("sample"),
-
-  WORDCOUNT("wordcount"),
 
   GREP("grep"),
 
@@ -44,4 +49,7 @@ public enum TestCase {
   TestCase(String name) {
     this.name = name;
   }
+
+  // Convert input name to uppercase and return related value of TestCase type
+  public static TestCase withValue(String name) {return TestCase.valueOf(name.toUpperCase()); }
 }

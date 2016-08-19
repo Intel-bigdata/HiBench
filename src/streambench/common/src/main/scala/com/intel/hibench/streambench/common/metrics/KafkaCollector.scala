@@ -19,55 +19,58 @@ package com.intel.hibench.streambench.common.metrics
 
 import java.io.{FileWriter, File}
 import java.util.Date
+import java.util.concurrent.{TimeUnit, Future, Executors}
 
-import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.{UniformReservoir, Histogram}
+import kafka.utils.{ZKStringSerializer, ZkUtils}
+import org.I0Itec.zkclient.ZkClient
+
+import scala.collection.mutable.ArrayBuffer
 
 
-class KafkaCollector(name: String, consumer: KafkaConsumer, outputDir: String) extends LatencyCollector {
+class KafkaCollector(zkConnect: String, metricsTopic: String,
+    outputDir: String, sampleNumber: Int, desiredThreadNum: Int) extends LatencyCollector {
 
-  private var minTime = Long.MaxValue
-  private var maxTime = 0L
-  private var count = 0L
-  private val registry = new MetricRegistry
-  private val histogram = registry.histogram(name)
+  private val histogram = new Histogram(new UniformReservoir(sampleNumber))
+  private val threadPool = Executors.newFixedThreadPool(desiredThreadNum)
+  private val fetchResults = ArrayBuffer.empty[Future[FetchJobResult]]
 
   def start(): Unit = {
+    val partitions = getPartitions(metricsTopic, zkConnect)
 
-    println("start collecting metrics from kafka topic " + name)
-    while (consumer.hasNext) {
-      val times = new String(consumer.next(), "UTF-8").split(":")
-      val startTime = times(0).toLong
-      val endTime = times(1).toLong
+    println("Starting MetricsReader for kafka topic: " + metricsTopic)
 
-      updateLatency(startTime, endTime)
-      updateThroughput(startTime, endTime)
-    }
+    partitions.foreach(partition => {
+      val job = new FetchJob(zkConnect, metricsTopic, partition, histogram)
+      val fetchFeature = threadPool.submit(job)
+      fetchResults += fetchFeature
+    })
 
-    consumer.close()
-    report()
+    threadPool.shutdown()
+    threadPool.awaitTermination(30, TimeUnit.MINUTES)
+
+    val finalResults = fetchResults.map(_.get()).reduce((a, b) => {
+      val minTime = Math.min(a.minTime, b.minTime)
+      val maxTime = Math.max(a.maxTime, b.maxTime)
+      val count = a.count + b.count
+      new FetchJobResult(minTime, maxTime, count)
+    })
+
+    report(finalResults.minTime, finalResults.maxTime, finalResults.count)
   }
 
-  private def updateLatency(startTime: Long, endTime: Long): Unit = {
-    histogram.update(endTime - startTime)
-
-  }
-
-  private def updateThroughput(startTime: Long ,endTime: Long): Unit = {
-    count += 1
-
-    if (startTime < minTime) {
-      minTime = startTime
+  private def getPartitions(topic: String, zkConnect: String): Seq[Int] = {
+    val zkClient = new ZkClient(zkConnect, 6000, 6000, ZKStringSerializer)
+    try {
+      ZkUtils.getPartitionsForTopics(zkClient, Seq(topic)).flatMap(_._2).toSeq
+    } finally {
+      zkClient.close()
     }
-
-    if (endTime > maxTime) {
-      maxTime = endTime
-    }
-
   }
 
 
-  private def report(): Unit = {
-    val outputFile = new File(outputDir, name + ".csv")
+  private def report(minTime: Long, maxTime: Long, count: Long): Unit = {
+    val outputFile = new File(outputDir, metricsTopic + ".csv")
     println(s"written out metrics to ${outputFile.getCanonicalPath}")
     val header = "time,count,throughput(msgs/s),max_latency(ms),mean_latency(ms),min_latency(ms)," +
         "stddev_latency(ms),p50_latency(ms),p75_latency(ms),p95_latency(ms),p98_latency(ms)," +
@@ -107,3 +110,5 @@ class KafkaCollector(name: String, consumer: KafkaConsumer, outputDir: String) e
   }
 
 }
+
+
