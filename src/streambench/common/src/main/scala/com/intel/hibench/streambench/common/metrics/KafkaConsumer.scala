@@ -26,10 +26,7 @@ import kafka.message.MessageAndOffset
 import kafka.utils.{ZKStringSerializer, ZkUtils, Utils}
 import org.I0Itec.zkclient.ZkClient
 
-class KafkaConsumer(
-    zookeeperConnect: String,
-    topic: String,
-    partition: Int) {
+class KafkaConsumer(zookeeperConnect: String, topic: String, partition: Int) {
 
   private val CLIENT_ID = "metrics_reader"
   private val props = new Properties()

@@ -38,7 +38,7 @@ class KafkaCollector(zkConnect: String, metricsTopic: String,
   def start(): Unit = {
     val partitions = getPartitions(metricsTopic, zkConnect)
 
-    println("start collecting metrics from kafka topic: " + metricsTopic)
+    println("Starting MetricsReader for kafka topic: " + metricsTopic)
 
     partitions.foreach(partition => {
       val job = new FetchJob(zkConnect, metricsTopic, partition, histogram)
@@ -47,7 +47,7 @@ class KafkaCollector(zkConnect: String, metricsTopic: String,
     })
 
     threadPool.shutdown()
-    threadPool.awaitTermination(10, TimeUnit.MINUTES)
+    threadPool.awaitTermination(30, TimeUnit.MINUTES)
 
     val finalResults = fetchResults.map(_.get()).reduce((a, b) => {
       val minTime = Math.min(a.minTime, b.minTime)
