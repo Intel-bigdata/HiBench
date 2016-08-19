@@ -70,9 +70,8 @@ class KafkaConsumer(
   }
 
   private def createConsumer: SimpleConsumer = {
+    val zkClient = new ZkClient(zookeeperConnect, 6000, 6000, ZKStringSerializer)
     try {
-      val zkClient = new ZkClient(zookeeperConnect)
-      zkClient.setZkSerializer(ZKStringSerializer)
       val leader = ZkUtils.getLeaderForPartition(zkClient, topic, partition)
           .getOrElse(throw new RuntimeException(
             s"leader not available for TopicAndPartition($topic, $partition)"))
@@ -83,6 +82,8 @@ class KafkaConsumer(
     } catch {
       case e: Exception =>
         throw e
+    } finally {
+      zkClient.close()
     }
   }
 

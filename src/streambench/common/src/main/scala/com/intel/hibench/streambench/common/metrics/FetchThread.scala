@@ -76,7 +76,7 @@ class FetchThread(zkConnect: String,
     consumers.foldLeft(false) { (hasNext, tpAndConsumer) =>
       val (_, consumer) = tpAndConsumer
       if (consumer.hasNext) {
-        val times = new String(consumer.next(), "UTF-8")
+        val times = new String(consumer.next(), "UTF-8").split(":")
         val startTime = times(0).toLong
         val endTime = times(1).toLong
         latencyHistogram.updateLatency(startTime, endTime)
