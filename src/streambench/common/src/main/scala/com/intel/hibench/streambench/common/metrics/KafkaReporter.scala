@@ -33,19 +33,19 @@ class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyRepo
   }
 }
 
-
 object ProducerSingleton {
-  private var instance : Option[KafkaProducer[String, String]] = None
+  @volatile private var instance : Option[KafkaProducer[String, String]] = None
 
   def getInstance(bootstrapServers: String): KafkaProducer[String, String] = synchronized {
-    if (instance.isDefined) {
-      instance.get
-    } else {
-      val props = new Properties()
-      props.put("bootstrap.servers", bootstrapServers)
-      instance = Some(new KafkaProducer(props, new StringSerializer, new StringSerializer))
-      instance.get
+    if (!instance.isDefined) {
+      synchronized {
+        if(!instance.isDefined) {
+          val props = new Properties()
+          props.put("bootstrap.servers", bootstrapServers)
+          instance = Some(new KafkaProducer(props, new StringSerializer, new StringSerializer))
+        }
+      }
     }
+    instance.get
   }
-
 }
