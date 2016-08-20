@@ -91,6 +91,10 @@ object RunBench {
     val ssc = new StreamingContext(conf, Milliseconds(config.batchInterval))
     ssc.checkpoint(config.checkpointPath)
 
+    if(!config.debugMode) {
+      ssc.sparkContext.setLogLevel("ERROR")
+    }
+
     val lines: DStream[(String, String)] = if (config.directMode) {
       // direct mode with low level Kafka API
       KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
