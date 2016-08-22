@@ -19,32 +19,61 @@ package com.intel.flinkbench.microbench;
 
 import com.intel.flinkbench.datasource.StreamBase;
 import com.intel.flinkbench.util.FlinkBenchConfig;
-import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.util.Collector;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.UserVisitParser;
 
 public class WordCount extends StreamBase {
-    
+
     @Override
-    public void processStream(FlinkBenchConfig config) throws Exception {
+    public void processStream(final FlinkBenchConfig config) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setBufferTimeout(config.bufferTimeout);
         createDataStream(config);
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
         dataStream
-                .flatMap(new Splitter())
+                .map(new MapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
+                    @Override
+                    public Tuple2<String, Tuple2<String, Integer>> map(Tuple2<String, String> input) throws Exception {
+                        String browser = UserVisitParser.parse(input.f1).getBrowser();
+                        //map record to <browser, <timeStamp, 1>> type
+                        return new Tuple2<String, Tuple2<String, Integer>>(browser, new Tuple2<String, Integer>(input.f0, 1));
+                    }
+                })
                 .keyBy(0)
-                .sum(1)
-                .print();
-    }
+                .map(new RichMapFunction<Tuple2<String, Tuple2<String, Integer>>, Tuple2<String, Tuple2<String, Integer>>>() {
+                    private transient ValueState<Integer> sum;
 
-    public static class Splitter implements FlatMapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>> {
-        @Override
-        public void flatMap(Tuple2<String, String> sentence, Collector<Tuple2<String, Tuple2<String, Integer>>> out) throws Exception {
-            for (String word : sentence.f1.split(" ")) {
-                out.collect(new Tuple2<String, Tuple2<String, Integer>>(sentence.f0, new Tuple2<String, Integer>(word, 1)));
-            }
-        }
+                    @Override
+                    public Tuple2<String, Tuple2<String, Integer>> map(Tuple2<String, Tuple2<String, Integer>> input) throws Exception {
+                        int currentSum = sum.value();
+                        currentSum += input.f1.f1;
+                        sum.update(currentSum);
+                        KafkaReporter kafkaReporter = new KafkaReporter(config.reportTopic, config.brokerList);
+                        kafkaReporter.report(Long.parseLong(input.f1.f0), System.currentTimeMillis());
+                        return new Tuple2<String, Tuple2<String, Integer>>(input.f0, new Tuple2<String, Integer>(input.f1.f0, currentSum));
+                    }
+
+                    @Override
+                    public void open(Configuration config) {
+                        ValueStateDescriptor<Integer> descriptor =
+                                new ValueStateDescriptor<Integer>(
+                                        "count", // the state name
+                                        TypeInformation.of(new TypeHint<Integer>() {
+                                        }), // type information
+                                        0); // default value of the state, if nothing was set
+                        sum = getRuntimeContext().getState(descriptor);
+                    }
+                });
+        env.execute("Word Count Job");
     }
 }

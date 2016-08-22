@@ -23,7 +23,7 @@ package com.intel.hibench.streambench.common;
 // 0 	34.57.45.175,nbizrgdziebtsaecsecujfjcqtvnpcnxxwiopmddorcxnlijdizgoi,2001-06-29,0.14202267,Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1),DOM,DOM-ES,Gaborone's,7
 public class UserVisitParser {
 
-  static public UserVisit parse(String line) {
+  public static UserVisit parse(String line) {
     String[] elements = line.split("[\\s,]+");
     String ip = elements[1];
     String sessionId = elements[2];
