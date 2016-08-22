@@ -53,6 +53,9 @@ public class RunBench {
     conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
     conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
 
+    conf.windowDuration = Long.parseLong(cl.getProperty(StreamBenchConfig.FixWINDOW_DURATION));
+    conf.windowSlideStep = Long.parseLong(cl.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP));
+
     conf.brokerList = cl.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST);
     int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
     long recordPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
@@ -73,6 +76,9 @@ public class RunBench {
       } else if (benchName.equals("identity")) {
         TridentIdentity identity = new TridentIdentity(conf);
         identity.run();
+      } else if (benchName.equals("fixwindow")) {
+        WindowedCount window = new WindowedCount(conf);
+        window.run();
       } else if (benchName.equals("sample")) {
         conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
         TridentSample sample = new TridentSample(conf);
