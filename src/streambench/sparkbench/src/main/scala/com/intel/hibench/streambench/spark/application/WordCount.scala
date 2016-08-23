@@ -50,7 +50,7 @@ class WordCount() extends BenchBase {
 
     wordCount.foreachRDD(rdd => rdd.foreachPartition(partLines => {
       val reporter = new KafkaReporter(reportTopic, brokerList)
-      partLines.map { case (word, inTime) =>
+      partLines.foreach { case (word, inTime) =>
         val outTime = System.currentTimeMillis()
         reporter.report(inTime, outTime)
         if (config.debugMode) println(word + ": " + inTime + ", " + outTime )
