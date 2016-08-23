@@ -27,7 +27,7 @@ public class UserVisitParser {
     String[] elements = line.split("[\\s,]+");
     String ip = elements[1];
     String sessionId = elements[2];
-    String browser = elements[4];
+    String browser = elements[5];
     return new UserVisit(ip, sessionId, browser);
   }
 }
