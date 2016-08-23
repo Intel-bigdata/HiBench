@@ -26,26 +26,33 @@ import org.apache.kafka.common.serialization.StringSerializer
  */
 class KafkaReporter(topic: String, bootstrapServers: String) extends LatencyReporter {
 
-  private val producer = ProducerSingleton.getInstance(bootstrapServers)
+  private val producers = ProducerSingleton.getInstance(bootstrapServers)
 
+  private var cur: Int = 0
+
+  // This code is not thread safe, but as we just want random access here, so it should be fine,
   override def report(startTime: Long, endTime: Long): Unit = {
-    producer.send(new ProducerRecord[String, String](topic, null, s"$startTime:$endTime"))
+    producers(cur).send(new ProducerRecord[String, String](topic, null, s"$startTime:$endTime"))
+    cur = (cur + 1) % 3
   }
 }
 
 object ProducerSingleton {
-  @volatile private var instance : Option[KafkaProducer[String, String]] = None
+  @volatile private var instances : Array[KafkaProducer[String, String]] = Array.empty
 
-  def getInstance(bootstrapServers: String): KafkaProducer[String, String] = synchronized {
-    if (!instance.isDefined) {
+  def getInstance(bootstrapServers: String): Array[KafkaProducer[String, String]] = synchronized {
+    if (instances.isEmpty) {
       synchronized {
-        if(!instance.isDefined) {
+        if(instances.isEmpty) {
           val props = new Properties()
           props.put("bootstrap.servers", bootstrapServers)
-          instance = Some(new KafkaProducer(props, new StringSerializer, new StringSerializer))
+          instances = Array(
+            new KafkaProducer(props, new StringSerializer, new StringSerializer),
+            new KafkaProducer(props, new StringSerializer, new StringSerializer),
+            new KafkaProducer(props, new StringSerializer, new StringSerializer))
         }
       }
     }
-    instance.get
+    instances
   }
 }
