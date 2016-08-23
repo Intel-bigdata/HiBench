@@ -19,7 +19,7 @@ package com.intel.hibench.streambench.gearpump.application
 
 import com.intel.hibench.streambench.common.TestCase
 import com.intel.hibench.streambench.gearpump.source.SourceProvider
-import com.intel.hibench.streambench.gearpump.task.{Sum, Split}
+import com.intel.hibench.streambench.gearpump.task.{Sum, Parser}
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.partitioner.HashPartitioner
@@ -33,7 +33,7 @@ class WordCount(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) e
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()
     val partitioner = new HashPartitioner
-    val split = Processor[Split](conf.parallelism)
+    val split = Processor[Parser](conf.parallelism)
     val sum = Processor[Sum](conf.parallelism)
     StreamApplication("wordCount", Graph(source ~ partitioner ~> split ~ partitioner ~> sum), benchConfig)
   }

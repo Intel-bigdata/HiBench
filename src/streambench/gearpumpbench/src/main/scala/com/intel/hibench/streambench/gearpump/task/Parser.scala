@@ -21,11 +21,11 @@ import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
-class Split(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
+class Parser(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
   import taskContext.output
 
   override def onNext(msg: Message): Unit = {
     val userVisit = UserVisitParser.parse(msg.msg.asInstanceOf[String])
-    output(new Message(userVisit.getBrowser, msg.timestamp))
+    output(new Message(userVisit.getIp, msg.timestamp))
   }
 }

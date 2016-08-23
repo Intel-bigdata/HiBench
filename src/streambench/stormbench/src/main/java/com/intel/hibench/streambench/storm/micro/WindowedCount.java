@@ -66,12 +66,12 @@ public class WindowedCount extends SingleSpoutTops{
         UserVisit uv = UserVisitParser.parse(kv.get(key));
         latencyReporter.report(startTime, System.currentTimeMillis());
 
-        Integer count = counts.get(uv.getBrowser());
+        Integer count = counts.get(uv.getIp());
         if (count == null) {
           count = 0;
         }
         count++;
-        counts.put(uv.getBrowser(), count);
+        counts.put(uv.getIp(), count);
       }
     }
   }

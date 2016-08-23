@@ -64,8 +64,11 @@ object RunBench {
     val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
     MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
+    val windowDuration = conf.getProperty(StreamBenchConfig.FixWINDOW_DURATION).toLong
+    val windowStep = conf.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP).toLong
+
     GearpumpConfig(benchName, zkHost, brokerList, consumerGroup, topic,
-      parallelism, prob, reporterTopic)
+      parallelism, prob, reporterTopic, windowDuration, windowStep)
   }
 
   private def getReporterTopic(conf: ConfigLoader): String = {

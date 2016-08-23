@@ -9,6 +9,8 @@ case class GearpumpConfig(
   parallelism: Int,
   prob: Double,
   reporterTopic: String,
+  windowDuration: Long,
+  windowSlideStep: Long,
   pattern: String = " ",
   fieldIndex: Int = 0,
   separator: String = "\\s+"

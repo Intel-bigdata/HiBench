@@ -85,7 +85,7 @@ public class Wordcount extends SingleSpoutTops {
       String key = kv.keySet().iterator().next();
       Long startTime = Long.parseLong(key);
       UserVisit uv = UserVisitParser.parse(kv.get(key));
-      collector.emit(new Values(uv.getBrowser(), startTime));
+      collector.emit(new Values(uv.getIp(), startTime));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
