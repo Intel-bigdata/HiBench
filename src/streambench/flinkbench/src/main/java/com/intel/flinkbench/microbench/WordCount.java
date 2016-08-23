@@ -44,9 +44,9 @@ public class WordCount extends StreamBase {
                 .map(new MapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
                     @Override
                     public Tuple2<String, Tuple2<String, Integer>> map(Tuple2<String, String> input) throws Exception {
-                        String browser = UserVisitParser.parse(input.f1).getBrowser();
+                        String ip = UserVisitParser.parse(input.f1).getIp();
                         //map record to <browser, <timeStamp, 1>> type
-                        return new Tuple2<String, Tuple2<String, Integer>>(browser, new Tuple2<String, Integer>(input.f0, 1));
+                        return new Tuple2<String, Tuple2<String, Integer>>(ip, new Tuple2<String, Integer>(input.f0, 1));
                     }
                 })
                 .keyBy(0)
