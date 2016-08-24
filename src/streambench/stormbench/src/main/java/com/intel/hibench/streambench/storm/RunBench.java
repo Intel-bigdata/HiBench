@@ -20,6 +20,7 @@ package com.intel.hibench.streambench.storm;
 import com.intel.hibench.streambench.common.ConfigLoader;
 import com.intel.hibench.streambench.common.Platform;
 import com.intel.hibench.streambench.common.StreamBenchConfig;
+import com.intel.hibench.streambench.common.TestCase;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.storm.micro.*;
 import com.intel.hibench.streambench.storm.trident.*;
@@ -32,7 +33,7 @@ public class RunBench {
     runAll(args);
   }
 
-  public static void runAll(String[] args) throws Exception {
+  private static void runAll(String[] args) throws Exception {
 
     if (args.length < 2)
       BenchLogUtil.handleError("Usage: RunBench <ConfigFile> <FrameworkName>");
@@ -51,6 +52,7 @@ public class RunBench {
     conf.topic = cl.getProperty(StreamBenchConfig.KAFKA_TOPIC);
     conf.consumerGroup = cl.getProperty(StreamBenchConfig.CONSUMER_GROUP);
     conf.ackon = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_ACKON));
+    conf.localShuffle = Boolean.parseBoolean(cl.getProperty(StreamBenchConfig.STORM_LOCAL_SHUFFLE));
 
     conf.windowDuration = Long.parseLong(cl.getProperty(StreamBenchConfig.FixWINDOW_DURATION));
     conf.windowSlideStep = Long.parseLong(cl.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP));
@@ -62,52 +64,33 @@ public class RunBench {
     conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, producerNum, recordPerInterval, intervalSpan);
     int reportTopicPartitions = Integer.parseInt(cl.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS));
     MetricsUtil.createTopic(conf.zkHost, conf.reporterTopic, reportTopicPartitions);
-    String benchName = conf.benchName;
+    TestCase benchName = TestCase.withValue(conf.benchName);
 
     BenchLogUtil.logMsg("Benchmark starts... " + "  " + benchName +
             "   Frameworks:" + (TridentFramework ? "Trident" : "Storm"));
 
     if (TridentFramework) { // For trident workloads
-      if (benchName.equals("wordcount")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
+      if (benchName.equals(TestCase.WORDCOUNT)) {
         TridentWordcount wordcount = new TridentWordcount(conf);
         wordcount.run();
-      } else if (benchName.equals("identity")) {
+      } else if (benchName.equals(TestCase.IDENTITY)) {
         TridentIdentity identity = new TridentIdentity(conf);
         identity.run();
-      } else if (benchName.equals("sample")) {
-        conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
-        TridentSample sample = new TridentSample(conf);
-        sample.run();
-      } else if (benchName.equals("project")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        TridentProject project = new TridentProject(conf);
-        project.run();
-      } else if (benchName.equals("grep")) {
-        conf.pattern = cl.getProperty("hibench.streambench.pattern");
-        TridentGrep grep = new TridentGrep(conf);
-        grep.run();
-      } else if (benchName.equals("distinctcount")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        TridentDistinctCount distinct = new TridentDistinctCount(conf);
-        distinct.run();
-      } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        TridentNumericCalc numeric = new TridentNumericCalc(conf);
-        numeric.run();
+      } else if (benchName.equals(TestCase.REPARTITION)) {
+        TridentRepartition repartition = new TridentRepartition(conf);
+        repartition.run();
+      } else if (benchName.equals(TestCase.FIXWINDOW)) {
+        TridentWindow window = new TridentWindow(conf);
+        window.run();
       }
     } else { // For storm workloads
-      if (benchName.equals("identity")) {
+      if (benchName.equals(TestCase.IDENTITY)) {
         Identity identity = new Identity(conf);
         identity.run();
-      } else if (benchName.equals("wordcount")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        Wordcount wordcount = new Wordcount(conf);
-        wordcount.run();
-      } else if (benchName.equals("fixwindow")) {
+      } else if (benchName.equals(TestCase.WORDCOUNT)) {
+        WordCount wordCount = new WordCount(conf);
+        wordCount.run();
+      } else if (benchName.equals(TestCase.FIXWINDOW)) {
           WindowedCount window = new WindowedCount(conf);
           window.run();
       }

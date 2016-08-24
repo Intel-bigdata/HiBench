@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intel.hibench.streambench.gearpump.application
 
 import com.intel.hibench.streambench.common.TestCase
 import com.intel.hibench.streambench.gearpump.source.SourceProvider
-import com.intel.hibench.streambench.gearpump.task.{Parser, Sum}
+import com.intel.hibench.streambench.gearpump.task.{Parser, SlidingWindow}
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.partitioner.ShufflePartitioner
@@ -27,14 +26,14 @@ import org.apache.gearpump.streaming.{Processor, StreamApplication}
 import org.apache.gearpump.util.Graph
 import org.apache.gearpump.util.Graph._
 
-class WordCount(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
-  override val benchName = TestCase.WORDCOUNT
+class WindowCount(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
+  override val benchName = TestCase.FIXWINDOW
 
   override def application(benchConfig: UserConfig): StreamApplication = {
     val source = getSource()
     val partitioner = new ShufflePartitioner
     val parser = Processor[Parser](conf.parallelism)
-    val sum = Processor[Sum](conf.parallelism)
-    StreamApplication("wordCount", Graph(source ~ partitioner ~> parser ~> sum), benchConfig)
+    val slidingWindow = Processor[SlidingWindow](conf.parallelism)
+    StreamApplication("windowCount", Graph(source ~ partitioner ~> parser ~> slidingWindow), benchConfig)
   }
 }

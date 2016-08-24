@@ -17,7 +17,7 @@
 package com.intel.hibench.streambench.gearpump
 
 import com.intel.hibench.streambench.common.metrics.MetricsUtil
-import com.intel.hibench.streambench.common.{StreamBenchConfig, Platform, ConfigLoader}
+import com.intel.hibench.streambench.common.{ConfigLoader, Platform, StreamBenchConfig, TestCase}
 import com.intel.hibench.streambench.gearpump.application._
 import com.intel.hibench.streambench.gearpump.source.KafkaSourceProvider
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
@@ -36,9 +36,10 @@ object RunBench {
     val confLoader = new ConfigLoader(args(0))
     val gearConf = getConfig(confLoader)
 
-    val benchmark = gearConf.benchName match {
-      case "wordcount" => new WordCount(gearConf)
-      case _ => new IdentityApp(gearConf)
+    val benchmark = TestCase.withValue(gearConf.benchName) match {
+      case TestCase.WORDCOUNT => new WordCount(gearConf)
+      case TestCase.IDENTITY => new IdentityApp(gearConf)
+      case TestCase.FIXWINDOW => new WindowCount(gearConf)
     }
 
     val benchConf = UserConfig.empty

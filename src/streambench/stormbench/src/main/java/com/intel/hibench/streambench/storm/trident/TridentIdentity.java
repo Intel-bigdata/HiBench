@@ -17,19 +17,13 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import com.google.common.collect.ImmutableMap;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.trident.functions.Identity;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.trident.operation.BaseFunction;
-import org.apache.storm.trident.operation.TridentCollector;
-import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Values;
 
 public class TridentIdentity extends SingleTridentSpoutTops {
 
@@ -44,26 +38,11 @@ public class TridentIdentity extends SingleTridentSpoutTops {
     TridentTopology topology = new TridentTopology();
 
     topology.newStream("bg0", spout)
-            .each(spout.getOutputFields(), new Identity(config),
-                    new Fields("tuple"))
-            .parallelismHint(config.boltThreads);
+        .each(spout.getOutputFields(), new Identity(config),
+            new Fields("tuple"))
+        .parallelismHint(config.boltThreads);
     return topology;
   }
 
-  private static class Identity extends BaseFunction {
-    private final StormBenchConfig config;
 
-    public Identity(StormBenchConfig config) {
-      this.config = config;
-    }
-
-    @Override
-    public void execute(TridentTuple tuple, TridentCollector collector) {
-      final LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
-      ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
-      collector.emit(new Values(kv));
-      latencyReporter.report(Long.parseLong(kv.keySet().iterator().next()),
-          System.currentTimeMillis());
-    }
-  }
 }

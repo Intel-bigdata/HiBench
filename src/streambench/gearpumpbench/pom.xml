@@ -33,6 +33,7 @@
         <gearpumpVersion>0.8.1</gearpumpVersion>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
+        <eclipseCollectionsVersion>7.1.0</eclipseCollectionsVersion>
     </properties>
 
     <repositories>
@@ -71,6 +72,16 @@
             <groupId>org.apache.gearpump</groupId>
             <artifactId>gearpump-external-kafka_2.11</artifactId>
             <version>${gearpumpVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections-api</artifactId>
+            <version>${eclipseCollectionsVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.collections</groupId>
+            <artifactId>eclipse-collections</artifactId>
+            <version>${eclipseCollectionsVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.intel.hibench.streambench</groupId>

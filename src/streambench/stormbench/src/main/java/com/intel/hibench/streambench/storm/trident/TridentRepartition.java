@@ -19,18 +19,15 @@ package com.intel.hibench.streambench.storm.trident;
 
 import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
+import com.intel.hibench.streambench.storm.trident.functions.Identity;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.trident.operation.BaseFunction;
-import org.apache.storm.trident.operation.TridentCollector;
-import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Values;
 
-public class TridentGrep extends SingleTridentSpoutTops {
+public class TridentRepartition extends SingleTridentSpoutTops {
 
-  public TridentGrep(StormBenchConfig config) {
+  public TridentRepartition(StormBenchConfig config) {
     super(config);
   }
 
@@ -41,23 +38,11 @@ public class TridentGrep extends SingleTridentSpoutTops {
     TridentTopology topology = new TridentTopology();
 
     topology.newStream("bg0", spout)
-            .each(spout.getOutputFields(), new Grep(config.pattern), new Fields("tuple"))
-            .parallelismHint(config.workerCount);
+        .parallelismHint(config.spoutThreads)
+        .shuffle()
+        .each(spout.getOutputFields(), new Identity(config),
+            new Fields("tuple"))
+        .parallelismHint(config.boltThreads);
     return topology;
-  }
-
-  private static class Grep extends BaseFunction {
-    private String pattern;
-
-    public Grep(String pattern) {
-      this.pattern = pattern;
-    }
-
-    @Override
-    public void execute(TridentTuple tuple, TridentCollector collector) {
-      String val = tuple.getString(0);
-      if (val.contains(pattern))
-        collector.emit(new Values(val));
-    }
   }
 }

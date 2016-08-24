@@ -25,6 +25,7 @@ import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.BoltDeclarer;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseBasicBolt;
@@ -35,41 +36,44 @@ import org.apache.storm.tuple.Values;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Wordcount extends SingleSpoutTops {
+public class WordCount extends SingleSpoutTops {
 
-  public Wordcount(StormBenchConfig config) {
+  public WordCount(StormBenchConfig config) {
     super(config);
   }
 
   @Override
   public void setBolts(TopologyBuilder builder) {
-    builder.setBolt("split", new SplitStreamBolt(),
-            config.boltThreads).shuffleGrouping("spout");
+    BoltDeclarer boltDeclarer = builder.setBolt("split", new SplitStreamBolt(),
+        config.boltThreads);
+    if (config.localShuffle) {
+      boltDeclarer.localOrShuffleGrouping("spout");
+    } else {
+      boltDeclarer.shuffleGrouping("spout");
+    }
     builder.setBolt("count", new WordCountBolt(config),
-            config.boltThreads).fieldsGrouping("split", new Fields("word"));
+        config.boltThreads).fieldsGrouping("split", new Fields("word"));
   }
 
   private static class WordCountBolt extends BaseBasicBolt {
     Map<String, Integer> counts = new HashMap<String, Integer>();
     private final StormBenchConfig config;
 
-    public WordCountBolt(StormBenchConfig config) {
+    WordCountBolt(StormBenchConfig config) {
       this.config = config;
     }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-      LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
-      latencyReporter.report(tuple.getLong(1), System.currentTimeMillis());
-
       String word = tuple.getString(0);
       Integer count = counts.get(word);
       if (count == null)
         count = 0;
       count++;
       counts.put(word, count);
-      //BenchLogUtil.logMsg("Word:"+word+"  count:"+count);
-      collector.emit(new Values(word, count));
+
+      LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
+      latencyReporter.report(tuple.getLong(1), System.currentTimeMillis());
     }
 
     @Override

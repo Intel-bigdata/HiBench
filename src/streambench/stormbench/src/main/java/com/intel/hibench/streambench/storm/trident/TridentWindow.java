@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.intel.hibench.streambench.storm.trident;
 
 import com.intel.hibench.streambench.common.metrics.KafkaReporter;
@@ -24,19 +23,22 @@ import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.streambench.storm.trident.functions.Parser;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
+import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.trident.operation.Aggregator;
+import org.apache.storm.trident.operation.BaseAggregator;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.operation.TridentOperationContext;
 import org.apache.storm.trident.tuple.TridentTuple;
+import org.apache.storm.trident.windowing.InMemoryWindowsStoreFactory;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-public class TridentWordcount extends SingleTridentSpoutTops {
+public class TridentWindow extends SingleTridentSpoutTops {
 
-  public TridentWordcount(StormBenchConfig config) {
+  public TridentWindow(StormBenchConfig config) {
     super(config);
   }
 
@@ -48,25 +50,28 @@ public class TridentWordcount extends SingleTridentSpoutTops {
     topology.newStream("bg0", spout)
         .each(spout.getOutputFields(), new Parser(), new Fields("ip", "time"))
         .parallelismHint(config.spoutThreads)
-        .groupBy(new Fields("ip"))
-        .aggregate(new Fields("ip", "time"), new Count(config), new Fields("ip", "count"))
+        .groupBy(new Fields("ip")).toStream()
+        .slidingWindow(new BaseWindowedBolt.Duration((int) config.windowDuration, TimeUnit.MILLISECONDS),
+            new BaseWindowedBolt.Duration((int) config.windowSlideStep, TimeUnit.MILLISECONDS),
+            new InMemoryWindowsStoreFactory(),
+            new Fields("ip", "time"), new Count(config), new Fields("ip", "count"))
         .parallelismHint(config.boltThreads);
     return topology;
   }
 
-  private static class Count implements Aggregator<Count.State> {
+  private static class Count extends BaseAggregator<Count.State> {
 
     private final StormBenchConfig config;
     private LatencyReporter reporter = null;
 
-    static class State {
-      String ip;
-      long count = 0;
-
-    }
-
     Count(StormBenchConfig config) {
       this.config = config;
+    }
+
+    static class State {
+      String ip;
+      long minTime = Long.MAX_VALUE;
+      long count = 0L;
     }
 
     @Override
@@ -75,7 +80,7 @@ public class TridentWordcount extends SingleTridentSpoutTops {
     }
 
     @Override
-    public State init(Object o, TridentCollector tridentCollector) {
+    public State init(Object batchId, TridentCollector tridentCollector) {
       return new State();
     }
 
@@ -83,16 +88,15 @@ public class TridentWordcount extends SingleTridentSpoutTops {
     public void aggregate(State state, TridentTuple tridentTuple, TridentCollector tridentCollector) {
       state.ip = tridentTuple.getString(0);
       state.count++;
-      tridentCollector.emit(new Values(state.ip, state.count));
-      reporter.report(tridentTuple.getLong(0), System.currentTimeMillis());
+      state.minTime = Math.min(tridentTuple.getLong(1), state.minTime);
     }
 
     @Override
     public void complete(State state, TridentCollector tridentCollector) {
-    }
-
-    @Override
-    public void cleanup() {
+      tridentCollector.emit(new Values(state.ip, state.count));
+      for (int i = 0; i < state.count; i++) {
+        reporter.report(state.minTime, System.currentTimeMillis());
+      }
     }
   }
 }

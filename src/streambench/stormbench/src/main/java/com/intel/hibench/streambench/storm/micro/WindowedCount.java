@@ -24,10 +24,16 @@ import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.BoltDeclarer;
+import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.topology.base.BaseBasicBolt;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseWindowedBolt;
 import org.apache.storm.topology.base.BaseWindowedBolt.Duration;
+import org.apache.storm.tuple.Values;
 import org.apache.storm.windowing.TupleWindow;
 
 import java.util.HashMap;
@@ -44,35 +50,62 @@ public class WindowedCount extends SingleSpoutTops{
   public void setBolts(TopologyBuilder builder) {
     Duration windowDuration = new Duration((int)config.windowDuration, TimeUnit.MILLISECONDS);
     Duration windowSlide = new Duration((int)config.windowSlideStep, TimeUnit.MICROSECONDS);
+    BoltDeclarer boltDeclarer = builder.setBolt("parser", new ParserBolt());
+    if (config.localShuffle) {
+      boltDeclarer.localOrShuffleGrouping("spout");
+    } else {
+      boltDeclarer.shuffleGrouping("spout");
+    }
     builder.setBolt("window", new SlidingWindowBolt(config).withWindow(windowDuration, windowSlide),
-      config.boltThreads).shuffleGrouping("spout");
+      config.boltThreads).fieldsGrouping("parser", new Fields("ip"));
+  }
+
+  private static class ParserBolt extends BaseBasicBolt {
+
+    @Override
+    public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
+      ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
+      String key = kv.keySet().iterator().next();
+      UserVisit uv = UserVisitParser.parse(kv.get(key));
+      basicOutputCollector.emit(new Values(uv.getIp(), key));
+    }
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+      outputFieldsDeclarer.declare(new Fields("ip", "time"));
+    }
   }
 
   private static class SlidingWindowBolt extends BaseWindowedBolt {
     private final StormBenchConfig config;
 
-    public SlidingWindowBolt(StormBenchConfig config) {
+    SlidingWindowBolt(StormBenchConfig config) {
       this.config = config;
     }
 
     @Override
     public void execute(TupleWindow inputWindow) {
-      Map<String, Integer> counts = new HashMap<String, Integer>();
-      LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
+      Map<String, Long[]> counts = new HashMap<String, Long[]>();
       for(Tuple tuple: inputWindow.get()) {
-        ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
-        String key = kv.keySet().iterator().next();
-        Long startTime = Long.parseLong(key);
-        UserVisit uv = UserVisitParser.parse(kv.get(key));
-        latencyReporter.report(startTime, System.currentTimeMillis());
-
-        Integer count = counts.get(uv.getIp());
-        if (count == null) {
-          count = 0;
+        Long time = Long.parseLong(tuple.getString(1));
+        String ip =  tuple.getString(0);
+        Long[] timeAndCount = counts.get(ip);
+        if (null == timeAndCount) {
+          timeAndCount = new Long[2];
+          timeAndCount[0] = time;
+          timeAndCount[1] = 0L;
         }
-        count++;
-        counts.put(uv.getIp(), count);
+        timeAndCount[0] = Math.min(timeAndCount[0], time);
+        timeAndCount[1]++;
+        counts.put(ip, timeAndCount);
+      }
+      LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
+      for (Long[] timeAndCount: counts.values()) {
+        for (int i = 0; i < timeAndCount[1]; i++) {
+          latencyReporter.report(timeAndCount[0], System.currentTimeMillis());
+        }
       }
     }
+
   }
 }
