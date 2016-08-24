@@ -15,6 +15,9 @@ public class StormBenchConfig implements Serializable {
   public String brokerList;
   public String reporterTopic;
 
+  public long windowDuration;
+  public long windowSlideStep;
+
   //Following are fields that are benchmark specific
   public String separator = "\\s+";
   public int fieldIndex = 1;

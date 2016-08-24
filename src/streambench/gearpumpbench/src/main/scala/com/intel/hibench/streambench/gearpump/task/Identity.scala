@@ -24,9 +24,9 @@ import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
 class Identity(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
   private val benchConfig = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
+  val reporter =  new KafkaReporter(benchConfig.reporterTopic, benchConfig.brokerList)
 
   override def onNext(msg: Message): Unit = {
-    val reporter =  new KafkaReporter(benchConfig.reporterTopic, benchConfig.brokerList)
     taskContext.output(msg)
     reporter.report(msg.timestamp, System.currentTimeMillis())
   }

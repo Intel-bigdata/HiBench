@@ -16,21 +16,16 @@
  */
 package com.intel.hibench.streambench.gearpump.task
 
-import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
+import com.intel.hibench.streambench.common.UserVisitParser
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
-import scala.util.Random
-
-class Sample(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
-  private val benchConf = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
-  private val probability = benchConf.prob
-  private val random = new Random()
+class Parser(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf) {
+  import taskContext.output
 
   override def onNext(msg: Message): Unit = {
-    if (random.nextDouble() <= probability) {
-      taskContext.output(msg)
-    }
+    val userVisit = UserVisitParser.parse(msg.msg.asInstanceOf[String])
+    output(new Message(userVisit.getIp, msg.timestamp))
   }
 }

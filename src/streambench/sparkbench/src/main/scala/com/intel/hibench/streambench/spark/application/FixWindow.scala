@@ -38,7 +38,7 @@ class FixWindow(duration: Long, slideStep: Long) extends BenchBase {
       val reporter = new KafkaReporter(reportTopic, brokerList)
       val outTime = System.currentTimeMillis()
       reporter.report(value._1, outTime)
-      if(config.debugMode == true) {
+      if(config.debugMode) {
         println("Event: " + value._1 + ", " + outTime)
       }
 

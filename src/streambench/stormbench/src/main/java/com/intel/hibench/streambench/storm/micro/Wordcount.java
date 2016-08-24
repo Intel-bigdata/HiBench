@@ -17,6 +17,11 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
+import com.google.common.collect.ImmutableMap;
+import com.intel.hibench.streambench.common.UserVisit;
+import com.intel.hibench.streambench.common.UserVisitParser;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.topology.BasicOutputCollector;
@@ -38,17 +43,25 @@ public class Wordcount extends SingleSpoutTops {
 
   @Override
   public void setBolts(TopologyBuilder builder) {
-    builder.setBolt("split", new SplitStreamBolt(config.separator),
+    builder.setBolt("split", new SplitStreamBolt(),
             config.boltThreads).shuffleGrouping("spout");
-    builder.setBolt("count", new WordCountBolt(),
+    builder.setBolt("count", new WordCountBolt(config),
             config.boltThreads).fieldsGrouping("split", new Fields("word"));
   }
 
   private static class WordCountBolt extends BaseBasicBolt {
     Map<String, Integer> counts = new HashMap<String, Integer>();
+    private final StormBenchConfig config;
+
+    public WordCountBolt(StormBenchConfig config) {
+      this.config = config;
+    }
 
     @Override
     public void execute(Tuple tuple, BasicOutputCollector collector) {
+      LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
+      latencyReporter.report(tuple.getLong(1), System.currentTimeMillis());
+
       String word = tuple.getString(0);
       Integer count = counts.get(word);
       if (count == null)
@@ -66,18 +79,13 @@ public class Wordcount extends SingleSpoutTops {
   }
 
   private static class SplitStreamBolt extends BaseBasicBolt {
-    private String separator;
-
-    public SplitStreamBolt(String separator) {
-      this.separator = separator;
-    }
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-      String record = tuple.getString(0);
-      String[] fields = record.split(separator);
-      for (String s : fields) {
-        collector.emit(new Values(s));
-      }
+      ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
+      String key = kv.keySet().iterator().next();
+      Long startTime = Long.parseLong(key);
+      UserVisit uv = UserVisitParser.parse(kv.get(key));
+      collector.emit(new Values(uv.getIp(), startTime));
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {

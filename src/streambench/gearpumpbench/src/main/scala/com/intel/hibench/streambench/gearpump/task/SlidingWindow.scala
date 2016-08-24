@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.intel.hibench.streambench.gearpump.application
 
-import com.intel.hibench.streambench.common.TestCase
-import com.intel.hibench.streambench.gearpump.source.SourceProvider
-import com.intel.hibench.streambench.gearpump.task.Sample
+package com.intel.hibench.streambench.gearpump.task
+
 import com.intel.hibench.streambench.gearpump.util.GearpumpConfig
+import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
-import org.apache.gearpump.partitioner.ShufflePartitioner
-import org.apache.gearpump.streaming.{Processor, StreamApplication}
-import org.apache.gearpump.util.Graph
-import org.apache.gearpump.util.Graph._
+import org.apache.gearpump.streaming.task.{Task, TaskContext}
 
-class SampleApp(conf: GearpumpConfig)(implicit sourceProvider: SourceProvider) extends BasicApplication(conf) {
-  override val benchName = TestCase.SAMPLE
+//Todo
+class SlidingWindow(taskContext: TaskContext, conf: UserConfig) extends Task(taskContext, conf)  {
+  private val benchConfig = conf.getValue[GearpumpConfig](GearpumpConfig.BENCH_CONFIG).get
+  private val windowDuration = benchConfig.windowDuration
+  private val windowStep = benchConfig.windowSlideStep
+  import taskContext.output
 
-  override def application(benchConfig: UserConfig): StreamApplication = {
-    val source = getSource()
-    val partitioner = new ShufflePartitioner
-    val sample = Processor[Sample](conf.parallelism)
-    StreamApplication("sample", Graph(source ~ partitioner ~> sample), benchConfig)
+  override def onNext(msg: Message): Unit = {
   }
 }

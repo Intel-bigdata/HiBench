@@ -37,12 +37,7 @@ object RunBench {
     val gearConf = getConfig(confLoader)
 
     val benchmark = gearConf.benchName match {
-      case "project" => new ProjectStream(gearConf)
-      case "sample" => new SampleApp(gearConf)
-      case "statistics" => new NumericCalc(gearConf)
       case "wordcount" => new WordCount(gearConf)
-      case "grep" => new GrepApp(gearConf)
-      case "distinctcount" => new DistinctCount(gearConf)
       case _ => new IdentityApp(gearConf)
     }
 
@@ -64,8 +59,11 @@ object RunBench {
     val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
     MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
+    val windowDuration = conf.getProperty(StreamBenchConfig.FixWINDOW_DURATION).toLong
+    val windowStep = conf.getProperty(StreamBenchConfig.FixWINDOW_SLIDESTEP).toLong
+
     GearpumpConfig(benchName, zkHost, brokerList, consumerGroup, topic,
-      parallelism, prob, reporterTopic)
+      parallelism, prob, reporterTopic, windowDuration, windowStep)
   }
 
   private def getReporterTopic(conf: ConfigLoader): String = {
