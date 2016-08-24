@@ -37,12 +37,7 @@ object RunBench {
     val gearConf = getConfig(confLoader)
 
     val benchmark = gearConf.benchName match {
-      case "project" => new ProjectStream(gearConf)
-      case "sample" => new SampleApp(gearConf)
-      case "statistics" => new NumericCalc(gearConf)
       case "wordcount" => new WordCount(gearConf)
-      case "grep" => new GrepApp(gearConf)
-      case "distinctcount" => new DistinctCount(gearConf)
       case _ => new IdentityApp(gearConf)
     }
 

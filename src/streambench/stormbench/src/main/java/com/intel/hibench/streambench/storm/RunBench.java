@@ -22,7 +22,6 @@ import com.intel.hibench.streambench.common.Platform;
 import com.intel.hibench.streambench.common.StreamBenchConfig;
 import com.intel.hibench.streambench.common.metrics.MetricsUtil;
 import com.intel.hibench.streambench.storm.micro.*;
-import com.intel.hibench.streambench.storm.micro.NumericCalc;
 import com.intel.hibench.streambench.storm.trident.*;
 import com.intel.hibench.streambench.storm.util.BenchLogUtil;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
@@ -76,9 +75,6 @@ public class RunBench {
       } else if (benchName.equals("identity")) {
         TridentIdentity identity = new TridentIdentity(conf);
         identity.run();
-      } else if (benchName.equals("fixwindow")) {
-        WindowedCount window = new WindowedCount(conf);
-        window.run();
       } else if (benchName.equals("sample")) {
         conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
         TridentSample sample = new TridentSample(conf);
@@ -107,38 +103,13 @@ public class RunBench {
       if (benchName.equals("identity")) {
         Identity identity = new Identity(conf);
         identity.run();
-      } else if (benchName.equals("project")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        ProjectStream project = new ProjectStream(conf);
-        project.run();
-      } else if (benchName.equals("sample")) {
-        conf.prob = Double.parseDouble(cl.getProperty("hibench.streambench.prob"));
-        SampleStream sample = new SampleStream(conf);
-        sample.run();
       } else if (benchName.equals("wordcount")) {
         conf.separator = cl.getProperty("hibench.streambench.separator");
         Wordcount wordcount = new Wordcount(conf);
         wordcount.run();
-      } else if (benchName.equals("grep")) {
-        conf.pattern = cl.getProperty("hibench.streambench.pattern");
-        GrepStream grep = new GrepStream(conf);
-        grep.run();
-      } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        NumericCalc numeric = new NumericCalc(conf);
-        numeric.run();
-      } else if (benchName.equals("distinctcount")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        DistinctCount distinct = new DistinctCount(conf);
-        distinct.run();
-      } else if (benchName.equals("statistics")) {
-        conf.separator = cl.getProperty("hibench.streambench.separator");
-        conf.fieldIndex = Integer.parseInt(cl.getProperty("hibench.streambench.field_index"));
-        NumericCalcSep numeric = new NumericCalcSep(conf);
-        numeric.run();
+      } else if (benchName.equals("fixwindow")) {
+          WindowedCount window = new WindowedCount(conf);
+          window.run();
       }
     }
   }
