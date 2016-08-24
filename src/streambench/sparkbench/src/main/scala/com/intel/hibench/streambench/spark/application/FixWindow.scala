@@ -32,18 +32,25 @@ class FixWindow(duration: Long, slideStep: Long) extends BenchBase {
     lines.window(Duration(duration), Duration(slideStep)).map{
       case (inTime, line) => {
         val uv = UserVisitParser.parse(line)
-        (uv.getBrowser, (inTime, 1))
+        (uv.getIp, (inTime, 1))
       }
     }.reduceByKey((value, result) => {
+      // maintain the min time of this window and count record number
+      (Math.min(value._1, result._1), value._2 + result._2)
+    }).foreachRDD( rdd => rdd.foreachPartition( results => {
+
+      // report back to kafka
       val reporter = new KafkaReporter(reportTopic, brokerList)
       val outTime = System.currentTimeMillis()
-      reporter.report(value._1, outTime)
-      if(config.debugMode) {
-        println("Event: " + value._1 + ", " + outTime)
-      }
 
-      // Sum
-      (value._1, value._2 + result._2)
-    }).foreachRDD(_ => Unit)
+      results.foreach(res => {
+        (1 to (res._2._2)).foreach { _ =>
+          reporter.report(res._2._1, outTime)
+          if(config.debugMode) {
+            println("Event: " + res._2._1 + ", " + outTime)
+          }
+        }
+      })
+    }))
   }
 }

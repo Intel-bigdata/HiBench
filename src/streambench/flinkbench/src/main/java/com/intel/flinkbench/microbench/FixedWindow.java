@@ -24,24 +24,31 @@ public class FixedWindow extends StreamBase{
         long windowDuration = Long.parseLong(config.windowDuration);
         long windowSlideStep = Long.parseLong(config.windowSlideStep);
 
-        dataStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<String, Integer>>>() {
+        dataStream.map(new MapFunction<Tuple2<String, String>, Tuple2<String, Tuple2<Long, Integer>>>() {
 
             @Override
-            public Tuple2<String, Tuple2<String, Integer>> map(Tuple2<String, String> value) throws Exception {
+            public Tuple2<String, Tuple2<Long, Integer>> map(Tuple2<String, String> value) throws Exception {
                 
-                String browser = UserVisitParser.parse(value.f1).getBrowser();
-                return new Tuple2<String, Tuple2<String, Integer>>(browser, new Tuple2<String, Integer>(value.f0, 1));
+                String ip = UserVisitParser.parse(value.f1).getIp();
+                return new Tuple2<String, Tuple2<Long, Integer>>(ip, new Tuple2<Long, Integer>(Long.parseLong(value.f0), 1));
             }
         })
                 .keyBy(0)
                 .timeWindow(Time.seconds(windowDuration), Time.seconds(windowSlideStep))
-                .reduce(new ReduceFunction<Tuple2<String, Tuple2<String, Integer>>>() {
+                .reduce(new ReduceFunction<Tuple2<String, Tuple2<Long, Integer>>>() {
                     @Override
-                    public Tuple2<String, Tuple2<String, Integer>> reduce(Tuple2<String, Tuple2<String, Integer>> v1, Tuple2<String, Tuple2<String, Integer>> v2) throws Exception {
-                        KafkaReporter kafkaReporter = new KafkaReporter(config.reportTopic, config.brokerList);
+                    public Tuple2<String, Tuple2<Long, Integer>> reduce(Tuple2<String, Tuple2<Long, Integer>> v1, Tuple2<String, Tuple2<Long, Integer>> v2) throws Exception {
+                        return new Tuple2<String, Tuple2<Long, Integer>>(v1.f0, new Tuple2<Long, Integer>(Math.min(v1.f1.f0, v2.f1.f0), v1.f1.f1 + v2.f1.f1));
+                    }
+                }).map(new MapFunction<Tuple2<String, Tuple2<Long, Integer>>, String>() {
 
-                        kafkaReporter.report(Long.parseLong(v1.f1.f0), System.currentTimeMillis());
-                        return new Tuple2<String, Tuple2<String, Integer>>(v1.f0, new Tuple2<String, Integer>(v1.f1.f0, v1.f1.f1 + v2.f1.f1));
+                    @Override
+                    public String map(Tuple2<String, Tuple2<Long, Integer>> value) throws Exception {
+                        KafkaReporter kafkaReporter = new KafkaReporter(config.reportTopic, config.brokerList);
+                        for (int i = 0; i< value.f1.f1; i++) {
+                            kafkaReporter.report(value.f1.f0, System.currentTimeMillis());
+                        }
+                        return value.f0;
                     }
                 });
 
