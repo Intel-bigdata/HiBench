@@ -23,6 +23,7 @@ import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.topology.BasicOutputCollector;
+import org.apache.storm.topology.BoltDeclarer;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
 import org.apache.storm.topology.base.BaseBasicBolt;
@@ -39,15 +40,20 @@ public class Identity extends SingleSpoutTops {
 
   @Override
   public void setBolts(TopologyBuilder builder) {
-    builder.setBolt("identity", new IdentityBolt(config),
-        config.boltThreads).shuffleGrouping("spout");
+    BoltDeclarer boltDeclarer = builder.setBolt("identity", new IdentityBolt(config),
+        config.boltThreads);
+    if (config.localShuffle) {
+      boltDeclarer.localOrShuffleGrouping("spout");
+    } else {
+      boltDeclarer.shuffleGrouping("spout");
+    }
   }
 
   private static class IdentityBolt extends BaseBasicBolt {
 
     private final StormBenchConfig config;
 
-    public IdentityBolt(StormBenchConfig config) {
+    IdentityBolt(StormBenchConfig config) {
       this.config = config;
     }
 

@@ -14,29 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.intel.hibench.streambench.storm.trident.functions;
 
-package com.intel.hibench.streambench.storm.trident;
-
-
+import com.google.common.collect.ImmutableMap;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import org.apache.storm.trident.operation.BaseFunction;
 import org.apache.storm.trident.operation.TridentCollector;
+import org.apache.storm.trident.operation.TridentOperationContext;
 import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Values;
 
-public class Sketch extends BaseFunction {
-  private int fieldIndex;
-  private String separator;
+import java.util.Map;
 
-  public Sketch(int fieldIndex, String separator) {
-    this.fieldIndex = fieldIndex;
-    this.separator = separator;
+public class Identity extends BaseFunction {
+  private final StormBenchConfig config;
+  private LatencyReporter reporter = null;
+
+  public Identity(StormBenchConfig config) {
+    this.config = config;
+  }
+
+  @Override
+  public void prepare(Map conf, TridentOperationContext context) {
+    this.reporter = new KafkaReporter(config.reporterTopic, config.brokerList);
   }
 
   @Override
   public void execute(TridentTuple tuple, TridentCollector collector) {
-    String record = tuple.getString(0);
-    String[] fields = record.split(separator);
-    if (fields.length > fieldIndex)
-      collector.emit(new Values(fields[fieldIndex]));
+    ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
+    collector.emit(new Values(kv));
+    reporter.report(Long.parseLong(kv.keySet().iterator().next()),
+        System.currentTimeMillis());
   }
 }

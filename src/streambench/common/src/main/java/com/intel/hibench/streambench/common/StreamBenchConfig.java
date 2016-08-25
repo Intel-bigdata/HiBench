@@ -93,6 +93,7 @@ public class StreamBenchConfig {
   public static String STORM_SPOUT_THREADS = "hibench.streambench.storm.spout_threads";
   public static String STORM_BOLT_THREADS = "hibench.streambench.storm.bolt_threads";
   public static String STORM_ACKON = "hibench.streambench.storm.ackon";
+  public static String STORM_LOCAL_SHUFFLE = "hibench.streambench.storm.localshuffle";
 
   // =====================================
   // Gearpump Related Conf
