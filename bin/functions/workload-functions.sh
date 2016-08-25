@@ -94,6 +94,7 @@ function gen_report() {		# dump the result to report file
 #    local nodes=`cat ${SPARK_HOME}/conf/slaves 2>/dev/null | grep -v '^\s*$' | sed "/^#/ d" | wc -l`
     local nodes=`echo ${SLAVES} | wc -w`
     nodes=${nodes:-1}
+    nodes=`hdfs dfsadmin -report | grep datanodes | sed 's/[^0-9]*//g'`
     
     if [ $nodes -eq 0 ]; then nodes=1; fi
     local tput_node=`echo "$tput/$nodes"|bc`
