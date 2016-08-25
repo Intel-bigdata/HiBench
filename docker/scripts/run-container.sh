@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -14,7 +15,6 @@
 # limitations under the License.
 
 
-#!/bin/bash
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
@@ -39,4 +39,4 @@ fi
 
 # run HiBench workload wordcount as an example
 # Format: sudo docker run (-v "LocalLargeDiskDir:/usr/loal"-it) hibench-hadoop-spark /bin/bash /root/HiBench/workloads/<workload-name>/prepare/prepare.sh
-sudo docker run -ti hibench-docker /bin/bash -c '${HIBENCH_HOME}/workloads/wordcount/prepare/prepare.sh && ${HIBENCH_HOME}/workloads/wordcount/mapreduce/bin/run.sh'
+sudo docker run -ti hibench-docker /bin/bash -c '/root/runexample.sh'
