@@ -34,7 +34,7 @@ public class FixedWindow extends StreamBase{
             }
         })
                 .keyBy(0)
-                .timeWindow(Time.seconds(windowDuration), Time.seconds(windowSlideStep))
+                .timeWindow(Time.milliseconds(windowDuration), Time.milliseconds(windowSlideStep))
                 .reduce(new ReduceFunction<Tuple2<String, Tuple2<Long, Integer>>>() {
                     @Override
                     public Tuple2<String, Tuple2<Long, Integer>> reduce(Tuple2<String, Tuple2<Long, Integer>> v1, Tuple2<String, Tuple2<Long, Integer>> v2) throws Exception {
