@@ -1,0 +1,3 @@
+# Packages for Cloudera's Distribution for Hadoop, Spark
+deb [arch=amd64] http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh5.3.3 contrib
+deb-src http://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh trusty-cdh5.3.3 contrib

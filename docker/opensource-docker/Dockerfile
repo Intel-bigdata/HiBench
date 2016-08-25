@@ -66,6 +66,6 @@ COPY conf/yarn-site.xml ${HADOOP_CONF_DIR}/
 COPY scripts/hadoop-env.sh ${HADOOP_CONF_DIR}/
 COPY scripts/restart-hadoop-spark.sh /root/
 RUN chmod +x /root/restart-hadoop-spark.sh
-
-# start HADOOP/SPARK
-CMD bash -C '/root/restart-hadoop-spark.sh'; 'bash'
+#Copy RunExample File
+COPY scripts/runexample.sh /root/runexample.sh
+RUN chmod +x /root/runexample.sh
