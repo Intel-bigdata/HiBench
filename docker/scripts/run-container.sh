@@ -39,4 +39,10 @@ fi
 
 # run HiBench workload wordcount as an example
 # Format: sudo docker run (-v "LocalLargeDiskDir:/usr/loal"-it) hibench-hadoop-spark /bin/bash /root/HiBench/workloads/<workload-name>/prepare/prepare.sh
-sudo docker run -ti hibench-docker /bin/bash -c '/root/runexample.sh'
+if [ "$1" == "cdh" ]
+then
+   sudo docker run -ti hibench-docker-cdh /bin/bash -c '/root/runexample.sh'
+elif [ "$1" == "open-source" ]
+then
+   sudo docker run -ti hibench-docker-opensource /bin/bash -c '/root/runexample.sh'
+fi
