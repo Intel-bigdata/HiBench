@@ -38,12 +38,12 @@ case "$1" in
   "cdh")
      build-base
      second-step
-     sudo docker build -t hibench-docker ${HOME_DIR}/cdh-docker/
+     sudo docker build -t hibench-docker-cdh ${HOME_DIR}/cdh-docker/
      ;;
   "open-source")
      build-base
      second-step
-     sudo docker build -t hibench-docker ${HOME_DIR}/opensource-docker/
+     sudo docker build -t hibench-docker-opensource ${HOME_DIR}/opensource-docker/
      ;;
   *)
      exit 1
