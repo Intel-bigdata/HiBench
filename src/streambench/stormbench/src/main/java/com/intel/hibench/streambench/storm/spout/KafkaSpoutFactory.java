@@ -21,8 +21,10 @@ import com.intel.hibench.streambench.storm.util.StormBenchConfig;
 import kafka.api.OffsetRequest;
 import org.apache.storm.kafka.*;
 import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
+import org.apache.storm.kafka.trident.TransactionalTridentKafkaSpout;
 import org.apache.storm.kafka.trident.TridentKafkaConfig;
 import org.apache.storm.topology.base.BaseRichSpout;
+import org.apache.storm.trident.spout.ITridentDataSource;
 
 public class KafkaSpoutFactory {
 
@@ -39,17 +41,20 @@ public class KafkaSpoutFactory {
   }
 
 
-  public static OpaqueTridentKafkaSpout getTridentSpout(StormBenchConfig conf) {
+  public static ITridentDataSource getTridentSpout(StormBenchConfig conf, boolean opaque) {
     String topic = conf.topic;
     String consumerGroup = conf.consumerGroup;
     String zkHost = conf.zkHost;
     BrokerHosts brokerHosts = new ZkHosts(zkHost);
     TridentKafkaConfig tridentKafkaConfig = new TridentKafkaConfig(brokerHosts, topic, consumerGroup);
-    tridentKafkaConfig.fetchSizeBytes = 10 * 1024;
     tridentKafkaConfig.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
     tridentKafkaConfig.ignoreZkOffsets = true;
     tridentKafkaConfig.startOffsetTime = OffsetRequest.LatestTime();
-    return new OpaqueTridentKafkaSpout(tridentKafkaConfig);
+    if (opaque) {
+      return new OpaqueTridentKafkaSpout(tridentKafkaConfig);
+    } else {
+      return new TransactionalTridentKafkaSpout(tridentKafkaConfig);
+    }
   }
 
 }

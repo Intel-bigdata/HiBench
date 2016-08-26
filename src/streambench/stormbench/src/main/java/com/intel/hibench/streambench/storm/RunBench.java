@@ -61,7 +61,13 @@ public class RunBench {
     int producerNum = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
     long recordPerInterval = Long.parseLong(cl.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL));
     int intervalSpan = Integer.parseInt(cl.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN));
-    conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM, conf.topic, producerNum, recordPerInterval, intervalSpan);
+    if (TridentFramework) {
+      conf.reporterTopic = MetricsUtil.getTopic(Platform.TRIDENT,
+          conf.topic, producerNum, recordPerInterval, intervalSpan);
+    } else {
+      conf.reporterTopic = MetricsUtil.getTopic(Platform.STORM,
+          conf.topic, producerNum, recordPerInterval, intervalSpan);
+    }
     int reportTopicPartitions = Integer.parseInt(cl.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS));
     MetricsUtil.createTopic(conf.zkHost, conf.reporterTopic, reportTopicPartitions);
     TestCase benchName = TestCase.withValue(conf.benchName);

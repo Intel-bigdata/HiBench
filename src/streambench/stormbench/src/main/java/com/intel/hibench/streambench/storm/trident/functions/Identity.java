@@ -20,32 +20,25 @@ import com.google.common.collect.ImmutableMap;
 import com.intel.hibench.streambench.common.metrics.KafkaReporter;
 import com.intel.hibench.streambench.common.metrics.LatencyReporter;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import org.apache.storm.trident.operation.BaseFunction;
-import org.apache.storm.trident.operation.TridentCollector;
-import org.apache.storm.trident.operation.TridentOperationContext;
+import org.apache.storm.trident.operation.MapFunction;
 import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Values;
 
-import java.util.Map;
 
-public class Identity extends BaseFunction {
+public class Identity implements MapFunction {
+
   private final StormBenchConfig config;
-  private LatencyReporter reporter = null;
 
   public Identity(StormBenchConfig config) {
     this.config = config;
   }
 
   @Override
-  public void prepare(Map conf, TridentOperationContext context) {
-    this.reporter = new KafkaReporter(config.reporterTopic, config.brokerList);
-  }
-
-  @Override
-  public void execute(TridentTuple tuple, TridentCollector collector) {
-    ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
-    collector.emit(new Values(kv));
+  public Values execute(TridentTuple tridentTuple) {
+    ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tridentTuple.getValue(0);
+    LatencyReporter reporter = new KafkaReporter(config.reporterTopic, config.brokerList);
     reporter.report(Long.parseLong(kv.keySet().iterator().next()),
         System.currentTimeMillis());
+    return new Values(kv);
   }
 }

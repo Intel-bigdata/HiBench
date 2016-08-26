@@ -22,6 +22,7 @@ public enum Platform {
   SPARK("spark"),
   FLINK("flink"),
   STORM("storm"),
+  TRIDENT("trident"),
   GEARPUMP("gearpump"),
   SAMZA("samza");
 
