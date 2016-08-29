@@ -53,6 +53,7 @@ RUN apt-get install -y python-numpy python-matplotlib
 
 # Install Java
 RUN \
+  add-apt-repository -y ppa:openjdk-r/ppa && \
   apt-get update && \
   apt-get install -y openjdk-${JDK_VERSION}-jdk
 
