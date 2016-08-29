@@ -49,14 +49,15 @@ public class WindowedCount extends SingleSpoutTops{
   @Override
   public void setBolts(TopologyBuilder builder) {
     Duration windowDuration = new Duration((int)config.windowDuration, TimeUnit.MILLISECONDS);
-    Duration windowSlide = new Duration((int)config.windowSlideStep, TimeUnit.MICROSECONDS);
-    BoltDeclarer boltDeclarer = builder.setBolt("parser", new ParserBolt());
+    Duration windowSlide = new Duration((int)config.windowSlideStep, TimeUnit.MILLISECONDS);
+    BoltDeclarer boltDeclarer = builder.setBolt("parser", new ParserBolt(), config.boltThreads);
     if (config.localShuffle) {
       boltDeclarer.localOrShuffleGrouping("spout");
     } else {
       boltDeclarer.shuffleGrouping("spout");
     }
-    builder.setBolt("window", new SlidingWindowBolt(config).withWindow(windowDuration, windowSlide),
+    builder.setBolt("window", new SlidingWindowBolt(config)
+            .withWindow(windowDuration, windowSlide),
       config.boltThreads).fieldsGrouping("parser", new Fields("ip"));
   }
 
@@ -65,9 +66,9 @@ public class WindowedCount extends SingleSpoutTops{
     @Override
     public void execute(Tuple tuple, BasicOutputCollector basicOutputCollector) {
       ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
-      String key = kv.keySet().iterator().next();
-      UserVisit uv = UserVisitParser.parse(kv.get(key));
-      basicOutputCollector.emit(new Values(uv.getIp(), key));
+      String time = kv.keySet().iterator().next();
+      UserVisit uv = UserVisitParser.parse(kv.get(time));
+      basicOutputCollector.emit(new Values(uv.getIp(), Long.parseLong(time)));
     }
 
     @Override
@@ -87,7 +88,7 @@ public class WindowedCount extends SingleSpoutTops{
     public void execute(TupleWindow inputWindow) {
       Map<String, Long[]> counts = new HashMap<String, Long[]>();
       for(Tuple tuple: inputWindow.get()) {
-        Long time = Long.parseLong(tuple.getString(1));
+        Long time = tuple.getLong(1);
         String ip =  tuple.getString(0);
         Long[] timeAndCount = counts.get(ip);
         if (null == timeAndCount) {

@@ -52,7 +52,7 @@ public class WordCount extends SingleSpoutTops {
       boltDeclarer.shuffleGrouping("spout");
     }
     builder.setBolt("count", new WordCountBolt(config),
-        config.boltThreads).fieldsGrouping("split", new Fields("word"));
+        config.boltThreads).fieldsGrouping("split", new Fields("ip"));
   }
 
   private static class WordCountBolt extends BaseBasicBolt {
@@ -78,7 +78,7 @@ public class WordCount extends SingleSpoutTops {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-      declarer.declare(new Fields("word", "count"));
+      declarer.declare(new Fields("ip", "count"));
     }
   }
 
@@ -93,7 +93,7 @@ public class WordCount extends SingleSpoutTops {
     }
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-      declarer.declare(new Fields("word"));
+      declarer.declare(new Fields("ip", "time"));
     }
   }
 

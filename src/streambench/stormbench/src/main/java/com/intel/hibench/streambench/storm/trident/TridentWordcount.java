@@ -28,6 +28,7 @@ import org.apache.storm.trident.TridentTopology;
 import org.apache.storm.trident.operation.Aggregator;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.operation.TridentOperationContext;
+import org.apache.storm.trident.spout.ITridentDataSource;
 import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
@@ -42,11 +43,11 @@ public class TridentWordcount extends SingleTridentSpoutTops {
 
   @Override
   public TridentTopology createTopology() {
-    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
+    ITridentDataSource source = KafkaSpoutFactory.getTridentSpout(config, true);
 
     TridentTopology topology = new TridentTopology();
-    topology.newStream("bg0", spout)
-        .each(spout.getOutputFields(), new Parser(), new Fields("ip", "time"))
+    topology.newStream("kafka", source)
+        .each(new Parser(), new Fields("ip", "time"))
         .parallelismHint(config.spoutThreads)
         .groupBy(new Fields("ip"))
         .aggregate(new Fields("ip", "time"), new Count(config), new Fields("ip", "count"))

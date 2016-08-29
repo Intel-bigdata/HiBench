@@ -21,9 +21,8 @@ import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.streambench.storm.trident.functions.Identity;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.tuple.Fields;
+import org.apache.storm.trident.spout.ITridentDataSource;
 
 public class TridentIdentity extends SingleTridentSpoutTops {
 
@@ -33,16 +32,15 @@ public class TridentIdentity extends SingleTridentSpoutTops {
 
   @Override
   public TridentTopology createTopology() {
-    OpaqueTridentKafkaSpout spout = KafkaSpoutFactory.getTridentSpout(config);
+    ITridentDataSource source = KafkaSpoutFactory.getTridentSpout(config, true);
 
     TridentTopology topology = new TridentTopology();
 
-    topology.newStream("bg0", spout)
-        .each(spout.getOutputFields(), new Identity(config),
-            new Fields("tuple"))
+    topology.newStream("kafka", source)
+        .map(new Identity(config)
+        )
         .parallelismHint(config.boltThreads);
     return topology;
   }
-
 
 }
