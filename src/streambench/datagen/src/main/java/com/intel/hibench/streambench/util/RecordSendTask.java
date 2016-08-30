@@ -55,7 +55,7 @@ public class RecordSendTask extends TimerTask {
 
   @Override
   public void run() {
-    synchronized (stopped) {
+    synchronized(this) {
       if (debugMode) {
         String threadName = Thread.currentThread().getName();
         System.out.println( threadName + " - RecordSendTask run, " +
