@@ -47,10 +47,10 @@ public class TridentWordcount extends SingleTridentSpoutTops {
 
     TridentTopology topology = new TridentTopology();
     topology.newStream("kafka", source)
-        .each(new Parser(), new Fields("ip", "time"))
+        .each(new Fields("str"), new Parser(), new Fields("ip", "time"))
         .parallelismHint(config.spoutThreads)
         .groupBy(new Fields("ip"))
-        .aggregate(new Fields("ip", "time"), new Count(config), new Fields("ip", "count"))
+        .aggregate(new Fields("ip", "time"), new Count(config), new Fields("word", "count"))
         .parallelismHint(config.boltThreads);
     return topology;
   }
