@@ -64,7 +64,9 @@ class SlidingWindow(taskContext: TaskContext, conf: UserConfig) extends Task(tas
   private def getWindows(timestamp: TimeStamp): List[TimeStamp] = {
     val windows = ArrayBuffer.empty[TimeStamp]
     var start = lastStartFor(timestamp)
-    while (start > timestamp) {
+    windows += start
+    start -= windowStep
+    while (start >= timestamp) {
       windows += start
       start -= windowStep
     }
