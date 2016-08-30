@@ -49,7 +49,7 @@ public class RecordSendTask extends TimerTask {
     this.totalRounds = totalRounds;
     this.totalRecords = totalRecords;
     this.debugMode = debugMode;
-
+    this.timer = timer;
     System.out.println(Thread.currentThread().getName() + " - starting generate data ... ");
   }
 
