@@ -59,6 +59,7 @@ public class DataGenerator {
     DataGeneratorConfig dataGeneratorConf = new DataGeneratorConfig(testCase, brokerList, kMeansFile, kMeansFileOffset,
         userVisitsFile, userVisitsFileOffset, dfsMaster, recordLength, intervalSpan, topic, recordsPerInterval,
         totalRounds, totalRecords, debugMode);
+
     // Create thread pool and submit producer task
     int producerNumber = Integer.parseInt(configLoader.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER));
     ExecutorService pool = Executors.newFixedThreadPool(producerNumber);
@@ -91,6 +92,8 @@ public class DataGenerator {
     double mbPreSecond = (double)recordsPreSecond * recordLength / 1000000;
     System.out.println("    " + mbPreSecond + " Mb/second");
     System.out.println("====================================================");
+
+    pool.shutdown();
   }
 
   static class DataGeneratorJob implements Runnable {
@@ -115,9 +118,9 @@ public class DataGenerator {
 
       // Schedule timer task
       Timer timer = new Timer();
-      timer.schedule(
+      timer.scheduleAtFixedRate(
           new RecordSendTask(sender, conf.getTopic(), conf.getRecordsPerInterval(),
-              conf.getTotalRounds(), conf.getTotalRecords(), conf.getDebugMode()), 0, conf.getIntervalSpan());
+              conf.getTotalRounds(), conf.getTotalRecords(), conf.getDebugMode(), timer), 0, conf.getIntervalSpan());
     }
   }
 }

@@ -17,7 +17,9 @@
 
 package com.intel.hibench.streambench.util;
 
+import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RecordSendTask extends TimerTask {
   KafkaSender sender;
@@ -28,12 +30,18 @@ public class RecordSendTask extends TimerTask {
   private int totalRounds;         // Total times this task plan to run. -1 means run infinity
   private long totalRecords;       // Total records this task plan to sent. -1 means no limit.
 
-  private static int roundCounter = 0;     // Count how many rounds has run
-  private static long recordsCounter = 0L; // Count how many records has sent
+  // Count how many rounds has run pre producer
+  private int roundCounter = 0;
+
+  // Count how many records has sent globally
+  private static AtomicLong recordsCounter = new AtomicLong(0L);
+  private Timer timer;     // The timer which executor this task
+
+  private Boolean stopped = false;
 
   // Constructors
   public RecordSendTask(KafkaSender sender, String topic,
-      long recordsPerInterval, int totalRounds, long totalRecords, boolean debugMode) {
+      long recordsPerInterval, int totalRounds, long totalRecords, boolean debugMode, Timer timer) {
 
     this.sender = sender;
     this.topic = topic;
@@ -47,27 +55,31 @@ public class RecordSendTask extends TimerTask {
 
   @Override
   public void run() {
-    if (debugMode) {
-      String threadName = Thread.currentThread().getName();
-      System.out.println( threadName + " - RecordSendTask run, " +
-          roundCounter + " round, " + recordsCounter + " records sent");
-    }
+    synchronized (stopped) {
+      if (debugMode) {
+        String threadName = Thread.currentThread().getName();
+        System.out.println( threadName + " - RecordSendTask run, " +
+            roundCounter + " round, " + recordsCounter + " records sent");
+      }
 
-    if (isRecordValid() && isRoundValid()) {
-      // Send records to Kafka
-      long sentRecords = sender.send(topic, recordsPerInterval, debugMode);
+      if (isRecordValid() && isRoundValid()) {
+        // Send records to Kafka
+        long sentRecords = sender.send(topic, recordsPerInterval, debugMode);
 
-      // Update counter
-      roundCounter++;
-      recordsCounter += sentRecords;
-    } else {
-
-      sender.close();
-
-      // exit application
-      System.out.println("DataGenerator stop, " +
-          roundCounter + " round, " + recordsCounter + " records sent");
-      System.exit(0);
+        // Update counter
+        roundCounter++;
+        recordsCounter.getAndAdd(sentRecords);
+      } else {
+        if(!stopped) {
+          sender.close();
+          timer.cancel();
+          timer.purge();
+          stopped = true;
+          // exit timer thread
+          System.out.println("DataGenerator stop, " +
+              roundCounter + " round, " + recordsCounter + " records sent");
+        }
+      }
     }
   }
 
@@ -78,6 +90,6 @@ public class RecordSendTask extends TimerTask {
 
   // Check sent record number, if it's bigger than total records, terminate data generator
   private boolean isRecordValid() {
-    return (-1 == totalRecords) || (recordsCounter < totalRecords);
+    return (-1 == totalRecords) || (recordsCounter.get() < totalRecords);
   }
 }
