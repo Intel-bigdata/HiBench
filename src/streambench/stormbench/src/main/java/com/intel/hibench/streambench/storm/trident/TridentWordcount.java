@@ -23,17 +23,12 @@ import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.streambench.storm.trident.functions.Parser;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
 import org.apache.storm.trident.TridentTopology;
-import org.apache.storm.trident.operation.Aggregator;
-import org.apache.storm.trident.operation.TridentCollector;
-import org.apache.storm.trident.operation.TridentOperationContext;
+import org.apache.storm.trident.operation.ReducerAggregator;
 import org.apache.storm.trident.spout.ITridentDataSource;
+import org.apache.storm.trident.testing.MemoryMapState;
 import org.apache.storm.trident.tuple.TridentTuple;
 import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Values;
-
-import java.util.Map;
 
 public class TridentWordcount extends SingleTridentSpoutTops {
 
@@ -51,50 +46,38 @@ public class TridentWordcount extends SingleTridentSpoutTops {
         .project(new Fields("ip", "time"))
         .parallelismHint(config.spoutThreads)
         .groupBy(new Fields("ip"))
-        .aggregate(new Fields("ip", "time"), new Count(config), new Fields("word", "count"))
+        .persistentAggregate(new MemoryMapState.Factory(), new Fields("ip", "time"), new Count(config),
+            new Fields("word", "count"))
         .parallelismHint(config.boltThreads);
     return topology;
   }
 
-  private static class Count implements Aggregator<Count.State> {
+  private static class Count implements ReducerAggregator<Count.State> {
 
     private final StormBenchConfig config;
     private LatencyReporter reporter = null;
-
-    static class State {
-      String ip;
-      long count = 0;
-
-    }
 
     Count(StormBenchConfig config) {
       this.config = config;
     }
 
     @Override
-    public void prepare(Map conf, TridentOperationContext context) {
+    public State init() {
       this.reporter = new KafkaReporter(config.reporterTopic, config.brokerList);
-    }
-
-    @Override
-    public State init(Object o, TridentCollector tridentCollector) {
       return new State();
     }
 
     @Override
-    public void aggregate(State state, TridentTuple tridentTuple, TridentCollector tridentCollector) {
+    public State reduce(State state, TridentTuple tridentTuple) {
       state.ip = tridentTuple.getString(0);
       state.count++;
-      tridentCollector.emit(new Values(state.ip, state.count));
-      reporter.report(tridentTuple.getLong(0), System.currentTimeMillis());
+      reporter.report(tridentTuple.getLong(1), System.currentTimeMillis());
+      return state;
     }
 
-    @Override
-    public void complete(State state, TridentCollector tridentCollector) {
-    }
-
-    @Override
-    public void cleanup() {
+    static class State {
+      String ip;
+      long count = 0;
     }
   }
 }
