@@ -31,7 +31,8 @@ class FetchJob(zkConnect: String, topic: String, partition: Int,
       val times = new String(consumer.next(), "UTF-8").split(":")
       val startTime = times(0).toLong
       val endTime = times(1).toLong
-      histogram.update(endTime - startTime)
+      // correct negative value which might be caused by difference of system time
+      histogram.update(Math.max(0, endTime - startTime))
       result.update(startTime, endTime)
     }
     println(s"Collected ${result.count} results for partition: ${partition}")
