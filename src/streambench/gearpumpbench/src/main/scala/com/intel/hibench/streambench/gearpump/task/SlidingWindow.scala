@@ -53,7 +53,7 @@ class SlidingWindow(taskContext: TaskContext, conf: UserConfig) extends Task(tas
       countsByIp.forEachValue(new Procedure[(TimeStamp, Long)]() {
 
         override def value(tuple: (TimeStamp, Long)): Unit = {
-          reporter.report(tuple._1, System.currentTimeMillis())
+          (1 to tuple._2.toInt).foreach(i =>reporter.report(tuple._1, System.currentTimeMillis()))
         }
       })
       windowStart = windowCounts.firstKey()
