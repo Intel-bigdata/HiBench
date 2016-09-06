@@ -38,6 +38,7 @@ public class WordCount extends StreamBase {
     public void processStream(final FlinkBenchConfig config) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setBufferTimeout(config.bufferTimeout);
+        env.enableCheckpointing(config.checkpointDuration);
         createDataStream(config);
         DataStream<Tuple2<String, String>> dataStream = env.addSource(getDataStream());
         dataStream
