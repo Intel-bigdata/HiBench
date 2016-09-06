@@ -60,6 +60,6 @@ COPY scripts/hadoop-env.sh /etc/hadoop/conf/hadoop-env.sh
 #Format HDFS
 COPY scripts/restart-hadoop-spark.sh /usr/bin/restart-hadoop-spark.sh
 RUN chmod +x /usr/bin/restart-hadoop-spark.sh
-
-# start HADOOP/SPARK
-CMD bash -C '/usr/bin/restart-hadoop-spark.sh'; 'bash'
+#Copy RunExample File
+COPY scripts/runexample.sh /root/runexample.sh
+RUN chmod +x /root/runexample.sh

@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#!/bin/bash
 
 CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 HOME_DIR=${CUR_DIR}/..
@@ -56,9 +55,9 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
         echo "ENV $line"  >> ${DOCKERFILE_ADDR}
 
         JDK_VERSION=`echo $line | cut -d ' ' -f 2`
-        sed -i 's/java-[0-9]/java-${JDK_VERSION}/' CDH_HADOOP_ENV_FILE
-        sed -i 's/java-[0-9]/java-${JDK_VERSION}/' OPENSOURCE_HADOOP_ENV_FILE
-        ;;
+        sed -i 's/java-[0-9]/java-'"$JDK_VERSION"'/' $CDH_HADOOP_ENV_FILE
+        sed -i 's/java-[0-9]/java-'"$JDK_VERSION"'/' $OPENSOURCE_HADOOP_ENV_FILE
+	;;
       *)
         echo "ENV $line"  >> ${DOCKERFILE_ADDR}
         ;;
