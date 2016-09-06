@@ -39,5 +39,6 @@ public class FlinkBenchConfig implements Serializable{
 
     // Flink related
     public long bufferTimeout;
+    public long checkpointDuration;
 
 }

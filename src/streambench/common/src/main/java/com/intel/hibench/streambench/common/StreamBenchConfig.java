@@ -86,6 +86,8 @@ public class StreamBenchConfig {
   // ======================================
   public static String FLINK_BUFFERTIMEOUT = "hibench.streambench.flink.bufferTimeout";
 
+  public static String FLINK_CHECKPOINTDURATION = "hibench.streambench.flink.checkpointDuration";
+
   // ======================================
   // Storm Related Conf
   // ======================================
