@@ -121,4 +121,3 @@ Note:
 
 ### [Advanced Configurations](https://github.com/intel-hadoop/HiBench/wiki/Advanced-Configurations) ###
 ### [Possible issues](https://github.com/intel-hadoop/HiBench/wiki/Possible-issues) ###
-
