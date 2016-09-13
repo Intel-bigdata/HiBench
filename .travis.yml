@@ -1,0 +1,6 @@
+language: java
+jdk:
+  - oraclejdk8
+  - openjdk7
+install: cd src && mvn install -q -DskipTests=true -Dmaven.javadoc.skip=true
+script: mvn test -q
