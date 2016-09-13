@@ -14,13 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -u
-this="${BASH_SOURCE-$0}"
-bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
-script="$(basename -- "$this")"
-this="$bin/$script"
+current_dir=`dirname "$0"`
+root_dir=${current_dir}/../../../..
+workload_config=${root_dir}/conf/micro/wordcount.conf
+. "${root_dir}/bin/functions/load-bench-config.sh"
 
-# include function interfaces for workload
-. ${bin}/workload-functions.sh
+enter_bench ScalaSparkWordcount ${workload_config}
+show_bannar start
 
+rmr-hdfs $OUTPUT_HDFS || true
+
+SIZE=`dir_size $INPUT_HDFS`
+START_TIME=`timestamp`
+run-spark-job com.intel.sparkbench.micro.ScalaWordCount $INPUT_HDFS $OUTPUT_HDFS
+END_TIME=`timestamp`
+
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
+show_bannar finish
+leave_bench
 

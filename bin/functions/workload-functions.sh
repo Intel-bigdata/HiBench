@@ -26,16 +26,13 @@ HIBENCH_CONF_FOLDER=${HIBENCH_CONF_FOLDER:-${workload_func_bin}/../../conf}
 
 function enter_bench(){		# declare the entrance of a workload
     assert $1 "Workload name not specified."
-    assert $2 "Workload root not specified."
-    assert $3 "Workload folder not specified."
+    assert $2 "Workload config file not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
-    workload_root=$2
-    workload_folder=$3
-    shift 3
+    workload_config_file=$2
+    shift 2
     patching_args=$@
     echo "patching args=$patching_args"
-    local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $workload_root $workload_folder $patching_args`
-#    ${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $workload_root $workload_folder $patching_args
+    local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER}  $workload_config_file $HIBENCH_CUR_WORKLOAD_NAME $patching_args`
     . $CONF_FILE
 }
 

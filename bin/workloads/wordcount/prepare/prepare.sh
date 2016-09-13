@@ -14,13 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -u
-this="${BASH_SOURCE-$0}"
-bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
-script="$(basename -- "$this")"
-this="$bin/$script"
+current_dir=`dirname "$0"`
+root_dir=${current_dir}/../../../../
+workload_config=${root_dir}/conf/micro/wordcount.conf
+. "${root_dir}/bin/functions/load-bench-config.sh"
 
-# include function interfaces for workload
-. ${bin}/workload-functions.sh
+enter_bench HadoopPrepareWordcount ${workload_config}
+show_bannar start
 
+rmr-hdfs $INPUT_HDFS || true
+START_TIME=`timestamp`
+echo "DataSize:"${DATASIZE}
+echo "map num:" {$NUM_MAPS}
+
+run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
+    -D ${BYTES_TOTAL_NAME}=${DATASIZE} \
+    -D ${MAP_CONFIG_NAME}=${NUM_MAPS} \
+    -D ${REDUCER_CONFIG_NAME}=${NUM_REDS} \
+    ${COMPRESS_OPT} \
+    ${INPUT_HDFS}
+#run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
+END_TIME=`timestamp`
 
