@@ -138,11 +138,11 @@ def load_config(conf_root, workload_config_file, workload_name, patching_config=
                 HibenchConfRef[key] = filename
 
     # override values from os environment variable settings
-    for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
-        if env_name in os.environ:
-            env_value = os.getenv(env_name)
-            HibenchConf[prop_name] = env_value
-            HibenchConfRef[prop_name] = "OS environment variable:%s" % env_name
+    # for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
+    #     if env_name in os.environ:
+    #         env_value = os.getenv(env_name)
+    #         HibenchConf[prop_name] = env_value
+    #         HibenchConfRef[prop_name] = "OS environment variable:%s" % env_name
 
     # override values by patching config
     for item in [x for x in patching_config.split(',') if x]:

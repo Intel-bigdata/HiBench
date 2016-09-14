@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package com.intel.sparkbench.micro
+package com.intel.hibench.sparkbench.micro
 
-import com.intel.sparkbench.IOCommon
+import com.intel.hibench.sparkbench.common.IOCommon
+
 import org.apache.spark._
-import org.apache.spark.rdd._
+import org.apache.spark.rdd.RDD
 
 import scala.reflect.ClassTag
 

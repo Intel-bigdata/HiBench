@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package com.intel.sparkbench.micro
+package com.intel.hibench.sparkbench.micro
 
-import com.intel.sparkbench.IOCommon
+import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.hadoop.examples.terasort.{TeraInputFormat, TeraOutputFormat}
 import org.apache.hadoop.io.Text
 import org.apache.spark.SparkContext._
@@ -56,7 +56,6 @@ object ScalaTeraSort {
 
     sorted_data.saveAsNewAPIHadoopFile[TeraOutputFormat](args(1))
     //io.save(args(1), sorted_data)
-
 
     sc.stop()
   }
