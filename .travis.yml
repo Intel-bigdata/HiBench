@@ -1,6 +1,14 @@
 language: java
 jdk:
-  - oraclejdk8
   - openjdk7
-install: cd src && mvn install -q -DskipTests=true -Dmaven.javadoc.skip=true
-script: mvn test -q
+  - oraclejdk8
+install: 
+  - cd src
+before_script:
+  - "echo $JAVA_OPTS"
+  - "export JAVA_OPTS=-Xmx512m"
+env:
+  - SPARK_VERSION=1.5
+  - SPARK_VERSION=1.6
+script:
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark${SPARK_VERSION} -DMR2
