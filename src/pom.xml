@@ -10,11 +10,11 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <scala.version>2.10.4</scala.version>
-        <scala.binary.version>2.10</scala.binary.version>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
 	<slf4j.version>1.7.5</slf4j.version>
 	<log4j.version>1.2.17</log4j.version>
 	<scopt.version>3.2.0</scopt.version>
@@ -59,19 +59,7 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>scala-tools.org</id>
-            <name>Scala-tools Maven 2 Repository</name>
-            <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
-        </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>scala-tools.org</id>
-            <name>Scala-tools Maven2 Repository</name>
-            <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <pluginManagement>
@@ -209,5 +197,21 @@
 	    </modules>
 
         </profile>
+        <profile>
+            <id>spark2.0</id>
+            <properties>
+                <env>spark2.0</env>
+                <spark.version>2.0.0</spark.version>
+                <spark.bin.version>2.0</spark.bin.version>
+            </properties>
+            <activation>
+                <property><name>spark2.0</name></property>
+            </activation>
+            <modules>
+              <module>streambench</module>
+            </modules>
+
+        </profile>
+
     </profiles>
 </project>

@@ -18,7 +18,7 @@
 package com.intel.sparkbench.sql
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.SQLContext
 
 /*
  * ported from HiBench's hive bench
@@ -27,7 +27,7 @@ object ScalaSparkSQLBench{
   def main(args: Array[String]){
     if (args.length < 2){
       System.err.println(
-        s"Usage: $ScalaSparkSQLBench <workload name> <SQL sciprt file>"
+        s"Usage: $ScalaSparkSQLBench <workload name> <SQL script file>"
       )
       System.exit(1)
     }
@@ -35,7 +35,7 @@ object ScalaSparkSQLBench{
     val sql_file = args(1)
     val sparkConf = new SparkConf().setAppName(workload_name)
     val sc = new SparkContext(sparkConf)
-    val hc = new HiveContext(sc)
+    val hc = new SQLContext(sc)
 
     val _sql = scala.io.Source.fromFile(sql_file).mkString
     _sql.split(';').foreach { x =>

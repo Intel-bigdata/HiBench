@@ -75,8 +75,8 @@ public final class JavaBayes {
     JavaPairRDD<String, Long> wordCount = data
             .flatMap(new FlatMapFunction<Tuple2<String, String>, String>() {
                 @Override
-                public Iterable<String> call(Tuple2<String, String> e) {
-                    return Arrays.asList(SPACE.split(e._2()));
+                public Iterator<String> call(Tuple2<String, String> e) {
+                    return Arrays.asList(SPACE.split(e._2())).iterator();
                 }
             })
             .mapToPair(new PairFunction<String, String, Long>() {

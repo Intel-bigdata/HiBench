@@ -16,10 +16,9 @@
  <dependencies>
    <dependency>
      <groupId>org.apache.kafka</groupId>
-     <artifactId>kafka-clients</artifactId>
-     <version>0.8.1</version>
-     <scope>system</scope>
-     <systemPath>${basedir}/lib/kafka-clients-0.8.1.jar</systemPath>
+     <!--<artifactId>kafka-clients</artifactId>-->
+     <artifactId>kafka_2.11</artifactId>
+     <version>0.8.2.2</version>
    </dependency>
     <dependency>
         <groupId>org.apache.hadoop</groupId>

@@ -26,8 +26,6 @@ package org.apache.spark.examples;
 import com.intel.sparkbench.IOCommon;
 import scala.Tuple2;
 
-import com.google.common.collect.Iterables;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
@@ -40,6 +38,8 @@ import org.apache.spark.api.java.function.PairFunction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.Iterator;
+import com.google.common.collect.Iterables;
 
 /**
  * Computes the PageRank of URLs from an input file. Input file should
@@ -81,7 +81,7 @@ public final class JavaPageRank {
       @Override
       public Tuple2<String, String> call(String s) {
         String[] parts = SPACES.split(s);
-        // Modified by Lv: accept last two vaules from HiBench generated PageRank data format
+        // Modified by Lv: accept last two values from HiBench generated PageRank data format
         return new Tuple2<String, String>(parts[parts.length-2], parts[parts.length-1]);
       }
     }).distinct().groupByKey().cache();
@@ -100,13 +100,13 @@ public final class JavaPageRank {
       JavaPairRDD<String, Double> contribs = links.join(ranks).values()
         .flatMapToPair(new PairFlatMapFunction<Tuple2<Iterable<String>, Double>, String, Double>() {
           @Override
-          public Iterable<Tuple2<String, Double>> call(Tuple2<Iterable<String>, Double> s) {
+          public Iterator<Tuple2<String, Double>> call(Tuple2<Iterable<String>, Double> s) {
             int urlCount = Iterables.size(s._1);
             List<Tuple2<String, Double>> results = new ArrayList<Tuple2<String, Double>>();
             for (String n : s._1) {
               results.add(new Tuple2<String, Double>(n, s._2() / urlCount));
             }
-            return results;
+            return results.iterator();
           }
       });
 
