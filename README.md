@@ -1,4 +1,4 @@
-# HiBench Suite #
+# HiBench Suite [![Build Status](https://travis-ci.org/intel-hadoop/HiBench.svg?branch=master)](https://travis-ci.org/intel-hadoop/HiBench)
 ## The bigdata micro benchmark suite ##
 
 
@@ -121,4 +121,3 @@ Note:
 
 ### [Advanced Configurations](https://github.com/intel-hadoop/HiBench/wiki/Advanced-Configurations) ###
 ### [Possible issues](https://github.com/intel-hadoop/HiBench/wiki/Possible-issues) ###
-
