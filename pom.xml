@@ -107,7 +107,8 @@
     </build>
 
     <modules>
-        <module>sparkbench/micro</module>
+      <module>sparkbench/common</module>
+      <module>sparkbench/micro</module>
     </modules>
 
     <profiles>

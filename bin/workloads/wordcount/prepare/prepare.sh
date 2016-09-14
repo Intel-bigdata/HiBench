@@ -24,15 +24,11 @@ show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
-echo "DataSize:"${DATASIZE}
-echo "map num:" {$NUM_MAPS}
 
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D ${BYTES_TOTAL_NAME}=${DATASIZE} \
-    -D ${MAP_CONFIG_NAME}=${NUM_MAPS} \
-    -D ${REDUCER_CONFIG_NAME}=${NUM_REDS} \
-    ${COMPRESS_OPT} \
+    -D mapreduce.randomtextwriter.totalbytes=${DATASIZE} \
+    -D mapreduce.job.maps=${NUM_MAPS} \
+    -D mapreduce.job.reduces=${NUM_REDS} \
     ${INPUT_HDFS}
-#run-spark-job com.intel.sparkbench.datagen.RandomTextWriter $INPUT_HDFS ${DATASIZE}
 END_TIME=`timestamp`
 

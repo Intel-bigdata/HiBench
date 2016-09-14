@@ -43,10 +43,6 @@ HiBenchEnvPropMappingMandatory=dict(
 
     REDUCER_CONFIG_NAME="hibench.hadoop.reducer.name",
     MAP_CONFIG_NAME="hibench.hadoop.mapper.name",
-    COMPRESS_OPT="hibench.workload.compress.options",
-    DATATOOLS_COMPRESS_OPT="hibench.workload.compress.datatools.options",
-    KMEANS_COMPRESS_OPT="hibench.workload.compress.kmeans_gen.options",
-    HIVE_SQL_COMPRESS_OPTS="hibench.workload.compress.hive.options",
 
     MASTERS="hibench.masters.hostnames",
     SLAVES="hibench.slaves.hostnames",
@@ -77,7 +73,6 @@ HiBenchEnvPropMapping=dict(
     HADOOP_SLEEP_JAR="hibench.sleep.job.jar",
     # For Sort, Terasort, Wordcount
     DATASIZE="hibench.workload.datasize",
-    BYTES_TOTAL_NAME="hibench.randomtextwriter.bytestotal.name",
 
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",
