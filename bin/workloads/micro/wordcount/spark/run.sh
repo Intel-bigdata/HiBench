@@ -15,8 +15,8 @@
 # limitations under the License.
 
 current_dir=`dirname "$0"`
-root_dir=${current_dir}/../../../..
-workload_config=${root_dir}/conf/micro/wordcount.conf
+root_dir=${current_dir}/../../../../../
+workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
 enter_bench ScalaSparkWordcount ${workload_config}

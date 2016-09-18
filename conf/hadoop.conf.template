@@ -1,0 +1,14 @@
+hibench.hadoop.home            /home/yuzhou/cluster/hadoop/hadoop-2.7.0
+hibench.hadoop.executable      ${hibench.hadoop.home}/bin/hadoop
+
+hibench.hadoop.configure.dir	${hibench.hadoop.home}/etc/hadoop
+
+
+hibench.hdfs.master            hdfs://localhost:8020
+
+#cdh4, cdh5, apache, hdp
+hibench.hadoop.release			apache
+
+#only hadoop2 is supported
+hibench.hadoop.version			hadoop2
+
