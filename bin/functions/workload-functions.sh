@@ -212,11 +212,11 @@ function run-spark-job() {
         if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
             YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
-       if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
-           YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
+       if [[ -n "${SPARK_YARN_EXECUTOR_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --executor-memory ${SPARK_YARN_EXECUTOR_MEMORY}"
        fi
-       if [[ -n "${YARN_DRIVER_MEMORY:-}" ]]; then
-           YARN_OPTS="${YARN_OPTS} --driver-memory ${YARN_DRIVER_MEMORY}"
+       if [[ -n "${SPAKR_YARN_DRIVER_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
        fi
     fi
     if [[ "$CLS" == *.py ]]; then 
