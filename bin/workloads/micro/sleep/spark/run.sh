@@ -19,7 +19,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/sleep.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench ScalaSparkWordcount ${workload_config}
+enter_bench ScalaSparkSleep ${workload_config}
 show_bannar start
 
 START_TIME=`timestamp`

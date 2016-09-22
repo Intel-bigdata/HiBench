@@ -19,7 +19,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/sleep.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareWordcount ${workload_config}
+enter_bench PrepareSleep ${workload_config}
 show_bannar start
 
 echo -e "${On_Blue}Prepare sleep: nothing to do${Color_Off}"
