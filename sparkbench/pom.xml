@@ -11,106 +11,48 @@
         <artifactId>hibench</artifactId>
         <version>6.0-SNAPSHOT</version>
   </parent>
+  <modules>
+   <module>common</module>
+  </modules>
   <profiles>
         <profile>
             <id>micro</id>
               <modules>
-		<module>common</module>
                 <module>micro</module>
               </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>micro</value>
-                </property>
-            </activation>
         </profile>
 
         <profile>
             <id>graph</id>
               <modules>
-		<module>common</module>
                 <module>graph</module>
               </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>graph</value>
-                </property>
-            </activation>
         </profile>
 
         <profile>
             <id>ml</id>
               <modules>
-		<module>common</module>
                 <module>ml</module>
               </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>ml</value>
-                </property>
-            </activation>
         </profile>
 
         <profile>
             <id>sql</id>
               <modules>
-		<module>common</module>
                 <module>sql</module>
               </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>sql</value>
-                </property>
-            </activation>
-        </profile>
-
-        <profile>
-            <id>common</id>
-              <modules>
-                <module>common</module>
-              </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>common</value>
-                </property>
-            </activation>
-        </profile>
-
-        <profile>
-            <id>allmodule</id>
-              <modules>
-		<module>common</module>
-                <module>micro</module>
-                <module>ml</module>
-                <module>graph</module>
-                <module>sql</module>
-              </modules>
-            <activation>
-                <property>
-                <name>module</name>
-                <value>allmodule</value>
-                </property>
-            </activation>
         </profile>
 
         <profile>
             <id>defaultmodule</id>
               <modules>
-		<module>common</module>
                 <module>micro</module>
                 <module>ml</module>
                 <module>graph</module>
                 <module>sql</module>
               </modules>
             <activation>
-                <property>
-                <name>!module</name>
-                </property>
+		<activeByDefault>true</activeByDefault>
             </activation>
         </profile>
   </profiles>
