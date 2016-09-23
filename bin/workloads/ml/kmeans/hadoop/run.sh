@@ -16,23 +16,25 @@
 
 current_dir=`dirname "$0"`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
+workload_config=${root_dir}/conf/workloads/ml/kmeans.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareWordcount ${workload_config}
+enter_bench HadoopKmeans ${workload_config}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+ensure-mahout-release
+
+rmr-hdfs $OUTPUT_HDFS || true
+
+SIZE=`dir_size $INPUT_HDFS`
+OPTION="-i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
+CMD="${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}"
+MONITOR_PID=`start-monitor`
 START_TIME=`timestamp`
-
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D mapreduce.randomtextwriter.totalbytes=${DATASIZE} \
-    -D mapreduce.randomtextwriter.bytespermap=$(( ${DATASIZE} / ${NUM_MAPS} )) \
-    -D mapreduce.job.maps=${NUM_MAPS} \
-    -D mapreduce.job.reduces=${NUM_REDS} \
-    ${INPUT_HDFS}
+execute_withlog $CMD
 END_TIME=`timestamp`
+stop-monitor $MONITOR_PID
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-

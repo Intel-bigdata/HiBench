@@ -16,23 +16,22 @@
 
 current_dir=`dirname "$0"`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
+workload_config=${root_dir}/conf/workloads/ml/kmeans.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareWordcount ${workload_config}
+enter_bench HadoopPrepareKmeans ${workload_config}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
+ensure-mahout-release
+
 START_TIME=`timestamp`
 
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D mapreduce.randomtextwriter.totalbytes=${DATASIZE} \
-    -D mapreduce.randomtextwriter.bytespermap=$(( ${DATASIZE} / ${NUM_MAPS} )) \
-    -D mapreduce.job.maps=${NUM_MAPS} \
-    -D mapreduce.job.reduces=${NUM_REDS} \
-    ${INPUT_HDFS}
+OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
+export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath`
+export_withlog HADOOP_CLASSPATH
+run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${OPTION}
 END_TIME=`timestamp`
 
 show_bannar finish
 leave_bench
-
