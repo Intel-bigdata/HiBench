@@ -41,38 +41,3 @@ stop-monitor $MONITOR_PID
 show_bannar finish
 leave_bench
 
-#run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-#    -D mapreduce.randomtextwriter.totalbytes=${DATASIZE} \
-#    -D mapreduce.randomtextwriter.bytespermap=$(( ${DATASIZE} / ${NUM_MAPS} )) \
-#    -D mapreduce.job.maps=${NUM_MAPS} \
-#    -D mapreduce.job.reduces=${NUM_REDS} \
-#    ${INPUT_HDFS}
-#END_TIME=`timestamp`
-
-#workload_folder=`dirname "$0"`
-#workload_folder=`cd "$workload_folder"; pwd`
-#workload_root=${workload_folder}/..
-#. "${workload_root}/../../bin/functions/load-bench-config.sh"
-
-#enter_bench HadoopPrepareDFSIOE ${workload_root} ${workload_folder}
-#show_bannar start
-
-#rmr-hdfs $INPUT_HDFS || true
-
-#MONITOR_PID=`start-monitor`
-#START_TIME=`timestamp`
-
-#run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh                \
-#    -Dmapreduce.map.java.opts=\"-Dtest.build.data=${INPUT_HDFS} ${MAP_JAVA_OPTS}\"    \
-#    -Dmapreduce.reduce.java.opts=\"-Dtest.build.data=${INPUT_HDFS} ${RED_JAVA_OPTS}\" \
-#    -Dtest.build.data=${INPUT_HDFS}                                                 \
-#    -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096 
-
-
-#END_TIME=`timestamp`
-#stop-monitor $MONITOR_PID
-
-#show_bannar finish
-#leave_bench
-
-
