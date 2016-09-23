@@ -106,34 +106,63 @@
         </plugins>
     </build>
 
-    <modules>
-      <module>sparkbench/common</module>
-      <module>sparkbench/micro</module>
-    </modules>
-
     <profiles>
       <profile>
-        <id>spark1.6</id>
-        <properties>
-          <env>spark1.6</env>
-          <spark.version>1.6.0</spark.version>
-          <spark.bin.version>1.6</spark.bin.version>
-        </properties>
-        <activation>
-          <property><name>spark1.6</name></property>
-        </activation>
+        <id>sparkbench</id>
+	 <modules>
+             <module>sparkbench</module>
+   	 </modules>
       </profile>
 
       <profile>
-        <id>spark2.0</id>
-        <properties>
-          <env>spark2.0</env>
-          <spark.version>2.0.0</spark.version>
-          <spark.bin.version>2.0</spark.bin.version>
-        </properties>
+        <id>flinkbench</id>
+         <modules>
+             <module>flinkbench</module>
+         </modules>
+      </profile>
+
+      <profile>
+        <id>gearpumpbench</id>
+         <modules>
+             <module>gearpumpbench</module>
+         </modules>
+      </profile>
+
+      <profile>
+        <id>hadoopbench</id>
+         <modules>
+             <module>hadoopbench</module>
+         </modules>
+      </profile>
+
+      <profile>
+        <id>samzabench</id>
+         <modules>
+             <module>samzabench</module>
+         </modules>
+      </profile>
+
+      <profile>
+        <id>stormbench</id>
+         <modules>
+             <module>stormbench</module>
+         </modules>
+      </profile>
+
+      <profile>
+        <id>defaultbench</id>
+         <modules>
+             <module>sparkbench</module>
+             <module>flinkbench</module>
+             <module>gearpumpbench</module>
+             <module>hadoopbench</module>
+             <module>samzabench</module>
+             <module>stormbench</module>
+         </modules>
         <activation>
-          <property><name>spark2.0</name></property>
+	  <activeByDefault>true</activeByDefault>
         </activation>
       </profile>
+
     </profiles>
 </project>
