@@ -25,8 +25,8 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 run-hadoop-job ${HADOOP_EXAMPLES_JAR} teragen \
-    -D ${MAP_CONFIG_NAME}=${NUM_MAPS} \
-    -D ${REDUCER_CONFIG_NAME}=${NUM_REDS} \
+    -D mapreduce.job.maps=${NUM_MAPS} \
+    -D mapreduce.job.reduces=${NUM_REDS} \
     ${DATASIZE} ${INPUT_HDFS}
 END_TIME=`timestamp`
 
