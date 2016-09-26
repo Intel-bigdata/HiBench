@@ -117,18 +117,24 @@ def shell(cmd, timeout=5):
     return stdout
 
 
-def OneAndOnlyOneFile(filename_pattern):
+def exactly_one_file(filename_candidate_list):
+    for filename_pattern in filename_candidate_list:
+        result = exactly_one_file_one_candidate(filename_pattern)
+        if result != "":
+            return result
+    assert 0, "The pattern " + filename_pattern + \
+        " matches no files, please set `hibench.hadoop.examples.jar` manually"
+
+
+def exactly_one_file_one_candidate(filename_pattern):
     files = glob.glob(filename_pattern)
-    if len(files) == 1:
+    if len(files) == 0:
+        return ""
+    elif len(files) == 1:
         return files[0]
     else:
-        log('This filename pattern "%s" is required to match only one file.' %
-            filename_pattern)
-        if len(files) == 0:
-            log("However, there's no file found, please fix it.")
-        else:
-            log("However, there's several files found, please remove the redundant files:\n", "\n".join(files))
-        raise Exception("Need to match one and only one file!")
+        assert 0, "The pattern " + filename_pattern + \
+            " matches more than one file, please remove the redundant files"
 
 
 def load_config(
@@ -380,54 +386,47 @@ def probe_spark_version():
 def probe_hadoop_examples_jars():
     # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
-        # Apache release
-        if HibenchConf['hibench.hadoop.release'] == 'apache':
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] +
-                "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"] = "Inferred by: " + HibenchConf[
-                'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
-        # CDH release
-        elif HibenchConf['hibench.hadoop.release'].startswith('cdh'):
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] +
-                "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar",
-                HibenchConf['hibench.hadoop.home'] +
-                "/../../jars/hadoop-mapreduce-examples-*.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"] = "Inferred by: " + HibenchConf['hibench.hadoop.home'] + \
-                "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar" + " & " + HibenchConf['hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-examples-*.jar"
-        # HDP release
-        elif HibenchConf['hibench.hadoop.release'].startswith('hdp'):
-            HibenchConf["hibench.hadoop.examples.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] + "/hadoop-mapreduce-examples.jar")
-            HibenchConfRef["hibench.hadoop.examples.jar"] = "Inferred by: " + \
-                HibenchConf['hibench.hadoop.home'] + "/hadoop-mapreduce-examples.jar"
+        examples_jars_candidate_apache0 = HibenchConf[
+            'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
+        examples_jars_candidate_cdh0 = HibenchConf[
+            'hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar"
+        examples_jars_candidate_cdh1 = HibenchConf[
+            'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-examples-*.jar"
+        examples_jars_candidate_hdp0 = HibenchConf[
+            'hibench.hadoop.home'] + "/hadoop-mapreduce-examples.jar"
+        examples_jars_candidate_list = [
+            examples_jars_candidate_apache0,
+            examples_jars_candidate_cdh0,
+            examples_jars_candidate_cdh1,
+            examples_jars_candidate_hdp0]
+
+        HibenchConf["hibench.hadoop.examples.jar"] = exactly_one_file(
+            examples_jars_candidate_list)
+        HibenchConfRef["hibench.hadoop.examples.jar"] = "Inferred by " + \
+            HibenchConf["hibench.hadoop.examples.jar"]
 
 
 def probe_hadoop_examples_test_jars():
     # probe hadoop examples test jars
     if not HibenchConf.get("hibench.hadoop.examples.test.jar", ""):
-        if HibenchConf['hibench.hadoop.release'] == 'apache':
-            HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] +
-                "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar")
-            HibenchConfRef["hibench.hadoop.examples.test.jar"] = "Inferred by: " + HibenchConf[
-                'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar"
-        # CDH release
-        elif HibenchConf['hibench.hadoop.release'].startswith('cdh'):
-            HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] +
-                "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar",
-                HibenchConf['hibench.hadoop.home'] +
-                "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar")
-            HibenchConfRef["hibench.hadoop.examples.test.jar"] = "Inferred by: " + HibenchConf['hibench.hadoop.home'] + \
-                "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar" + " & " + HibenchConf['hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar"
-        # HDP release
-        elif HibenchConf['hibench.hadoop.release'].startswith('hdp'):
-            HibenchConf["hibench.hadoop.examples.test.jar"] = OneAndOnlyOneFile(
-                HibenchConf['hibench.hadoop.home'] + "/hadoop-mapreduce-client-jobclient-tests.jar")
-            HibenchConfRef["hibench.hadoop.examples.test.jar"] = "Inferred by: " + HibenchConf[
-                'hibench.hadoop.home'] + "/hadoop-mapreduce-client-jobclient-tests.jar"
+        examples_test_jars_candidate_apache0 = HibenchConf[
+            'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar"
+        examples_test_jars_candidate_cdh0 = HibenchConf[
+            'hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
+        examples_test_jars_candidate_cdh1 = HibenchConf[
+            'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar"
+        examples_test_jars_candidate_hdp0 = HibenchConf[
+            'hibench.hadoop.home'] + "/hadoop-mapreduce-client-jobclient-tests.jar"
+        examples_test_jars_candidate_list = [
+            examples_test_jars_candidate_apache0,
+            examples_test_jars_candidate_cdh0,
+            examples_test_jars_candidate_cdh1,
+            examples_test_jars_candidate_hdp0]
+
+        HibenchConf["hibench.hadoop.examples.test.jar"] = exactly_one_file(
+            examples_test_jars_candidate_list)
+        HibenchConfRef["hibench.hadoop.examples.test.jar"] = "Inferred by " + \
+            HibenchConf["hibench.hadoop.examples.test.jar"]
 
 
 def probe_sleep_job_jar():
@@ -463,6 +462,37 @@ def probe_mapper_reducer_names():
             "hibench.hadoop.reducer.name"] = "Use default reducer name"
 
 
+def probe_spark_port(port_name, default_port):
+    spark_home = HibenchConf.get("hibench.spark.home", "")
+    assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
+    join = os.path.join
+    spark_env_file = join(spark_home, "conf/spark-env.sh")
+    master_port = default_port
+
+    if(len(glob.glob(spark_env_file)) == 1):
+        with open(spark_env_file) as f:
+            file_content = f.readlines()
+        for line in file_content:
+            if not line.strip().startswith(
+                    "#") and port_name in line:
+                if "\"" in line:
+                    master_port = line.split("=")[1].split("\"")[1]
+                elif "\'" in line:
+                    master_port = line.split("=")[1].split("\'")[1]
+                else:
+                    master_port = line.split("=")[1]
+        master_port = master_port.strip()
+    return master_port
+
+
+def probe_spark_master_webui_port():
+    return probe_spark_port("SPARK_MASTER_WEBUI_PORT", "8080")
+
+
+def probe_spark_worker_webui_port():
+    return probe_spark_port("SPARK_WORKER_WEBUI_PORT", "8081")
+
+
 def probe_masters_slaves_hostnames():
     # probe masters, slaves hostnames
     # determine running mode according to spark master configuration
@@ -486,19 +516,23 @@ def probe_masters_slaves_hostnames():
                 0]
             HibenchConfRef[
                 'hibench.masters.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
-            try:
-                log(spark_master, HibenchConf['hibench.masters.hostnames'])
-                with closing(urllib.urlopen('http://%s:8080' % HibenchConf['hibench.masters.hostnames'])) as page:
-                    worker_hostnames = [
-                        re.findall(
-                            "http:\/\/([a-zA-Z\-\._0-9]+):8081",
-                            x)[0] for x in page.readlines() if "8081" in x and "worker" in x]
+
+            log(spark_master, HibenchConf['hibench.masters.hostnames'])
+            master_port = probe_spark_master_webui_port()
+            worker_port = probe_spark_worker_webui_port()
+            with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port))) as page:
+                worker_hostnames = [
+                    re.findall(
+                        "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
+                        worker_port,
+                        x)[0] for x in page.readlines() if "%s" %
+                    worker_port in x and "worker" in x]
                 HibenchConf['hibench.slaves.hostnames'] = " ".join(
                     worker_hostnames)
                 HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
-                    'http://%s:8080' % HibenchConf['hibench.masters.hostnames']
-            except Exception as e:
-                assert 0, "Get workers from spark master's web UI page failed, reason:%s\nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
+                    'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
+                assert HibenchConf['hibench.slaves.hostnames'] != "" and HibenchConf[
+                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually"
         # yarn mode
         elif spark_master.startswith("yarn"):
             yarn_executable = os.path.join(os.path.dirname(
@@ -609,7 +643,6 @@ def generate_optional_value():
     probe_mapper_reducer_names()
     probe_masters_slaves_hostnames()
     probe_java_opts()
-#    test_succeed()
 
 
 def test_succeed():
