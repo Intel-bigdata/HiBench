@@ -11,7 +11,7 @@
     <groupId>com.intel.hibench.sparkbench</groupId>
     <artifactId>sparkbench-micro</artifactId>
     <packaging>jar</packaging>
-    <name>sparkbench-micro</name>
+    <name>sparkbench micro benchmark</name>
 
     <dependencies>
       <dependency>

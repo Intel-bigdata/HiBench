@@ -16,23 +16,20 @@
 
 current_dir=`dirname "$0"`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
+workload_config=${root_dir}/conf/workloads/ml/kmeans.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareWordcount ${workload_config}
+enter_bench ScalaSparkKmeans ${workload_config}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr-hdfs $OUTPUT_HDFS || true
+
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} randomtextwriter \
-    -D mapreduce.randomtextwriter.totalbytes=${DATASIZE} \
-    -D mapreduce.randomtextwriter.bytespermap=$(( ${DATASIZE} / ${NUM_MAPS} )) \
-    -D mapreduce.job.maps=${NUM_MAPS} \
-    -D mapreduce.job.reduces=${NUM_REDS} \
-    ${INPUT_HDFS}
+run-spark-job com.intel.hibench.sparkbench.ml.DenseKMeans -k $K --numIterations $MAX_ITERATION $INPUT_HDFS/samples
 END_TIME=`timestamp`
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-
