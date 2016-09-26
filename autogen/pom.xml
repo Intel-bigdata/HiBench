@@ -25,11 +25,6 @@
          <version>${mahout.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
-        <artifactId>hadoop-core</artifactId>
-        <version>${hadoop.mr1.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.uncommons.maths</groupId>
         <artifactId>uncommons-maths</artifactId>
         <version>${uncommons-maths.version}</version>
