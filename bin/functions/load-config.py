@@ -117,13 +117,13 @@ def shell(cmd, timeout=5):
     return stdout
 
 
-def exactly_one_file(filename_candidate_list):
+def exactly_one_file(filename_candidate_list, config_name):
     for filename_pattern in filename_candidate_list:
         result = exactly_one_file_one_candidate(filename_pattern)
         if result != "":
             return result
     assert 0, "The pattern " + filename_pattern + \
-        " matches no files, please set `hibench.hadoop.examples.jar` manually"
+        " matches no files, please set `" + config_name + "` manually"
 
 
 def exactly_one_file_one_candidate(filename_pattern):
@@ -401,7 +401,7 @@ def probe_hadoop_examples_jars():
             examples_jars_candidate_hdp0]
 
         HibenchConf["hibench.hadoop.examples.jar"] = exactly_one_file(
-            examples_jars_candidate_list)
+            examples_jars_candidate_list, "hibench.hadoop.examples.jar")
         HibenchConfRef["hibench.hadoop.examples.jar"] = "Inferred by " + \
             HibenchConf["hibench.hadoop.examples.jar"]
 
@@ -424,7 +424,7 @@ def probe_hadoop_examples_test_jars():
             examples_test_jars_candidate_hdp0]
 
         HibenchConf["hibench.hadoop.examples.test.jar"] = exactly_one_file(
-            examples_test_jars_candidate_list)
+            examples_test_jars_candidate_list, "hibench.hadoop.examples.test.jar")
         HibenchConfRef["hibench.hadoop.examples.test.jar"] = "Inferred by " + \
             HibenchConf["hibench.hadoop.examples.test.jar"]
 
@@ -467,7 +467,7 @@ def probe_spark_port(port_name, default_port):
     assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
     join = os.path.join
     spark_env_file = join(spark_home, "conf/spark-env.sh")
-    master_port = default_port
+    port = default_port
 
     if(len(glob.glob(spark_env_file)) == 1):
         with open(spark_env_file) as f:
@@ -476,13 +476,13 @@ def probe_spark_port(port_name, default_port):
             if not line.strip().startswith(
                     "#") and port_name in line:
                 if "\"" in line:
-                    master_port = line.split("=")[1].split("\"")[1]
+                    port = line.split("=")[1].split("\"")[1]
                 elif "\'" in line:
-                    master_port = line.split("=")[1].split("\'")[1]
+                    port = line.split("=")[1].split("\'")[1]
                 else:
-                    master_port = line.split("=")[1]
-        master_port = master_port.strip()
-    return master_port
+                    port = line.split("=")[1]
+                port = port.strip()
+    return port
 
 
 def probe_spark_master_webui_port():
@@ -494,12 +494,14 @@ def probe_spark_worker_webui_port():
 
 
 def probe_masters_slaves_hostnames():
+
+
     # probe masters, slaves hostnames
     # determine running mode according to spark master configuration
     if not (
         HibenchConf.get(
             "hibench.masters.hostnames",
-            "") or HibenchConf.get(
+            "") and HibenchConf.get(
             "hibench.slaves.hostnames",
             "")):  # no pre-defined hostnames, let's probe
         spark_master = HibenchConf['hibench.spark.master']
@@ -516,7 +518,6 @@ def probe_masters_slaves_hostnames():
                 0]
             HibenchConfRef[
                 'hibench.masters.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
-
             log(spark_master, HibenchConf['hibench.masters.hostnames'])
             master_port = probe_spark_master_webui_port()
             worker_port = probe_spark_worker_webui_port()
@@ -532,7 +533,7 @@ def probe_masters_slaves_hostnames():
                 HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
                     'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
                 assert HibenchConf['hibench.slaves.hostnames'] != "" and HibenchConf[
-                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually"
+                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" %(master_port, worker_port)
         # yarn mode
         elif spark_master.startswith("yarn"):
             yarn_executable = os.path.join(os.path.dirname(
@@ -574,22 +575,6 @@ def probe_masters_slaves_hostnames():
                     assert 0, "Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file"
             except Exception as e:
                 assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
-
-    # reset hostnames according to gethostbyaddr
-    names = set(
-        HibenchConf['hibench.masters.hostnames'].split() +
-        HibenchConf['hibench.slaves.hostnames'].split())
-    new_name_mapping = {}
-    for name in names:
-        try:
-            new_name_mapping[name] = socket.gethostbyaddr(name)[0]
-        # host name lookup failure?
-        except:
-            new_name_mapping[name] = name
-    HibenchConf['hibench.masters.hostnames'] = repr(" ".join(
-        [new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
-    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join(
-        [new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
 
 
 def probe_java_opts():
