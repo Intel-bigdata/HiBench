@@ -597,14 +597,17 @@ def probe_java_opts():
         if "mapreduce.reduce.java.opts" in line and cnt + 1 < len(content):
             reduce_java_opts_line = content[cnt + 1]
         cnt += 1
+    def add_quotation_marks(line):
+        if not (line.startswith("'") or line.startswith("\"")):
+            return "'" + line + "'"
     if map_java_opts_line != "":
-        HibenchConf['hibench.dfsioe.map.java_opts'] = map_java_opts_line.split("<")[
-            0].strip()
+        HibenchConf['hibench.dfsioe.map.java_opts'] = add_quotation_marks(map_java_opts_line.split("<")[
+            0].strip())
         HibenchConfRef['hibench.dfsioe.map.java_opts'] = "Probed by configuration file:'%s'" % os.path.join(
             HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
     if reduce_java_opts_line != "":
-        HibenchConf['hibench.dfsioe.red.java_opts'] = reduce_java_opts_line.split("<")[
-            0].strip()
+        HibenchConf['hibench.dfsioe.red.java_opts'] = add_quotation_marks(reduce_java_opts_line.split("<")[
+            0].strip())
         HibenchConfRef['hibench.dfsioe.red.java_opts'] = "Probed by configuration file:'%s'" % os.path.join(
             HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
 
