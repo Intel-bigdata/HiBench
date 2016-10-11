@@ -1,4 +1,4 @@
-package com.intel.sparkbench.nweight
+package com.intel.hibench.sparkbench.graph.nweight
 
 import it.unimi.dsi.fastutil.objects.ObjectHeaps
 
@@ -18,7 +18,6 @@ class SizedPriorityQueue(
   }
 
   def fullySorted(): Array[(Long, Double)] = {
-    import scala.collection.JavaConversions._
     val slicedBuf = buf.slice(0, size_ - 1)
     java.util.Arrays.sort(slicedBuf, comparator)
     slicedBuf

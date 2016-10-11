@@ -1,14 +1,13 @@
-package com.intel.sparkbench.nweight 
+package com.intel.hibench.sparkbench.graph.nweight
 
 import org.apache.spark.{SparkContext, SparkConf}
-import org.apache.spark.SparkContext._
-import org.apache.spark.rdd.RDD
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.scheduler.{JobLogger, StatsReportListener}
 
 import com.esotericsoftware.kryo.{Kryo, Serializer => KSerializer}
 import com.esotericsoftware.kryo.io.{Input => KryoInput, Output => KryoOutput}
 import com.esotericsoftware.kryo.serializers.{JavaSerializer => KryoJavaSerializer}
+import com.esotericsoftware.kryo.{Serializer => KSerializer}
 
 /** 
  * Compute NWeight for Graph G(V, E) as defined below

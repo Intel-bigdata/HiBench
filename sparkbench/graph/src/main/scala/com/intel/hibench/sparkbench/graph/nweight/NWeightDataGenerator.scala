@@ -1,11 +1,9 @@
-package com.intel.sparkbench.nweight.datagen
+package com.intel.hibench.sparkbench.graph.nweight
 
 import java.io._
 
-import com.intel.sparkbench.IOCommon
-
+import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark.HashPartitioner
-import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.recommendation.{MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD

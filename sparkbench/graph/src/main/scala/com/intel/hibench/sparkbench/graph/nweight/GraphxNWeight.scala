@@ -1,8 +1,7 @@
-package com.intel.sparkbench.nweight
+package com.intel.hibench.sparkbench.graph.nweight
 
 import scala.collection.JavaConversions._
 import org.apache.spark.SparkContext
-import org.apache.spark.SparkContext._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.HashPartitioner
 import org.apache.spark.storage.StorageLevel
@@ -17,9 +16,9 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
  *  <vertex> <vertex1>:<weight1>, <vertex2>:<weight2> ...)
  */
 
-object PregelNWeight extends Serializable{
+object GraphxNWeight extends Serializable{
 
-  def sendMsg(edge: EdgeTriplet[SizedPriorityQueue, Double]) = {
+  def mapF(edge: EdgeTriplet[SizedPriorityQueue, Double]) = {
     val m = new Long2DoubleOpenHashMap()
     val w1 = edge.attr
     val id = edge.srcId
@@ -30,26 +29,24 @@ object PregelNWeight extends Serializable{
     Iterator((id, m))
   }
 
-  def mergMsg(c1: Long2DoubleOpenHashMap, c2: Long2DoubleOpenHashMap) = {
+  def reduceF(c1: Long2DoubleOpenHashMap, c2: Long2DoubleOpenHashMap) = {
     c2.long2DoubleEntrySet()
       .fastIterator()
       .foreach(pair => c1.put(pair.getLongKey(), c1.get(pair.getLongKey()) + pair.getDoubleValue()))
     c1
   }
 
-  def vProg(id: VertexId, vdata: SizedPriorityQueue, msg: Long2DoubleOpenHashMap) = {
+  def updateF (id: VertexId, vdata: SizedPriorityQueue, msg: Option[Long2DoubleOpenHashMap]) = {
     vdata.clear()
-    if (msg.size > 0) {
-      msg.long2DoubleEntrySet().fastIterator().foreach { pair =>
+    val weightMap = msg.orNull
+    if (weightMap != null) {
+      weightMap.long2DoubleEntrySet().fastIterator().foreach { pair =>
         val src = pair.getLongKey()
         val wn = pair.getDoubleValue()
         vdata.enqueue((src, wn))
       }
-      vdata
-    } else {
-      vdata.enqueue((id, 1))
-      vdata 
     }
+    vdata
   }
 
   def nweight(sc: SparkContext, input: String, output: String, step: Int,
@@ -68,9 +65,21 @@ object PregelNWeight extends Serializable{
       }
     }.partitionBy(part).map(_._2)
 
-    var g = GraphImpl(edges, new SizedPriorityQueue(maxDegree), storageLevel, storageLevel).cache()
+    val vertices = edges.map { e =>
+      (e.srcId, (e.dstId, e.attr))
+    }.groupByKey(part).map { case (id, seq) =>
+      val vdata = new SizedPriorityQueue(maxDegree)
+      seq.foreach(vdata.enqueue(_))
+      (id, vdata)
+    }
 
-    g = Pregel(g, new Long2DoubleOpenHashMap, step, EdgeDirection.In)(vProg _, sendMsg _, mergMsg _)
+    var g = GraphImpl(vertices, edges, new SizedPriorityQueue(maxDegree), storageLevel, storageLevel).cache()
+
+    var msg: RDD[(VertexId, Long2DoubleOpenHashMap)] = null
+    for (i <- 2 to step) {
+      msg = g.mapReduceTriplets(mapF _, reduceF _, Some(g.vertices , EdgeDirection.In))
+      g = g.outerJoinVertices(msg)(updateF _).persist(storageLevel)
+    }
 
     g.vertices.map { case (vid, vdata) => 
       var s = new StringBuilder
