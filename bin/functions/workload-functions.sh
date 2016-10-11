@@ -32,7 +32,7 @@ function enter_bench(){		# declare the entrance of a workload
     shift 2
     patching_args=$@
     echo "patching args=$patching_args"
-    local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER}  $workload_config_file $HIBENCH_CUR_WORKLOAD_NAME $patching_args`
+    local CONF_FILE=`${workload_func_bin}/load_config.py ${HIBENCH_CONF_FOLDER}  $workload_config_file $HIBENCH_CUR_WORKLOAD_NAME $patching_args`
     . $CONF_FILE
 }
 
