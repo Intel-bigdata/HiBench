@@ -137,15 +137,7 @@ def exactly_one_file_one_candidate(filename_pattern):
             " matches more than one file, please remove the redundant files"
 
 
-def load_config(
-        conf_root,
-        workload_config_file,
-        workload_name,
-        patching_config=""):
-    abspath = os.path.abspath
-    conf_root = abspath(conf_root)
-    workload_config_file = abspath(workload_config_file)
-
+def parse_conf(conf_root, workload_config_file):
     conf_files = sorted(glob.glob(conf_root + "/*.conf")) + \
         sorted(glob.glob(workload_config_file))
 
@@ -156,7 +148,7 @@ def load_config(
             for line in f.readlines():
                 line = line.strip()
                 if not line:
-                    continue     # skip empty lines
+                    continue  # skip empty lines
                 if line[0] == '#':
                     continue  # skip comments
                 try:
@@ -167,13 +159,15 @@ def load_config(
                 HibenchConf[key] = value.strip()
                 HibenchConfRef[key] = filename
 
+
+def override_conf_by_paching_conf():
+
     # override values from os environment variable settings
     # for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
     #     if env_name in os.environ:
     #         env_value = os.getenv(env_name)
     #         HibenchConf[prop_name] = env_value
     #         HibenchConfRef[prop_name] = "OS environment variable:%s" % env_name
-
     # override values by patching config
     for item in [x for x in patching_config.split(',') if x]:
         key, value = re.split('=', item, 1)
@@ -181,7 +175,21 @@ def load_config(
         HibenchConfRef[
             key] = "Overrided by parent script during calling: " + item
 
-    # generate ref values
+
+def load_config(
+        conf_root,
+        workload_config_file,
+        workload_name,
+        patching_config=""):
+    abspath = os.path.abspath
+    conf_root = abspath(conf_root)
+    workload_config_file = abspath(workload_config_file)
+
+    parse_conf(conf_root, workload_config_file)
+
+    override_conf_by_paching_conf()
+
+    # generate ref values, replace "${xxx}" to its values
     waterfall_config()
     # generate auto probe values
     generate_optional_value()
@@ -495,7 +503,6 @@ def probe_spark_worker_webui_port():
 
 def probe_masters_slaves_hostnames():
 
-
     # probe masters, slaves hostnames
     # determine running mode according to spark master configuration
     if not (
@@ -533,7 +540,7 @@ def probe_masters_slaves_hostnames():
                 HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
                     'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
                 assert HibenchConf['hibench.slaves.hostnames'] != "" and HibenchConf[
-                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" %(master_port, worker_port)
+                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" % (master_port, worker_port)
         # yarn mode
         elif spark_master.startswith("yarn"):
             yarn_executable = os.path.join(os.path.dirname(
@@ -577,15 +584,19 @@ def probe_masters_slaves_hostnames():
                 assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
 
     # reset hostnames according to gethostbyaddr
-    names = set(HibenchConf['hibench.masters.hostnames'].split() + HibenchConf['hibench.slaves.hostnames'].split())
+    names = set(
+        HibenchConf['hibench.masters.hostnames'].split() +
+        HibenchConf['hibench.slaves.hostnames'].split())
     new_name_mapping = {}
     for name in names:
         try:
             new_name_mapping[name] = socket.gethostbyaddr(name)[0]
         except:  # host name lookup failure?
             new_name_mapping[name] = name
-    HibenchConf['hibench.masters.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
-    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
+    HibenchConf['hibench.masters.hostnames'] = repr(" ".join(
+        [new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
+    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join(
+        [new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
 
 
 def probe_java_opts():
@@ -608,17 +619,18 @@ def probe_java_opts():
         if "mapreduce.reduce.java.opts" in line and cnt + 1 < len(content):
             reduce_java_opts_line = content[cnt + 1]
         cnt += 1
+
     def add_quotation_marks(line):
         if not (line.startswith("'") or line.startswith("\"")):
             return repr(line)
     if map_java_opts_line != "":
-        HibenchConf['hibench.dfsioe.map.java_opts'] = add_quotation_marks(map_java_opts_line.split("<")[
-            0].strip())
+        HibenchConf['hibench.dfsioe.map.java_opts'] = add_quotation_marks(
+            map_java_opts_line.split("<")[0].strip())
         HibenchConfRef['hibench.dfsioe.map.java_opts'] = "Probed by configuration file:'%s'" % os.path.join(
             HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
     if reduce_java_opts_line != "":
-        HibenchConf['hibench.dfsioe.red.java_opts'] = add_quotation_marks(reduce_java_opts_line.split("<")[
-            0].strip())
+        HibenchConf['hibench.dfsioe.red.java_opts'] = add_quotation_marks(
+            reduce_java_opts_line.split("<")[0].strip())
         HibenchConfRef['hibench.dfsioe.red.java_opts'] = "Probed by configuration file:'%s'" % os.path.join(
             HibenchConf['hibench.hadoop.configure.dir'], 'mapred-site.xml')
 
