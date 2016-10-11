@@ -576,6 +576,17 @@ def probe_masters_slaves_hostnames():
             except Exception as e:
                 assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
 
+    # reset hostnames according to gethostbyaddr
+    names = set(HibenchConf['hibench.masters.hostnames'].split() + HibenchConf['hibench.slaves.hostnames'].split())
+    new_name_mapping = {}
+    for name in names:
+        try:
+            new_name_mapping[name] = socket.gethostbyaddr(name)[0]
+        except:  # host name lookup failure?
+            new_name_mapping[name] = name
+    HibenchConf['hibench.masters.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.masters.hostnames'].split()]))
+    HibenchConf['hibench.slaves.hostnames'] = repr(" ".join([new_name_mapping[x] for x in HibenchConf['hibench.slaves.hostnames'].split()]))
+
 
 def probe_java_opts():
     file_name = os.path.join(
@@ -599,7 +610,7 @@ def probe_java_opts():
         cnt += 1
     def add_quotation_marks(line):
         if not (line.startswith("'") or line.startswith("\"")):
-            return "'" + line + "'"
+            return repr(line)
     if map_java_opts_line != "":
         HibenchConf['hibench.dfsioe.map.java_opts'] = add_quotation_marks(map_java_opts_line.split("<")[
             0].strip())
