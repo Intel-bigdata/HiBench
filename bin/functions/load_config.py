@@ -470,35 +470,35 @@ def probe_mapper_reducer_names():
             "hibench.hadoop.reducer.name"] = "Use default reducer name"
 
 
-def probe_spark_port(port_name, default_port):
+def probe_spark_conf(conf_name, default_value):
     spark_home = HibenchConf.get("hibench.spark.home", "")
     assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
     join = os.path.join
     spark_env_file = join(spark_home, "conf/spark-env.sh")
-    port = default_port
+    value = default_value
 
     if(len(glob.glob(spark_env_file)) == 1):
         with open(spark_env_file) as f:
             file_content = f.readlines()
         for line in file_content:
             if not line.strip().startswith(
-                    "#") and port_name in line:
+                    "#") and conf_name in line:
                 if "\"" in line:
-                    port = line.split("=")[1].split("\"")[1]
+                    value = line.split("=")[1].split("\"")[1]
                 elif "\'" in line:
-                    port = line.split("=")[1].split("\'")[1]
+                    value = line.split("=")[1].split("\'")[1]
                 else:
-                    port = line.split("=")[1]
-                port = port.strip()
-    return port
+                    value = line.split("=")[1]
+                value = value.strip()
+    return value
 
 
 def probe_spark_master_webui_port():
-    return probe_spark_port("SPARK_MASTER_WEBUI_PORT", "8080")
+    return probe_spark_conf("SPARK_MASTER_WEBUI_PORT", "8080")
 
 
 def probe_spark_worker_webui_port():
-    return probe_spark_port("SPARK_WORKER_WEBUI_PORT", "8081")
+    return probe_spark_conf("SPARK_WORKER_WEBUI_PORT", "8081")
 
 
 def probe_masters_slaves_hostnames():
