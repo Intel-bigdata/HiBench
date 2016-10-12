@@ -470,7 +470,7 @@ def probe_mapper_reducer_names():
             "hibench.hadoop.reducer.name"] = "Use default reducer name"
 
 
-def probe_spark_conf(conf_name, default_value):
+def probe_spark_conf_value(conf_name, default_value):
     spark_home = HibenchConf.get("hibench.spark.home", "")
     assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
     join = os.path.join
@@ -494,11 +494,11 @@ def probe_spark_conf(conf_name, default_value):
 
 
 def probe_spark_master_webui_port():
-    return probe_spark_conf("SPARK_MASTER_WEBUI_PORT", "8080")
+    return probe_spark_conf_value("SPARK_MASTER_WEBUI_PORT", "8080")
 
 
 def probe_spark_worker_webui_port():
-    return probe_spark_conf("SPARK_WORKER_WEBUI_PORT", "8081")
+    return probe_spark_conf_value("SPARK_WORKER_WEBUI_PORT", "8081")
 
 
 def probe_masters_slaves_hostnames():
