@@ -24,7 +24,6 @@ workload_config=${root_dir}/conf/workloads/sql/join.conf
 enter_bench HadoopJoin ${workload_config}
 show_bannar start
 
-echo "Dependency dir is: " ${DEPENDENCY_DIR}
 ensure-hivebench-release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
