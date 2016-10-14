@@ -279,12 +279,12 @@ function run-hadoop-job(){
 }
 
 function ensure-hivebench-release(){
-    if [ ! -e ${DEPENDENCY_DIR}"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
+    if [ ! -e ${DEPENDENCY_DIR}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
         assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
-    cd ${DEPENDENCY_DIR}"/hivebench/target"
+    cd ${DEPENDENCY_DIR}"/hadoopbench/sql/target"
     if [ ! -d $HIVE_HOME ]; then
         tar zxf $HIVE_RELEASE".tar.gz"
     fi
@@ -388,7 +388,6 @@ set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
-${HIVE_SQL_COMPRESS_OPTS}
 
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
@@ -409,7 +408,6 @@ set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
-${HIVE_SQL_COMPRESS_OPTS}
 
 CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
@@ -431,7 +429,6 @@ set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
-${HIVE_SQL_COMPRESS_OPTS}
 
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_copy';
