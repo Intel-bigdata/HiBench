@@ -31,7 +31,7 @@ import scala.reflect.ClassTag
 
 class ConfigurableOrderedRDDFunctions[K : Ordering : ClassTag, V: ClassTag,
                                       P <: Product2[K, V] : ClassTag]
-      (self: RDD[P]) extends Logging with Serializable {
+      (self: RDD[P]) extends Serializable {
   private val ordering = implicitly[Ordering[K]]
 
   def sortByKeyWithPartitioner(partitioner: Partitioner,

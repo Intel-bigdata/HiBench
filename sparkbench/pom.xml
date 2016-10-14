@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.intel.hibench</groupId>
   <artifactId>sparkbench</artifactId>
@@ -7,54 +8,123 @@
   <version>6.0-SNAPSHOT</version>
   <name>sparkbench</name>
   <parent>
-        <groupId>com.intel.hibench</groupId>
-        <artifactId>hibench</artifactId>
-        <version>6.0-SNAPSHOT</version>
+    <groupId>com.intel.hibench</groupId>
+    <artifactId>hibench</artifactId>
+    <version>6.0-SNAPSHOT</version>
   </parent>
+
   <modules>
-   <module>common</module>
+    <module>common</module>
+    <module>assembly</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <configuration>
+          <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+          <scalaVersion>${scala.version}</scalaVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scala-compile-first</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>scala-test-compile</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <profiles>
-        <profile>
-            <id>micro</id>
-              <modules>
-                <module>micro</module>
-              </modules>
-        </profile>
+    <profile>
+      <id>micro</id>
+      <modules>
+        <module>micro</module>
+      </modules>
+    </profile>
 
-        <profile>
-            <id>graph</id>
-              <modules>
-                <module>graph</module>
-              </modules>
-        </profile>
+    <profile>
+      <id>graph</id>
+      <modules>
+        <module>graph</module>
+      </modules>
+    </profile>
 
-        <profile>
-            <id>ml</id>
-              <modules>
-                <module>ml</module>
-              </modules>
-        </profile>
+    <profile>
+      <id>ml</id>
+      <modules>
+        <module>ml</module>
+      </modules>
+    </profile>
 
-        <profile>
-            <id>sql</id>
-              <modules>
-                <module>sql</module>
-              </modules>
-        </profile>
+    <profile>
+      <id>sql</id>
+      <modules>
+        <module>sql</module>
+      </modules>
+    </profile>
 
-        <profile>
-            <id>defaultmodule</id>
-              <modules>
-                <module>micro</module>
-                <module>ml</module>
-                <module>graph</module>
-                <module>sql</module>
-              </modules>
-            <activation>
-		<activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
+    <profile>
+      <id>allModules</id>
+      <modules>
+        <module>micro</module>
+        <module>ml</module>
+        <module>graph</module>
+        <module>sql</module>
+      </modules>
+      <activation>
+        <property>
+          <name>!modules</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark1.6</id>
+      <properties>
+        <spark.version>1.6.0</spark.version>
+        <spark.bin.version>1.6</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>1.6</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark2.0</id>
+      <properties>
+        <spark.version>2.0.0</spark.version>
+        <spark.bin.version>2.0</spark.bin.version>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.0</value>
+        </property>
+      </activation>
+    </profile>
   </profiles>
 </project>
-
