@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.intel.sparkbench.sql
+package com.intel.hibench.sparkbench.sql
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
