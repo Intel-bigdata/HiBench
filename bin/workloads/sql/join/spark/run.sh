@@ -14,14 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#workload_folder=`dirname "$0"`
-#workload_folder=`cd "$workload_folder"; pwd`
-#workload_root=${workload_folder}/../../..
-#. "${workload_root}/../../bin/functions/load-bench-config.sh"
-
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
-root_dir=${current_dir}/../../../../../../
+root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/join.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
@@ -35,7 +30,7 @@ prepare-sql-join ${HIVEBENCH_SQL_FILE}
 START_TIME=`timestamp`
 SIZE=`dir_size $INPUT_HDFS`
 rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.sparkbench.sql.ScalaSparkSQLBench ScalaJoin ${HIVEBENCH_SQL_FILE}
+run-spark-job com.intel.hibench.sparkbench.sql.ScalaSparkSQLBench ScalaJoin ${HIVEBENCH_SQL_FILE}
 
 sleep 5
 END_TIME=`timestamp`
@@ -43,4 +38,3 @@ END_TIME=`timestamp`
 gen_report ${START_TIME} ${END_TIME} ${SIZE:-0}
 show_bannar finish
 leave_bench
-

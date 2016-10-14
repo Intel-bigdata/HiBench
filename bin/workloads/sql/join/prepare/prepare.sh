@@ -20,7 +20,6 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/join.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-
 enter_bench HadoopPrepareJoin ${workload_config}
 show_bannar start
 
@@ -43,5 +42,3 @@ SIZE="0"
 
 show_bannar finish
 leave_bench
-
-

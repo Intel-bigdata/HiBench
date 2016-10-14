@@ -80,6 +80,17 @@
     </profile>
 
     <profile>
+      <id>sql</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-sql</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <dependencies>
         <dependency>
@@ -95,6 +106,11 @@
         <dependency>
           <groupId>com.intel.hibench.sparkbench</groupId>
           <artifactId>sparkbench-graph</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-sql</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>

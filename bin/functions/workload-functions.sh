@@ -279,12 +279,12 @@ function run-hadoop-job(){
 }
 
 function ensure-hivebench-release(){
-    if [ ! -e ${DEPENDENCY_DIR}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
         assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
-    cd ${DEPENDENCY_DIR}"/hadoopbench/sql/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/sql/target"
     if [ ! -d $HIVE_HOME ]; then
         tar zxf $HIVE_RELEASE".tar.gz"
     fi
@@ -335,7 +335,7 @@ function export_withlog () {
 }
 
 function ensure-nutchindexing-release () {
-    if [ ! -e ${DEPENDENCY_DIR}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
         assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
         exit
     fi
@@ -349,7 +349,7 @@ function ensure-nutchindexing-release () {
         cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
     fi
     
-    cd ${DEPENDENCY_DIR}"/nutchindexing/target"
+    cd ${HIBENCH_HOME}"/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
         tar zxf apache-nutch-1.2-bin.tar.gz
     fi
