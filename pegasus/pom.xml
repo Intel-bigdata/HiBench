@@ -23,5 +23,4 @@
             <version>${hadoop.mr1.version}</version>
         </dependency>
     </dependencies>
-
 </project>

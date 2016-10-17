@@ -76,6 +76,13 @@
     </profile>
 
     <profile>
+      <id>websearch</id>
+      <modules>
+        <module>websearch</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>sql</id>
       <modules>
         <module>sql</module>
@@ -87,6 +94,7 @@
       <modules>
         <module>micro</module>
         <module>ml</module>
+        <module>websearch</module>
         <module>graph</module>
         <module>sql</module>
       </modules>
