@@ -3,20 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <!--
   <parent>
-    <groupId>com.intel.hibench</groupId>
-    <artifactId>sparkbench</artifactId>
-    <version>6.0-SNAPSHOT</version>
-  </parent>
-
-  <groupId>com.intel.hibench.sparkbench</groupId>
-  <artifactId>sparkbench-websearch</artifactId>
-  <packaging>jar</packaging>
-  <version>6.0-SNAPSHOT</version>
-  <name>sparkbench websearch benchmark</name>
--->
-    <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>sparkbench</artifactId>
     <version>6.0-SNAPSHOT</version>
@@ -41,36 +28,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>net.alchim31.maven</groupId>
-        <artifactId>scala-maven-plugin</artifactId>
-        <version>3.2.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <args>
-            <!-- work-around for https://issues.scala-lang.org/browse/SI-8358 -->
-            <arg>-nobootcp</arg>
-          </args>
-        </configuration>
-    </plugin>
-    </plugins>
-  </build>
 
 </project>

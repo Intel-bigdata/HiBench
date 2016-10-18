@@ -27,7 +27,7 @@ START_TIME=`timestamp`
 
 OPTION="-t pagerank \
         -b ${PAGERANK_BASE_HDFS} \
-        -n ${INPUT_HDFS} \
+        -n Input \
         -m ${NUM_MAPS} \
         -r ${NUM_REDS} \
         -p ${PAGES} \
