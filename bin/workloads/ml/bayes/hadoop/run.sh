@@ -35,7 +35,16 @@ MONITOR_PID=`start-monitor`
 CMD1="$MAHOUT_HOME/bin/mahout seq2sparse ${COMPRESS_OPT} -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS"
 execute_withlog ${CMD1}
 
-CMD2="$MAHOUT_HOME/bin/mahout trainnb ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp"
+if [ ${HADOOP_RELEASE} == "cdh5" ]
+then
+   CMD2="$MAHOUT_HOME/bin/mahout trainnb ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp"
+elif [ ${HADOOP_RELEASE} == "apache" ]
+then
+   CMD2="$MAHOUT_HOME/bin/mahout trainnb ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp"
+elif [ ${HADOOP_RELEASE} == "hdp" ]
+then
+   CMD2="$MAHOUT_HOME/bin/mahout trainnb ${COMPRESS_OPT} -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp"
+fi
 execute_withlog ${CMD2}
 
 END_TIME=`timestamp`
