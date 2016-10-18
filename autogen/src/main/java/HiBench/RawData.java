@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Random;
@@ -17,7 +19,7 @@ public class RawData {
 
 	private static Random rand = new Random(11);
 
-	private static String dict = "/usr/share/dict/words";
+	private static String dict = "/words";
 	private static int numSourceWords = 1000;
 	private static int numSourceUAgents = 2000;
 
@@ -116,18 +118,16 @@ public class RawData {
 		
 		FileSystem fs = hdfs_searchkeys.getFileSystem(new Configuration());
 		FSDataOutputStream fout = fs.create(hdfs_searchkeys);
-
-		File fdict = new File(dict);
+                
+                InputStream is=new RawData().getClass().getResourceAsStream(dict);
 		int len = 0;
-		if (fdict.exists()) {
-			
-			FileReader fr = new FileReader(fdict);
-			BufferedReader br = new BufferedReader(fr);
+		if (is!=null) {
+			InputStreamReader isr=new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
 			while (null != br.readLine()) {
 				len++;
 			}
 			br.close();
-			fr.close();
 			
 			int[] wids = new int[numSourceWords];
 			for (int i=0; i<numSourceWords; i++) {
@@ -136,9 +136,9 @@ public class RawData {
 			Arrays.sort(wids);
 
 			int i=0, j=0;
-			File newfdict = new File(dict);
-			FileReader newfr = new FileReader(newfdict);
-			BufferedReader newbr = new BufferedReader(newfr);
+			InputStream newis=new RawData().getClass().getResourceAsStream(dict);
+			InputStreamReader newisr=new InputStreamReader(newis);
+			BufferedReader newbr = new BufferedReader(newisr);
 			while ((i<wids.length) && (j<len)) {
 				String wd = newbr.readLine();
 				if (j==wids[i]) {
@@ -151,7 +151,6 @@ public class RawData {
 				j++;
 			}
 			newbr.close();
-			newfr.close();
 		} else {
 			for (int i=0; i<numSourceWords; i++) {
 				String wd = nextSeedWord() + "\n";
@@ -193,12 +192,12 @@ public class RawData {
 		FileSystem fs = hdfs_dict.getFileSystem(new Configuration());
 		FSDataOutputStream fout = fs.create(hdfs_dict);
 
-		File fdict = new File(dict);
+		InputStream is=new RawData().getClass().getResourceAsStream(dict);
 		int len = 0;
-		if (fdict.exists()) {
+		if (is!=null) {
 			
-			FileReader fr = new FileReader(fdict);
-			BufferedReader br = new BufferedReader(fr);
+			InputStreamReader isr=new InputStreamReader(is);
+                        BufferedReader br = new BufferedReader(isr);	
 			
 			while (len < size) {
 				String word = br.readLine() + "\n";
@@ -208,7 +207,6 @@ public class RawData {
 				len++;
 			}
 			br.close();
-			fr.close();
 		}
 		fout.close();
 		return len;
