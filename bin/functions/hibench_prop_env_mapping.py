@@ -32,7 +32,6 @@ HiBenchEnvPropMappingMandatory=dict(
     HIBENCH_HOME="hibench.home",
     HIBENCH_CONF="hibench.configure.dir", 
 
-    #DEPENDENCY_DIR="hibench.dependency.dir",
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
     NUM_MAPS="hibench.default.map.parallelism",
@@ -76,7 +75,7 @@ HiBenchEnvPropMapping=dict(
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",
     USERVISITS="hibench.workload.uservisits",
-    HIVE_INPUT="hibench.hive.dir.name.input",
+    HIVE_INPUT="hibench.workload.dir.name.input",
     HIVE_BASE_HDFS="hibench.hive.base.hdfs",
     # For bayes
     CLASSES="hibench.workload.classes",
