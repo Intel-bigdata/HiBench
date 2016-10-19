@@ -17,9 +17,14 @@
 
   <profiles>
     <profile>
-      <id>sql</id>
+      <id>micro</id>
       <modules>
-        <module>sql</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>graph</id>
+      <modules>
       </modules>
     </profile>
 
@@ -38,14 +43,23 @@
     </profile>
 
     <profile>
-      <id>defaultmodule</id>
+      <id>sql</id>
+      <modules>
+        <module>sql</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>allModules</id>
       <modules>
         <module>sql</module>
         <module>mahout</module>
         <module>pegasus</module>
       </modules>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!modules</name>
+        </property>
       </activation>
     </profile>
   </profiles>
