@@ -38,6 +38,26 @@ def parse_conf_before_probe():
     parse_conf()
     load_config.waterfall_config()
 
+def get_expected(name):
+    expected_probe_conf_path = "/test_load_config_answer.conf"
+    test_load_config_answer = os.path.abspath(".") + expected_probe_conf_path
+    content = load_config.read_file_content(test_load_config_answer)
+    for line in content:
+        line = line.strip()
+        if not line:
+            continue  # skip empty lines
+        if line[0] == '#':
+            continue  # skip comments
+        try:
+            key, value = re.split("\s", line, 1)
+        except ValueError:
+            key = line.strip()
+            value = ""
+        if key == name:
+            return value.strip()
+    return ""
+
+
 def test_probe_hadoop_examples_jars():
 
     def test_probe_hadoop_examples_jars_generator(case_num):
@@ -124,37 +144,50 @@ def test_probe_spark_version():
     runTest(ProbeSparkVersionTestCase)
 
 
-# def test_probe_sleep_jar():
-#     print_hint_seperator("Test probe sleep jar")
-#     runTest(ProbeSleepJarTestCase)
-
 def test_probe_hadoop_conf_dir():
     print_hint_seperator("Test probe hadoop conf dir")
     runTest(ProbeHadoopConfDirTestCase)
 
 def test_probe_spark_conf_value():
-    def test_probe_spark_conf_value_generator(conf_name, line, default):
+    def test_probe_spark_conf_value_generator(case_num):
         def test(self):
             load_config.HibenchConf["hibench.spark.home"] = "/tmp/test/spark_home"
-            spark_env_dir = load_config.HibenchConf["hibench.spark.home"] + "/conf"
-            spark_env_path = load_config.HibenchConf["hibench.spark.home"] + "/conf/spark-env.sh"
-            # mkdir(spark_env_dir)
-            load_config.shell("echo " + line + " >> " + spark_env_path)
-            value = load_config.probe_spark_conf_value(conf_name, default)
-            expected = default
-            if len(line.split("=")) >= 2:
-                expected = line.split("=")[1]
-            expected = expected.strip("\'")
-            expected = expected.strip("\"")
-            self.assertEqual(str(value), expected)
+
+            conf_name = spark_conf_test_case_list[case_num][1]
+            line = spark_conf_test_case_list[case_num][2]
+            default = spark_conf_test_case_list[case_num][3]
+
+            def read_file_content(filepath):
+                if filepath == "/tmp/test/spark_home/conf/spark-env.sh":
+                    return [line]
+                else:
+                    return []
+
+            mock_read_file_content = mock.Mock(side_effect=read_file_content)
+            with mock.patch("load_config.read_file_content",
+                            mock_read_file_content):
+                answer = ""
+
+                try:
+                    from load_config import probe_spark_conf_value
+                    answer = probe_spark_conf_value(conf_name, default)
+                except:
+                    pass
+                expected = default
+                if len(line.split("=")) >= 2:
+                    expected = line.split("=")[1]
+                expected = expected.strip("\'")
+                expected = expected.strip("\"")
+                self.assertEqual(str(answer), expected)
+
         return test
 
-    spark_conf_test_case_list = [["spark_master_webui_port_simple", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=8880", None], ["spark_master_webui_port_single_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\'8880\'", None], ["spark_master_webui_port_double_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\"8880\"", None],
+    spark_conf_test_case_list = [["spark_master_webui_port_simple", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=8880", "8080"], ["spark_master_webui_port_single_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\'8880\'", "8080"], ["spark_master_webui_port_double_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\"8880\"", "8080"],
                                  ]
 
-    for case in spark_conf_test_case_list:
-        test_name = 'test_%s' % case[0]
-        test = test_probe_spark_conf_value_generator(case[1], case[2], case[3])
+    for i in range(len(spark_conf_test_case_list)):
+        test_name = 'test_%s' % spark_conf_test_case_list[i][0]
+        test = test_probe_spark_conf_value_generator(i)
         setattr(ProbeSparkConfValueTestCase, test_name, test)
     print_hint_seperator("Test probe spark conf value")
     runTest(ProbeSparkConfValueTestCase)
@@ -162,6 +195,10 @@ def test_probe_spark_conf_value():
 def test_probe_java_opts():
     print_hint_seperator("Test probe java opts")
     runTest(ProbeJavaOptsTestCase)
+
+def test_probe_masters_slaves_hostnames():
+    print_hint_seperator("Test probe masters slaves hostnames")
+    runTest(ProbeMastersSlavesHostnamesTestCase)
 
 class ProbeHadoopExamplesTestCase(unittest.TestCase):
     def setUp(self):
@@ -179,35 +216,16 @@ class ProbeHadoopTestExamplesTestCase(unittest.TestCase):
 
 class ProbeJavaBinTestCase(unittest.TestCase):
     def setUp(self):
-        self.java_home = "/tmp/test/java_home"
-        self.java_bin = self.java_home + "/bin/java"
         pass
     def tearDown(self):
-        # remove(self.java_home)
         pass
     def test_probe_java_bin(self):
-        os.environ["JAVA_HOME"] = self.java_home # visible in this process + all children
-        # touch(self.java_bin)
         load_config.probe_java_bin()
         answer = load_config.HibenchConf["java.bin"]
-        expected = self.java_bin
+        expected = get_expected("java.bin")
         self.assertEqual(answer, expected)
 
 class ProbeHadoopReleaseTestCase(unittest.TestCase):
-    def expected_hadoop_release(self):
-        if not load_config.HibenchConf.get("hibench.hadoop.release", ""):
-            cmd_release_and_version = load_config.HibenchConf[
-                                          'hibench.hadoop.executable'] + ' version | head -1'
-            # An example for version here: apache hadoop 2.7.3
-            hadoop_release_and_version = load_config.shell(cmd_release_and_version).strip()
-            expected_hadoop_release = \
-                "cdh4" if "cdh4" in hadoop_release_and_version else \
-                    "cdh5" if "cdh5" in hadoop_release_and_version else \
-                        "apache" if "Hadoop" in hadoop_release_and_version else \
-                            "UNKNOWN"
-        else:
-            expected_hadoop_release = load_config.HibenchConf["hibench.hadoop.release"]
-        return expected_hadoop_release
 
     def setUp(self):
         pass
@@ -217,34 +235,10 @@ class ProbeHadoopReleaseTestCase(unittest.TestCase):
         parse_conf_before_probe()
         load_config.probe_hadoop_release()
         answer = load_config.HibenchConf["hibench.hadoop.release"]
-        expected = self.expected_hadoop_release()
+        expected = get_expected("hibench.hadoop.release")
         self.assertEqual(answer, expected)
 
 class ProbeSparkVersionTestCase(unittest.TestCase):
-    def expected_spark_version(self):
-        if not load_config.HibenchConf.get("hibench.spark.version", ""):
-            spark_home = load_config.HibenchConf.get("hibench.spark.home", "")
-            assert spark_home, "`hibench.spark.home` undefined, please fix it and retry"
-            try:
-                release_file = os.path.join(spark_home, "RELEASE")
-                with open(release_file) as f:
-                    spark_version_raw = f.readlines()[0]
-                    # spark_version_raw="Spark 1.2.2-SNAPSHOT (git revision
-                    # f9d8c5e) built for Hadoop 1.0.4\n"      # version sample
-                    spark_version = spark_version_raw.split()[1].strip()
-                    load_config.HibenchConfRef[
-                        "hibench.spark.version"] = "Probed from file %s, parsed by value:%s" % (
-                        release_file, spark_version_raw)
-            except IOError as e:  # no release file, fall back to hard way
-                shell_cmd = '( cd %s; mvn help:evaluate -Dexpression=project.version 2> /dev/null | grep -v "INFO" | tail -n 1)' % spark_home
-                spark_version = load_config.shell(shell_cmd, timeout=600).strip()
-                load_config.HibenchConfRef[
-                    "hibench.spark.version"] = "Probed by shell command: %s, value: %s" % (
-                    shell_cmd, spark_version)
-            spark_version = "spark" + spark_version[:3]
-        else:
-            spark_version = load_config.HibenchConf["hibench.spark.version"]
-        return spark_version
     def setUp(self):
         pass
     def tearDown(self):
@@ -253,26 +247,8 @@ class ProbeSparkVersionTestCase(unittest.TestCase):
         parse_conf_before_probe()
         load_config.probe_spark_version()
         answer = load_config.HibenchConf["hibench.spark.version"]
-        expected = self.expected_spark_version()
+        expected = get_expected("hibench.spark.version")
         self.assertEqual(answer, expected)
-
-# class ProbeSleepJarTestCase(unittest.TestCase):
-#     def expected_sleep_jar(self):
-#         if not HibenchConf.get('hibench.sleep.job.jar', ''):
-#             sleep_jar = HibenchConf['hibench.hadoop.examples.test.jar']
-#         else:
-#             sleep_jar = HibenchConf['hibench.sleep.job.jar']
-#         return sleep_jar
-#     def setUp(self):
-#         pass
-#     def tearDown(self):
-#         pass
-#     def test_probe_spark_version(self):
-#         parse_conf_before_probe()
-#         probe_sleep_job_jar()
-#         answer = HibenchConf["hibench.sleep.job.jar"]
-#         expected = self.expected_spark_version()
-#         self.assertEqual(answer, expected)
 
 class ProbeHadoopConfDirTestCase(unittest.TestCase):
     def expected_hadoop_conf_dir(self):
@@ -298,7 +274,6 @@ class ProbeSparkConfValueTestCase(unittest.TestCase):
         pass
     def tearDown(self):
         pass
-        # remove(load_config.HibenchConf["hibench.spark.home"])
     def test_probe_spark_conf_value_default_value(self):
         parse_conf_before_probe()
         conf_name = "Whatever~"
@@ -313,38 +288,69 @@ class ProbeJavaOptsTestCase(unittest.TestCase):
         load_config.HibenchConf["hibench.hadoop.configure.dir"] = "/tmp/test/hadoop_home/etc/hadoop"
     def tearDown(self):
         pass
-        # remove(load_config.HibenchConf["hibench.spark.home"])
     def test_probe_java_opts(self):
-        # mkdir(load_config.HibenchConf["hibench.hadoop.configure.dir"])
+
         mapred_site_path = load_config.HibenchConf["hibench.hadoop.configure.dir"] + "/mapred-site.xml"
 
         mapred_site_content = "<property><name>mapreduce.map.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property><property><name>mapreduce.reduce.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property>"
         expected_map_java_opts = "-Xmx1536M -DpreferIPv4Stack=true"
         expected_reduce_java_opts = "-Xmx1536M -DpreferIPv4Stack=true"
-        echo = "echo \"" + mapred_site_content + "\" >> " + mapred_site_path
-        load_config.shell(echo)
-        load_config.probe_java_opts()
-        answer_map_java_opts = load_config.HibenchConf['hibench.dfsioe.map.java_opts']
-        answer_red_java_opts = load_config.HibenchConf['hibench.dfsioe.red.java_opts']
-        if answer_map_java_opts.startswith("\'"):
-            expected_map_java_opts = "\'" + expected_map_java_opts + "\'"
-        elif answer_map_java_opts.startswith("\""):
-            expected_map_java_opts = "\"" + expected_map_java_opts + "\""
-        self.assertEqual(answer_map_java_opts, expected_map_java_opts)
-        if answer_red_java_opts.startswith("\'"):
-            expected_reduce_java_opts = "\'" + expected_reduce_java_opts + "\'"
-        elif answer_red_java_opts.startswith("\""):
-            expected_reduce_java_opts = "\"" + expected_reduce_java_opts + "\""
-        self.assertEqual(answer_red_java_opts, expected_reduce_java_opts)
+
+        def read_file_content_java_opts(filepath):
+            if filepath == "/tmp/test/hadoop_home/etc/hadoop/mapred-site.xml":
+                return [mapred_site_content]
+            else:
+                return []
+
+        mock_read_file_content_java_opts = mock.Mock(side_effect=read_file_content_java_opts)
+        with mock.patch("load_config.read_file_content",
+                        mock_read_file_content_java_opts):
+            answer = ""
+
+            try:
+                from load_config import probe_java_opts
+                probe_java_opts()
+                answer = ""
+            except:
+                pass
+
+            answer_map_java_opts = load_config.HibenchConf[
+                'hibench.dfsioe.map.java_opts']
+            answer_red_java_opts = load_config.HibenchConf[
+                'hibench.dfsioe.red.java_opts']
+            if answer_map_java_opts.startswith("\'"):
+                expected_map_java_opts = "\'" + expected_map_java_opts + "\'"
+            elif answer_map_java_opts.startswith("\""):
+                expected_map_java_opts = "\"" + expected_map_java_opts + "\""
+            self.assertEqual(answer_map_java_opts, expected_map_java_opts)
+            if answer_red_java_opts.startswith("\'"):
+                expected_reduce_java_opts = "\'" + expected_reduce_java_opts + "\'"
+            elif answer_red_java_opts.startswith("\""):
+                expected_reduce_java_opts = "\"" + expected_reduce_java_opts + "\""
+            self.assertEqual(answer_red_java_opts, expected_reduce_java_opts)
+
+class ProbeMastersSlavesHostnamesTestCase(unittest.TestCase):
+    def setUp(self):
+        pass
+    def tearDown(self):
+        pass
+    def test_probe_masters_slaves_hostnames(self):
+        load_config.probe_masters_slaves_hostnames()
+        answer_masters_hostnames = load_config.HibenchConf['hibench.masters.hostnames']
+        answer_slaves_hostnames = load_config.HibenchConf['hibench.slaves.hostnames']
+        expected_masters_hostnames = get_expected("hibench.masters.hostnames")
+        expected_slaves_hostnames = get_expected("hibench.slaves.hostnames")
+        self.assertEqual(answer_masters_hostnames.strip("\'"), expected_masters_hostnames)
+        self.assertEqual(answer_slaves_hostnames.strip("\'"), expected_slaves_hostnames)
 
 if __name__ == '__main__':
     test_probe_hadoop_examples_jars()
     test_probe_hadoop_test_examples_jars()
-    # test_probe_java_bin()
-    # test_probe_hadoop_release()
-    # test_probe_spark_version()
-    # # test_probe_sleep_jar()
-    # test_probe_hadoop_conf_dir()
-    # test_probe_spark_conf_value()
-    # test_probe_java_opts()
+    test_probe_java_bin()
+    test_probe_hadoop_release()
+    test_probe_spark_version()
+    test_probe_hadoop_conf_dir()
+    test_probe_spark_conf_value()
+    test_probe_java_opts()
+    test_probe_masters_slaves_hostnames()
 
