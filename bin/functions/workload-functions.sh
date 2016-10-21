@@ -354,12 +354,6 @@ function ensure-nutchindexing-release () {
     NUTCH_ROOT=${WORKLOAD_RESULT_FOLDER}
     cp -a $NUTCH_DIR/nutch $NUTCH_ROOT
 
-    if [ $HADOOP_VERSION == "hadoop1" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr1.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    elif [ $HADOOP_VERSION == "hadoop2" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    fi
-    
     cd ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
         tar zxf apache-nutch-1.2-bin.tar.gz

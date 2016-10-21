@@ -16,7 +16,7 @@
 
 current_dir=`dirname "$0"`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/nutchindexing.conf
+workload_config=${root_dir}/conf/workloads/websearch/nutchindexing.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
 enter_bench HadoopPrepareNutchindexing ${workload_config} 
