@@ -2,7 +2,8 @@ import unittest
 import os
 import load_config
 import mock
-import fnmatch, re
+import fnmatch
+import re
 import glob
 
 
@@ -10,9 +11,11 @@ def print_hint_seperator(hint):
     print("\n" + hint)
     print("--------------------------------")
 
-def runTest(test_case):
+
+def run_test(test_case):
     suite = unittest.TestLoader().loadTestsFromTestCase(test_case)
     unittest.TextTestRunner(verbosity=2).run(suite)
+
 
 def parse_conf():
     conf_root = os.path.abspath(".") + "/../../conf"
@@ -34,9 +37,11 @@ def parse_conf():
                 load_config.HibenchConf[key] = value.strip()
                 load_config.HibenchConfRef[key] = filename
 
+
 def parse_conf_before_probe():
     parse_conf()
     load_config.waterfall_config()
+
 
 def get_expected(name):
     expected_probe_conf_path = "/test_load_config_answer.conf"
@@ -71,7 +76,8 @@ def test_probe_hadoop_examples_jars():
                 else:
                     return ""
 
-            mock_exactly_one_file_one_candidate = mock.Mock(side_effect=exactly_one_file_one_candidate)
+            mock_exactly_one_file_one_candidate = mock.Mock(
+                side_effect=exactly_one_file_one_candidate)
             with mock.patch("load_config.exactly_one_file_one_candidate",
                             mock_exactly_one_file_one_candidate):
                 try:
@@ -80,12 +86,20 @@ def test_probe_hadoop_examples_jars():
                 except:
                     pass
                 answer = load_config.HibenchConf["hibench.hadoop.examples.jar"]
-                self.assertEqual(os.path.abspath(answer), os.path.abspath(hadoop_examples_jars_list[case_num][1]))
+                self.assertEqual(
+                    os.path.abspath(answer), os.path.abspath(
+                        hadoop_examples_jars_list[case_num][1]))
 
         return test
 
-    hadoop_examples_jars_list = [["apache0", "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar"], ["cdh0", "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-examples-2.7.3.jar"],
-                                 ["cdh1", "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-examples-2.7.3.jar"], ["hdp0", "/tmp/test/hadoop_home/hadoop-mapreduce-examples.jar"]]
+    hadoop_examples_jars_list = [["apache0",
+                                  "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar"],
+                                 ["cdh0",
+                                  "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-examples-2.7.3.jar"],
+                                 ["cdh1",
+                                  "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-examples-2.7.3.jar"],
+                                 ["hdp0",
+                                  "/tmp/test/hadoop_home/hadoop-mapreduce-examples.jar"]]
 
     for i in range(len(hadoop_examples_jars_list)):
         test_name = 'test_%s' % hadoop_examples_jars_list[i][0]
@@ -93,7 +107,8 @@ def test_probe_hadoop_examples_jars():
         setattr(ProbeHadoopExamplesTestCase, test_name, test)
 
     print_hint_seperator("Test probe hadoop examples jars:")
-    runTest(ProbeHadoopExamplesTestCase)
+    run_test(ProbeHadoopExamplesTestCase)
+
 
 def test_probe_hadoop_test_examples_jars():
     def test_probe_hadoop_examples_jars_generator(case_num):
@@ -107,7 +122,8 @@ def test_probe_hadoop_test_examples_jars():
                 else:
                     return ""
 
-            mock_exactly_one_file_one_candidate = mock.Mock(side_effect=exactly_one_file_one_candidate)
+            mock_exactly_one_file_one_candidate = mock.Mock(
+                side_effect=exactly_one_file_one_candidate)
             with mock.patch("load_config.exactly_one_file_one_candidate",
                             mock_exactly_one_file_one_candidate):
                 try:
@@ -115,13 +131,22 @@ def test_probe_hadoop_test_examples_jars():
                     probe_hadoop_examples_test_jars()
                 except:
                     pass
-                answer = load_config.HibenchConf["hibench.hadoop.examples.test.jar"]
-                self.assertEqual(os.path.abspath(answer), os.path.abspath(hadoop_test_examples_jars_list[case_num][1]))
+                answer = load_config.HibenchConf[
+                    "hibench.hadoop.examples.test.jar"]
+                self.assertEqual(
+                    os.path.abspath(answer), os.path.abspath(
+                        hadoop_test_examples_jars_list[case_num][1]))
 
         return test
 
-    hadoop_test_examples_jars_list = [["apache0", "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"], ["cdh0", "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
-                                 ["cdh1", "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"], ["hdp0", "/tmp/test/hadoop_home/hadoop-mapreduce-client-jobclient-tests.jar"]]
+    hadoop_test_examples_jars_list = [["apache0",
+                                       "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
+                                      ["cdh0",
+                                       "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
+                                      ["cdh1",
+                                       "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
+                                      ["hdp0",
+                                       "/tmp/test/hadoop_home/hadoop-mapreduce-client-jobclient-tests.jar"]]
 
     for i in range(len(hadoop_test_examples_jars_list)):
         test_name = 'test_%s' % hadoop_test_examples_jars_list[i][0]
@@ -129,29 +154,34 @@ def test_probe_hadoop_test_examples_jars():
         setattr(ProbeHadoopTestExamplesTestCase, test_name, test)
 
     print_hint_seperator("Test probe hadoop test examples jars:")
-    runTest(ProbeHadoopTestExamplesTestCase)
+    run_test(ProbeHadoopTestExamplesTestCase)
+
 
 def test_probe_java_bin():
     print_hint_seperator("Test probe java bin:")
-    runTest(ProbeJavaBinTestCase)
+    run_test(ProbeJavaBinTestCase)
+
 
 def test_probe_hadoop_release():
     print_hint_seperator("Test probe hadoop release:")
-    runTest(ProbeHadoopReleaseTestCase)
+    run_test(ProbeHadoopReleaseTestCase)
+
 
 def test_probe_spark_version():
     print_hint_seperator("Test probe spark version")
-    runTest(ProbeSparkVersionTestCase)
+    run_test(ProbeSparkVersionTestCase)
 
 
 def test_probe_hadoop_conf_dir():
     print_hint_seperator("Test probe hadoop conf dir")
-    runTest(ProbeHadoopConfDirTestCase)
+    run_test(ProbeHadoopConfDirTestCase)
+
 
 def test_probe_spark_conf_value():
     def test_probe_spark_conf_value_generator(case_num):
         def test(self):
-            load_config.HibenchConf["hibench.spark.home"] = "/tmp/test/spark_home"
+            load_config.HibenchConf[
+                "hibench.spark.home"] = "/tmp/test/spark_home"
 
             conf_name = spark_conf_test_case_list[case_num][1]
             line = spark_conf_test_case_list[case_num][2]
@@ -182,7 +212,18 @@ def test_probe_spark_conf_value():
 
         return test
 
-    spark_conf_test_case_list = [["spark_master_webui_port_simple", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=8880", "8080"], ["spark_master_webui_port_single_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\'8880\'", "8080"], ["spark_master_webui_port_double_quotes", "SPARK_MASTER_WEBUI_PORT", "export SPARK_MASTER_WEBUI_PORT=\"8880\"", "8080"],
+    spark_conf_test_case_list = [["spark_master_webui_port_simple",
+                                  "SPARK_MASTER_WEBUI_PORT",
+                                  "export SPARK_MASTER_WEBUI_PORT=8880",
+                                  "8080"],
+                                 ["spark_master_webui_port_single_quotes",
+                                  "SPARK_MASTER_WEBUI_PORT",
+                                  "export SPARK_MASTER_WEBUI_PORT=\'8880\'",
+                                  "8080"],
+                                 ["spark_master_webui_port_double_quotes",
+                                  "SPARK_MASTER_WEBUI_PORT",
+                                  "export SPARK_MASTER_WEBUI_PORT=\"8880\"",
+                                  "8080"],
                                  ]
 
     for i in range(len(spark_conf_test_case_list)):
@@ -190,47 +231,62 @@ def test_probe_spark_conf_value():
         test = test_probe_spark_conf_value_generator(i)
         setattr(ProbeSparkConfValueTestCase, test_name, test)
     print_hint_seperator("Test probe spark conf value")
-    runTest(ProbeSparkConfValueTestCase)
+    run_test(ProbeSparkConfValueTestCase)
+
 
 def test_probe_java_opts():
     print_hint_seperator("Test probe java opts")
-    runTest(ProbeJavaOptsTestCase)
+    run_test(ProbeJavaOptsTestCase)
+
 
 def test_probe_masters_slaves_hostnames():
     print_hint_seperator("Test probe masters slaves hostnames")
-    runTest(ProbeMastersSlavesHostnamesTestCase)
+    run_test(ProbeMastersSlavesHostnamesTestCase)
+
 
 class ProbeHadoopExamplesTestCase(unittest.TestCase):
+
     def setUp(self):
-        load_config.HibenchConf["hibench.hadoop.home"] = "/tmp/test/hadoop_home"
+        load_config.HibenchConf[
+            "hibench.hadoop.home"] = "/tmp/test/hadoop_home"
 
     def tearDown(self):
         load_config.HibenchConf["hibench.hadoop.examples.jar"] = ""
 
+
 class ProbeHadoopTestExamplesTestCase(unittest.TestCase):
+
     def setUp(self):
-        load_config.HibenchConf["hibench.hadoop.home"] = "/tmp/test/hadoop_home"
+        load_config.HibenchConf[
+            "hibench.hadoop.home"] = "/tmp/test/hadoop_home"
 
     def tearDown(self):
         load_config.HibenchConf["hibench.hadoop.examples.test.jar"] = ""
 
+
 class ProbeJavaBinTestCase(unittest.TestCase):
+
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_java_bin(self):
         load_config.probe_java_bin()
         answer = load_config.HibenchConf["java.bin"]
         expected = get_expected("java.bin")
         self.assertEqual(answer, expected)
 
+
 class ProbeHadoopReleaseTestCase(unittest.TestCase):
 
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_hadoop_release(self):
         parse_conf_before_probe()
         load_config.probe_hadoop_release()
@@ -238,11 +294,15 @@ class ProbeHadoopReleaseTestCase(unittest.TestCase):
         expected = get_expected("hibench.hadoop.release")
         self.assertEqual(answer, expected)
 
+
 class ProbeSparkVersionTestCase(unittest.TestCase):
+
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_spark_version(self):
         parse_conf_before_probe()
         load_config.probe_spark_version()
@@ -250,18 +310,24 @@ class ProbeSparkVersionTestCase(unittest.TestCase):
         expected = get_expected("hibench.spark.version")
         self.assertEqual(answer, expected)
 
+
 class ProbeHadoopConfDirTestCase(unittest.TestCase):
+
     def expected_hadoop_conf_dir(self):
         if not load_config.HibenchConf.get("hibench.hadoop.configure.dir", ""):
             hadoop_conf_dir = os.path.join(
                 load_config.HibenchConf["hibench.hadoop.home"], "etc", "hadoop")
         else:
-            hadoop_conf_dir = load_config.HibenchConf["hibench.hadoop.configure.dir"]
+            hadoop_conf_dir = load_config.HibenchConf[
+                "hibench.hadoop.configure.dir"]
         return hadoop_conf_dir
+
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_hadoop_conf_dir(self):
         parse_conf_before_probe()
         load_config.probe_hadoop_configure_dir()
@@ -269,11 +335,15 @@ class ProbeHadoopConfDirTestCase(unittest.TestCase):
         expected = self.expected_hadoop_conf_dir()
         self.assertEqual(answer, expected)
 
+
 class ProbeSparkConfValueTestCase(unittest.TestCase):
+
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_spark_conf_value_default_value(self):
         parse_conf_before_probe()
         conf_name = "Whatever~"
@@ -282,15 +352,22 @@ class ProbeSparkConfValueTestCase(unittest.TestCase):
         expected = default_value
         self.assertEqual(answer, expected)
 
+
 class ProbeJavaOptsTestCase(unittest.TestCase):
+
     def setUp(self):
-        load_config.HibenchConf["hibench.hadoop.home"] = "/tmp/test/hadoop_home"
-        load_config.HibenchConf["hibench.hadoop.configure.dir"] = "/tmp/test/hadoop_home/etc/hadoop"
+        load_config.HibenchConf[
+            "hibench.hadoop.home"] = "/tmp/test/hadoop_home"
+        load_config.HibenchConf[
+            "hibench.hadoop.configure.dir"] = "/tmp/test/hadoop_home/etc/hadoop"
+
     def tearDown(self):
         pass
+
     def test_probe_java_opts(self):
 
-        mapred_site_path = load_config.HibenchConf["hibench.hadoop.configure.dir"] + "/mapred-site.xml"
+        mapred_site_path = load_config.HibenchConf[
+            "hibench.hadoop.configure.dir"] + "/mapred-site.xml"
 
         mapred_site_content = "<property><name>mapreduce.map.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property><property><name>mapreduce.reduce.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property>"
         expected_map_java_opts = "-Xmx1536M -DpreferIPv4Stack=true"
@@ -302,7 +379,8 @@ class ProbeJavaOptsTestCase(unittest.TestCase):
             else:
                 return []
 
-        mock_read_file_content_java_opts = mock.Mock(side_effect=read_file_content_java_opts)
+        mock_read_file_content_java_opts = mock.Mock(
+            side_effect=read_file_content_java_opts)
         with mock.patch("load_config.read_file_content",
                         mock_read_file_content_java_opts):
             answer = ""
@@ -329,19 +407,29 @@ class ProbeJavaOptsTestCase(unittest.TestCase):
                 expected_reduce_java_opts = "\"" + expected_reduce_java_opts + "\""
             self.assertEqual(answer_red_java_opts, expected_reduce_java_opts)
 
+
 class ProbeMastersSlavesHostnamesTestCase(unittest.TestCase):
+
     def setUp(self):
         pass
+
     def tearDown(self):
         pass
+
     def test_probe_masters_slaves_hostnames(self):
         load_config.probe_masters_slaves_hostnames()
-        answer_masters_hostnames = load_config.HibenchConf['hibench.masters.hostnames']
-        answer_slaves_hostnames = load_config.HibenchConf['hibench.slaves.hostnames']
+        answer_masters_hostnames = load_config.HibenchConf[
+            'hibench.masters.hostnames']
+        answer_slaves_hostnames = load_config.HibenchConf[
+            'hibench.slaves.hostnames']
         expected_masters_hostnames = get_expected("hibench.masters.hostnames")
         expected_slaves_hostnames = get_expected("hibench.slaves.hostnames")
-        self.assertEqual(answer_masters_hostnames.strip("\'"), expected_masters_hostnames)
-        self.assertEqual(answer_slaves_hostnames.strip("\'"), expected_slaves_hostnames)
+        self.assertEqual(
+            answer_masters_hostnames.strip("\'"),
+            expected_masters_hostnames)
+        self.assertEqual(
+            answer_slaves_hostnames.strip("\'"),
+            expected_slaves_hostnames)
 
 if __name__ == '__main__':
     test_probe_hadoop_examples_jars()
@@ -353,4 +441,3 @@ if __name__ == '__main__':
     test_probe_spark_conf_value()
     test_probe_java_opts()
     test_probe_masters_slaves_hostnames()
-
