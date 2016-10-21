@@ -48,13 +48,20 @@
         <module>sql</module>
       </modules>
     </profile>
-
+    
+    <profile>
+	<id>nutch</id>
+	<modules>
+	  <module>nutchindexing</module>
+	</modules>
+    </profile>
     <profile>
       <id>allModules</id>
       <modules>
         <module>sql</module>
         <module>mahout</module>
         <module>pegasus</module>
+	<module>nutchindexing</module>
       </modules>
       <activation>
         <property>
