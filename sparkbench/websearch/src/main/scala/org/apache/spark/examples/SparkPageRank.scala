@@ -24,7 +24,7 @@
 
 package org.apache.spark.examples
 
-import com.intel.sparkbench.IOCommon
+import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark.SparkContext._
 import org.apache.spark.{SparkConf, SparkContext}
 

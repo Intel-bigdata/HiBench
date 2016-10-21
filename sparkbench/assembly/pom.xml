@@ -69,6 +69,17 @@
     </profile>
 
     <profile>
+      <id>websearch</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-websearch</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>graph</id>
       <dependencies>
         <dependency>
@@ -101,6 +112,11 @@
         <dependency>
           <groupId>com.intel.hibench.sparkbench</groupId>
           <artifactId>sparkbench-ml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-websearch</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

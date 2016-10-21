@@ -53,12 +53,3 @@ stop-monitor $MONITOR_PID
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-
-
-#$MAHOUT_HOME/bin/mahout seq2sparse \
-#        $COMPRESS_OPT -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS
-
-#$MAHOUT_HOME/bin/mahout trainnb \
-#        $COMPRESS_OPT -i ${OUTPUT_HDFS}/vectors/tfidf-vectors -el -o ${OUTPUT_HDFS}/model -li ${OUTPUT_HDFS}/labelindex  -ow --tempDir ${OUTPUT_HDFS}/temp
-
-
