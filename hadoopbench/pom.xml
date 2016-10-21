@@ -39,6 +39,7 @@
       <id>websearch</id>
       <modules>
         <module>pegasus</module>
+	<module>nutchindexing</module>
       </modules>
     </profile>
 
@@ -49,12 +50,6 @@
       </modules>
     </profile>
     
-    <profile>
-	<id>nutch</id>
-	<modules>
-	  <module>nutchindexing</module>
-	</modules>
-    </profile>
     <profile>
       <id>allModules</id>
       <modules>
