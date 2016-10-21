@@ -334,8 +334,19 @@ function export_withlog () {
     export ${var_name}
 }
 
+function command_exist ()
+{
+    result=$(which $1)
+    if [ $? -eq 0 ] 
+    then
+        return 0
+    else
+        return 1
+    fi  
+}
+
 function ensure-nutchindexing-release () {
-    if [ ! -e ${HIBENCH_HOME}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
         assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
         exit
     fi
@@ -349,7 +360,7 @@ function ensure-nutchindexing-release () {
         cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
     fi
     
-    cd ${HIBENCH_HOME}"/nutchindexing/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
         tar zxf apache-nutch-1.2-bin.tar.gz
     fi
