@@ -33,8 +33,8 @@ import scala.util.hashing._
  */
 
 class BaseRangePartitioner [K : Ordering : ClassTag, V]
-      (@transient partitions: Int,
-       @transient rdd: RDD[_ <: Product2[K,V]],
+      (@transient private val partitions: Int,
+       @transient private val rdd: RDD[_ <: Product2[K,V]],
        private var ascending: Boolean = true)
   extends Partitioner {   // Adopted from scala's RangePartitioner
   
