@@ -1,0 +1,16 @@
+micro.sleep
+micro.sort
+micro.terasort
+micro.wordcount
+micro.dfsioe
+
+sql.aggregation
+sql.join
+sql.scan
+
+websearch.pagerank
+
+ml.bayes
+ml.kmeans
+
+graph.nweight

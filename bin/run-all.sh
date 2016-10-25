@@ -15,40 +15,42 @@
 # limitations under the License.
 set -u
 
-DIR=`dirname "$0"`
-DIR=`cd "${DIR}/.."; pwd`
+current_dir=`dirname "$0"`
+root_dir=`cd "${current_dir}/.."; pwd`
 
-. ${DIR}/bin/functions/color.sh
+. ${root_dir}/bin/functions/color.sh
 
-for benchmark in `cat $DIR/conf/benchmarks.lst`; do
+for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
     if [[ $benchmark == \#* ]]; then
         continue
     fi
 
     echo -e "${UYellow}${BYellow}Prepare ${Yellow}${UYellow}${benchmark} ${BYellow}...${Color_Off}"
-    
-    WORKLOAD=$DIR/workloads/${benchmark}
+
+    benchmark="${benchmark/./\/}"
+
+    WORKLOAD=$root_dir/bin/workloads/${benchmark}
     echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
     "${WORKLOAD}/prepare/prepare.sh"
 
     if [ $? -ne 0 ]
     then
-	echo "ERROR: ${benchmark} prepare failed!" 
+	echo "ERROR: ${benchmark} prepare failed!"
         continue
     fi
 
-    for target in `cat $DIR/conf/languages.lst`; do
-	if [[ $target == \#* ]]; then 
+    for target in `cat $root_dir/conf/languages.lst`; do
+	if [[ $target == \#* ]]; then
 	    continue
 	fi
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${target}${Color_Off}"
-	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${target}/bin/run.sh${Color_Off}"
-	$WORKLOAD/${target}/bin/run.sh
+	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${target}/run.sh${Color_Off}"
+	$WORKLOAD/${target}/run.sh
 
 	result=$?
 	if [ $result -ne 0 ]
 	then
-	    echo -e "${On_IRed}ERROR: ${benchmark}/${target} failed to run successfully.${Color_Off}" 
+	    echo -e "${On_IRed}ERROR: ${benchmark}/${target} failed to run successfully.${Color_Off}"
             exit $result
 	fi
     done
