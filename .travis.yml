@@ -1,0 +1,10 @@
+language: java
+jdk:
+  - openjdk7
+install: 
+before_script:
+  - "export JAVA_OPTS=-Xmx512m"
+env:
+  - SPARK_VERSION=1.6
+script:
+  - mvn clean package -q -Dmaven.javadoc.skip=true
