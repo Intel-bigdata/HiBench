@@ -8,6 +8,7 @@ sql.aggregation
 sql.join
 sql.scan
 
+websearch.nutchindexing
 websearch.pagerank
 
 ml.bayes

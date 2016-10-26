@@ -39,18 +39,29 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
         continue
     fi
 
-    for target in `cat $root_dir/conf/languages.lst`; do
-	if [[ $target == \#* ]]; then
+    for framework in `cat $root_dir/conf/frameworks.lst`; do
+	if [[ $framework == \#* ]]; then
 	    continue
 	fi
-	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${target}${Color_Off}"
-	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${target}/run.sh${Color_Off}"
-	$WORKLOAD/${target}/run.sh
+
+	if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
+	    continue
+	fi
+	if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
+	    continue
+	fi
+	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
+
+	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
+	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
+	$WORKLOAD/${framework}/run.sh
 
 	result=$?
 	if [ $result -ne 0 ]
 	then
-	    echo -e "${On_IRed}ERROR: ${benchmark}/${target} failed to run successfully.${Color_Off}"
+	    echo -e "${On_IRed}ERROR: ${benchmark}/${framework} failed to run successfully.${Color_Off}"
             exit $result
 	fi
     done
