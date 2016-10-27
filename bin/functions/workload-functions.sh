@@ -292,12 +292,12 @@ function ensure-hivebench-release(){
 }
 
 function ensure-mahout-release (){
-    if [ ! -e ${HIBENCH_HOME}"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
         assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
-    cd ${HIBENCH_HOME}"/mahout/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/mahout/target"
     if [ ! -d $MAHOUT_HOME ]; then
         tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
@@ -334,8 +334,19 @@ function export_withlog () {
     export ${var_name}
 }
 
+function command_exist ()
+{
+    result=$(which $1)
+    if [ $? -eq 0 ] 
+    then
+        return 0
+    else
+        return 1
+    fi  
+}
+
 function ensure-nutchindexing-release () {
-    if [ ! -e ${HIBENCH_HOME}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
         assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
         exit
     fi
@@ -343,13 +354,7 @@ function ensure-nutchindexing-release () {
     NUTCH_ROOT=${WORKLOAD_RESULT_FOLDER}
     cp -a $NUTCH_DIR/nutch $NUTCH_ROOT
 
-    if [ $HADOOP_VERSION == "hadoop1" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr1.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    elif [ $HADOOP_VERSION == "hadoop2" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    fi
-    
-    cd ${HIBENCH_HOME}"/nutchindexing/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
         tar zxf apache-nutch-1.2-bin.tar.gz
     fi

@@ -2,11 +2,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hibench</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
+
   <groupId>com.intel.hibench</groupId>
   <artifactId>hadoopbench</artifactId>
   <packaging>pom</packaging>
@@ -15,19 +17,51 @@
 
   <profiles>
     <profile>
+      <id>micro</id>
+      <modules>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>graph</id>
+      <modules>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>ml</id>
+      <modules>
+        <module>mahout</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>websearch</id>
+      <modules>
+        <module>pegasus</module>
+	<module>nutchindexing</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>sql</id>
       <modules>
         <module>sql</module>
       </modules>
     </profile>
-
+    
     <profile>
-      <id>defaultmodule</id>
+      <id>allModules</id>
       <modules>
         <module>sql</module>
+        <module>mahout</module>
+        <module>pegasus</module>
+	<module>nutchindexing</module>
       </modules>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <property>
+          <name>!modules</name>
+        </property>
       </activation>
     </profile>
   </profiles>

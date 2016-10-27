@@ -136,6 +136,12 @@ def exactly_one_file_one_candidate(filename_pattern):
         assert 0, "The pattern " + filename_pattern + \
             " matches more than one file, please remove the redundant files"
 
+def read_file_content(filepath):
+    file_content = []
+    if(len(glob.glob(filepath)) == 1):
+        with open(filepath) as f:
+            file_content = f.readlines()
+    return file_content
 
 def parse_conf(conf_root, workload_config_file):
     conf_files = sorted(glob.glob(conf_root + "/*.conf")) + \
@@ -477,19 +483,17 @@ def probe_spark_conf_value(conf_name, default_value):
     spark_env_file = join(spark_home, "conf/spark-env.sh")
     value = default_value
 
-    if(len(glob.glob(spark_env_file)) == 1):
-        with open(spark_env_file) as f:
-            file_content = f.readlines()
-        for line in file_content:
-            if not line.strip().startswith(
-                    "#") and conf_name in line:
-                if "\"" in line:
-                    value = line.split("=")[1].split("\"")[1]
-                elif "\'" in line:
-                    value = line.split("=")[1].split("\'")[1]
-                else:
-                    value = line.split("=")[1]
-                value = value.strip()
+    file_content = read_file_content(spark_env_file)
+    for line in file_content:
+        if not line.strip().startswith(
+                "#") and conf_name in line:
+            if "\"" in line:
+                value = line.split("=")[1].split("\"")[1]
+            elif "\'" in line:
+                value = line.split("=")[1].split("\'")[1]
+            else:
+                value = line.split("=")[1]
+            value = value.strip()
     return value
 
 
@@ -606,11 +610,10 @@ def probe_java_opts():
     cnt = 0
     map_java_opts_line = ""
     reduce_java_opts_line = ""
-    try:
-        with open(file_name) as f:
-            content = f.read()
-    except IOError:
-        return
+    lines = read_file_content(file_name)
+    content = ""
+    for line in lines:
+        content = content + line
     # Do the split for itself so as to deal with any weird xml style
     content = content.split("<value>")
     for line in content:
@@ -654,25 +657,6 @@ def generate_optional_value():
     probe_mapper_reducer_names()
     probe_masters_slaves_hostnames()
     probe_java_opts()
-
-
-def test_succeed():
-    # Can only be used to test if auto probe executes correctly, will effect
-    # the latter export_config function and get a no such file or directory
-    # error
-    print("1 " + HibenchConf['java.bin'] + '\n')
-    print("2 " + HibenchConf["hibench.hadoop.release"] + "\n")
-    print("3 " + HibenchConf["hibench.spark.version"] + "\n")
-    print("4 " + HibenchConf["hibench.hadoop.examples.jar"] + "\n")
-    print("5 " + HibenchConf["hibench.hadoop.examples.test.jar"] + "\n")
-    print("6 " + HibenchConf["hibench.sleep.job.jar"] + "\n")
-    print("7 " + HibenchConf["hibench.hadoop.configure.dir"] + "\n")
-    print("8 " + HibenchConf["hibench.hadoop.mapper.name"] + "\n")
-    print("9 " + HibenchConf["hibench.hadoop.reducer.name"] + "\n")
-    print("10 " + HibenchConf['hibench.masters.hostnames'] + "\n")
-    print("11 " + HibenchConf['hibench.slaves.hostnames'] + "\n")
-    print("12 " + HibenchConf['hibench.dfsioe.map.java_opts'] + "\n")
-    print("13 " + HibenchConf['hibench.dfsioe.red.java_opts'] + "\n")
 
 
 def export_config(workload_name):

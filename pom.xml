@@ -115,8 +115,6 @@
 
   <modules>
     <module>autogen</module>
-    <module>mahout</module>
-    <module>pegasus</module>
   </modules>
 
   <profiles>
