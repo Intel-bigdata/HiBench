@@ -575,7 +575,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
         fsConfig.setInt("test.io.file.buffer.size", bufferSize);
         fsConfig.setInt("test.io.sampling.interval",tputSampleInterval);
  
-        FileSystem fs = FileSystem.get(new Path(TEST_ROOT_DIR).toUri(), fsConfig);
+	FileSystem fs = FileSystem.get(fsConfig);
 
         //get the configuration of max number of concurrent maps
         JobConf dummyConf = new JobConf(fsConfig, TestDFSIOEnh.class);
