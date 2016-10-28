@@ -187,8 +187,8 @@ def load_config(
     conf_root = abspath(conf_root)
     workload_config_file = abspath(workload_config_file)
 
-    # get current workload job name and store it in workload_job
-    (dir,workload_job) = os.path.split(workload_folder)
+    # get current workload's framework name and store it in framework_name
+    (dir,framework_name) = os.path.split(workload_folder)
     # get workload name
     workload_name = os.path.basename(dir)
 
@@ -206,7 +206,7 @@ def load_config(
     check_config()
     #import pdb;pdb.set_trace()
     # Export config to file, let bash script to import as local variables.
-    print export_config(workload_name, workload_job)
+    print export_config(workload_name, framework_name)
 
 
 def check_config():             # check configures
@@ -660,10 +660,10 @@ def generate_optional_value():
     probe_java_opts()
 
 
-def export_config(workload_name, workload_job):
+def export_config(workload_name, framework_name):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']
-    conf_dir = join(report_dir, workload_name, workload_job, 'conf')
+    conf_dir = join(report_dir, workload_name, framework_name, 'conf')
     conf_filename = join(conf_dir, "%s.conf" % workload_name)
 
     spark_conf_dir = join(conf_dir, "sparkbench")
