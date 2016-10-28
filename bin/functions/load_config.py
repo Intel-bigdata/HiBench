@@ -14,7 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, os, glob, re, urllib, socket
+import sys
+import os
+import glob
+import re
+import urllib
+import socket
+
 from contextlib import closing
 from collections import defaultdict
 from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvPropMapping
