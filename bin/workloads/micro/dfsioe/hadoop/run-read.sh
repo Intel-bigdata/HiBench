@@ -21,7 +21,7 @@ workload_config=${root_dir}/conf/workloads/micro/dfsioe.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
 
-enter_bench HadoopDfsioe-read ${workload_config}
+enter_bench HadoopDfsioe-read ${workload_config} ${current_dir}
 show_bannar start
 
 # path check
