@@ -19,7 +19,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopWordcount ${workload_config}
+enter_bench HadoopWordcount ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $OUTPUT_HDFS || true

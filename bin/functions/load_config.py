@@ -14,11 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import glob
-import re
-import urllib
-import socket
+import sys, os, glob, re, urllib, socket
 from contextlib import closing
 from collections import defaultdict
 from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvPropMapping
@@ -185,11 +181,16 @@ def override_conf_by_paching_conf():
 def load_config(
         conf_root,
         workload_config_file,
-        workload_name,
+        workload_folder,
         patching_config=""):
     abspath = os.path.abspath
     conf_root = abspath(conf_root)
     workload_config_file = abspath(workload_config_file)
+
+    # get current workload job name and store it in workload_job
+    (dir,workload_job) = os.path.split(workload_folder)
+    # get workload name
+    workload_name = os.path.basename(dir)
 
     parse_conf(conf_root, workload_config_file)
 
@@ -205,7 +206,7 @@ def load_config(
     check_config()
     #import pdb;pdb.set_trace()
     # Export config to file, let bash script to import as local variables.
-    print export_config(workload_name)
+    print export_config(workload_name, workload_job)
 
 
 def check_config():             # check configures
@@ -659,10 +660,10 @@ def generate_optional_value():
     probe_java_opts()
 
 
-def export_config(workload_name):
+def export_config(workload_name, workload_job):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']
-    conf_dir = join(report_dir, workload_name, 'conf')
+    conf_dir = join(report_dir, workload_name, workload_job, 'conf')
     conf_filename = join(conf_dir, "%s.conf" % workload_name)
 
     spark_conf_dir = join(conf_dir, "sparkbench")
@@ -736,10 +737,10 @@ if __name__ == "__main__":
     if len(sys.argv) < 4:
         raise Exception(
             "Please supply <conf root path>, <workload root path>, <workload folder path> [<patch config lists, seperated by comma>")
-    conf_root, workload_config, workload_name = sys.argv[
+    conf_root, workload_configFile, workload_folder = sys.argv[
         1], sys.argv[2], sys.argv[3]
     if len(sys.argv) > 4:
         patching_config = sys.argv[4]
     else:
         patching_config = ''
-    load_config(conf_root, workload_config, workload_name, patching_config)
+    load_config(conf_root, workload_configFile, workload_folder, patching_config)
