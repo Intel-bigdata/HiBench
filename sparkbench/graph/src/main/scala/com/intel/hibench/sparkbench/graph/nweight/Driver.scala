@@ -19,7 +19,7 @@ package com.intel.hibench.sparkbench.graph.nweight
 
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.scheduler.{JobLogger, StatsReportListener}
+import org.apache.spark.scheduler.StatsReportListener
 
 /** 
  * Compute NWeight for Graph G(V, E) as defined below
@@ -74,8 +74,7 @@ object NWeight extends Serializable{
     else
       sparkConf.setAppName("NWeightPregel")
     val sc = new SparkContext(sparkConf)
- 
-    sc.addSparkListener(new JobLogger)
+
     sc.addSparkListener(new StatsReportListener)
 
     if (model.toLowerCase == "graphx") {
