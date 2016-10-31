@@ -20,7 +20,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/join.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareJoin ${workload_config}
+enter_bench HadoopPrepareJoin ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
