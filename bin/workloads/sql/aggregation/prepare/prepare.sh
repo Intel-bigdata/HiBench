@@ -20,7 +20,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/aggregation.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareAggregation ${workload_config}
+enter_bench HadoopPrepareAggregation ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
