@@ -33,7 +33,7 @@ OPTION="-t hive \
         -r ${NUM_REDS} \
         -p ${PAGES} \
         -v ${USERVISITS} \
-        -o sequence"
+        -o text"
 
 START_TIME=`timestamp`
 run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION}  

@@ -331,11 +331,11 @@ public class HiveData {
 		job.setInputFormat(NLineInputFormat.class);
 		FileInputFormat.setInputPaths(job, dummy.getPath());
 
-		job.set("mapred.map.output.compression.type", "BLOCK");
-	 	job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");	
-		MapFileOutputFormat.setCompressOutput(job, true);
+		// job.set("mapred.map.output.compression.type", "BLOCK");
+	 	// job.set("mapreduce.output.fileoutputformat.compress.type","BLOCK");
+		// MapFileOutputFormat.setCompressOutput(job, true);
 //		MapFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.LzoCodec.class);
-		MapFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.DefaultCodec.class);
+		// MapFileOutputFormat.setOutputCompressorClass(job, org.apache.hadoop.io.compress.DefaultCodec.class);
 
 		if (options.isSequenceOut()) {
 			job.setOutputFormat(SequenceFileOutputFormat.class);

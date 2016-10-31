@@ -20,7 +20,7 @@ package com.intel.hibench.sparkbench.micro
 import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.hadoop.examples.terasort.{TeraInputFormat, TeraOutputFormat}
 import org.apache.hadoop.io.Text
-import org.apache.spark.SparkContext._
+import org.apache.hadoop.io.BytesWritable
 import org.apache.spark._
 import org.apache.spark.rdd._
 
@@ -30,7 +30,10 @@ object ScalaTeraSort {
   implicit def rddToSampledOrderedRDDFunctions[K: Ordering : ClassTag, V: ClassTag]
   (rdd: RDD[(K, V)]) = new ConfigurableOrderedRDDFunctions[K, V, (K, V)](rdd)
 
-  implicit def ArrayByteOrdering: Ordering[Array[Byte]] = Ordering.fromLessThan{case (a, b)=> a.compareTo(b)<0}
+  implicit def ArrayByteOrdering: Ordering[Array[Byte]] = Ordering.fromLessThan {
+    case (a, b) => (new BytesWritable(a).compareTo(new BytesWritable(b))) < 0
+  }
+
   def main(args: Array[String]) {
     if (args.length != 2) {
       System.err.println(
