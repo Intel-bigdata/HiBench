@@ -114,6 +114,7 @@
   </build>
 
   <modules>
+    <module>common</module>
     <module>autogen</module>
   </modules>
 
