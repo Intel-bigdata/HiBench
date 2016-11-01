@@ -17,7 +17,7 @@
 
   <properties>
     <repo>http://archive.apache.org</repo>
-    <file>dist/hive/hive-0.12.0/hive-0.12.0-bin.tar.gz</file>
+    <file>dist/hive/hive-0.14.0/apache-hive-0.14.0-bin.tar.gz</file>
   </properties>
 
   <build>
