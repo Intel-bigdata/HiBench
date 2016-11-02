@@ -16,8 +16,9 @@
  */
 package com.intel.hibench.gearpumpbench
 
-import com.intel.hibench.streambench.common.metrics.MetricsUtil
-import com.intel.hibench.streambench.common.{ConfigLoader, Platform, StreamBenchConfig, TestCase}
+import com.intel.hibench.common.streaming.{TestCase, StreamBenchConfig, Platform, ConfigLoader}
+import com.intel.hibench.common.streaming.metrics.MetricsUtil
+import com.intel.hibench.common.streaming.TestCase
 import com.intel.hibench.gearpumpbench.application._
 import com.intel.hibench.gearpumpbench.source.KafkaSourceProvider
 import com.intel.hibench.gearpumpbench.util.GearpumpConfig

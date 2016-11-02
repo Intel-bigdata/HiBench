@@ -31,8 +31,8 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.UserVisitParser;
+import com.intel.hibench.common.streaming.metrics.KafkaReporter;
+import com.intel.hibench.common.streaming.UserVisitParser;
 
 public class WordCount extends StreamBase {
 

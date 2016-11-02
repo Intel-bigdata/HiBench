@@ -20,10 +20,10 @@ package com.intel.hibench.flinkbench;
 import com.intel.hibench.flinkbench.microbench.*;
 import com.intel.hibench.flinkbench.util.BenchLogUtil;
 import com.intel.hibench.flinkbench.util.FlinkBenchConfig;
-import com.intel.hibench.streambench.common.ConfigLoader;
-import com.intel.hibench.streambench.common.metrics.MetricsUtil;
-import com.intel.hibench.streambench.common.StreamBenchConfig;
-import com.intel.hibench.streambench.common.Platform;
+import com.intel.hibench.common.streaming.ConfigLoader;
+import com.intel.hibench.common.streaming.metrics.MetricsUtil;
+import com.intel.hibench.common.streaming.StreamBenchConfig;
+import com.intel.hibench.common.streaming.Platform;
 
 public class RunBench {
   public static void main(String[] args) throws Exception {

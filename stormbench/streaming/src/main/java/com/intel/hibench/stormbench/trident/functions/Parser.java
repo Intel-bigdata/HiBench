@@ -17,8 +17,8 @@
 package com.intel.hibench.stormbench.trident.functions;
 
 import com.google.common.collect.ImmutableMap;
-import com.intel.hibench.streambench.common.UserVisit;
-import com.intel.hibench.streambench.common.UserVisitParser;
+import com.intel.hibench.common.streaming.UserVisit;
+import com.intel.hibench.common.streaming.UserVisitParser;
 import org.apache.storm.trident.operation.BaseFunction;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.tuple.TridentTuple;

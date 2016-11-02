@@ -25,7 +25,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.common.streaming.metrics.KafkaReporter;
 
 public class Repartition extends StreamBase {
 

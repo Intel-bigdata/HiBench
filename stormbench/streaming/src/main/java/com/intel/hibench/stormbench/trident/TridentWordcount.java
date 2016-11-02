@@ -17,8 +17,8 @@
 
 package com.intel.hibench.stormbench.trident;
 
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+import com.intel.hibench.common.streaming.metrics.KafkaReporter;
+import com.intel.hibench.common.streaming.metrics.LatencyReporter;
 import com.intel.hibench.stormbench.spout.KafkaSpoutFactory;
 import com.intel.hibench.stormbench.topologies.SingleTridentSpoutTops;
 import com.intel.hibench.stormbench.trident.functions.Parser;

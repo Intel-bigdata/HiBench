@@ -16,7 +16,7 @@
  */
 package com.intel.hibench.gearpumpbench.task
 
-import com.intel.hibench.streambench.common.UserVisitParser
+import com.intel.hibench.common.streaming.UserVisitParser
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.{Task, TaskContext}
