@@ -18,8 +18,8 @@
 package com.intel.hibench.stormbench.micro;
 
 import com.google.common.collect.ImmutableMap;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+import com.intel.hibench.common.streaming.metrics.KafkaReporter;
+import com.intel.hibench.common.streaming.metrics.LatencyReporter;
 import com.intel.hibench.stormbench.topologies.SingleSpoutTops;
 import com.intel.hibench.stormbench.util.StormBenchConfig;
 

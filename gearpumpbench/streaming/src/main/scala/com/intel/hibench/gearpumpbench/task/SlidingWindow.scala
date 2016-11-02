@@ -17,7 +17,7 @@
 
 package com.intel.hibench.gearpumpbench.task
 
-import com.intel.hibench.streambench.common.metrics.KafkaReporter
+import com.intel.hibench.common.streaming.metrics.KafkaReporter
 import com.intel.hibench.gearpumpbench.util.GearpumpConfig
 import org.apache.gearpump.{Message, TimeStamp}
 import org.apache.gearpump.cluster.UserConfig

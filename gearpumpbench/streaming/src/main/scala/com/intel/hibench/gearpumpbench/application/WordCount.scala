@@ -17,10 +17,10 @@
 
 package com.intel.hibench.gearpumpbench.application
 
-import com.intel.hibench.streambench.common.TestCase
 import com.intel.hibench.gearpumpbench.source.SourceProvider
 import com.intel.hibench.gearpumpbench.task.{Parser, Sum}
 import com.intel.hibench.gearpumpbench.util.GearpumpConfig
+import com.intel.hibench.common.streaming.TestCase
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.partitioner.ShufflePartitioner
 import org.apache.gearpump.streaming.{Processor, StreamApplication}

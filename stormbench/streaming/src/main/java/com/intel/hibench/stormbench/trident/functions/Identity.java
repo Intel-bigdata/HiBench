@@ -17,8 +17,8 @@
 package com.intel.hibench.stormbench.trident.functions;
 
 import com.google.common.collect.ImmutableMap;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+import com.intel.hibench.common.streaming.metrics.KafkaReporter;
+import com.intel.hibench.common.streaming.metrics.LatencyReporter;
 import com.intel.hibench.stormbench.util.StormBenchConfig;
 import org.apache.storm.trident.operation.MapFunction;
 import org.apache.storm.trident.tuple.TridentTuple;

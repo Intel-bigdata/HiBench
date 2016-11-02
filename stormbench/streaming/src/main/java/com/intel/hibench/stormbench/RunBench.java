@@ -17,11 +17,11 @@
 
 package com.intel.hibench.stormbench;
 
-import com.intel.hibench.streambench.common.ConfigLoader;
-import com.intel.hibench.streambench.common.Platform;
-import com.intel.hibench.streambench.common.StreamBenchConfig;
-import com.intel.hibench.streambench.common.TestCase;
-import com.intel.hibench.streambench.common.metrics.MetricsUtil;
+import com.intel.hibench.common.streaming.ConfigLoader;
+import com.intel.hibench.common.streaming.Platform;
+import com.intel.hibench.common.streaming.StreamBenchConfig;
+import com.intel.hibench.common.streaming.TestCase;
+import com.intel.hibench.common.streaming.metrics.MetricsUtil;
 import com.intel.hibench.stormbench.micro.*;
 import com.intel.hibench.stormbench.trident.*;
 import com.intel.hibench.stormbench.util.BenchLogUtil;
