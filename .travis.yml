@@ -2,9 +2,7 @@ language: java
 jdk:
   - openjdk7
 install:
-  - python -h
-  - apt-get install -y python2.7 python2.7-dev
-  - python -h
+  - python --version
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
