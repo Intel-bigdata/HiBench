@@ -1,4 +1,4 @@
-# HiBench Suite #
+# HiBench Suite ![Build Status](https://travis-ci.org/zybing/HiBench.svg?branch=6.0) #
 ## The bigdata micro benchmark suite ##
 
 
