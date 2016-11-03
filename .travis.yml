@@ -2,6 +2,8 @@ language: java
 jdk:
   - openjdk7
 install: 
+  - pwd
+  - ll
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
