@@ -2,7 +2,6 @@ language: java
 jdk:
   - openjdk7
 install:
-  - python --version
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
@@ -11,4 +10,5 @@ cache:
   directories:
   - $HOME/.m2
 script:
+  - ./bin/workloads/micro/wordcount/prepare/prepare.sh
   - mvn clean package -q -Dmaven.javadoc.skip=true
