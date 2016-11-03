@@ -10,8 +10,15 @@ install:
   - wget http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz
   - tar -xzf hadoop-2.6.5.tar.gz
   - cd ${hibench}
+  - cp ./travis/spark-env.sh /opt/spark-1.6.0-bin-hadoop2.6/conf/
+  - cp ./travis/core-site.xml /opt/hadoop-2.6.5/etc/hadoop/
+  - cp ./travis/hdfs-site.xml /opt/hadoop-2.6.5/etc/hadoop/
+  - cp ./travis/mapred-site.xml /opt/hadoop-2.6.5/etc/hadoop/
+  - cp ./travis/yarn-site.xml /opt/hadoop-2.6.5/etc/hadoop/
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
+  - "export HADOOP_HOME=/opt/hadoop-2.6.5"
+  - "export SPARK_HOME=/opt/spark-1.6.0-bin-hadoop2.6"
 env:
   - SPARK_VERSION=1.6
 cache:
@@ -19,3 +26,4 @@ cache:
   - $HOME/.m2
 script:
   - mvn clean package -q -Dmaven.javadoc.skip=true
+  - ./travis/restart-hadoop-spark.sh
