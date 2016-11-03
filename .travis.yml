@@ -26,5 +26,5 @@ cache:
   - $HOME/.m2
 script:
   - mvn clean package -q -Dmaven.javadoc.skip=true
-  - cat /etc/hosts
+  - sudo echo -e "Host localhost\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
   - sudo ./travis/restart-hadoop-spark.sh
