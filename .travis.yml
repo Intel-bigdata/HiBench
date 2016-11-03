@@ -3,11 +3,13 @@ language: java
 jdk:
   - openjdk7
 install:
+  - hibench=$(pwd)
   - cd /opt/
   - wget http://d3kbcqa49mib13.cloudfront.net/spark-1.6.0-bin-hadoop2.6.tgz
   - tar -xzf spark-1.6.0-bin-hadoop2.6.tgz
-  - cd ./spark-1.6.0-bin-hadoop2.6
-  - ./bin/run-example SparkPi
+  - wget http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz
+  - tar -xzf hadoop-2.6.5.tar.gz
+  - cd ${hibench}
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
