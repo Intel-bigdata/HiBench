@@ -2,7 +2,10 @@ language: java
 jdk:
   - openjdk7
 install:
+  - cd /opt/
   - wget http://d3kbcqa49mib13.cloudfront.net/spark-1.6.0-bin-hadoop2.6.tgz
+  - tar -xzf spark-1.6.0-bin-hadoop2.6.tgz
+  - ls -l
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
