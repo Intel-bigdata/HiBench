@@ -26,7 +26,7 @@ cache:
   - $HOME/.m2
 script:
 #  - mvn clean package -q -Dmaven.javadoc.skip=true
-  - ssh-keygen -q -t rsa
+  - ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
   - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   - echo "    StrictHostKeyChecking no                     " >> /etc/ssh/ssh_config
   - echo "    UserKnownHostsFile=/dev/null                 " >> /etc/ssh/ssh_config
