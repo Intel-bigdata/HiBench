@@ -14,8 +14,6 @@
 # limitations under the License.
 
 
-# restart ssh service
-service ssh restart
 
 # stop process
 ${HADOOP_HOME}/sbin/stop-dfs.sh
