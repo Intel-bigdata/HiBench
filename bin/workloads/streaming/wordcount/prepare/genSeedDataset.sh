@@ -25,8 +25,11 @@ workload_config=${root_dir}/conf/workloads/streaming/wordcount.conf
 enter_bench HadoopPrepareDatafile1 ${workload_config} ${current_dir}
 show_bannar start
 
+PAGES=120000
+USERVISITS=1000000
+
 rmr-hdfs $STREAMING_DATA_DIR || true
-echo -e "${On_Blue}Pages:120000, USERVISITS:1000000${Color_Off}"
+echo -e "${On_Blue}Pages:${PAGES}, USERVISITS:${USERVISITS}${Color_Off}"
 
 OPTION="-t hive \
         -b ${STREAMING_DATA_DIR} \
@@ -37,7 +40,7 @@ OPTION="-t hive \
         -v ${USERVISITS}"
 
 START_TIME=`timestamp`
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} ${DATATOOLS_COMPRESS_OPT}
+run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION}
 END_TIME=`timestamp`
 SIZE="0"
 
