@@ -536,22 +536,23 @@ def probe_masters_slaves_hostnames():
                 0]
             HibenchConfRef[
                 'hibench.masters.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
-            log(spark_master, HibenchConf['hibench.masters.hostnames'])
-            master_port = probe_spark_master_webui_port()
-            worker_port = probe_spark_worker_webui_port()
-            with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port))) as page:
-                worker_hostnames = [
-                    re.findall(
-                        "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
-                        worker_port,
-                        x)[0] for x in page.readlines() if "%s" %
-                    worker_port in x and "worker" in x]
-                HibenchConf['hibench.slaves.hostnames'] = " ".join(
-                    worker_hostnames)
-                HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
-                    'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
-                assert HibenchConf['hibench.slaves.hostnames'] != "" and HibenchConf[
-                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" % (master_port, worker_port)
+            try:
+                log(spark_master, HibenchConf['hibench.masters.hostnames'])
+                master_port = probe_spark_master_webui_port()
+                worker_port = probe_spark_worker_webui_port()
+                with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port))) as page:
+                    worker_hostnames = [
+                        re.findall(
+                            "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
+                            worker_port,
+                            x)[0] for x in page.readlines() if "%s" %
+                        worker_port in x and "worker" in x]
+                    HibenchConf['hibench.slaves.hostnames'] = " ".join(
+                        worker_hostnames)
+                    HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
+                        'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
+            except Exception as e:
+                    assert 0, "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" % (master_port, worker_port)
         # yarn mode
         elif spark_master.startswith("yarn"):
             yarn_executable = os.path.join(os.path.dirname(
