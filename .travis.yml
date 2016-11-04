@@ -29,4 +29,4 @@ script:
   - ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
   - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   - sudo ssh  -o StrictHostKeyChecking=no  127.0.0.1
-  - sudo ./travis/restart-hadoop-spark.sh
+  - ./travis/restart-hadoop-spark.sh
