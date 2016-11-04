@@ -26,7 +26,5 @@ cache:
   - $HOME/.m2
 script:
 #  - mvn clean package -q -Dmaven.javadoc.skip=true
-  - ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-  - cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   - sudo ./travis/ssh.sh
   - sudo ./travis/restart-hadoop-spark.sh
