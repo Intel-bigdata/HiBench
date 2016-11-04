@@ -540,7 +540,8 @@ def probe_masters_slaves_hostnames():
                 log(spark_master, HibenchConf['hibench.masters.hostnames'])
                 master_port = probe_spark_master_webui_port()
                 worker_port = probe_spark_worker_webui_port()
-                with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port))) as page:
+                # Make the assumption that the master is in internal network, and force not to use any proxies
+                with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port), proxies={})) as page:
                     worker_hostnames = [
                         re.findall(
                             "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
