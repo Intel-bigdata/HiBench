@@ -25,3 +25,4 @@ cache:
 script:
   - mvn clean package -q -Dmaven.javadoc.skip=true
   - sudo ./travis/restart-hadoop-spark.sh
+  - sudo ./bin/workloads/micro/wordcount/prepare/prepare.sh
