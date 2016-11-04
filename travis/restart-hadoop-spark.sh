@@ -13,7 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#restart ssh service
 
+ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
+cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+echo "    StrictHostKeyChecking no                     " >> /etc/ssh/ssh_config
+service ssh restart
 
 # stop process
 /opt/hadoop-2.6.5/sbin/stop-dfs.sh
