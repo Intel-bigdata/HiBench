@@ -14,18 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workload_folder=`dirname "$0"`
-workload_folder=`cd "$workload_folder"; pwd`
-workload_root=${workload_folder}/../..
-echo $workload_root
-. "${workload_root}/../../bin/functions/load-bench-config.sh"
+current_dir=`dirname "$0"`
+current_dir=`cd "$current_dir"; pwd`
+root_dir=${current_dir}/../../../../..
+workload_config=${root_dir}/conf/workloads/streaming/wordcount.conf
+. "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench GearpumpWordcount ${workload_root} ${workload_folder}
+enter_bench GearpumpWordcount ${workload_config} ${current_dir}
 show_bannar start
 
 START_TIME=`timestamp`
 printFullLog
-run-gearpump-app com.intel.hibench.streambench.gearpump.RunBench ${SPARKBENCH_PROPERTIES_FILES}
+run-gearpump-app com.intel.hibench.gearpumpbench.RunBench ${SPARKBENCH_PROPERTIES_FILES}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0
