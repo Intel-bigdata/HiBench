@@ -15,8 +15,7 @@ install:
   - cp ./travis/hdfs-site.xml /opt/hadoop-2.6.5/etc/hadoop/
   - cp ./travis/mapred-site.xml /opt/hadoop-2.6.5/etc/hadoop/
   - cp ./travis/yarn-site.xml /opt/hadoop-2.6.5/etc/hadoop/
-#  - cp ./travis/hadoop-env.sh /opt/hadoop-2.6.5/etc/hadoop/
-#  - cp ./travis/hibench.conf ./conf/
+  - cp ./travis/hibench.conf ./conf/
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
 env:
@@ -32,3 +31,4 @@ script:
   - cp ./travis/spark.conf ./conf/
   - /opt/hadoop-2.6.5/bin/yarn node -list 2
   - sudo ./bin/workloads/micro/wordcount/prepare/prepare.sh
+  - sudo ./bin/workloads/micro/wordcount/hadoop/run.sh
