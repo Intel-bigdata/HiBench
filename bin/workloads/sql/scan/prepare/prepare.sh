@@ -20,7 +20,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/scan.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench HadoopPrepareScan ${workload_config}
+enter_bench HadoopPrepareScan ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
@@ -33,7 +33,7 @@ OPTION="-t hive \
         -r ${NUM_REDS} \
         -p ${PAGES} \
         -v ${USERVISITS} \
-        -o sequence"
+        -o text"
 
 START_TIME=`timestamp`
 run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION}  

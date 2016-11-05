@@ -15,7 +15,6 @@
 # limitations under the License.
 
 workload_folder=`dirname "$0"`
-workload_folder=`cd "$workload_folder"; pwd`
 
 ${workload_folder}/run-read.sh
 ${workload_folder}/run-write.sh

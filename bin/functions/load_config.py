@@ -15,10 +15,12 @@
 # limitations under the License.
 
 import sys
+import os
 import glob
 import re
 import urllib
 import socket
+
 from contextlib import closing
 from collections import defaultdict
 from hibench_prop_env_mapping import HiBenchEnvPropMappingMandatory, HiBenchEnvPropMapping
@@ -185,11 +187,16 @@ def override_conf_by_paching_conf():
 def load_config(
         conf_root,
         workload_config_file,
-        workload_name,
+        workload_folder,
         patching_config=""):
     abspath = os.path.abspath
     conf_root = abspath(conf_root)
     workload_config_file = abspath(workload_config_file)
+
+    # get current workload's framework name and store it in framework_name
+    (dir,framework_name) = os.path.split(workload_folder)
+    # get workload name
+    workload_name = os.path.basename(dir)
 
     parse_conf(conf_root, workload_config_file)
 
@@ -205,7 +212,7 @@ def load_config(
     check_config()
     #import pdb;pdb.set_trace()
     # Export config to file, let bash script to import as local variables.
-    print export_config(workload_name)
+    print export_config(workload_name, framework_name)
 
 
 def check_config():             # check configures
@@ -529,22 +536,24 @@ def probe_masters_slaves_hostnames():
                 0]
             HibenchConfRef[
                 'hibench.masters.hostnames'] = "Probed by the evidence of 'hibench.spark.master=%s'" % spark_master
-            log(spark_master, HibenchConf['hibench.masters.hostnames'])
-            master_port = probe_spark_master_webui_port()
-            worker_port = probe_spark_worker_webui_port()
-            with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port))) as page:
-                worker_hostnames = [
-                    re.findall(
-                        "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
-                        worker_port,
-                        x)[0] for x in page.readlines() if "%s" %
-                    worker_port in x and "worker" in x]
-                HibenchConf['hibench.slaves.hostnames'] = " ".join(
-                    worker_hostnames)
-                HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
-                    'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
-                assert HibenchConf['hibench.slaves.hostnames'] != "" and HibenchConf[
-                    'hibench.masters.hostnames'] != "", "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" % (master_port, worker_port)
+            try:
+                log(spark_master, HibenchConf['hibench.masters.hostnames'])
+                master_port = probe_spark_master_webui_port()
+                worker_port = probe_spark_worker_webui_port()
+                # Make the assumption that the master is in internal network, and force not to use any proxies
+                with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port), proxies={})) as page:
+                    worker_hostnames = [
+                        re.findall(
+                            "http:\/\/([a-zA-Z\-\._0-9]+):%s" %
+                            worker_port,
+                            x)[0] for x in page.readlines() if "%s" %
+                        worker_port in x and "worker" in x]
+                    HibenchConf['hibench.slaves.hostnames'] = " ".join(
+                        worker_hostnames)
+                    HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
+                        'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
+            except Exception as e:
+                    assert 0, "Get workers from spark master's web UI page failed, \nPlease check your configurations, network settings, proxy settings, or set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually, master_port: %s, slave_port:%s" % (master_port, worker_port)
         # yarn mode
         elif spark_master.startswith("yarn"):
             yarn_executable = os.path.join(os.path.dirname(
@@ -659,10 +668,10 @@ def generate_optional_value():
     probe_java_opts()
 
 
-def export_config(workload_name):
+def export_config(workload_name, framework_name):
     join = os.path.join
     report_dir = HibenchConf['hibench.report.dir']
-    conf_dir = join(report_dir, workload_name, 'conf')
+    conf_dir = join(report_dir, workload_name, framework_name, 'conf')
     conf_filename = join(conf_dir, "%s.conf" % workload_name)
 
     spark_conf_dir = join(conf_dir, "sparkbench")
@@ -736,10 +745,10 @@ if __name__ == "__main__":
     if len(sys.argv) < 4:
         raise Exception(
             "Please supply <conf root path>, <workload root path>, <workload folder path> [<patch config lists, seperated by comma>")
-    conf_root, workload_config, workload_name = sys.argv[
+    conf_root, workload_configFile, workload_folder = sys.argv[
         1], sys.argv[2], sys.argv[3]
     if len(sys.argv) > 4:
         patching_config = sys.argv[4]
     else:
         patching_config = ''
-    load_config(conf_root, workload_config, workload_name, patching_config)
+    load_config(conf_root, workload_configFile, workload_folder, patching_config)
