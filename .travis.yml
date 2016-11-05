@@ -32,3 +32,4 @@ script:
   - /opt/hadoop-2.6.5/bin/yarn node -list 2
   - sudo ./bin/workloads/micro/wordcount/prepare/prepare.sh
   - sudo ./bin/workloads/micro/wordcount/hadoop/run.sh
+  - sudo ./bin/workloads/micro/wordcount/spark/run.sh
