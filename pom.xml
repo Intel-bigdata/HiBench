@@ -143,13 +143,6 @@
     </profile>
 
     <profile>
-      <id>samzabench</id>
-      <modules>
-        <module>samzabench</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>stormbench</id>
       <modules>
         <module>stormbench</module>
@@ -163,7 +156,6 @@
         <module>flinkbench</module>
         <module>gearpumpbench</module>
         <module>hadoopbench</module>
-        <module>samzabench</module>
         <module>stormbench</module>
       </modules>
       <activation>
