@@ -110,11 +110,7 @@ function gen_report() {		# dump the result to report file
 
 function rmr-hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        RMDIR_CMD="fs -rmr -skipTrash"
-    else
-        RMDIR_CMD="fs -rm -r -skipTrash"
-    fi
+    RMDIR_CMD="fs -rm -r -skipTrash"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
     echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -151,11 +147,7 @@ function upload-to-hdfs(){
 
 function dus-hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        DUS_CMD="fs -dus"
-    else
-        DUS_CMD="fs -du -s"
-    fi
+    DUS_CMD="fs -du -s"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
     echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -376,17 +368,15 @@ function ensure-nutchindexing-release () {
     cp $NUTCH_ROOT/nutch/bin/nutch $NUTCH_HOME_WORKLOAD/bin
 
     # Patching jcl-over-slf4j version against cdh or hadoop2
-    if [ $HADOOP_VERSION == "hadoop2" ] || [ ${HADOOP_RELEASE:0:3} == "cdh" ]; then
-        mkdir $NUTCH_HOME_WORKLOAD/temp
-        unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
-        cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
-        rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
-        cd $NUTCH_HOME_WORKLOAD/temp
-        zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
-        rm -rf $NUTCH_HOME_WORKLOAD/temp
-    fi
+    mkdir $NUTCH_HOME_WORKLOAD/temp
+    unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
+    cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
+    rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
+    cd $NUTCH_HOME_WORKLOAD/temp
+    zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
+    rm -rf $NUTCH_HOME_WORKLOAD/temp
 
     echo $NUTCH_HOME_WORKLOAD
 }
