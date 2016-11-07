@@ -39,7 +39,7 @@
       <id>websearch</id>
       <modules>
         <module>pegasus</module>
-	<module>nutchindexing</module>
+        <module>nutchindexing</module>
       </modules>
     </profile>
 
@@ -49,14 +49,14 @@
         <module>sql</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>allModules</id>
       <modules>
         <module>sql</module>
         <module>mahout</module>
         <module>pegasus</module>
-	<module>nutchindexing</module>
+        <module>nutchindexing</module>
       </modules>
       <activation>
         <property>

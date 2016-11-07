@@ -92,6 +92,13 @@
     </profile>
 
     <profile>
+      <id>streaming</id>
+      <modules>
+        <module>streaming</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <modules>
         <module>micro</module>
@@ -99,6 +106,7 @@
         <module>websearch</module>
         <module>graph</module>
         <module>sql</module>
+        <module>streaming</module>
       </modules>
       <activation>
         <property>

@@ -1,0 +1,25 @@
+# nimbus of storm cluster
+hibench.streambench.storm.nimbus                HOSTNAME_OF_STORM_NIMBUS
+hibench.streambench.storm.nimbusAPIPort         6627
+
+hibench.streambench.storm.home                  /PATH/TO/YOUR/STORM/HOME
+
+# number of workers of Storm. Number of most bolt threads is also equal to this param.
+hibench.streambench.storm.worker_count           12
+
+# number of kafka spout threads of Storm
+hibench.streambench.storm.spout_threads          12
+
+# number of bolt threads altogether
+hibench.streambench.storm.bolt_threads           12
+
+hibench.streambench.storm.localshuffle           true
+
+# time interval to contact nimbus to judge if finished
+hibench.streambench.storm.nimbusContactInterval 10
+
+# kafka arg indicating whether to read data from kafka from the start or go on to read from last position
+hibench.streambench.storm.read_from_start       true
+
+# whether to turn on ack
+hibench.streambench.storm.ackon         true
