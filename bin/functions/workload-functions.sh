@@ -26,16 +26,15 @@ HIBENCH_CONF_FOLDER=${HIBENCH_CONF_FOLDER:-${workload_func_bin}/../../conf}
 
 function enter_bench(){		# declare the entrance of a workload
     assert $1 "Workload name not specified."
-    assert $2 "Workload root not specified."
-    assert $3 "Workload folder not specified."
+    assert $2 "Workload config file not specified."
+    assert $3 "Current workload folder not specified."
     export HIBENCH_CUR_WORKLOAD_NAME=$1
-    workload_root=$2
+    workload_config_file=$2
     workload_folder=$3
     shift 3
     patching_args=$@
     echo "patching args=$patching_args"
-    local CONF_FILE=`${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $workload_root $workload_folder $patching_args`
-#    ${workload_func_bin}/load-config.py ${HIBENCH_CONF_FOLDER} $workload_root $workload_folder $patching_args
+    local CONF_FILE=`${workload_func_bin}/load_config.py ${HIBENCH_CONF_FOLDER} $workload_config_file $workload_folder $patching_args`
     . $CONF_FILE
 }
 
@@ -111,11 +110,7 @@ function gen_report() {		# dump the result to report file
 
 function rmr-hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        RMDIR_CMD="fs -rmr -skipTrash"
-    else
-        RMDIR_CMD="fs -rm -r -skipTrash"
-    fi
+    RMDIR_CMD="fs -rm -r -skipTrash"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
     echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -152,11 +147,7 @@ function upload-to-hdfs(){
 
 function dus-hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        DUS_CMD="fs -dus"
-    else
-        DUS_CMD="fs -du -s"
-    fi
+    DUS_CMD="fs -du -s"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
     echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -191,34 +182,6 @@ function dir_size() {
     done
 }
 
-function check_compress() {
-  if [ "x"$HADOOP_VERSION == "xhadoop2" ]; then
-
-     if [ $COMPRESS -eq 1 ]; then
-       COMPRESS_OPT="-Dmapreduce.map.output.compress=true \
-                     -Dmapreduce.map.output.compress.codec=$COMPRESS_CODEC_MAP \
-                     -Dmapreduce.output.fileoutputformat.compress=true \
-                     -Dmapreduce.output.fileoutputformat.compress.codec=$COMPRESS_CODEC \
-                     -Dmapreduce.output.fileoutputformat.compress.type=BLOCK "
-     else
-       COMPRESS_OPT="-Dmapreduce.output.fileoutputformat.compress=false "
-     fi
-
-  else
-    if [ $COMPRESS -eq 1 ]; then
-
-      COMPRESS_OPT="-Dmapred.map.output.compress=true \
-                    -Dmapred.map.output.compress.codec=$COMPRESS_CODEC_MAP \
-                    -Dmapred.output.compress=true \
-                    -Dmapred.output.compression.codec=$COMPRESS_CODEC \
-                    -Dmapred.output.compression.type=BLOCK "
-
-    else
-      COMPRESS_OPT="-Dmapred.output.compress=false"
-    fi
-  fi
-}
-
 function run-spark-job() {
     LIB_JARS=
     while (($#)); do
@@ -243,11 +206,11 @@ function run-spark-job() {
         if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
             YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
-       if [[ -n "${YARN_EXECUTOR_MEMORY:-}" ]]; then
-           YARN_OPTS="${YARN_OPTS} --executor-memory ${YARN_EXECUTOR_MEMORY}"
+       if [[ -n "${SPARK_YARN_EXECUTOR_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --executor-memory ${SPARK_YARN_EXECUTOR_MEMORY}"
        fi
-       if [[ -n "${YARN_DRIVER_MEMORY:-}" ]]; then
-           YARN_OPTS="${YARN_OPTS} --driver-memory ${YARN_DRIVER_MEMORY}"
+       if [[ -n "${SPAKR_YARN_DRIVER_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
        fi
     fi
     if [[ "$CLS" == *.py ]]; then 
@@ -270,13 +233,21 @@ function run-spark-job() {
     fi
 }
 
-function run-streaming-job (){
-    run-spark-job --jars ${STREAMINGBENCH_JARS} $@
+function run-storm-job(){
+    CMD="${STORM_HOME}/bin/storm jar ${STREAMBENCH_STORM_JAR} $@"
+    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
 }
 
-function run-storm-job(){
-    CMD="${STORM_BIN_HOME}/storm jar ${STREAMBENCH_STORM_JAR} $@"
-    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+function run-gearpump-app(){
+    CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
+    echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
+
+function run-flink-job(){
+    CMD="${FLINK_HOME}/bin/flink run -p ${STREAMBENCH_FLINK_PARALLELISM} -m ${HIBENCH_FLINK_MASTER} $@ ${STREAMBENCH_FLINK_JAR} ${SPARKBENCH_PROPERTIES_FILES}"
+    echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
@@ -310,12 +281,12 @@ function run-hadoop-job(){
 }
 
 function ensure-hivebench-release(){
-    if [ ! -e ${DEPENDENCY_DIR}"/hivebench/target/"$HIVE_RELEASE".tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
         assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
-    cd ${DEPENDENCY_DIR}"/hivebench/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/sql/target"
     if [ ! -d $HIVE_HOME ]; then
         tar zxf $HIVE_RELEASE".tar.gz"
     fi
@@ -323,12 +294,12 @@ function ensure-hivebench-release(){
 }
 
 function ensure-mahout-release (){
-    if [ ! -e ${DEPENDENCY_DIR}"/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
         assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
-    cd ${DEPENDENCY_DIR}"/mahout/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/mahout/target"
     if [ ! -d $MAHOUT_HOME ]; then
         tar zxf $MAHOUT_RELEASE".tar.gz"
     fi
@@ -365,8 +336,19 @@ function export_withlog () {
     export ${var_name}
 }
 
+function command_exist ()
+{
+    result=$(which $1)
+    if [ $? -eq 0 ] 
+    then
+        return 0
+    else
+        return 1
+    fi  
+}
+
 function ensure-nutchindexing-release () {
-    if [ ! -e ${DEPENDENCY_DIR}"/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
+    if [ ! -e ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
         assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
         exit
     fi
@@ -374,13 +356,7 @@ function ensure-nutchindexing-release () {
     NUTCH_ROOT=${WORKLOAD_RESULT_FOLDER}
     cp -a $NUTCH_DIR/nutch $NUTCH_ROOT
 
-    if [ $HADOOP_VERSION == "hadoop1" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr1.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    elif [ $HADOOP_VERSION == "hadoop2" ]; then
-        cp $NUTCH_ROOT/nutch/conf/nutch-site-mr2.xml $NUTCH_ROOT/nutch/conf/nutch-site.xml
-    fi
-    
-    cd ${DEPENDENCY_DIR}"/nutchindexing/target"
+    cd ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target"
     if [ ! -d $NUTCH_HOME ]; then
         tar zxf apache-nutch-1.2-bin.tar.gz
     fi
@@ -392,17 +368,15 @@ function ensure-nutchindexing-release () {
     cp $NUTCH_ROOT/nutch/bin/nutch $NUTCH_HOME_WORKLOAD/bin
 
     # Patching jcl-over-slf4j version against cdh or hadoop2
-    if [ $HADOOP_VERSION == "hadoop2" ] || [ ${HADOOP_RELEASE:0:3} == "cdh" ]; then
-        mkdir $NUTCH_HOME_WORKLOAD/temp
-        unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
-        cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
-        rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
-        cd $NUTCH_HOME_WORKLOAD/temp
-        zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
-        rm -rf $NUTCH_HOME_WORKLOAD/temp
-    fi
+    mkdir $NUTCH_HOME_WORKLOAD/temp
+    unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
+    cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
+    rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
+    cd $NUTCH_HOME_WORKLOAD/temp
+    zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
+    rm -rf $NUTCH_HOME_WORKLOAD/temp
 
     echo $NUTCH_HOME_WORKLOAD
 }
@@ -419,11 +393,11 @@ set hive.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
 set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
-${HIVE_SQL_COMPRESS_OPTS}
+
 DROP TABLE IF EXISTS uservisits;
-CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE LOCATION '$INPUT_HDFS/uservisits';
 DROP TABLE IF EXISTS uservisits_aggre;
-CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
+CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS TEXTFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
 INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP;
 EOF
 }
@@ -441,14 +415,13 @@ set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
-${HIVE_SQL_COMPRESS_OPTS}
 
 DROP TABLE IF EXISTS rankings;
-CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
+CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE LOCATION '$INPUT_HDFS/rankings';
 DROP TABLE IF EXISTS uservisits_copy;
-CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE LOCATION '$INPUT_HDFS/uservisits';
 DROP TABLE IF EXISTS rankings_uservisits_join;
-CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
+CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS TEXTFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
 INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC;
 EOF
 }
@@ -466,12 +439,11 @@ set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
-${HIVE_SQL_COMPRESS_OPTS}
 
 DROP TABLE IF EXISTS uservisits;
-CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE LOCATION '$INPUT_HDFS/uservisits';
 DROP TABLE IF EXISTS uservisits_copy;
-CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_copy';
+CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' STORED AS TEXTFILE LOCATION '$OUTPUT_HDFS/uservisits_copy';
 INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits;
 EOF
 
