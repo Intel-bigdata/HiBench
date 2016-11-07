@@ -41,8 +41,16 @@ class SlidingWindow(taskContext: TaskContext, conf: UserConfig) extends Task(tas
     val ip = message.msg.asInstanceOf[String]
     val msgTime = System.currentTimeMillis()
     getWindows(msgTime).foreach { window =>
-      val countsByIp = windowCounts.getOrDefault(window, new UnifiedMap[String, (TimeStamp, Long)])
-      val (minTime, count) = countsByIp.getOrDefault(ip, (msgTime, 0L))
+      val countsByIp = if (windowCounts.containsKey(window)) {
+        windowCounts.get(window)
+      } else {
+        new UnifiedMap[String, (TimeStamp, Long)]
+      }
+      val (minTime, count) = if (countsByIp.containsKey(ip)) {
+        countsByIp.get(ip)
+      } else {
+        (msgTime, 0L)
+      }
       countsByIp.put(ip, (Math.min(msgTime, minTime), count + 1L))
       windowCounts.put(window, countsByIp)
     }
@@ -62,7 +70,6 @@ class SlidingWindow(taskContext: TaskContext, conf: UserConfig) extends Task(tas
       }
     }
   }
-
 
   private def getWindows(timestamp: TimeStamp): List[TimeStamp] = {
     val windows = ArrayBuffer.empty[TimeStamp]
