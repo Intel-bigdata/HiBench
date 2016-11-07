@@ -1,0 +1,8 @@
+hibench.streambench.flink.home                   /PATH/TO/YOUR/FLINK/HOME
+
+hibench.flink.master                             HOSTNAME:PORT
+
+# Default parallelism of flink job
+hibench.streambench.flink.parallelism            20
+hibench.streambench.flink.bufferTimeout          10
+hibench.streambench.flink.checkpointDuration     1000

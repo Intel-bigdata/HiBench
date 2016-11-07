@@ -1,0 +1,5 @@
+hibench.streambench.gearpump.home                /PATH/TO/YOUR/GEARPUMP/HOME
+
+hibench.streambench.gearpump.parallelism         12
+
+hibench.streambench.gearpump.executors           12
