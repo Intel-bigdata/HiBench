@@ -40,11 +40,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-    </dependency>
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
@@ -114,6 +109,7 @@
   </build>
 
   <modules>
+    <module>common</module>
     <module>autogen</module>
   </modules>
 
