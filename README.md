@@ -2,6 +2,11 @@
 ## The bigdata micro benchmark suite ##
 
 
+- Current version: 5.0
+- Release date: 2015-10-12
+- Homepage: https://github.com/intel-hadoop/HiBench
+- To ask a question or report an issue, please use Github Issues
+
 - Contents:
   1. Overview
   2. Getting Started
