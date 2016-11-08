@@ -17,52 +17,29 @@
 
 package com.intel.hibench.streambench.storm.micro;
 
-import com.google.common.collect.ImmutableMap;
-import com.intel.hibench.streambench.common.metrics.KafkaReporter;
-import com.intel.hibench.streambench.common.metrics.LatencyReporter;
-import com.intel.hibench.streambench.storm.topologies.SingleSpoutTops;
-import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import org.apache.storm.topology.BasicOutputCollector;
-import org.apache.storm.topology.BoltDeclarer;
-import org.apache.storm.topology.OutputFieldsDeclarer;
-import org.apache.storm.topology.TopologyBuilder;
-import org.apache.storm.topology.base.BaseBasicBolt;
-import org.apache.storm.tuple.Fields;
-import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
+import backtype.storm.topology.base.*;
+import backtype.storm.topology.*;
+import backtype.storm.tuple.*;
+
+import com.intel.hibench.streambench.storm.util.*;
+import com.intel.hibench.streambench.storm.topologies.*;
 
 
-public class Identity extends SingleSpoutTops {
-
-  public Identity(StormBenchConfig config) {
+public class Identity extends SingleSpoutTops{
+  
+  public Identity(StormBenchConfig config){
     super(config);
   }
-
-  @Override
-  public void setBolts(TopologyBuilder builder) {
-    BoltDeclarer boltDeclarer = builder.setBolt("identity", new IdentityBolt(config),
-        config.boltThreads);
-    if (config.localShuffle) {
-      boltDeclarer.localOrShuffleGrouping("spout");
-    } else {
-      boltDeclarer.shuffleGrouping("spout");
-    }
+  
+  public void setBolt(TopologyBuilder builder){
+	  builder.setBolt("identity",new IdentityBolt(), config.boltThreads).shuffleGrouping("spout");
   }
-
-  private static class IdentityBolt extends BaseBasicBolt {
-
-    private final StormBenchConfig config;
-
-    IdentityBolt(StormBenchConfig config) {
-      this.config = config;
-    }
+  
+  public static class IdentityBolt extends BaseBasicBolt {
 
     @Override
-    public void execute(Tuple tuple, BasicOutputCollector collector) {
-      final LatencyReporter latencyReporter = new KafkaReporter(config.reporterTopic, config.brokerList);
-      ImmutableMap<String, String> kv = (ImmutableMap<String, String>) tuple.getValue(0);
-      collector.emit(new Values(kv));
-      latencyReporter.report(Long.parseLong(kv.keySet().iterator().next()), System.currentTimeMillis());
+    public void execute(Tuple tuple, BasicOutputCollector collector){
+      collector.emit(new Values(tuple.getValues()));
     }
 
     @Override

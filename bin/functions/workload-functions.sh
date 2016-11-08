@@ -271,24 +271,12 @@ function run-spark-job() {
 }
 
 function run-streaming-job (){
-    run-spark-job --jars ${STREAMBENCH_SPARK_JAR} $@
+    run-spark-job --jars ${STREAMINGBENCH_JARS} $@
 }
 
 function run-storm-job(){
-    CMD="${STORM_HOME}/bin/storm jar ${STREAMBENCH_STORM_JAR} $@"
+    CMD="${STORM_BIN_HOME}/storm jar ${STREAMBENCH_STORM_JAR} $@"
     echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
-    execute_withlog $CMD
-}
-
-function run-gearpump-app(){
-    CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
-    echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
-    execute_withlog $CMD
-}
-
-function run-flink-job(){
-    CMD="${FLINK_HOME}/bin/flink run -p ${STREAMBENCH_FLINK_PARALLELISM} -m ${HIBENCH_FLINK_MASTER} $@ ${STREAMBENCH_FLINK_JAR} ${SPARKBENCH_PROPERTIES_FILES}"
-    echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
