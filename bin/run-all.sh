@@ -26,8 +26,7 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
     fi
 
     echo -e "${UYellow}${BYellow}Prepare ${Yellow}${UYellow}${benchmark} ${BYellow}...${Color_Off}"
-
-    benchmark="${benchmark/./\/}"
+    benchmark="${benchmark/.//}"
 
     WORKLOAD=$root_dir/bin/workloads/${benchmark}
     echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
