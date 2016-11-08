@@ -1,0 +1,19 @@
+# Hadoop home
+hibench.hadoop.home     /PATH/TO/YOUR/HADOOP/ROOT
+
+# The path of hadoop executable
+hibench.hadoop.executable     ${hibench.hadoop.home}/bin/hadoop
+
+# Hadoop configraution directory
+hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
+
+# The root HDFS path to store HiBench data
+hibench.hdfs.master       hdfs://localhost:8020
+
+
+# Hadoop release provider. Supported value: apache, cdh5, hdp
+hibench.hadoop.release    apache
+
+#Hadoop version. Only hadoop2 is supported
+#TODO: remove this
+hibench.hadoop.version    hadoop2
