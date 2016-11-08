@@ -90,31 +90,41 @@ hibench.compress.profile	 	disable
 # Compression codec profile selection:	 snappy, lzo, default
 hibench.compress.codec.profile		snappy
 
+#======================================================
 # Streaming settings
+#======================================================
 #-------------------
 # Available benchname: identity sample project grep wordcount distinctcount statistics
-hibench.streamingbench.benchname	identity
+hibench.streambench.testCase    identity
 
 # data scale of streaming data
-hibench.streamingbench.scale.profile    ${hibench.scale.profile}
+hibench.streambench.scale.profile    ${hibench.scale.profile}
 
 # zookeeper host:port of kafka cluster
 #example         hostname:2181
-hibench.streamingbench.zookeeper.host	HOSTNAME:HOSTPORT
+hibench.streambench.zkHost	HOSTNAME:HOSTPORT
 
 # Kafka broker lists, used for direct mode, written in mode "host:port,host:port,..."
 #example         hostname:9092
-hibench.streamingbench.brokerList	HOSTNAME:HOSTPORT
+hibench.streambench.kafka.brokerList	HOSTNAME:HOSTPORT
 
 # Storm home
-hibench.streamingbench.storm.home	/PATH/TO/STORM/HOME
+hibench.streambench.storm.home	/PATH/TO/STORM/HOME
+
+# Flink home
+hibench.streambench.flink.home	/PATH/TO/FLINK/HOME
 
 # Kafka home
-hibench.streamingbench.kafka.home	/PATH/TO/KAFKA/HOME
+hibench.streambench.kafka.home	/PATH/TO/KAFKA/HOME
 
 #Cluster config
 # nimbus of storm cluster
-hibench.streamingbench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
+hibench.streambench.storm.nimbus	HOSTNAME_TO_STORM_NIMBUS
 
 # partition size settings
-hibench.streamingbench.partitions	1
+hibench.streambench.kafka.topicPartitions	20
+
+## gearpump bench conf
+hibench.streambench.gearpump.home  /PATH/TO/GEARPUMP/HOME
+hibench.streambench.gearpump.executors  1
+hibench.streambench.gearpump.parallelism  1

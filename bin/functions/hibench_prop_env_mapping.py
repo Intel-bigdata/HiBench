@@ -123,31 +123,36 @@ HiBenchEnvPropMapping=dict(
     MODEL="hibench.nweight.model",
 
     # For streaming bench
-    # zkHelper
-    STREAMING_ZKHELPER_JAR="hibench.streamingbench.zkhelper.jar",
+    STREAMING_TESTCASE="hibench.streambench.testCase",
+
     # prepare
-    STREAMING_TOPIC_NAME="hibench.streamingbench.topic_name",
-    STREAMING_KAFKA_HOME="hibench.streamingbench.kafka.home",
-    STREAMING_ZKADDR="hibench.streamingbench.zookeeper.host",
-    STREAMING_CONSUMER_GROUP="hibench.streamingbench.consumer_group",
-    STREAMING_DATA_SCALE_FACTOR="hibench.streamingbench.datagen.scale_factor",
-    STREAMING_DATA_DIR="hibench.streamingbench.datagen.dir",
-    STREAMING_DATA1_NAME="hibench.streamingbench.datagen.data1.name",
-    STREAMING_DATA1_DIR="hibench.streamingbench.datagen.data1.dir",
-    STREAMING_DATA1_LENGTH="hibench.streamingbench.datagen.data1.length",
-    STREAMING_DATA2_SAMPLE_DIR="hibench.streamingbench.datagen.data2_samples.dir",
-    STREAMING_DATA2_CLUSTER_DIR="hibench.streamingbench.datagen.data2_cluster.dir",
-    STREAMING_PARTITIONS="hibench.streamingbench.partitions",
-    DATA_GEN_JAR="hibench.streamingbench.datagen.jar",
-    
-    STREAMING_DATAGEN_MODE="hibench.streamingbench.prepare.mode",
-    STREAMING_DATAGEN_RECORDS="hibench.streamingbench.prepare.push.records",
+    STREAMING_TOPIC_NAME="hibench.streambench.kafka.topic",
+    STREAMING_KAFKA_HOME="hibench.streambench.kafka.home",
+    STREAMING_ZKADDR="hibench.streambench.zkHost",
+    STREAMING_CONSUMER_GROUP="hibench.streambench.kafka.consumerGroup",
+    STREAMING_DATA_DIR="hibench.streambench.datagen.dir",
+    STREAMING_DATA1_NAME="hibench.streambench.datagen.data1.name",
+    STREAMING_DATA1_DIR="hibench.streambench.datagen.data1.dir",
+    STREAMING_DATA1_LENGTH="hibench.streambench.datagen.recordLength",
+    STREAMING_DATA2_SAMPLE_DIR="hibench.streambench.datagen.data2_samples.dir",
+    STREAMING_DATA2_CLUSTER_DIR="hibench.streambench.datagen.data2_cluster.dir",
+    STREAMING_PARTITIONS="hibench.streambench.kafka.topicPartitions",
+    DATA_GEN_JAR="hibench.streambench.datagen.jar",
 
     # sparkstreaming
-    STREAMINGBENCH_JARS="hibench.streamingbench.jars",
-    STREAMBENCH_STORM_JAR="hibench.streamingbench.stormbench.jar",
-    STORM_BIN_HOME="hibench.streamingbench.storm.bin",
-    STREAMING_BENCHNAME="hibench.streamingbench.benchname",
+    STREAMBENCH_SPARK_JAR="hibench.streambench.sparkbench.jar",
+    STREAMBENCH_STORM_JAR="hibench.streambench.stormbench.jar",
+
+    # gearpump
+    GEARPUMP_HOME="hibench.streambench.gearpump.home",
+    STREAMBENCH_GEARPUMP_JAR="hibench.streambench.gearpump.jar",
+    STREAMBENCH_GEARPUMP_EXECUTORS="hibench.streambench.gearpump.executors",
+    
+    # flinkstreaming
+    HIBENCH_FLINK_MASTER="hibench.flink.master",
+    FLINK_HOME="hibench.streambench.flink.home",
+    STREAMBENCH_FLINK_JAR="hibench.streambench.flinkbench.jar",
+    STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
 
     # samza
     STREAMING_SAMZA_WORDCOUNT_INTERNAL_TOPIC="samza_internal.wordcount.kafka.input.name",

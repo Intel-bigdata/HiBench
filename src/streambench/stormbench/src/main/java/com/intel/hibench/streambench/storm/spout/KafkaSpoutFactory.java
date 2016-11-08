@@ -17,34 +17,44 @@
 
 package com.intel.hibench.streambench.storm.spout;
 
-import backtype.storm.topology.base.BaseRichSpout;
-import backtype.storm.Config;
-import storm.kafka.*;
-import backtype.storm.spout.SchemeAsMultiScheme;
-import storm.kafka.trident.*;
+import com.intel.hibench.streambench.storm.util.StormBenchConfig;
+import kafka.api.OffsetRequest;
+import org.apache.storm.kafka.*;
+import org.apache.storm.kafka.trident.OpaqueTridentKafkaSpout;
+import org.apache.storm.kafka.trident.TransactionalTridentKafkaSpout;
+import org.apache.storm.kafka.trident.TridentKafkaConfig;
+import org.apache.storm.topology.base.BaseRichSpout;
+import org.apache.storm.trident.spout.ITridentDataSource;
 
-public class KafkaSpoutFactory{
-  
-  public static BaseRichSpout getSpout(String zkHost,String topic,String consumerGroup,boolean readFromStart){
-    BrokerHosts brokerHosts=new ZkHosts(zkHost);
-    SpoutConfig spoutConfig = new SpoutConfig(brokerHosts,topic,"/"+consumerGroup,consumerGroup); 
-    spoutConfig.scheme=new SchemeAsMultiScheme(new StringScheme());
-    //spoutConfig.stateUpdateIntervalMs = 1000;
-	spoutConfig.forceFromStart=readFromStart;
-    KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
-	return kafkaSpout;
-  }
-  
+public class KafkaSpoutFactory {
 
-  public static OpaqueTridentKafkaSpout getTridentSpout(String zkHost,String topic,String consumerGroup,boolean readFromStart){
-    BrokerHosts brokerHosts=new ZkHosts(zkHost);
-	TridentKafkaConfig tridentKafkaConfig = new TridentKafkaConfig(brokerHosts,topic,consumerGroup);
-    tridentKafkaConfig.fetchSizeBytes = 10*1024;
-    tridentKafkaConfig.scheme = new SchemeAsMultiScheme(new StringScheme());
-    tridentKafkaConfig.forceFromStart = readFromStart;
-    OpaqueTridentKafkaSpout opaqueTridentKafkaSpout = new OpaqueTridentKafkaSpout(tridentKafkaConfig);
-	return opaqueTridentKafkaSpout;
+  public static BaseRichSpout getSpout(StormBenchConfig conf) {
+    String topic = conf.topic;
+    String consumerGroup = conf.consumerGroup;
+    String zkHost = conf.zkHost;
+    BrokerHosts brokerHosts = new ZkHosts(zkHost);
+    SpoutConfig spoutConfig = new SpoutConfig(brokerHosts, topic, "", consumerGroup);
+    spoutConfig.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
+    spoutConfig.ignoreZkOffsets = true;
+    spoutConfig.startOffsetTime = OffsetRequest.LatestTime();
+    return new KafkaSpout(spoutConfig);
   }
-  
-  
+
+
+  public static ITridentDataSource getTridentSpout(StormBenchConfig conf, boolean opaque) {
+    String topic = conf.topic;
+    String consumerGroup = conf.consumerGroup;
+    String zkHost = conf.zkHost;
+    BrokerHosts brokerHosts = new ZkHosts(zkHost);
+    TridentKafkaConfig tridentKafkaConfig = new TridentKafkaConfig(brokerHosts, topic, consumerGroup);
+    tridentKafkaConfig.scheme = new KeyValueSchemeAsMultiScheme(new StringKeyValueScheme());
+    tridentKafkaConfig.ignoreZkOffsets = true;
+    tridentKafkaConfig.startOffsetTime = OffsetRequest.LatestTime();
+    if (opaque) {
+      return new OpaqueTridentKafkaSpout(tridentKafkaConfig);
+    } else {
+      return new TransactionalTridentKafkaSpout(tridentKafkaConfig);
+    }
+  }
+
 }

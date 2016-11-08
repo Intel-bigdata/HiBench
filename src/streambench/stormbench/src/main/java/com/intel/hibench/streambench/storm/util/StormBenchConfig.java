@@ -1,23 +1,25 @@
 package com.intel.hibench.streambench.storm.util;
 
-public class StormBenchConfig{
-  public String nimbus;
-  public int nimbusAPIPort;
+import java.io.Serializable;
+
+public class StormBenchConfig implements Serializable {
   public String zkHost;
   public int workerCount;
   public int spoutThreads;
   public int boltThreads;
   public String benchName;
-  public long recordCount;
   public String topic;
   public String consumerGroup;
-  public boolean readFromStart;
   public boolean ackon;
-  public int nimbusContactInterval;
-  
+  public boolean localShuffle;
+  public String brokerList;
+  public String reporterTopic;
+
+  public long windowDuration;
+  public long windowSlideStep;
+
   //Following are fields that are benchmark specific
-  public String separator;
-  public int fieldIndex;
-  public double prob;
-  public String pattern;
+  public String separator = "\\s+";
+  public int fieldIndex = 1;
+  public String pattern = " ";
 }

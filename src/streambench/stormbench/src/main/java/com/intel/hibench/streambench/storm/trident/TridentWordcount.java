@@ -17,73 +17,67 @@
 
 package com.intel.hibench.streambench.storm.trident;
 
-import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
-
-import com.intel.hibench.streambench.storm.spout.ConstructSpoutUtil;
+import com.intel.hibench.streambench.common.metrics.KafkaReporter;
+import com.intel.hibench.streambench.common.metrics.LatencyReporter;
+import com.intel.hibench.streambench.storm.spout.KafkaSpoutFactory;
 import com.intel.hibench.streambench.storm.topologies.SingleTridentSpoutTops;
-import com.intel.hibench.streambench.storm.util.BenchLogUtil;
+import com.intel.hibench.streambench.storm.trident.functions.Parser;
 import com.intel.hibench.streambench.storm.util.StormBenchConfig;
-import storm.trident.TridentTopology;
-import storm.trident.operation.BaseFunction;
-import storm.trident.operation.TridentCollector;
-import storm.trident.tuple.TridentTuple;
-import storm.kafka.trident.*;
-
-
-import java.util.Map;
-import java.util.HashMap;
+import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.ReducerAggregator;
+import org.apache.storm.trident.spout.ITridentDataSource;
+import org.apache.storm.trident.testing.MemoryMapState;
+import org.apache.storm.trident.tuple.TridentTuple;
+import org.apache.storm.tuple.Fields;
 
 public class TridentWordcount extends SingleTridentSpoutTops {
-  
-  public TridentWordcount(StormBenchConfig config){
+
+  public TridentWordcount(StormBenchConfig config) {
     super(config);
   }
 
   @Override
-  public void setTopology(TridentTopology topology) {
-    OpaqueTridentKafkaSpout spout = ConstructSpoutUtil.constructTridentSpout();
+  public TridentTopology createTopology() {
+    ITridentDataSource source = KafkaSpoutFactory.getTridentSpout(config, true);
 
-    topology
-      .newStream("bg0", spout)
-      .each(spout.getOutputFields(), new Split(config.separator), new Fields("words"))
-      .parallelismHint(config.spoutThreads)
-      .partitionBy(new Fields("words"))
-      .each(new Fields("words"), new WordCount(), new Fields("word", "count"))
-      .parallelismHint(config.workerCount)
-      ;
+    TridentTopology topology = new TridentTopology();
+    topology.newStream("kafka", source)
+        .each(new Fields("str"), new Parser(), new Fields("ip", "time"))
+        .project(new Fields("ip", "time"))
+        .parallelismHint(config.spoutThreads)
+        .groupBy(new Fields("ip"))
+        .persistentAggregate(new MemoryMapState.Factory(), new Fields("ip", "time"), new Count(config),
+            new Fields("word", "count"))
+        .parallelismHint(config.boltThreads);
+    return topology;
   }
 
-  public static class Split extends BaseFunction {
-    String separator;
+  private static class Count implements ReducerAggregator<Count.State> {
 
-    public Split(String separator) {
-      this.separator = separator;
+    private final StormBenchConfig config;
+    private LatencyReporter reporter = null;
+
+    Count(StormBenchConfig config) {
+      this.config = config;
     }
 
     @Override
-    public void execute(TridentTuple tuple, TridentCollector collector) {
-      String sentence = tuple.getString(0);
-      for (String word : sentence.split(separator)) {
-        collector.emit(new Values(word));
-      }
+    public State init() {
+      this.reporter = new KafkaReporter(config.reporterTopic, config.brokerList);
+      return new State();
     }
-  }
-
-  public static class WordCount extends BaseFunction {
-    Map<String, Integer> counts = new HashMap<String, Integer>();
 
     @Override
-    public void execute(TridentTuple tuple, TridentCollector collector) {
-      String word = tuple.getString(0);
-      Integer count = counts.get(word);
-      if (count == null)
-        count = 0;
-      count++;
-      counts.put(word, count);
-      BenchLogUtil.logMsg("Word:" + word + "  count:" + count);
-      collector.emit(new Values(word, count));
+    public State reduce(State state, TridentTuple tridentTuple) {
+      state.ip = tridentTuple.getString(0);
+      state.count++;
+      reporter.report(tridentTuple.getLong(1), System.currentTimeMillis());
+      return state;
+    }
+
+    static class State {
+      String ip;
+      long count = 0;
     }
   }
-
 }
