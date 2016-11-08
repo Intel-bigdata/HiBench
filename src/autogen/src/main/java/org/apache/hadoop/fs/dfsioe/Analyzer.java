@@ -107,7 +107,7 @@ public class Analyzer {
 	    job.setReducerClass(_Reducer.class);
 	    job.setOutputKeyClass(Text.class);
 	    job.setOutputValueClass(Text.class);
-	    FileInputFormat.addInputPath(job, new Path(TestDFSIOEnh.READ_DIR, "part-00000"));
+	    FileInputFormat.addInputPath(job, new Path(DfsioeConfig.getInstance().getReadDir(conf), "part-00000"));
 	    FileOutputFormat.setOutputPath(job, outdir);
 	    System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}

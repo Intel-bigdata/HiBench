@@ -1,3 +1,4 @@
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -14,7 +15,6 @@
 # limitations under the License.
 
 
-#!/bin/bash
 
 CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 HOME_DIR=${CUR_DIR}/..
@@ -38,12 +38,12 @@ case "$1" in
   "cdh")
      build-base
      second-step
-     sudo docker build -t hibench-docker ${HOME_DIR}/cdh-docker/
+     sudo docker build -t hibench-docker-cdh ${HOME_DIR}/cdh-docker/
      ;;
   "open-source")
      build-base
      second-step
-     sudo docker build -t hibench-docker ${HOME_DIR}/opensource-docker/
+     sudo docker build -t hibench-docker-opensource ${HOME_DIR}/opensource-docker/
      ;;
   *)
      exit 1

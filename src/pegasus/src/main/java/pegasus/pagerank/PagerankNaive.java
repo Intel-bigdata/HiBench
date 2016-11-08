@@ -380,7 +380,7 @@ public class PagerankNaive extends Configured implements Tool
 		if( cur_iteration == 1 )
 			gen_initial_vector(number_nodes, vector_path);
 
-		final FileSystem fs = FileSystem.get(getConf());
+		final FileSystem fs = FileSystem.get(vector_path.toUri(), getConf());
 
 		// Run pagerank until converges. 
 		for (i = cur_iteration; i <= niteration; i++) {
@@ -456,8 +456,9 @@ public class PagerankNaive extends Configured implements Tool
 		System.out.println("");
 		
 		// copy it to curbm_path, and delete temporary local file.
-		final FileSystem fs = FileSystem.get(getConf());
-		fs.copyFromLocalFile( true, new Path("./" + file_name), new Path (vector_path.toString()+ "/" + file_name) );
+		Path destination = new Path(vector_path.toString()+ "/" + file_name);
+		final FileSystem fs = FileSystem.get(destination.toUri(), getConf());
+		fs.copyFromLocalFile( true, new Path("./" + file_name), destination);
 	}
 
 	// read neighborhood number after each iteration.

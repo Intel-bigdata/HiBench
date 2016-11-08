@@ -9,30 +9,31 @@
   <name>hibench</name>
   <url>http://maven.apache.org</url>
 
-  <properties>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
-    <encoding>UTF-8</encoding>
-    <scala.version>2.10.4</scala.version>
-    <scala.binary.version>2.10</scala.binary.version>
-    <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>1.2.17</log4j.version>
-    <scopt.version>3.2.0</scopt.version>
-    <mahout.version>0.9</mahout.version>
-    <uncommons-maths.version>1.2.2a</uncommons-maths.version>
-    <junit.version>3.8.1</junit.version>
-    <hadoop.mr2.version>2.4.0</hadoop.mr2.version>
-    <hadoop.mr1.version>1.2.1</hadoop.mr1.version>
-    <scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
-    <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
-    <maven-assembly-plugin.version>2.5.3</maven-assembly-plugin.version>
-    <maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
-    <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
-    <download-maven-plugin.version>1.2.0</download-maven-plugin.version>
-    <jetty.version>8.1.14.v20131031</jetty.version>
-    <scalatest.version>2.2.1</scalatest.version>
-    <scalacheck.version>1.11.3</scalacheck.version>
-  </properties>
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+	<slf4j.version>1.7.5</slf4j.version>
+	<log4j.version>1.2.17</log4j.version>
+	<scopt.version>3.2.0</scopt.version>
+	<mahout.version>0.9</mahout.version>
+	<uncommons-maths.version>1.2.2a</uncommons-maths.version>
+	<junit.version>3.8.1</junit.version>
+	<hadoop.mr2.version>2.4.0</hadoop.mr2.version>
+	<hadoop.mr1.version>1.2.1</hadoop.mr1.version>
+	<scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
+	<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+	<maven-assembly-plugin.version>2.5.3</maven-assembly-plugin.version>
+	<maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
+	<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
+	<download-maven-plugin.version>1.2.0</download-maven-plugin.version>
+	<jetty.version>8.1.14.v20131031</jetty.version>
+	<scalatest.version>2.2.1</scalatest.version>
+	<scalacheck.version>1.11.3</scalacheck.version>
+        <fastutil.version>6.5.15</fastutil.version>
+    </properties>
 
   <repositories>
     <repository>

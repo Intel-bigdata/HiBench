@@ -2,7 +2,6 @@
 USER root
 
 ## add proxy config inside FIREWALL
-
 #==============================
 # System Basic Tools  Installation
 #==============================
@@ -54,15 +53,12 @@ RUN apt-get install -y python-numpy python-matplotlib
 
 # Install Java
 RUN \
-  echo oracle-java${JDK_VERSION}-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  add-apt-repository -y ppa:webupd8team/java && \
+  add-apt-repository -y ppa:openjdk-r/ppa && \
   apt-get update && \
-  apt-get install -y oracle-java${JDK_VERSION}-installer && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk${JDK_VERSION}-installer
+  apt-get install -y openjdk-${JDK_VERSION}-jdk
 
 # Define commonly used JAVA_HOME variable
-ENV JAVA_HOME /usr/lib/jvm/java-${JDK_VERSION}-oracle
+ENV JAVA_HOME /usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64
 ENV PATH $PATH:$JAVA_HOME/bin
 
 
@@ -102,6 +98,9 @@ RUN mv apache-maven-* /usr/local/apache-maven
 # define environment variables for maven
 ENV M2_HOME /usr/local/apache-maven
 ENV PATH $PATH:/usr/local/apache-maven/bin
+# copy local maven repository to docker image
+#RUN rm -rf /root/.m2
+#ADD .m2 /root/.m2
 
 
 #==============================
@@ -119,5 +118,9 @@ RUN mv /root/HiBench* ${HIBENCH_HOME}
 RUN rm -f HiBench-${HIBENCH_VERSION}.zip
 COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
 # start building HiBench
+RUN apt-get update && apt-get install -y thrift-compiler
+#RUN cd ${HIBENCH_HOME}/src && \
+#mvn clean package -D spark1.5 -D MR2
+# /bin/build-all.sh can be used to built hibench for all known Spark and MR versions
 RUN ${HIBENCH_HOME}/bin/build-all.sh
 

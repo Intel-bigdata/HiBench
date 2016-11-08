@@ -11,3 +11,6 @@ target/
 derby.log
 metastore_db/
 report/
+.classpath
+.project
+.settings/

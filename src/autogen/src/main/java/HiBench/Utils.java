@@ -151,7 +151,7 @@ public class Utils {
     
 	private static final void shareMapFile(String symbol, int slots, Path mfile, JobConf job) throws IOException, URISyntaxException {
 		
-		FileSystem fs = FileSystem.get(job);
+		FileSystem fs = FileSystem.get(mfile.toUri(), job);
 		if (fs.exists(mfile) && fs.getFileStatus(mfile).isDir()) {
 
 			DistributedCache.createSymlink(job);
