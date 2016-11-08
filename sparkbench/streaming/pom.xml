@@ -32,10 +32,41 @@
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>spark1.6</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
+          <version>1.6.0</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>1.6</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark2.0</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+          <version>2.0.0</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.0</value>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
 </project>
