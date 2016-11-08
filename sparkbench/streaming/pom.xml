@@ -36,6 +36,22 @@
 
   <profiles>
     <profile>
+      <id>defaultSpark</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming-kafka_${scala.binary.version}</artifactId>
+          <version>1.6.0</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>!spark</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
       <id>spark1.6</id>
       <dependencies>
         <dependency>

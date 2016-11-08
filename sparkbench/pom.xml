@@ -116,6 +116,19 @@
     </profile>
 
     <profile>
+      <id>defaultSpark</id>
+      <properties>
+        <spark.version>1.6.0</spark.version>
+        <spark.bin.version>1.6</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>!spark</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
       <id>spark1.6</id>
       <properties>
         <spark.version>1.6.0</spark.version>
