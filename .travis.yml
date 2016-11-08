@@ -33,5 +33,3 @@ script:
   - cp ./travis/spark.conf ./conf/
   - /opt/hadoop-2.6.5/bin/yarn node -list 2
   - sudo -E ./bin/run-all.sh
-#  - sudo -E ./bin/workloads/micro/wordcount/hadoop/run.sh
-#  - sudo -E ./bin/workloads/micro/wordcount/spark/run.sh
