@@ -8,7 +8,6 @@ before_script:
   - "echo $JAVA_OPTS"
   - "export JAVA_OPTS=-Xmx512m"
 env:
-  - SPARK_VERSION=1.5
   - SPARK_VERSION=1.6
 script:
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark${SPARK_VERSION} -DMR2
+  - mvn clean package -q -Dmaven.javadoc.skip=true
