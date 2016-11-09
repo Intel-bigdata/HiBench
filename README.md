@@ -23,7 +23,7 @@ HiBench is a big data benchmark suite that helps evaluate different big data fra
 
 There are totally 17 workloads in HiBench. The workloads are divided into 6 categories which are micro, ml(machine learning), sql, graph, websearch and streaming.
 
-  **Micro Bechmars:**
+  **Micro Bechmarks:**
 
 1. Sort (sort)
 
@@ -79,7 +79,7 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
 1. NWeight (nweight) 
 
-    nweith.
+    nweight.
 
 
 **Streaming Benchmarks:**
