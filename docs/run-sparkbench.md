@@ -10,7 +10,7 @@
 
 ### 2. Configure `hadoop.conf` ###
 
-
+Hadoop is used to generate the input data of the workloads.
 Create & edit `conf/hadoop.conf`：
 
     cp conf/hadoop.conf.template hadoop.conf
@@ -42,7 +42,7 @@ To run a single workload i.e. `wordcount`.
      bin/workloads/micro/wordcount/prepare/prepare.sh
      bin/workloads/micro/wordcount/spark/run.sh
 
-The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. the `run.sh` submits the spark job to the cluster. 
+The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `run.sh` submits the spark job to the cluster. 
 `bin/run-all.sh` can be used to run all workloads listed in conf/benchmarks.lst.
 
 ### 5. View the report ###
