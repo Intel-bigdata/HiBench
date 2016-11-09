@@ -1,11 +1,15 @@
 ### 1. Setup ###
- (1) Setup JDK, HDFS, Spark properly.
 
- (2) Python 2.x(>=2.6) is required.
+ * Python 2.x(>=2.6) is required.
+ 
+ * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
+ 
+ * Supported Spark version: 1.6.x, 2.0.x 
 
- (3) Build HiBench with Maven. 
+ * Build HiBench according to [build HiBench](build-hibench.md).
+ 
+ * Start HDFS, Yarn, Spark in the cluster.
 
-     mvn clean package
 
 
 ### 2. Configure `hadoop.conf` ###
