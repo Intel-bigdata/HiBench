@@ -1,0 +1,58 @@
+### 1. Setup ###
+ (1) Setup JDK, HDFS, Spark properly.
+
+ (2) Python 2.x(>=2.6) is required.
+
+ (3) Build HiBench with Maven. 
+
+     mvn clean package
+
+
+### 2. Configure `hadoop.conf` ###
+
+
+Create & edit `conf/hadoop.conf`：
+
+    cp conf/hadoop.conf.template hadoop.conf
+
+Set the below properties properly:
+
+    hibench.hadoop.home           The Hadoop installation location
+    hibench.hadoop.executable     The path of hadoop executable. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/bin/hadoop
+    hibench.hadoop.configure.dir  Hadoop configuration directory. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/etc/hadoop
+    hibench.hdfs.master           The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/username
+    hibench.hadoop.release        Hadoop release provider. Supported value: apache, cdh5, hdp
+
+
+### 3. Configure `spark.conf` ###
+
+Create & edit `conf/spark.conf`：
+
+    cp conf/spark.conf.template spark.conf
+
+Set the below properties properly:
+
+    hibench.spark.home            The Spark installation location
+    hibench.spark.master          The Spark master, i.e. `spark://xxx:7077`, `yarn-client`
+
+
+### 4. Run a workload ###
+To run a single workload i.e. `wordcount`. 
+
+     bin/workloads/micro/wordcount/prepare/prepare.sh
+     bin/workloads/micro/wordcount/spark/run.sh
+
+The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. the `run.sh` submits the spark job to the cluster. 
+`bin/run-all.sh` can be used to run all workloads listed in conf/benchmarks.lst.
+
+### 5. View the report ###
+
+   The `<HiBench_Root>/report/hibench.report` is a summarized workload report, including workload name, execution duration, data size, throughput per cluster, throughput per node.
+
+   The report directory also includs further information for debuging and tuning.
+     
+  * `<workload>/spark/bench.log`: Raw logs on client side.
+  * `<workload>/spark/monitor.html`: System utilization monitor results.
+  * `<workload>/spark/conf/<workload>.conf`: Generated environment variable configurations for this workload.
+  * `<workload>/spark/conf/sparkbench/<workload>/sparkbench.conf`: Generated configuration for this workloads, which is used for mapping to environment variable.
+  * `<workload>/spark/conf/sparkbench/<workload>/spark.conf`: Generated configuration for spark.
