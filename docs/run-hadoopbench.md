@@ -1,11 +1,12 @@
 ### 1. Setup ###
- (1) Setup JDK, HDFS, Yarn properly.
+ 
+ * Python 2.x(>=2.6) is required.
+ 
+ * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
 
- (2) Python 2.x(>=2.6) is required.
-
- (3) Build HiBench with Maven. 
-
-     mvn clean package
+ * Build HiBench according to [build HiBench](build-hibench.md).
+ 
+ * Start HDFS, Yarn in the cluster.
 
 
 ### 2. Configure `hadoop.conf` ###
