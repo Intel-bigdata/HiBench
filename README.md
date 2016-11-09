@@ -2,11 +2,10 @@
 ## The bigdata micro benchmark suite ##
 
 
-- Current version: 6.0
-- Homepage: https://github.com/intel-hadoop/HiBench
-- To ask a question or report an issue, please use Github Issues
-
-- Contents:
+* Current version: 6.0
+* Homepage: https://github.com/intel-hadoop/HiBench
+* To ask a question or report an issue, please use Github Issues
+* Contents:
   1. Overview
   2. Workloads
   3. Getting Started
@@ -112,8 +111,7 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
 ---
 ### Getting Started ###
-1. [Getting Started](https://github.com/intel-hadoop/HiBench/wiki/Getting-Started)
-2. [Getting Started for StreamingBench](https://github.com/intel-hadoop/HiBench/wiki/Getting-Started-for-StreamingBench)
+ * [Build HiBench](docs/build-hibench.md)
+ * [Run HadoopBench](docs/run-hadoopbench.md)
+ * [Run SparkBench](docs/run-sparkbench.md)
 
-### [Advanced Configurations](https://github.com/intel-hadoop/HiBench/wiki/Advanced-Configurations) ###
-### [Possible issues](https://github.com/intel-hadoop/HiBench/wiki/Possible-issues) ###
