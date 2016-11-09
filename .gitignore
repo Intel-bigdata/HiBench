@@ -11,5 +11,8 @@ target/
 derby.log
 metastore_db/
 report/
+.classpath
+.project
+.settings/
 conf/hadoop.conf
 conf/spark.conf

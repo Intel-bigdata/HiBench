@@ -1,8 +1,5 @@
 # Spark home
-hibench.spark.home      /PATH/TO/YOUR/SPARK/ROOT
-
-# Spark version. Supported value: spark1.6, spark2.0
-hibench.spark.version   spark1.6
+hibench.spark.home      /PATH/TO/YOUR/SPARK/HOME
 
 # Spark master
 #   standalone mode: `spark://xxx:7077`
@@ -23,3 +20,28 @@ spark.default.parallelism     ${hibench.default.map.parallelism}
 
 # set spark sql's default shuffle partitions according to hibench's parallelism value
 spark.sql.shuffle.partitions  ${hibench.default.map.parallelism}
+
+
+#======================================================
+# Spark Streaming
+#======================================================
+# Spark streaming Batchnterval in millisecond (default 100)
+hibench.streambench.spark.batchInterval          100
+
+# Number of nodes that will receive kafka input (default: 4)
+hibench.streambench.spark.receiverNumber        4
+
+# Indicate RDD storage level. (default: 2)
+# 0 = StorageLevel.MEMORY_ONLY
+# 1 = StorageLevel.MEMORY_AND_DISK_SER
+# other = StorageLevel.MEMORY_AND_DISK_SER_2
+hibench.streambench.spark.storageLevel 2
+
+# indicate whether to test the write ahead log new feature (default: false)
+hibench.streambench.spark.enableWAL false
+
+# if testWAL is true, this path to store stream context in hdfs shall be specified. If false, it can be empty (default: /var/tmp)
+hibench.streambench.spark.checkpointPath /var/tmp
+
+# whether to use direct approach or not (dafault: true)
+hibench.streambench.spark.useDirectMode true

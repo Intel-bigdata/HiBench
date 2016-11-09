@@ -110,11 +110,7 @@ function gen_report() {		# dump the result to report file
 
 function rmr-hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        RMDIR_CMD="fs -rmr -skipTrash"
-    else
-        RMDIR_CMD="fs -rm -r -skipTrash"
-    fi
+    RMDIR_CMD="fs -rm -r -skipTrash"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
     echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -151,11 +147,7 @@ function upload-to-hdfs(){
 
 function dus-hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
-    if [ $HADOOP_VERSION == "hadoop1" ] && [ "$HADOOP_RELEASE" == "apache" ]; then
-        DUS_CMD="fs -dus"
-    else
-        DUS_CMD="fs -du -s"
-    fi
+    DUS_CMD="fs -du -s"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
     echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
@@ -241,13 +233,21 @@ function run-spark-job() {
     fi
 }
 
-function run-streaming-job (){
-    run-spark-job --jars ${STREAMINGBENCH_JARS} $@
+function run-storm-job(){
+    CMD="${STORM_HOME}/bin/storm jar ${STREAMBENCH_STORM_JAR} $@"
+    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
 }
 
-function run-storm-job(){
-    CMD="${STORM_BIN_HOME}/storm jar ${STREAMBENCH_STORM_JAR} $@"
-    echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
+function run-gearpump-app(){
+    CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
+    echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
+    execute_withlog $CMD
+}
+
+function run-flink-job(){
+    CMD="${FLINK_HOME}/bin/flink run -p ${STREAMBENCH_FLINK_PARALLELISM} -m ${HIBENCH_FLINK_MASTER} $@ ${STREAMBENCH_FLINK_JAR} ${SPARKBENCH_PROPERTIES_FILES}"
+    echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
@@ -368,17 +368,15 @@ function ensure-nutchindexing-release () {
     cp $NUTCH_ROOT/nutch/bin/nutch $NUTCH_HOME_WORKLOAD/bin
 
     # Patching jcl-over-slf4j version against cdh or hadoop2
-    if [ $HADOOP_VERSION == "hadoop2" ] || [ ${HADOOP_RELEASE:0:3} == "cdh" ]; then
-        mkdir $NUTCH_HOME_WORKLOAD/temp
-        unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
-        rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
-        cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
-        rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
-        cd $NUTCH_HOME_WORKLOAD/temp
-        zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
-        rm -rf $NUTCH_HOME_WORKLOAD/temp
-    fi
+    mkdir $NUTCH_HOME_WORKLOAD/temp
+    unzip -q $NUTCH_HOME_WORKLOAD/nutch-1.2.job -d $NUTCH_HOME_WORKLOAD/temp
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/jcl-over-slf4j-*.jar
+    rm -f $NUTCH_HOME_WORKLOAD/temp/lib/slf4j-log4j*.jar
+    cp ${NUTCH_DIR}/target/dependency/jcl-over-slf4j-*.jar $NUTCH_HOME_WORKLOAD/temp/lib
+    rm -f $NUTCH_HOME_WORKLOAD/nutch-1.2.job
+    cd $NUTCH_HOME_WORKLOAD/temp
+    zip -qr $NUTCH_HOME_WORKLOAD/nutch-1.2.job *
+    rm -rf $NUTCH_HOME_WORKLOAD/temp
 
     echo $NUTCH_HOME_WORKLOAD
 }
@@ -396,7 +394,9 @@ set ${MAP_CONFIG_NAME}=$NUM_MAPS;
 set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
+DROP TABLE IF EXISTS uservisits;
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS  SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+DROP TABLE IF EXISTS uservisits_aggre;
 CREATE EXTERNAL TABLE uservisits_aggre ( sourceIP STRING, sumAdRevenue DOUBLE) STORED AS  SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_aggre';
 INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM uservisits GROUP BY sourceIP;
 EOF
@@ -416,8 +416,11 @@ set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
 
+DROP TABLE IF EXISTS rankings;
 CREATE EXTERNAL TABLE rankings (pageURL STRING, pageRank INT, avgDuration INT) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS  SEQUENCEFILE LOCATION '$INPUT_HDFS/rankings';
+DROP TABLE IF EXISTS uservisits_copy;
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS  SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+DROP TABLE IF EXISTS rankings_uservisits_join;
 CREATE EXTERNAL TABLE rankings_uservisits_join ( sourceIP STRING, avgPageRank DOUBLE, totalRevenue DOUBLE) STORED AS  SEQUENCEFILE LOCATION '$OUTPUT_HDFS/rankings_uservisits_join';
 INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), sum(adRevenue) as totalRevenue FROM rankings R JOIN (SELECT sourceIP, destURL, adRevenue FROM uservisits_copy UV WHERE (datediff(UV.visitDate, '1999-01-01')>=0 AND datediff(UV.visitDate, '2000-01-01')<=0)) NUV ON (R.pageURL = NUV.destURL) group by sourceIP order by totalRevenue DESC;
 EOF
@@ -437,7 +440,9 @@ set ${REDUCER_CONFIG_NAME}=$NUM_REDS;
 set hive.stats.autogather=false;
 
 
+DROP TABLE IF EXISTS uservisits;
 CREATE EXTERNAL TABLE uservisits (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS  SEQUENCEFILE LOCATION '$INPUT_HDFS/uservisits';
+DROP TABLE IF EXISTS uservisits_copy;
 CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate STRING,adRevenue DOUBLE,userAgent STRING,countryCode STRING,languageCode STRING,searchWord STRING,duration INT ) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde' STORED AS  SEQUENCEFILE LOCATION '$OUTPUT_HDFS/uservisits_copy';
 INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits;
 EOF

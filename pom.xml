@@ -22,8 +22,6 @@
     <mahout.version>0.9</mahout.version>
     <uncommons-maths.version>1.2.2a</uncommons-maths.version>
     <junit.version>3.8.1</junit.version>
-    <spark.version>1.6.0</spark.version>
-    <spark.bin.version>1.6</spark.bin.version>
     <hadoop.mr2.version>2.4.0</hadoop.mr2.version>
     <hadoop.mr1.version>1.2.1</hadoop.mr1.version>
     <scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
@@ -39,11 +37,6 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -114,6 +107,7 @@
   </build>
 
   <modules>
+    <module>common</module>
     <module>autogen</module>
   </modules>
 
@@ -147,13 +141,6 @@
     </profile>
 
     <profile>
-      <id>samzabench</id>
-      <modules>
-        <module>samzabench</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>stormbench</id>
       <modules>
         <module>stormbench</module>
@@ -167,7 +154,6 @@
         <module>flinkbench</module>
         <module>gearpumpbench</module>
         <module>hadoopbench</module>
-        <module>samzabench</module>
         <module>stormbench</module>
       </modules>
       <activation>

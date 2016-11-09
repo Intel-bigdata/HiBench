@@ -92,6 +92,13 @@
     </profile>
 
     <profile>
+      <id>streaming</id>
+      <modules>
+        <module>streaming</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <modules>
         <module>micro</module>
@@ -99,10 +106,24 @@
         <module>websearch</module>
         <module>graph</module>
         <module>sql</module>
+        <module>streaming</module>
       </modules>
       <activation>
         <property>
           <name>!modules</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>defaultSpark</id>
+      <properties>
+        <spark.version>1.6.0</spark.version>
+        <spark.bin.version>1.6</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>!spark</name>
         </property>
       </activation>
     </profile>
