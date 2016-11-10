@@ -1,17 +1,18 @@
 ## Overview ##
 The streaming benchmark consists of the following parts:  
+
 -  Data Generation
 
   The role of data generator is to generate a steady stream of data and send it to the Kafka cluster. Each record is labeled with the timestamp when it is generated.
 
 -  Kafka cluster
 
-  Kafka is a messaging system. Each streaming workload generates data to its own topics. 
+  Kafka is a messaging system. Each streaming workload saves the data to its own topics. 
 
 -  Test cluster
 
-  This could be a Spark cluster, Flink cluster, Storm cluster or Gearpump cluster. The streaming application (identity, repartition, wordcount, fixwindow) reads data from Kafka, process the data and write the results back to another topic in Kafka.
-  Each record in the result is also labled a timestamp.
+  This could be a Spark cluster, Flink cluster, Storm cluster or Gearpump cluster. The streaming application (identity, repartition, wordcount, fixwindow) reads data from Kafka, processes the data and writes the results back to another topic in Kafka.
+  Each record in the result is also labeled a timestamp.
 
 -  Metrics reader
 
@@ -60,8 +61,26 @@ Set the below properties properly:
     hibench.hadoop.release        Hadoop release provider. Supported value: apache, cdh5, hdp
 
 ### 3. Configure Kafka ###
+Set the below Kafka properites in `conf/hibench.conf` and leave others as default. 
+
+Param Name      | Param Meaning
+----------------|--------------------------------------------------------
+hibench.streambench.kafka.home|                  /PATH/TO/YOUR/KAFKA/HOME
+hibench.streambench.zkHost | zookeeper host:port of kafka cluster, host1:port1,host2:port2...
+hibench.streambench.kafka.brokerList | Kafka broker lists, written in mode host:port,host:port,..
+hibench.streambench.kafka.topicPartitions    |   number of partitions of generated topic (default 20)
 
 ### 4. Configure Data Generator ###
+Set the below Kafka properites in `conf/hibench.conf` and leave others as default. 
+
+Param Name      | Param Meaning
+----------------|--------------------------------------------------------
+hibench.streambench.datagen.intervalSpan     |    Interval span in millisecond (default: 50)
+hibench.streambench.datagen.recordsPerInterval   |  Number of records to generate per interval span (default: 5)
+hibench.streambench.datagen.recordLength     | fixed length of record (default: 200)
+hibench.streambench.datagen.producerNumber  |  Number of KafkaProducer running on different thread (default: 1)
+hibench.streambench.datagen.totalRounds     | Total round count of data send (default: -1 means infinity)
+hibench.streambench.datagen.totalRecords    | Number of total records that will be generated (default: -1 means infinity)
 
 ### 5. Configure the Streaming Framework ###
 
@@ -87,3 +106,4 @@ While the data are being sent to the Kafka, start the streaming application. Tak
 
 ### 8. Generate the report ###
 
+    
