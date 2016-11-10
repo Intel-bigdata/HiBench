@@ -19,8 +19,6 @@ install:
   - cp ./travis/benchmarks.lst ./conf/
 before_script:
   - "export JAVA_OPTS=-Xmx512m"
-env:
-  - SPARK_VERSION=1.6
 cache:
   directories:
   - $HOME/.m2
