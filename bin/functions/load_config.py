@@ -167,6 +167,13 @@ def parse_conf(conf_root, workload_config_file):
                 HibenchConf[key] = value.strip()
                 HibenchConfRef[key] = filename
 
+def override_conf_from_environment():
+    # override values from os environment variable settings
+    for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
+        if env_name in os.environ:
+            env_value = os.getenv(env_name)
+            HibenchConf[prop_name] = env_value
+            HibenchConfRef[prop_name] = "OS environment variable:%s" % env_name
 
 def override_conf_by_paching_conf():
 
@@ -199,6 +206,8 @@ def load_config(
     workload_name = os.path.basename(dir)
 
     parse_conf(conf_root, workload_config_file)
+
+    override_conf_from_environment()
 
     override_conf_by_paching_conf()
 
