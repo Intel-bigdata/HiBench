@@ -9,8 +9,7 @@
   1. Overview
   2. Getting Started
   3. Workloads
-  4. Advanced Configuration
-  5. Possible Issues
+  4. Supported Releases
 
 ---
 ### OVERVIEW ###
@@ -105,10 +104,10 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
     The workloads performs a window based aggregation. It tests the performance of window operation in the streaming frameworks.
   
     
-**Supported hadoop/spark/flink/storm/gearpump release:**
+### Supported Hadoop/Spark/Flink/Storm/Gearpump releases: ###
 
   - Hadoop: Apache Hadoop 2.x, CDH5, HDP
-  - Spark: Spark 1.6, Spark 2.0
+  - Spark: Spark 1.6.x, Spark 2.0.x
   - Flink: 1.0.3
   - Storm: 1.0.1
   - Gearpump: 0.8.1
