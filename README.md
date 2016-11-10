@@ -7,8 +7,8 @@
 * To ask a question or report an issue, please use Github Issues
 * Contents:
   1. Overview
-  2. Workloads
-  3. Getting Started
+  2. Getting Started
+  3. Workloads
   4. Advanced Configuration
   5. Possible Issues
 
@@ -17,6 +17,11 @@
 
 HiBench is a big data benchmark suite that helps evaluate different big data frameworks in terms of speed, throughput and system resource utilizations. It contains a set of Hadoop, Spark and streaming workloads, including Sort, WordCount, TeraSort, Sleep, SQL, PageRank, Nutch indexing, Bayes, Kmeans, NWeight and enhanced DFSIO, etc. It also contains several streaming workloads for Spark Streaming, Flink, Storm and Gearpump.
 
+### Getting Started ###
+ * [Build HiBench](docs/build-hibench.md)
+ * [Run HadoopBench](docs/run-hadoopbench.md)
+ * [Run SparkBench](docs/run-sparkbench.md)
+ * [Run StreamingBench](docs/run-streamingbench.md) (Spark streaming, Flink, Storm, Gearpump)
 
 ### Workloads ###
 
@@ -110,8 +115,5 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
   - Kafka: 0.8.2.2
 
 ---
-### Getting Started ###
- * [Build HiBench](docs/build-hibench.md)
- * [Run HadoopBench](docs/run-hadoopbench.md)
- * [Run SparkBench](docs/run-sparkbench.md)
+
 
