@@ -1,0 +1,89 @@
+## Overview ##
+The streaming benchmark consists of the following parts:  
+-  Data Generation
+
+  The role of data generator is to generate a steady stream of data and send it to the Kafka cluster. Each record is labeled with the timestamp when it is generated.
+
+-  Kafka cluster
+
+  Kafka is a messaging system. Each streaming workload generates data to its own topics. 
+
+-  Test cluster
+
+  This could be a Spark cluster, Flink cluster, Storm cluster or Gearpump cluster. The streaming application (identity, repartition, wordcount, fixwindow) reads data from Kafka, process the data and write the results back to another topic in Kafka.
+  Each record in the result is also labled a timestamp.
+
+-  Metrics reader
+
+  It reads the result in Kafka and calculate the time difference(Record out time - Record in time) and generate the report.
+
+### 1. Setup ###
+
+ * Python 2.x(>=2.6) is required.
+ 
+ * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
+ 
+ * Supported Spark version: 1.6.x, 2.0.x 
+
+ * Build HiBench according to [build HiBench](build-hibench.md).
+ 
+ * Start HDFS, Yarn in the cluster.
+ 
+ * Setup [ZooKeeper](http://zookeeper.apache.org/) (3.4.8 is preferred).
+
+ * Setup [Apache Kafka](http://kafka.apache.org/) (0.8.2.2, scala version 2.10 is preferred).
+  
+ * Setup one of the streaming frameworks that you want to test.
+
+   * [Apache Spark](http://spark.apache.org/) (1.6.1, is preferred).
+
+   * [Apache Storm](http://storm.apache.org/) (1.0.1 is preferred).
+
+   * [Apache Flink](http://flink.apache.org/) (1.0.3 is prefered).
+
+   * [Apache Gearpump](http://gearpump.apache.org/) (0.8.1 is prefered)
+
+
+### 2. Configure `hadoop.conf` ###
+
+Hadoop is used to generate the input data of the workloads.
+Create & edit `conf/hadoop.conf`：
+
+    cp conf/hadoop.conf.template hadoop.conf
+
+Set the below properties properly:
+
+    hibench.hadoop.home           The Hadoop installation location
+    hibench.hadoop.executable     The path of hadoop executable. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/bin/hadoop
+    hibench.hadoop.configure.dir  Hadoop configuration directory. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/etc/hadoop
+    hibench.hdfs.master           The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/username
+    hibench.hadoop.release        Hadoop release provider. Supported value: apache, cdh5, hdp
+
+### 3. Configure Kafka ###
+
+### 4. Configure Data Generator ###
+
+### 5. Configure the Streaming Framework ###
+
+ * Configure Spark Streaming
+ 
+ * Configure Flink
+ 
+ * Configure Storm
+ 
+ * Configure Gearpump
+ 
+
+### 6. Generate the data ###
+Take workload `identity` as an example. `genSeedDataset.sh` generates the seed data on HDFS. `dataGen.sh` sends the data to Kafka.
+
+    bin/workloads/streaming/identity/prepare/genSeedDataset.sh
+    bin/workloads/streaming/identity/prepare/dataGen.sh
+
+### 7. Run the streaming application ###
+While the data are being sent to the Kafka, start the streaming application. Take Spark streaming as an example.
+
+    bin/workloads/streaming/identity/spark/run.sh
+
+### 8. Generate the report ###
+
