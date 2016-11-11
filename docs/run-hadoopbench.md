@@ -12,7 +12,7 @@
 ### 2. Configure `hadoop.conf` ###
 
 
-Create & edit `conf/hadoop.conf`：
+Create and edit `conf/hadoop.conf`：
 
     cp conf/hadoop.conf.template conf/hadoop.conf
 

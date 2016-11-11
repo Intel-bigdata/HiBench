@@ -32,7 +32,7 @@ Note: For CDH and HDP users, please update `hibench.hadoop.executable`, `hibench
 
 ### 3. Configure `spark.conf` ###
 
-Create & edit `conf/spark.conf`：
+Create and edit `conf/spark.conf`：
 
     cp conf/spark.conf.template conf/spark.conf
 
