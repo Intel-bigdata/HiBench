@@ -21,12 +21,13 @@ Set the below properties properly:
 Property        |      Meaning
 ----------------|--------------------------------------------------------
 hibench.hadoop.home     |      The Hadoop installation location
-hibench.hadoop.executable  |   The path of hadoop executable. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/bin/hadoop
-hibench.hadoop.configure.dir | Hadoop configuration directory. For Apache Hadoop, it is <YOUR/HADOOP/HOME>/etc/hadoop
+hibench.hadoop.executable  |   The path of hadoop executable. For Apache Hadoop, it is /YOUR/HADOOP/HOME/bin/hadoop
+hibench.hadoop.configure.dir | Hadoop configuration directory. For Apache Hadoop, it is /YOUR/HADOOP/HOME/etc/hadoop
 hibench.hdfs.master       |    The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/username
 hibench.hadoop.release    |    Hadoop release provider. Supported value: apache, cdh5, hdp
 
 Note: For CDH and HDP users, please update `hibench.hadoop.executable`, `hibench.hadoop.configure.dir` and `hibench.hadoop.release` properly. The default value is for Apache release.
+
 
 ### 3. Run a workload ###
 To run a single workload i.e. `wordcount`. 
