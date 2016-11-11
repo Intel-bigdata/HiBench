@@ -84,13 +84,13 @@ hibench.streambench.datagen.totalRecords    | Number of total records that will 
 
 ### 5. Configure the Streaming Framework ###
 
- * Configure Spark Streaming
+ * [Configure Spark Streaming](sparkstreaming-configuration.md)
  
- * Configure Flink
+ * [Configure Flink](flink-configuration.md)
  
- * Configure Storm
+ * [Configure Storm](storm-configuration.md)
  
- * Configure Gearpump
+ * [Configure Gearpump](gearpump-configuration.md)
  
 
 ### 6. Generate the data ###
