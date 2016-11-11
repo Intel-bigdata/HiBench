@@ -66,7 +66,7 @@ The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `
 
 ### 6. Input data size ###
 
-   To change the input data size, you can set `hibench.scale.profile` in `conf/hibench.conf`. Available value is tiny, small, large, huge, gigantic and bigdata. The definition of these profiles can be found in the workload's conf file i.e. `con/workloads/micro/wordcount.conf`
+   To change the input data size, you can set `hibench.scale.profile` in `conf/hibench.conf`. Available values are tiny, small, large, huge, gigantic and bigdata. The definition of these profiles can be found in the workload's conf file i.e. `con/workloads/micro/wordcount.conf`
 
 ### 7. Tuning ###
 
@@ -78,9 +78,10 @@ hibench.default.shuffle.parallelism  |   Shuffle partition number in Spark
 
 
 Change the below properties to control Spark executor number, executor cores, executor memory and driver memory.
+
 Property        |      Meaning
 ----------------|--------------------------------------------------------
 hibench.yarn.executor.num   |   Spark executor number in Yarn mode
-hibench.yarn.executor.cores  |  Spark executro cores in Yarn mode
+hibench.yarn.executor.cores  |  Spark executor cores in Yarn mode
 spark.executor.memory  | Spark executor memory
 spark.driver.memory    | Spark driver memory
