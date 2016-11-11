@@ -82,7 +82,7 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
 1. NWeight (nweight) 
 
-    nweight.
+    NWeight is an iterative graph-parallel algorithm implemented by Spark GraphX and pregel. The algorithm computes associations between two vertices that are n-hop away. 
 
 
 **Streaming Benchmarks:**
