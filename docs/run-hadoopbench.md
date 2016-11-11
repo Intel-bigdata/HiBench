@@ -47,3 +47,16 @@ The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `
   * `<workload>/hadoop/bench.log`: Raw logs on client side.
   * `<workload>/hadoop/monitor.html`: System utilization monitor results.
   * `<workload>/hadoop/conf/<workload>.conf`: Generated environment variable configurations for this workload.
+
+### 5. Input data size ###
+
+   To change the input data size, you can set `hibench.scale.profile` in `conf/hibench.conf`. Available value is tiny, small, large, huge, gigantic and bigdata. The definition of these profiles can be found in the workload's conf file i.e. `con/workloads/micro/wordcount.conf`
+
+### 6. Tuning ###
+
+Change the below properties in `conf/hibench.conf` to control the parallelism
+Property        |      Meaning
+----------------|--------------------------------------------------------
+hibench.default.map.parallelism     |    Mapper number in hadoop
+hibench.default.shuffle.parallelism  |   Reducer number in hadoop
+
