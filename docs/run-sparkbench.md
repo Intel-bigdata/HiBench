@@ -17,7 +17,7 @@
 Hadoop is used to generate the input data of the workloads.
 Create & edit `conf/hadoop.conf`：
 
-    cp conf/hadoop.conf.template hadoop.conf
+    cp conf/hadoop.conf.template conf/hadoop.conf
 
 Set the below properties properly:
 

@@ -14,7 +14,7 @@
 
 Create & edit `conf/hadoop.conf`：
 
-    cp conf/hadoop.conf.template hadoop.conf
+    cp conf/hadoop.conf.template conf/hadoop.conf
 
 Set the below properties properly:
 
