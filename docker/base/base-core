@@ -101,23 +101,21 @@ RUN mv apache-maven-* /usr/local/apache-maven
 ENV M2_HOME /usr/local/apache-maven
 ENV PATH $PATH:/usr/local/apache-maven/bin
 # copy local maven repository to docker image
-#RUN rm -rf /root/.m2
-#ADD .m2 /root/.m2
+RUN rm -rf /root/.m2
+ADD .m2 /root/.m2
 
 
 #==============================
 # ADD HiBench to docker image
 #==============================
 
-# HiBench Version ( can be 3.0 or 4.0 or 5.0)
-#ENV HIBENCH_VERSION
 ENV HIBENCH_HOME /root/HiBench
 
 # download right version of HiBench
-RUN wget https://github.com/intel-hadoop/HiBench/archive/HiBench-${HIBENCH_VERSION}.zip
-RUN unzip HiBench-${HIBENCH_VERSION}.zip -d /root/
-RUN mv /root/HiBench* ${HIBENCH_HOME}
-RUN rm -f HiBench-${HIBENCH_VERSION}.zip
+RUN wget https://github.com/intel-hadoop/HiBench/archive/master.zip
+RUN unzip master.zip -d /root/
+RUN mv /root/master ${HIBENCH_HOME}
+RUN rm -f master.zip
 COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
 # start building HiBench
 RUN apt-get update && apt-get install -y thrift-compiler
