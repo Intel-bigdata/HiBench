@@ -7,16 +7,20 @@
 * To ask a question or report an issue, please use Github Issues
 * Contents:
   1. Overview
-  2. Workloads
-  3. Getting Started
-  4. Advanced Configuration
-  5. Possible Issues
+  2. Getting Started
+  3. Workloads
+  4. Supported Releases
 
 ---
 ### OVERVIEW ###
 
 HiBench is a big data benchmark suite that helps evaluate different big data frameworks in terms of speed, throughput and system resource utilizations. It contains a set of Hadoop, Spark and streaming workloads, including Sort, WordCount, TeraSort, Sleep, SQL, PageRank, Nutch indexing, Bayes, Kmeans, NWeight and enhanced DFSIO, etc. It also contains several streaming workloads for Spark Streaming, Flink, Storm and Gearpump.
 
+### Getting Started ###
+ * [Build HiBench](docs/build-hibench.md)
+ * [Run HadoopBench](docs/run-hadoopbench.md)
+ * [Run SparkBench](docs/run-sparkbench.md)
+ * [Run StreamingBench](docs/run-streamingbench.md) (Spark streaming, Flink, Storm, Gearpump)
 
 ### Workloads ###
 
@@ -78,7 +82,7 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
 1. NWeight (nweight) 
 
-    nweight.
+    NWeight is an iterative graph-parallel algorithm implemented by Spark GraphX and pregel. The algorithm computes associations between two vertices that are n-hop away. 
 
 
 **Streaming Benchmarks:**
@@ -100,18 +104,15 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
     The workloads performs a window based aggregation. It tests the performance of window operation in the streaming frameworks.
   
     
-**Supported hadoop/spark/flink/storm/gearpump release:**
+### Supported Hadoop/Spark/Flink/Storm/Gearpump releases: ###
 
   - Hadoop: Apache Hadoop 2.x, CDH5, HDP
-  - Spark: Spark 1.6, Spark 2.0
+  - Spark: Spark 1.6.x, Spark 2.0.x
   - Flink: 1.0.3
   - Storm: 1.0.1
   - Gearpump: 0.8.1
   - Kafka: 0.8.2.2
 
 ---
-### Getting Started ###
- * [Build HiBench](docs/build-hibench.md)
- * [Run HadoopBench](docs/run-hadoopbench.md)
- * [Run SparkBench](docs/run-sparkbench.md)
+
 
