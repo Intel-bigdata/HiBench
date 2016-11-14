@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
  *     Weight(n)(u, v) = Sum (over {x|there are edges (u, x) and (x, v)}) Weight(n-1)(u, x)*Weight(1)(x, v)
  *
  * Input is given in Text file format. Each line represents a Node and all out edges of that node (edge weight specified)
- *  <vertex> <vertex1>:<weight1>, <vertex2>:<weight2> ...)
+ *  <vertex> <vertex1>:<weight1>,<vertex2>:<weight2> ...)
  */
 
 object GraphxNWeight extends Serializable{
@@ -43,7 +43,7 @@ object GraphxNWeight extends Serializable{
       if (target != id)
         theMap.put(target, wn * edgeAttribute)
     }
-    Iterator((id, theMap))
+    edge.sendToSrc(theMap)
   }
 
   def reduceF(c1: Long2DoubleOpenHashMap, c2: Long2DoubleOpenHashMap) = {
@@ -94,7 +94,7 @@ object GraphxNWeight extends Serializable{
 
     var msg: RDD[(VertexId, Long2DoubleOpenHashMap)] = null
     for (i <- 2 to step) {
-      msg = g.aggregateMessages(mapF _, reduceF _, TripletFields.Src)
+      msg = g.aggregateMessages(mapF _, reduceF _)
       g = g.outerJoinVertices(msg)(updateF _).persist(storageLevel)
     }
 

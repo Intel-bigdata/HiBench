@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
  *
  * Input is given in Text file format. Each line represents a Node and all out edges of that node
  * (edge weight specified)
- *  <vertex> <vertex1>:<weight1>, <vertex2>:<weight2> ...)
+ *  <vertex> <vertex1>:<weight1>,<vertex2>:<weight2> ...)
  */
 
 object PregelNWeight extends Serializable{
