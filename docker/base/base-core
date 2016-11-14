@@ -2,6 +2,8 @@
 USER root
 
 ## add proxy config inside FIREWALL
+ENV http_proxy=http://child-prc.intel.com:913
+ENV https_proxy=https://http://child-prc.intel.com:913
 #==============================
 # System Basic Tools  Installation
 #==============================
