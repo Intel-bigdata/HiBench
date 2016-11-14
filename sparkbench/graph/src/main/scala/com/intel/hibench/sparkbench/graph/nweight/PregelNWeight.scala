@@ -92,7 +92,7 @@ object PregelNWeight extends Serializable{
     var g = GraphImpl(edges, new SizedPriorityQueue(maxDegree), storageLevel, storageLevel).cache()
 
     g = Pregel(g, new Long2DoubleOpenHashMap, step, EdgeDirection.In)(
-      vProg _, sendMsg _, mergMsg _)
+      vProg, sendMsg, mergMsg)
 
     g.vertices.map { case (vid, vdata) => 
       var s = new StringBuilder

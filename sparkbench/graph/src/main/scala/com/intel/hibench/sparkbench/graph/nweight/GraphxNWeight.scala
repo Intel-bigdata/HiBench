@@ -86,7 +86,7 @@ object GraphxNWeight extends Serializable{
       (e.srcId, (e.dstId, e.attr))
     }.groupByKey(part).map { case (id, seq) =>
       val vdata = new SizedPriorityQueue(maxDegree)
-      seq.foreach(vdata.enqueue(_))
+      seq.foreach(vdata.enqueue)
       (id, vdata)
     }
 
@@ -94,8 +94,8 @@ object GraphxNWeight extends Serializable{
 
     var msg: RDD[(VertexId, Long2DoubleOpenHashMap)] = null
     for (i <- 2 to step) {
-      msg = g.aggregateMessages(mapF _, reduceF _)
-      g = g.outerJoinVertices(msg)(updateF _).persist(storageLevel)
+      msg = g.aggregateMessages(mapF, reduceF)
+      g = g.outerJoinVertices(msg)(updateF).persist(storageLevel)
     }
 
     g.vertices.map { case (vid, vdata) => 
