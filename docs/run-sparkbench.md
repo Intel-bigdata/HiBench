@@ -15,7 +15,7 @@
 ### 2. Configure `hadoop.conf` ###
 
 Hadoop is used to generate the input data of the workloads.
-Create & edit `conf/hadoop.conf`：
+Create and edit `conf/hadoop.conf`：
 
     cp conf/hadoop.conf.template conf/hadoop.conf
 
@@ -71,6 +71,7 @@ The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `
 ### 7. Tuning ###
 
 Change the below properties in `conf/hibench.conf` to control the parallelism
+
 Property        |      Meaning
 ----------------|--------------------------------------------------------
 hibench.default.map.parallelism     |    Partition number in Spark
