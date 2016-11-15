@@ -124,7 +124,7 @@ def exactly_one_file(filename_candidate_list, config_name):
         result = exactly_one_file_one_candidate(filename_pattern)
         if result != "":
             return result
-    assert 0, "No example(test) jars found, please set `" + config_name + "` manually"
+    assert 0, "No files found under certain paths, please set `" + config_name + "` manually"
 
 
 def exactly_one_file_one_candidate(filename_pattern):
