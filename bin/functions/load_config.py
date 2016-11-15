@@ -401,7 +401,7 @@ def probe_hadoop_examples_jars():
         examples_jars_candidate_cdh1 = HibenchConf[
             'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-examples-*.jar"
         examples_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/hadoop-mapreduce-examples.jar"
+            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-examples.jar"
         examples_jars_candidate_hdp1 = HibenchConf['hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-examples.jar"
 
         examples_jars_candidate_list = [
@@ -427,7 +427,7 @@ def probe_hadoop_examples_test_jars():
         examples_test_jars_candidate_cdh1 = HibenchConf[
             'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar"
         examples_test_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/hadoop-mapreduce-client-jobclient-tests.jar"
+            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient*.jar"
         examples_test_jars_candidate_hdp1 = HibenchConf['hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-client-jobclient-tests.jar"
 
         examples_test_jars_candidate_list = [
