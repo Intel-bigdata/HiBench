@@ -298,8 +298,9 @@ function gen_heatmap_options(suffix, title, yAxis_desc, colorAxis_desc, series_d
 			    
                             if (plotY !== undefined && !isNaN(plotY) && point.y !== null) {
 				shapeArgs = point.shapeArgs;
+				pointAttr = (point.pointAttr && point.pointAttr['']) || point.series.pointAttribs(point);
 				
-				ctx.fillStyle = point.pointAttr[''].fill;
+				ctx.fillStyle = pointAttr.fill;
 				ctx.fillRect(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height);
                             }
 			});
