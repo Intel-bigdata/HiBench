@@ -39,8 +39,7 @@ RUN export YARN_HOME=$HADOOP_INSTALL
 RUN export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_INSTALL/lib/native
 RUN export HADOOP_OPTS="-Djava.library.path=$HADOOP_INSTALL/lib"
 
-#RUN wget https://archive.apache.org/dist/hadoop/core/hadoop-${HADOOP_VERSION_DETAIL}/hadoop-${HADOOP_VERSION_DETAIL}.tar.gz
-COPY hadoop-2.6.4.tar.gz ./hadoop-2.6.4.tar.gz
+RUN wget http://apache.mirrors.lucidnetworks.net/hadoop/common/hadoop-${HADOOP_VERSION_DETAIL}/hadoop-${HADOOP_VERSION_DETAIL}.tar.gz
 RUN tar xzf hadoop-*.tar.gz -C /usr/local/
 RUN rm -f hadoop-*.tar.gz 
 
