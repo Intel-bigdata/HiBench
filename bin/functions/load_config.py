@@ -124,8 +124,7 @@ def exactly_one_file(filename_candidate_list, config_name):
         result = exactly_one_file_one_candidate(filename_pattern)
         if result != "":
             return result
-    assert 0, "The pattern " + filename_pattern + \
-        " matches no files, please set `" + config_name + "` manually"
+    assert 0, "No files found under certain path(s), please set `" + config_name + "` manually"
 
 
 def exactly_one_file_one_candidate(filename_pattern):
@@ -402,12 +401,15 @@ def probe_hadoop_examples_jars():
         examples_jars_candidate_cdh1 = HibenchConf[
             'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-examples-*.jar"
         examples_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/hadoop-mapreduce-examples.jar"
+            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-examples.jar"
+        examples_jars_candidate_hdp1 = HibenchConf['hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-examples.jar"
+
         examples_jars_candidate_list = [
             examples_jars_candidate_apache0,
             examples_jars_candidate_cdh0,
             examples_jars_candidate_cdh1,
-            examples_jars_candidate_hdp0]
+            examples_jars_candidate_hdp0,
+            examples_jars_candidate_hdp1]
 
         HibenchConf["hibench.hadoop.examples.jar"] = exactly_one_file(
             examples_jars_candidate_list, "hibench.hadoop.examples.jar")
@@ -425,12 +427,15 @@ def probe_hadoop_examples_test_jars():
         examples_test_jars_candidate_cdh1 = HibenchConf[
             'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar"
         examples_test_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/hadoop-mapreduce-client-jobclient-tests.jar"
+            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient*.jar"
+        examples_test_jars_candidate_hdp1 = HibenchConf['hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-client-jobclient*.jar"
+
         examples_test_jars_candidate_list = [
             examples_test_jars_candidate_apache0,
             examples_test_jars_candidate_cdh0,
             examples_test_jars_candidate_cdh1,
-            examples_test_jars_candidate_hdp0]
+            examples_test_jars_candidate_hdp0,
+            examples_test_jars_candidate_hdp1]
 
         HibenchConf["hibench.hadoop.examples.test.jar"] = exactly_one_file(
             examples_test_jars_candidate_list, "hibench.hadoop.examples.test.jar")
