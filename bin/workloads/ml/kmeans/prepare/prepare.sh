@@ -24,13 +24,10 @@ enter_bench HadoopPrepareKmeans ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $INPUT_HDFS || true
-ensure-mahout-release
 
 START_TIME=`timestamp`
 
 OPTION="-sampleDir ${INPUT_SAMPLE} -clusterDir ${INPUT_CLUSTER} -numClusters ${NUM_OF_CLUSTERS} -numSamples ${NUM_OF_SAMPLES} -samplesPerFile ${SAMPLES_PER_INPUTFILE} -sampleDimension ${DIMENSIONS}"
-export HADOOP_CLASSPATH=`${MAHOUT_HOME}/bin/mahout classpath`
-export_withlog HADOOP_CLASSPATH
 run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${INPUT_SAMPLE} ${OPTION}
 END_TIME=`timestamp`
 

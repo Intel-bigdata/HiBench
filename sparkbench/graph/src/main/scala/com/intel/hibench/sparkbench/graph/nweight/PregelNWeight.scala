@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
  *
  * Input is given in Text file format. Each line represents a Node and all out edges of that node
  * (edge weight specified)
- *  <vertex> <vertex1>:<weight1>, <vertex2>:<weight2> ...)
+ * <vertex> <vertex1>:<weight1>,<vertex2>:<weight2> ...)
  */
 
 object PregelNWeight extends Serializable{
@@ -92,7 +92,7 @@ object PregelNWeight extends Serializable{
     var g = GraphImpl(edges, new SizedPriorityQueue(maxDegree), storageLevel, storageLevel).cache()
 
     g = Pregel(g, new Long2DoubleOpenHashMap, step, EdgeDirection.In)(
-      vProg _, sendMsg _, mergMsg _)
+      vProg, sendMsg, mergMsg)
 
     g.vertices.map { case (vid, vdata) => 
       var s = new StringBuilder
