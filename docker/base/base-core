@@ -3,7 +3,7 @@ USER root
 
 ## add proxy config inside FIREWALL
 ENV http_proxy=http://child-prc.intel.com:913
-ENV https_proxy=https://http://child-prc.intel.com:913
+ENV https_proxy=https://child-prc.intel.com:913
 #==============================
 # System Basic Tools  Installation
 #==============================
@@ -16,9 +16,6 @@ RUN \
   apt-get install -y build-essential && \
   apt-get install -y software-properties-common && \
   apt-get install -y git wget curl man unzip vim-tiny bc && \
-
-# compilers and basic tools
-  apt-get install -y gfortran make gcc 
 
 # install ssh server
 RUN apt-get -y install openssh-server; mkdir -p /var/run/sshd; locale-gen en_US en_US.UTF-8
@@ -55,7 +52,6 @@ RUN apt-get install -y python-numpy python-matplotlib
 
 # Install Java
 RUN \
-  add-apt-repository -y ppa:openjdk-r/ppa && \
   apt-get update && \
   apt-get install -y openjdk-${JDK_VERSION}-jdk
 
@@ -65,31 +61,8 @@ ENV PATH $PATH:$JAVA_HOME/bin
 
 
 #==============================
-# Scala Installation
-#==============================
-
-# export scala variables
-#ENV SCALA_VERSION 2.10.5
-ENV SCALA_HOME /usr/local/scala
-
-# Download and extract scala${SCALA_VERSION}
-RUN /usr/bin/wget \
-  http://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz \
-    -P /tmp && tar -xzf /tmp/scala-${SCALA_VERSION}.tgz -C /usr/local/ && rm -rf /tmp/*
-
-# change the default scala_home name
-RUN mv /usr/local/scala-${SCALA_VERSION} /usr/local/scala
-
-# add scala path
-ENV PATH $PATH:/usr/local/scala/bin
-
-
-#==============================
 # Maven Installation
 #==============================
-
-# Maven version 4 or 5
-#ENV MAVEN_VERSION 3.1.0
 
 # download maven
 RUN wget https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz
@@ -114,13 +87,11 @@ ENV HIBENCH_HOME /root/HiBench
 # download right version of HiBench
 RUN wget https://github.com/intel-hadoop/HiBench/archive/master.zip
 RUN unzip master.zip -d /root/
-RUN mv /root/master ${HIBENCH_HOME}
+RUN mv /root/HiBench-master ${HIBENCH_HOME}
 RUN rm -f master.zip
-COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
+#COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
 # start building HiBench
 RUN apt-get update && apt-get install -y thrift-compiler
-#RUN cd ${HIBENCH_HOME}/src && \
-#mvn clean package -D spark1.5 -D MR2
-# /bin/build-all.sh can be used to built hibench for all known Spark and MR versions
-RUN ${HIBENCH_HOME}/bin/build-all.sh
+RUN cd ${HIBENCH_HOME} && \
+mvn clean package
 
