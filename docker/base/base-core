@@ -15,10 +15,12 @@ RUN \
   apt-get -y upgrade && \
   apt-get install -y build-essential && \
   apt-get install -y software-properties-common && \
-  apt-get install -y git wget curl man unzip vim-tiny bc && \
+  apt-get install -y git wget curl man unzip vim-tiny bc 
 
 # install ssh server
-RUN apt-get -y install openssh-server; mkdir -p /var/run/sshd; locale-gen en_US en_US.UTF-8
+RUN \
+  apt-get update && \  
+  apt-get -y install openssh-server; mkdir -p /var/run/sshd; locale-gen en_US en_US.UTF-8
 
 # passwordless ssh
 RUN rm -f /etc/ssh/ssh_host_dsa_key
@@ -38,13 +40,6 @@ RUN echo "    UserKnownHostsFile=/dev/null                 " >> /etc/ssh/ssh_con
 
 # install python
 RUN apt-get install -y python${PYTHON_VERSION} python${PYTHON_VERSION}-dev
-
-# pip
-RUN wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py; python get-pip.py; rm -f /get-pip.py
-
-# install numpy and matplotlib
-RUN apt-get install -y python-numpy python-matplotlib
-
 
 #==============================
 # Java Installation
