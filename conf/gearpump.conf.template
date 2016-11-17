@@ -1,5 +1,7 @@
 hibench.streambench.gearpump.home                /PATH/TO/YOUR/GEARPUMP/HOME
 
+# Default parallelism in gearpump
 hibench.streambench.gearpump.parallelism         12
 
+# Executor number in gearpump
 hibench.streambench.gearpump.executors           12

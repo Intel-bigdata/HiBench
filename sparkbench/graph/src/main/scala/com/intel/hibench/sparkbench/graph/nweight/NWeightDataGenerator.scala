@@ -106,6 +106,8 @@ object NWeightDataGenerator {
     }
 
     resultData.saveAsTextFile(outputPath)
+
+    sc.stop()
   }
 
   def loadModel(modelPath: String, sc: SparkContext, partitions: Int): MatrixFactorizationModel = {

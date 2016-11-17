@@ -19,16 +19,19 @@ package com.intel.hibench.sparkbench.graph.nweight
 
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.storage.StorageLevel
-import org.apache.spark.scheduler.StatsReportListener
 
-/** 
- * Compute NWeight for Graph G(V, E) as defined below
- *     Weight(1)(u, v) = edge(u, v)
- *     Weight(n)(u, v) = Sum (over {x|there are edges (u, x) and (x, v)}) Weight(n-1)(u, x)*Weight(1)(x, v)
- * 
- * Input is given in Text file format. Each line represents a Node and all out edges of that node (edge weight specified) 
- *  <vertex> <vertex1>:<weight1>, <vertex2>:<weight2> ...) 
+/**
+ * Compute NWeight for Graph G(V, E) as defined below.
+ *
+ * Weight(1)(u, v) = edge(u, v)
+ * Weight(n)(u, v) =
+ *   Sum (over {x|there are edges (u, x) and (x, v)}) Weight(n-1)(u, x) * Weight(1)(x, v)
+ *
+ * Input is given in Text file format. Each line represents a Node and all out edges of that node
+ * (edge weight specified)
+ * <vertex> <vertex1>:<weight1>,<vertex2>:<weight2> ...)
  */
+
 object NWeight extends Serializable{
  
   def parseArgs(args: Array[String]) = {
@@ -75,12 +78,12 @@ object NWeight extends Serializable{
       sparkConf.setAppName("NWeightPregel")
     val sc = new SparkContext(sparkConf)
 
-    sc.addSparkListener(new StatsReportListener)
-
     if (model.toLowerCase == "graphx") {
       GraphxNWeight.nweight(sc, input, output, step, maxDegree, numPartitions, storageLevel)
     } else {
       PregelNWeight.nweight(sc, input, output, step, maxDegree, numPartitions, storageLevel)
     }
+
+    sc.stop()
   }
 }
