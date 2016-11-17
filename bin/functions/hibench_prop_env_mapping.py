@@ -115,6 +115,7 @@ HiBenchEnvPropMapping=dict(
 
     # For streaming bench
     STREAMING_TESTCASE="hibench.streambench.testCase",
+    COMMON_JAR="hibench.common.jar",
 
     # prepare
     STREAMING_TOPIC_NAME="hibench.streambench.kafka.topic",
@@ -129,6 +130,11 @@ HiBenchEnvPropMapping=dict(
     STREAMING_DATA2_CLUSTER_DIR="hibench.streambench.datagen.data2_cluster.dir",
     STREAMING_PARTITIONS="hibench.streambench.kafka.topicPartitions",
     DATA_GEN_JAR="hibench.streambench.datagen.jar",
+
+    # metrics reader
+    METRICE_READER_SAMPLE_NUM="hibench.streambench.metricsReader.sampleNum",
+    METRICS_READER_THREAD_NUM="hibench.streambench.metricsReader.threadNum",
+    METRICS_READER_OUTPUT_DIR="hibench.streambench.metricsReader.outputDir",
 
     # sparkstreaming
     STREAMBENCH_SPARK_JAR="hibench.streambench.sparkbench.jar",
