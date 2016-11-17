@@ -28,8 +28,6 @@ USER root
 COPY conf/cloudera.list /etc/apt/sources.list.d/cloudera.list
 #Set preference for cloudera packages
 COPY conf/cloudera.pref /etc/apt/preferences.d/cloudera.pref
-#Add the HiBench configuration file for CDH
-COPY conf/99-user_defined_properties.conf ${HIBENCH_HOME}/conf/
 
 #Add a Repository Key
 RUN wget http://archive.cloudera.com/cdh${CDH_VERSION}/ubuntu/trusty/amd64/cdh/archive.key -O archive.key && sudo apt-key add archive.key 
@@ -56,6 +54,8 @@ COPY conf/mapred-site.xml /etc/hadoop/conf/mapred-site.xml
 COPY conf/yarn-site.xml /etc/hadoop/conf/yarn-site.xml
 COPY conf/spark-defaults.conf /etc/spark/conf/spark-defaults.conf
 COPY scripts/hadoop-env.sh /etc/hadoop/conf/hadoop-env.sh
+COPY conf/hadoop.conf /root/HiBench/conf/hadoop.conf
+COPY conf/spark.conf /root/HiBench/conf/spark.conf
 
 #Format HDFS
 COPY scripts/restart-hadoop-spark.sh /usr/bin/restart-hadoop-spark.sh
