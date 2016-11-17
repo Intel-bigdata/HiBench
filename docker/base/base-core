@@ -2,8 +2,6 @@
 USER root
 
 ## add proxy config inside FIREWALL
-ENV http_proxy=http://child-prc.intel.com:913
-ENV https_proxy=https://child-prc.intel.com:913
 #==============================
 # System Basic Tools  Installation
 #==============================
@@ -70,8 +68,8 @@ RUN mv apache-maven-* /usr/local/apache-maven
 ENV M2_HOME /usr/local/apache-maven
 ENV PATH $PATH:/usr/local/apache-maven/bin
 # copy local maven repository to docker image
-RUN rm -rf /root/.m2
-ADD .m2 /root/.m2
+#RUN rm -rf /root/.m2
+#ADD .m2 /root/.m2
 
 
 #==============================
