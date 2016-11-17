@@ -86,6 +86,7 @@ RUN rm -f master.zip
 COPY conf/spark.conf ${HIBENCH_HOME}/conf/
 COPY conf/hadoop.conf ${HIBENCH_HOME}/conf/
 COPY conf/hibench.conf ${HIBENCH_HOME}/conf/
+
 # start building HiBench
 RUN apt-get update && apt-get install -y thrift-compiler
 RUN cd ${HIBENCH_HOME} && \
