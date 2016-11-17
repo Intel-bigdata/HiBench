@@ -8,4 +8,4 @@ rm -rf /etc/hostsbak
 #run wordcount example
 /usr/bin/restart-hadoop-spark.sh
 ${HIBENCH_HOME}/bin/workloads/micro/wordcount/prepare/prepare.sh
-${HIBENCH_HOME}//bin/workloads/micro/wordcount/hadoop/run.sh
+${HIBENCH_HOME}/bin/workloads/micro/wordcount/hadoop/run.sh
