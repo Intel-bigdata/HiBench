@@ -79,10 +79,10 @@ ENV PATH $PATH:/usr/local/apache-maven/bin
 ENV HIBENCH_HOME /root/HiBench
 
 # download right version of HiBench
-RUN wget https://github.com/intel-hadoop/HiBench/archive/master.zip
-RUN unzip master.zip -d /root/
-RUN mv /root/HiBench-master ${HIBENCH_HOME}
-RUN rm -f master.zip
+RUN wget https://github.com/intel-hadoop/HiBench/archive/HiBench-6.0.zip
+RUN unzip HiBench-6.0.zip -d /root/
+RUN mv /root/HiBench-HiBench-6.0 ${HIBENCH_HOME}
+RUN rm -f HiBench-6.0.zip
 COPY conf/spark.conf ${HIBENCH_HOME}/conf/
 COPY conf/hadoop.conf ${HIBENCH_HOME}/conf/
 COPY conf/hibench.conf ${HIBENCH_HOME}/conf/
