@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>flinkbench</artifactId>
-    <version>6.0</version>
+    <version>6.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench.flinkbench</groupId>
