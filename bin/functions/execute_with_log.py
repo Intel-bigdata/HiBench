@@ -98,8 +98,10 @@ def execute(workload_result_file, command_lines):
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
         if ("warn" in lline or 'error' in lline or 'exception' in lline) and lline.lstrip() == lline:
-            COLOR="Yellow" if "warn" in lline else "Red"
-            sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color).encode('utf-8'))
+            #Bypass hive 'error' while executing 'drop table if exists', which will check if the table exists and is actually not an error
+            if "table not found" not in lline:
+                COLOR="Yellow" if "warn" in lline else "Red"
+                sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color).encode('utf-8'))
             
         else:
             if len(line) >= width:
