@@ -17,7 +17,8 @@
 import sys, os, subprocess
 from terminalsize import get_terminal_size
 from time import time, sleep
-import re    
+import re
+import fnmatch
 
 def load_colors():
     color_script_fn = os.path.join(os.path.dirname(__file__), "color.enabled.sh")
@@ -97,10 +98,35 @@ def execute(workload_result_file, command_lines):
         line = replace_tab_to_space(line)
         #print "{Red}log=>{Color_Off}".format(**Color), line
         lline = line.lower()
-        if ("warn" in lline or 'error' in lline or 'exception' in lline) and lline.lstrip() == lline:
-            #Bypass hive 'error' while executing 'drop table if exists', which will check if the table exists and is actually not an error
-            if "table not found" not in lline:
-                COLOR="Yellow" if "warn" in lline else "Red"
+
+        def table_not_found_in_log(line):
+            table_not_found_pattern = "*Table * not found*"
+            regex = fnmatch.translate(table_not_found_pattern)
+            reobj = re.compile(regex)
+            if reobj.match(line):
+                return True
+            else:
+                return False
+
+        def database_default_exist_in_log(line):
+            database_default_already_exist = "Database default already exists"
+            if database_default_already_exist in line:
+                return True
+            else:
+                return False
+
+        def uri_with_key_not_found_in_log(line):
+            uri_with_key_not_found = "Could not find uri with key [dfs.encryption.key.provider.uri]"
+            if uri_with_key_not_found in line:
+                return True
+            else:
+                return False
+
+        if ('error' in lline) and lline.lstrip() == lline:
+            #Bypass hive 'error's and KeyProviderCache error
+            bypass_error_condition = table_not_found_in_log or database_default_exist_in_log(lline) or uri_with_key_not_found_in_log(lline)
+            if not bypass_error_condition:
+                COLOR = "Red"
                 sys.stdout.write((u"{%s}{line}{Color_Off}{ClearEnd}\n" % COLOR).format(line=line,**Color).encode('utf-8'))
             
         else:
