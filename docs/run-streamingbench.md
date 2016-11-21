@@ -110,5 +110,6 @@ While the data are being sent to the Kafka, start the streaming application. Tak
     bin/workloads/streaming/identity/spark/run.sh
 
 ### 8. Generate the report ###
+`metrics_reader.sh` is used to generate the report.
 
-    
+    bin/workloads/streaming/identity/common/metrics_reader.sh

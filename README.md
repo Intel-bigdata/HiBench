@@ -4,7 +4,6 @@
 
 * Current version: 6.0
 * Homepage: https://github.com/intel-hadoop/HiBench
-* To ask a question or report an issue, please use Github Issues
 * Contents:
   1. Overview
   2. Getting Started
