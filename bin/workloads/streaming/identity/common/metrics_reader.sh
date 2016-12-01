@@ -1,4 +1,4 @@
-  #!/bin/bash
+#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -25,7 +25,7 @@ show_bannar start
 
 printFullLog
 
-${TREAMING_KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${STREAMING_ZKADDR} --list
+${STREAMING_KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${STREAMING_ZKADDR} --list
 
 read -p "Please input the topic:" TOPIC
 
