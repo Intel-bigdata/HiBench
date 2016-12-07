@@ -49,7 +49,7 @@ object RunBench {
     val topic = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC)
     val zkHost = conf.getProperty(StreamBenchConfig.ZK_HOST)
     val consumerGroup = conf.getProperty(StreamBenchConfig.CONSUMER_GROUP)
-    val brokerList = if (directMode) conf.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST) else ""
+    val brokerList = conf.getProperty(StreamBenchConfig.KAFKA_BROKER_LIST)
     val debugMode = conf.getProperty(StreamBenchConfig.DEBUG_MODE).toBoolean
     val recordPerInterval = conf.getProperty(StreamBenchConfig.DATAGEN_RECORDS_PRE_INTERVAL).toLong
     val intervalSpan: Int = conf.getProperty(StreamBenchConfig.DATAGEN_INTERVAL_SPAN).toInt
