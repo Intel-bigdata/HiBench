@@ -2,8 +2,8 @@
 hibench.spark.home      /PATH/TO/YOUR/SPARK/HOME
 
 # Spark master
-#   standalone mode: `spark://xxx:7077`
-#   YARN mode: `yarn-client`
+#   standalone mode: spark://xxx:7077
+#   YARN mode: yarn-client
 hibench.spark.master    yarn-client
 
 # executor number and cores when running on Yarn
