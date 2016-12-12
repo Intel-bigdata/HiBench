@@ -66,7 +66,7 @@ The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `
 
 ### 6. Input data size ###
 
-   To change the input data size, you can set `hibench.scale.profile` in `conf/hibench.conf`. Available values are tiny, small, large, huge, gigantic and bigdata. The definition of these profiles can be found in the workload's conf file i.e. `con/workloads/micro/wordcount.conf`
+   To change the input data size, you can set `hibench.scale.profile` in `conf/hibench.conf`. Available values are tiny, small, large, huge, gigantic and bigdata. The definition of these profiles can be found in the workload's conf file i.e. `conf/workloads/micro/wordcount.conf`
 
 ### 7. Tuning ###
 
