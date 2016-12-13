@@ -61,19 +61,19 @@
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-core_${scala.binary.version}</artifactId>
+      <artifactId>gearpump-core_2.11</artifactId>
       <version>${gearpumpVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-streaming_${scala.binary.version}</artifactId>
+      <artifactId>gearpump-streaming_2.11</artifactId>
       <version>${gearpumpVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-external-kafka_${scala.binary.version}</artifactId>
+      <artifactId>gearpump-external-kafka_2.11</artifactId>
       <version>${gearpumpVersion}</version>
     </dependency>
     <dependency>
