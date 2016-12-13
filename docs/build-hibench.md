@@ -16,6 +16,19 @@ To build hadoop and spark benchmarks
 
 Supported frameworks includs: hadoopbench, sparkbench, flinkbench, stormbench, gearpumpbench.
 
+### Specify Scala Version ###
+To specify the Scala version, use -Dscala=xxx(2.10 or 2.11). By default, it builds for scala 2.10.
+
+    mvn -Dscala=2.11 clean package
+tips:
+Because some maven plugins cannot support scala version perfectly, there are some exceptions. 
+
+1.No matter what scala version is specified, the module (gearpumpbench/streaming) is always built in scala 2.11. 
+
+2.When the spark verison is specified to 2.0, the module (sparkbench/streaming) is only supported for scala 2.11.
+
+      
+
 ### Specify Spark Version ###
 To specify the spark version, use -Dspark=xxx(1.6 or 2.0). By default, it builds for spark 1.6.   
 
