@@ -23,9 +23,8 @@ To specify the Scala version, use -Dscala=xxx(2.10 or 2.11). By default, it buil
 tips:
 Because some maven plugins cannot support scala version perfectly, there are some exceptions. 
 
-1.No matter what scala version is specified, the module (gearpumpbench/streaming) is always built in scala 2.11. 
-
-2.When the spark verison is specified to 2.0, the module (sparkbench/streaming) is only supported for scala 2.11.
+1. No matter what scala version is specified, the module (gearpumpbench/streaming) is always built in scala 2.11. 
+2. When the spark verison is specified to 2.0, the module (sparkbench/streaming) is only supported for scala 2.11.
 
       
 
