@@ -38,6 +38,11 @@
       <artifactId>metrics-jvm</artifactId>
       <version>3.0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_${scala.binary.version}</artifactId>
+      <version>0.8.2.1</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -91,13 +96,10 @@
   <profiles>
     <profile>
       <id>defaultScalaVersion</id>
-      <dependencies>
-      <dependency>
-        <groupId>org.apache.kafka</groupId>
-        <artifactId>kafka_2.10</artifactId>
-        <version>0.8.2.1</version>
-      </dependency>
-      </dependencies>
+      <properties>
+        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+      </properties>
       <activation>
         <property>
           <name>!scala</name>
@@ -107,13 +109,10 @@
 
     <profile>
       <id>scala2.10</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.kafka</groupId>
-          <artifactId>kafka_2.10</artifactId>
-          <version>0.8.2.1</version>
-        </dependency>
-      </dependencies>
+      <properties>
+        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+      </properties>
       <activation>
         <property>
           <name>scala</name>
@@ -124,13 +123,10 @@
 
     <profile>
       <id>scala2.11</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.kafka</groupId>
-          <artifactId>kafka_2.11</artifactId>
-          <version>0.8.2.1</version>
-        </dependency>
-      </dependencies>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
       <activation>
         <property>
           <name>scala</name>
