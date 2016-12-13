@@ -31,9 +31,6 @@
   <packaging>jar</packaging>
   <name>gearpumpbench-streaming</name>
   <properties>
-    <gearpumpVersion>0.8.1</gearpumpVersion>
-    <scala.version>2.11.8</scala.version>
-    <scala.binary.version>2.11</scala.binary.version>
     <eclipseCollectionsVersion>7.1.0</eclipseCollectionsVersion>
   </properties>
 
@@ -64,19 +61,19 @@
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-core_2.11</artifactId>
+      <artifactId>gearpump-core_${scala.binary.version}</artifactId>
       <version>${gearpumpVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-streaming_2.11</artifactId>
+      <artifactId>gearpump-streaming_${scala.binary.version}</artifactId>
       <version>${gearpumpVersion}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.gearpump</groupId>
-      <artifactId>gearpump-external-kafka_2.11</artifactId>
+      <artifactId>gearpump-external-kafka_${scala.binary.version}</artifactId>
       <version>${gearpumpVersion}</version>
     </dependency>
     <dependency>
