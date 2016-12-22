@@ -6,6 +6,7 @@ case class SparkBenchConfig (
   // Spark
   master: String,
   benchName: String,
+  structured: Boolean,
   batchInterval: Int,
   receiverNumber: Int,
   copies: Int,
