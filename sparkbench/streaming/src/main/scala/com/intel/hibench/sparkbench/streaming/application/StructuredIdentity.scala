@@ -17,14 +17,13 @@
 
 package com.intel.hibench.sparkbench.streaming.application
 
-import com.intel.hibench.common.streaming.UserVisitParser
 import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-class StructuredWordCount() extends StructuredBenchBase {
+class StructuredIdentity() extends StructuredBenchBase {
 
   override def process(ds: DataFrame, config: SparkBenchConfig) = {
 
@@ -32,16 +31,9 @@ class StructuredWordCount() extends StructuredBenchBase {
     val spark = SparkSession.builder.appName("structured " + config.benchName).getOrCreate()
     import spark.implicits._
 
-    // Project Line to UserVisit
-    val words = ds.map(row => {
-      val userVisit = UserVisitParser.parse(row.getAs[String]("value"))
-      userVisit.getIp
-    })
-
-    val wordCounts = words.groupBy("value").count()
+    val results = ds.select("*")
     
-    val query = wordCounts.writeStream
-      .outputMode("complete")
+    val query = results.writeStream
       .format("console")
       .start()
 
