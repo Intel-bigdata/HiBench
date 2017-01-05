@@ -64,7 +64,7 @@ object RunBench {
 
     val producerNum = conf.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER).toInt
     val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, producerNum, recordPerInterval, intervalSpan)
-    println("Reporter Topic" + reporterTopic)
+    println("Reporter Topic: " + reporterTopic)
     val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
     MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
@@ -122,6 +122,8 @@ object RunBench {
   private def runStructured(config: SparkBenchConfig) {
     // select test case based on given benchName
     val testCase : StructuredBenchBase = TestCase.withValue(config.benchName) match {
+      case TestCase.IDENTITY => new StructuredIdentity()
+      case TestCase.REPARTITION => new StructuredRepartition()
       case TestCase.WORDCOUNT => new StructuredWordCount()
       case other =>
         throw new Exception(s"test case ${other} in structured streaming is not supported")
