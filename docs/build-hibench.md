@@ -2,24 +2,24 @@
 ### Build All ###
 To simply build all modules in Hibench, use the below command. This could be time consuming because the hadoopbench relies on 3rd party tools like Mahout and Nutch. The build process automatilly downloads these tools for you. If you won't run these workloads, you can only build a specific framework to speed up the build process.
 
-    mvn clean package
+    mvn clean package -Dscala=2.11
  
 
 ### Build a specific framework benchmark ###
 HiBench 6.0 supports building only bechmarks for a specific framework. For example, to build the hadoop benchmarks only, we can use the below command:
 
-    mvn -Phadoopbench clean package
+    mvn -Phadoopbench clean package -Dscala=2.11
 
 To build hadoop and spark benchmarks
 
-    mvn -Phadoopbench -Psparkbench clean package
+    mvn -Phadoopbench -Psparkbench clean package -Dscala=2.11
 
 Supported frameworks includs: hadoopbench, sparkbench, flinkbench, stormbench, gearpumpbench.
 
 ### Specify Scala Version ###
-To specify the Scala version, use -Dscala=xxx(2.10 or 2.11). By default, it builds for scala 2.10.
+To specify the Scala version, use -Dscala=xxx(2.10 or 2.11). By default, it builds for scala 2.11.
 
-    mvn -Dscala=2.11 clean package
+    mvn -Dscala=2.10 clean package
 tips:
 Because some maven plugins cannot support scala version perfectly, there are some exceptions. 
 
@@ -29,7 +29,7 @@ Because some maven plugins cannot support scala version perfectly, there are som
       
 
 ### Specify Spark Version ###
-To specify the spark version, use -Dspark=xxx(1.6 or 2.0). By default, it builds for spark 1.6.   
+To specify the spark version, use -Dspark=xxx(1.6 or 2.0). By default, it builds for spark 2.0.   
 
     mvn -Psparkbench -Dspark=2.0 clean package
 tips:
