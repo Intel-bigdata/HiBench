@@ -31,7 +31,7 @@ Because some maven plugins cannot support scala version perfectly, there are som
 ### Specify Spark Version ###
 To specify the spark version, use -Dspark=xxx(1.6 or 2.0). By default, it builds for spark 2.0.   
 
-    mvn -Psparkbench -Dspark=2.0 clean package
+    mvn -Psparkbench -Dspark=2.0 clean package -Dscala=2.11
 tips:
 when the spark version is specified to spark2.0(1.6) , the scala version will be specified to scala2.11(2.10) by
 default . For example , if we want use spark2.0 and scala2.11 to build hibench. we just use the command `mvn -Dspark=2.0 clean 
@@ -41,6 +41,6 @@ Similarly , the spark1.6 is associated with the scala2.10 by default.
 ### Build a single module ###
 If you are only interested in a single workload in HiBench. You can build a single module. For example, the below command only builds the sql workloads for Spark.
 
-    mvn -Psparkbench -Dmodules -Psql clean package
+    mvn -Psparkbench -Dmodules -Psql clean package -Dscala=2.11
 
 Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming.
