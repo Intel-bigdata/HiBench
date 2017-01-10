@@ -90,5 +90,5 @@ COPY conf/hibench.conf ${HIBENCH_HOME}/conf/
 # start building HiBench
 RUN apt-get update && apt-get install -y thrift-compiler
 RUN cd ${HIBENCH_HOME} && \
-mvn clean package
+mvn clean package -Dspark=1.6 -Dscala=2.10
 
