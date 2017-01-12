@@ -202,7 +202,9 @@ function run-spark-job() {
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
         export_withlog HADOOP_CONF_DIR
         
-        YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
+        if [[ -n "${YARN_NUM_EXECUTORS:-}" ]]; then
+            YARN_OPTS="${YARN_OPTS} --num-executors ${YARN_NUM_EXECUTORS}"
+        fi
         if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
             YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
        fi
