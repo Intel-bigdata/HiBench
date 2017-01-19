@@ -31,11 +31,6 @@
   <packaging>jar</packaging>
   <name>flinkbench-streaming</name>
 
-  <properties>
-    <flinkVersion>1.0.3</flinkVersion>
-    <jackson.version>2.4.2</jackson.version>
-  </properties>
-
   <repositories>
     <repository>
       <id>apache.snapshots</id>
@@ -64,13 +59,13 @@
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-kafka-0.8_2.11</artifactId>
+      <artifactId>flink-connector-kafka-0.8_${scala.binary.version}</artifactId>
       <version>${flinkVersion}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
-      <artifactId>flink-streaming-java_2.11</artifactId>
+      <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
       <version>${flinkVersion}</version>
       <scope>compile</scope>
     </dependency>

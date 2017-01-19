@@ -14,7 +14,9 @@
   <packaging>pom</packaging>
   <version>6.1-SNAPSHOT</version>
   <name>gearpumpbench</name>
-
+  <properties>
+  <gearpumpVersion>0.8.1</gearpumpVersion>
+  </properties>
   <profiles>
     <profile>
       <id>streaming</id>
@@ -31,6 +33,47 @@
       <activation>
         <property>
           <name>!modules</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>defaultScalaVersion</id>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>!scala</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>scala2.10</id>
+      <properties>
+        <scala.version>2.10.4</scala.version>
+        <scala.binary.version>2.10</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>scala</name>
+          <value>2.10</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>scala2.11</id>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>scala</name>
+          <value>2.11</value>
         </property>
       </activation>
     </profile>
