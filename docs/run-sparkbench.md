@@ -4,7 +4,7 @@
  
  * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
  
- * Supported Spark version: 1.6.x, 2.0.x 
+ * Supported Spark version: 1.6.x, 2.0.x, 2.1.x
 
  * Build HiBench according to [build HiBench](build-hibench.md).
  
