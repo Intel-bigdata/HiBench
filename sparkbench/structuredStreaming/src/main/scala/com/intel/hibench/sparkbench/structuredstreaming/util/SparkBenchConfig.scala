@@ -1,4 +1,4 @@
-package com.intel.hibench.sparkbench.streaming.util
+package com.intel.hibench.sparkbench.structuredstreaming.util
 
 import org.apache.spark.storage.StorageLevel
 

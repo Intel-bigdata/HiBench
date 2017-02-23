@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.streaming.application
+package com.intel.hibench.sparkbench.structuredstreaming.application
 
-import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
+import com.intel.hibench.sparkbench.structuredstreaming.util.SparkBenchConfig
 import org.apache.spark.sql.DataFrame
 
 /**

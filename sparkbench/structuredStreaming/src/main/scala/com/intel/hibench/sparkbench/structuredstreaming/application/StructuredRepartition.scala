@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.streaming.application
+package com.intel.hibench.sparkbench.structuredstreaming.application
 
 import com.intel.hibench.common.streaming.metrics.KafkaReporter
-import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
+import com.intel.hibench.sparkbench.structuredstreaming.util.SparkBenchConfig
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.ForeachWriter
@@ -26,7 +26,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-class StructuredIdentity() extends StructuredBenchBase {
+class StructuredRepartition() extends StructuredBenchBase {
 
   override def process(ds: DataFrame, config: SparkBenchConfig) = {
 
@@ -34,7 +34,9 @@ class StructuredIdentity() extends StructuredBenchBase {
     val spark = SparkSession.builder.appName("structured " + config.benchName).getOrCreate()
     import spark.implicits._
 
-    val query = ds.writeStream
+    val results = ds.repartition(config.coreNumber)
+    
+    val query = results.writeStream
       .format("console")
       .foreach(new ForeachWriter[Row] {
         var reporter: KafkaReporter = _

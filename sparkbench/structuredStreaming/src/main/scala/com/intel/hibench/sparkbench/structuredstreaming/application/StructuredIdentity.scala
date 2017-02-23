@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.streaming.application
+package com.intel.hibench.sparkbench.structuredstreaming.application
 
-import com.intel.hibench.common.streaming.UserVisitParser
-import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
+import com.intel.hibench.common.streaming.metrics.KafkaReporter
+import com.intel.hibench.sparkbench.structuredstreaming.util.SparkBenchConfig
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.ForeachWriter
+import org.apache.spark.sql.Row
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-class StructuredWordCount() extends StructuredBenchBase {
+class StructuredIdentity() extends StructuredBenchBase {
 
   override def process(ds: DataFrame, config: SparkBenchConfig) = {
 
@@ -32,17 +34,26 @@ class StructuredWordCount() extends StructuredBenchBase {
     val spark = SparkSession.builder.appName("structured " + config.benchName).getOrCreate()
     import spark.implicits._
 
-    // Project Line to UserVisit
-    val words = ds.map(row => {
-      val userVisit = UserVisitParser.parse(row.getAs[String]("value"))
-      userVisit.getIp
-    })
-
-    val wordCounts = words.groupBy("value").count()
-    
-    val query = wordCounts.writeStream
-      .outputMode("complete")
+    val query = ds.writeStream
       .format("console")
+      .foreach(new ForeachWriter[Row] {
+        var reporter: KafkaReporter = _
+
+        def open(partitionId: Long, version: Long): Boolean = {
+          val reportTopic = config.reporterTopic
+          val brokerList = config.brokerList
+          reporter = new KafkaReporter(reportTopic, brokerList)
+          true
+        }
+
+        def close(errorOrNull: Throwable): Unit = {}
+
+        def process(record: Row): Unit = {
+          val inTime = record(0).asInstanceOf[String].toLong
+          val outTime = System.currentTimeMillis()
+          reporter.report(inTime, outTime)
+        }
+      })
       .start()
 
     query.awaitTermination()

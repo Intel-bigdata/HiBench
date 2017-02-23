@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.streaming.application
+package com.intel.hibench.sparkbench.structuredstreaming.application
 
 import java.sql.Timestamp
 
 import com.intel.hibench.common.streaming.UserVisitParser
-import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
+import com.intel.hibench.sparkbench.structuredstreaming.util.SparkBenchConfig
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SparkSession

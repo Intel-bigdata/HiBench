@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.streaming
+package com.intel.hibench.sparkbench.structuredstreaming
 
 import com.intel.hibench.common.HiBenchConfig
 import com.intel.hibench.common.streaming.{TestCase, StreamBenchConfig, Platform, ConfigLoader}
 import com.intel.hibench.common.streaming.metrics.MetricsUtil
-import com.intel.hibench.sparkbench.streaming.util.SparkBenchConfig
-import com.intel.hibench.sparkbench.streaming.application._
+import com.intel.hibench.sparkbench.structuredstreaming.util.SparkBenchConfig
+import com.intel.hibench.sparkbench.structuredstreaming.application._
 import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Milliseconds, StreamingContext}
@@ -71,49 +73,35 @@ object RunBench {
       enableWAL, checkPointPath, directMode, zkHost, consumerGroup, topic, reporterTopic,
       brokerList, debugMode, coreNumber, probability, windowDuration, windowSlideStep)
 
-    run(config)
+    runStructured(config)
   }
 
-  private def run(config: SparkBenchConfig) {
+  private def runStructured(config: SparkBenchConfig) {
     // select test case based on given benchName
-    val testCase : BenchBase = TestCase.withValue(config.benchName) match {
-      case TestCase.IDENTITY => new Identity()
-      case TestCase.REPARTITION => new Repartition()
-      case TestCase.WORDCOUNT => new WordCount()
-      case TestCase.FIXWINDOW => new FixWindow(config.windowDuration, config.windowSlideStep)
+    val testCase : StructuredBenchBase = TestCase.withValue(config.benchName) match {
+      case TestCase.IDENTITY => new StructuredIdentity()
+      case TestCase.REPARTITION => new StructuredRepartition()
+      case TestCase.WORDCOUNT => new StructuredWordCount()
+      case TestCase.FIXWINDOW => new StructuredFixWindow(config.windowDuration, config.windowSlideStep)
       case other =>
-        throw new Exception(s"test case ${other} is not supported")
+        throw new Exception(s"test case ${other} in structured streaming is not supported")
     }
 
-    // defind streaming context
-    val conf = new SparkConf().setMaster(config.master).setAppName(config.benchName)
-    val ssc = new StreamingContext(conf, Milliseconds(config.batchInterval))
-    ssc.checkpoint(config.checkpointPath)
+    val ds: DataFrame = {
+      // Get the singleton instance of SparkSession
+      val spark = SparkSession.builder.appName("structured " + config.benchName).getOrCreate()
+      import spark.implicits._
 
-    if(!config.debugMode) {
-      ssc.sparkContext.setLogLevel("ERROR")
+      val ds1 = spark
+        .readStream
+        .format("kafka")
+        .option("kafka.bootstrap.servers", config.kafkaParams("metadata.broker.list"))
+        .option("subscribe", config.sourceTopic)
+        .load()
+
+      ds1.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     }
 
-    val lines: DStream[(String, String)] = if (config.directMode) {
-      // direct mode with low level Kafka API
-      KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-        ssc, config.kafkaParams, Set(config.sourceTopic))
-
-    } else {
-      // receiver mode with high level Kafka API
-      val kafkaInputs = (1 to config.receiverNumber).map{ _ =>
-        KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](
-          ssc, config.kafkaParams, Map(config.sourceTopic -> config.threadsPerReceiver), config.storageLevel)
-      }
-      ssc.union(kafkaInputs)
-    }
-
-    // convent key from String to Long, it stands for event creation time.
-    val parsedLines = lines.map{ case (k, v) => (k.toLong, v) }
-    testCase.process(parsedLines, config)
-
-    ssc.start()
-    ssc.awaitTermination()
+    testCase.process(ds, config)
   }
-
 }

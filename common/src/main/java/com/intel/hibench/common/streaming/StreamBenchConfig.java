@@ -28,8 +28,6 @@ public class StreamBenchConfig {
   // =====================================
   public static String TESTCASE = "hibench.streambench.testCase";
 
-  public static String STRUCTURED = "hibench.streambench.structured";
-
   public static String ZK_HOST = "hibench.streambench.zkHost";
 
   public static String CONSUMER_GROUP = "hibench.streambench.kafka.consumerGroup";
