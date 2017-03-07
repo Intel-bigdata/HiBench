@@ -23,10 +23,11 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.classification.{LogisticRegressionModel, LogisticRegressionWithLBFGS}
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.mllib.linalg._
 import org.apache.spark.mllib.util.MLUtils
 // $example off$
 
-object LogisticRegressionWithLBFGSiExamples {
+object LogisticRegressionWithLBFGSExamples {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("LogisticRegressionWithLBFGS")
