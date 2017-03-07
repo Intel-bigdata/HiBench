@@ -90,6 +90,13 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
+    # For Data
+    NUM_EXAMPLES="hibench.data.examples",
+    NUM_FEATURES="hibench.data.features",
+    LABELTYPE="hibench.data.labeltype",
+    FRACCATEGORICALFEATURES="hibench.data.frac_categorical_features",
+    FRACBINARYFEATURES="hibench.data.frac_binary_features",
+    TREEDEPTH="hibench.data.tree_depth",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
