@@ -163,52 +163,5 @@
         </property>
       </activation>
     </profile>
-
-    <profile>
-      <id>spark2.0</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-micro</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-ml</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-websearch</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-graph</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-sql</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-streaming</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-structuredStreaming</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-      <activation>
-        <property>
-          <name>spark</name>
-          <value>2.0</value>
-        </property>
-      </activation>
-    </profile>
   </profiles>
 </project>

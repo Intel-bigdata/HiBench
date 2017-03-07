@@ -17,20 +17,17 @@
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
-workload_config=${root_dir}/conf/workloads/structuredStreaming/fixwindow.conf
+workload_config=${root_dir}/conf/workloads/streaming/repartition.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench MetricsReader ${workload_config} ${current_dir}
+enter_bench SparkStructuredStreamingRepartition ${workload_config} ${current_dir}
 show_bannar start
 
+START_TIME=`timestamp`
 printFullLog
+run-spark-job com.intel.hibench.sparkbench.structuredstreaming.RunBench $SPARKBENCH_PROPERTIES_FILES
+END_TIME=`timestamp`
 
-${STREAMING_KAFKA_HOME}/bin/kafka-topics.sh --zookeeper ${STREAMING_ZKADDR} --list
-
-read -p "Please input the topic:" TOPIC
-
-CMD="${JAVA_BIN} -cp ${COMMON_JAR} com.intel.hibench.common.streaming.metrics.MetricsReader ${STREAMING_ZKADDR} ${TOPIC} ${METRICS_READER_OUTPUT_DIR} ${METRICE_READER_SAMPLE_NUM} ${METRICS_READER_THREAD_NUM}"
-
-execute_withlog $CMD
-
+gen_report ${START_TIME} ${END_TIME} 0
 show_bannar finish
+leave_bench

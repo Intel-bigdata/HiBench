@@ -57,8 +57,7 @@
       </dependencies>
       <activation>
         <property>
-          <name>spark</name>
-          <value>2.0</value>
+          <name>!spark</name>
         </property>
       </activation>
     </profile>

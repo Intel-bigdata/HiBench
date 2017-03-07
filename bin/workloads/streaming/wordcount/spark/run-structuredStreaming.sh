@@ -17,7 +17,7 @@
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
-workload_config=${root_dir}/conf/workloads/structuredStreaming/wordcount.conf
+workload_config=${root_dir}/conf/workloads/streaming/wordcount.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
 enter_bench SparkstructuredStreamingWordcount ${workload_config} ${current_dir}
