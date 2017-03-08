@@ -35,13 +35,13 @@ object LogisticRegressionWithLBFGSExamples {
 
     var inputPath = ""
 
-    if (args.length == 2) {
+    if (args.length == 1) {
       inputPath = args(0)
     }
 
     // $example on$
     // Load training data in LIBSVM format.
-    // val data = MLUtils.loadLibSVMFile(sc, "data/mllib/sample_libsvm_data.txt")
+    // val data = MLUtils.loadLibSVMFile(sc, inputPath)
     val data = sc.textFile(inputPath).map { pairStr =>
       val pair = pairStr.substring(1, pairStr.length()-1).split(",",2)
       val labeledData = LabeledPoint(pair(0).toDouble, Vectors.dense(pair(1).substring(1, pair(1).length()-1).split(",").map(_.toDouble)))

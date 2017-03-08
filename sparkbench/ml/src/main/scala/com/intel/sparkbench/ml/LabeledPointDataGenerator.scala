@@ -143,18 +143,10 @@ object LabeledPointDataGenerator {
     // Label points using tree.
     val labelVector = featureMatrix.map(trueModel.predict)
 
-    val data = labelVector.zip(featureMatrix).map(pair => {
-      var label = 0
-      if (pair._1 > 0)
-        label = 1
-      else
-        label = -1
-      new LabeledPoint(label, pair._2)
-    })
+    val data = labelVector.zip(featureMatrix).map(pair => new LabeledPoint(pair._1, pair._2))
     val categoricalFeaturesInfo = featuresGenerator.getCategoricalFeaturesInfo
     data
   }
-
 
   def randomBalancedDecisionTree(
       depth: Int,
