@@ -86,7 +86,7 @@ object LabeledPointDataGenerator {
         numFeatures, numPartitions, labelType,
         fracCategoricalFeatures, fracBinaryFeatures, treeDepth)   
  
-    data.saveAsTextFile(outputPath)
+    data.saveAsObjectFile(outputPath)
  
     sc.stop()
   }
