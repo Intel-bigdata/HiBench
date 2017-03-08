@@ -20,12 +20,10 @@ package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
 // $example on$
-import org.apache.spark.mllib.classification.{LogisticRegressionModel, LogisticRegressionWithLBFGS}
+import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.mllib.util.MLUtils
 // $example off$
 
 object LogisticRegressionWithLBFGSExamples {
@@ -42,12 +40,6 @@ object LogisticRegressionWithLBFGSExamples {
 
     // $example on$
     // Load training data in LIBSVM format.
-    // val data = MLUtils.loadLibSVMFile(sc, inputPath)
-    // val data = sc.testFile(inputPath).map { pairStr =>
-    //   val pair = pairStr.substring(1, pairStr.length()-1).split(",",2)
-    //   val labeledData = LabeledPoint(pair(0).toDouble, Vectors.dense(pair(1).substring(1, pair(1).length()-1).split(",").map(_.toDouble)))
-    //   labeledData
-    // }
     val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
 
     // Split data into training (60%) and test (40%).
@@ -70,12 +62,6 @@ object LogisticRegressionWithLBFGSExamples {
     val metrics = new MulticlassMetrics(predictionAndLabels)
     val accuracy = metrics.accuracy
     println(s"Accuracy = $accuracy")
-
-    // Save and load model
-    //model.save(sc, "target/tmp/scalaLogisticRegressionWithLBFGSModel"
-    //val sameModel = LogisticRegressionModel.load(sc,
-    //  "target/tmp/scalaLogisticRegressionWithLBFGSModel")
-    // $example off$
 
     sc.stop()
   }
