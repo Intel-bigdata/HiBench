@@ -46,12 +46,12 @@
       <dependencies>
         <dependency>
           <groupId>org.apache.spark</groupId>
-          <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+          <artifactId>spark-streaming-kafka-0-8_${scala.binary.version}</artifactId>
           <version>2.0.0</version>
         </dependency>
         <dependency>
           <groupId>org.apache.spark</groupId>
-          <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
+          <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
           <version>2.0.2</version>
         </dependency>
       </dependencies>
@@ -67,12 +67,12 @@
       <dependencies>
         <dependency>
           <groupId>org.apache.spark</groupId>
-          <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+          <artifactId>spark-streaming-kafka-0-8_${scala.binary.version}</artifactId>
           <version>2.0.0</version>
         </dependency>
         <dependency>
           <groupId>org.apache.spark</groupId>
-          <artifactId>spark-sql-kafka-0-10_2.11</artifactId>
+          <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
           <version>2.0.2</version>
         </dependency>
       </dependencies>
@@ -80,6 +80,28 @@
         <property>
           <name>spark</name>
           <value>2.0</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark2.1</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming-kafka-0-8_${scala.binary.version}</artifactId>
+          <version>2.1.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
+          <version>2.1.0</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.1</value>
         </property>
       </activation>
     </profile>

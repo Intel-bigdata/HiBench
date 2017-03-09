@@ -37,7 +37,6 @@ class StructuredRepartition() extends StructuredBenchBase {
     val results = ds.repartition(config.coreNumber)
     
     val query = results.writeStream
-      .format("console")
       .foreach(new ForeachWriter[Row] {
         var reporter: KafkaReporter = _
 

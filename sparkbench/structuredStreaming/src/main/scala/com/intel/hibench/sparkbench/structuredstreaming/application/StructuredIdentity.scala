@@ -35,7 +35,6 @@ class StructuredIdentity() extends StructuredBenchBase {
     import spark.implicits._
 
     val query = ds.writeStream
-      .format("console")
       .foreach(new ForeachWriter[Row] {
         var reporter: KafkaReporter = _
 
