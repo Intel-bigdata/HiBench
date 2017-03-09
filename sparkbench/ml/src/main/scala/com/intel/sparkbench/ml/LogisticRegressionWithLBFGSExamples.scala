@@ -58,9 +58,7 @@ object LogisticRegressionWithLBFGSExamples {
       (prediction, label)
     }
 
-    // Get evaluation metrics.
-    val metrics = new MulticlassMetrics(predictionAndLabels)
-    val accuracy = metrics.accuracy
+    val accuracy = predictionAndLabels.filter(x => x._1 == x._2).count().toDouble / predictionAndLabels.count()
     println(s"Accuracy = $accuracy")
 
     sc.stop()
