@@ -20,13 +20,6 @@ package com.intel.hibench.sparkbench.ml
 import java.io._
 
 import com.intel.hibench.sparkbench.common.IOCommon
-import org.apache.spark.HashPartitioner
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.recommendation.{MatrixFactorizationModel, Rating}
-import org.apache.spark.rdd.RDD
-
-import scala.collection.mutable.ArrayBuffer
-import scala.util.Random
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.linalg._
@@ -45,7 +38,7 @@ import scala.util.control.Breaks._
 object LabeledPointDataGenerator {
 
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("ML-DataGeneration")
+    val conf = new SparkConf().setAppName("LabeledPointDataGeneration")
     val sc = new SparkContext(conf)
 
     var outputPath = ""

@@ -62,7 +62,7 @@ HiBenchEnvPropMapping=dict(
     YARN_EXECUTOR_CORES="hibench.yarn.executor.cores",
     SPARK_YARN_EXECUTOR_MEMORY="spark.executor.memory",
     SPARK_YARN_DRIVER_MEMORY="spark.driver.memory",
-    DATA_HDFS="hibench.hdfs.classification.dir",
+    DATA_HDFS="hibench.hdfs.data.dir",
     # For Sleep workload
     MAP_SLEEP_TIME="hibench.sleep.mapper.seconds",
     RED_SLEEP_TIME="hibench.sleep.reducer.seconds",
@@ -90,13 +90,18 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
-    # For Data
+    # For Classification
     NUM_EXAMPLES="hibench.classification.examples",
     NUM_FEATURES="hibench.classification.features",
     LABELTYPE="hibench.classification.labeltype",
     FRACCATEGORICALFEATURES="hibench.classification.frac_categorical_features",
     FRACBINARYFEATURES="hibench.classification.frac_binary_features",
     TREEDEPTH="hibench.classification.tree_depth",
+    # For Rating
+    NUM_USERS="hibench.rating.users",
+    NUM_PRODUCTS="hibench.rating.products",
+    NUM_RATINGS="hibench.rating.ratings",
+    IMPLICITPREFS="hibench.rating.implicitprefs",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
