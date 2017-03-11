@@ -213,7 +213,8 @@ function run-spark-job() {
            YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
        fi
     fi
-    if [[ "$CLS" == *.py ]]; then 
+
+    if [[ "$CLS" == *.py ]]; then
         LIB_JARS="$LIB_JARS --jars ${SPARKBENCH_JAR}"
         SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --master ${SPARK_MASTER} ${YARN_OPTS} ${CLS} $@"
     else
@@ -306,6 +307,16 @@ function ensure-mahout-release (){
     export_withlog HADOOP_EXECUTABLE
     export_withlog HADOOP_HOME
     export_withlog HADOOP_CONF_DIR    
+}
+
+function ensure-tpcds-kit-ready (){
+    if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
+        make -C "sparkbench/sql/src/main/c"
+        if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
+            assert 0 "Error: Tpc DS kit is not ready!"
+            exit
+        fi
+    fi
 }
 
 function execute () {
@@ -447,4 +458,53 @@ CREATE EXTERNAL TABLE uservisits_copy (sourceIP STRING,destURL STRING,visitDate 
 INSERT OVERWRITE TABLE uservisits_copy SELECT * FROM uservisits;
 EOF
 
+}
+
+function getExecTime() {
+    start=$1
+    end=$2
+    qname=$3
+    start_s=$(echo $start | cut -d '.' -f 1)
+    start_ns=$(echo $start | cut -d '.' -f 2)
+    end_s=$(echo $end | cut -d '.' -f 1)
+    end_ns=$(echo $end | cut -d '.' -f 2)
+    delta_ms=$(( ( 10#$end_s - 10#$start_s ) * 1000 + ( 10#$end_ns / 1000000 - 10#$start_ns / 1000000 ) ))
+    show_s=$(( $delta_ms / 1000 ))
+    show_ms=$(( $delta_ms % 1000 ))
+    echo "++ Duration: ${show_s}s ${show_ms}ms for ${qname} ++"
+}
+
+function runPowerTest() {
+    len=${#INCLUDED_LIST[@]}
+    for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM}; i++)); do
+        j=0
+        found=false
+        while [ $j -lt $len ]
+        do
+            if [ "${INCLUDED_LIST[$j]}" == "${i}" ]; then
+                found=true
+                break
+            fi
+            let j++
+        done
+        if [ "${found}" == "false" ]; then
+            continue
+        fi
+
+        export QUERY_NUMBER=${i}
+        export QUERY_NAME=q${QUERY_NUMBER}
+        export QUERY_FILE_NAME="/home/gcz/Documents/work/tpcds-queries/${QUERY_NAME}.sql"
+        export LOG_FILE_NAME="/home/gcz/Documents/work/tpcds/np_1280_10t_${QUERY_NAME}_${TUNNING_NAME}.log"
+
+        export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
+        export SPARK_SQL_LOCAL_OPTS="--conf spark.sql.shuffle.partitions=${REDUCE_NUM}"
+
+        start=$(date +%s.%N)
+        echo -e "${BCyan}Exec script: ${Cyan}This is for query ${i}, shit man!${Color_Off}"
+
+        ${SPARK_SQL_CMD} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME} 2>&1 | tee ${LOG_FILE_NAME}
+        end=$(date +%s.%N)
+        getExecTime $start $end ${QUERY_NAME} >> ${LOG_FILE_NAME}
+
+    done
 }

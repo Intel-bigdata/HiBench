@@ -35,4 +35,46 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+            <execution>
+                <id>hi</id>
+                <phase>compile</phase>
+                <goals>
+                    <goal>exec</goal>
+                </goals>
+                <configuration>
+                    <executable>make</executable>
+                    <arguments>
+                        <argument>all</argument>
+                    </arguments>
+                    <workingDirectory>src/main/c</workingDirectory>
+                </configuration>
+            </execution>
+            <execution>
+                <id>hi2</id>
+                <phase>clean</phase>
+                <goals>
+                    <goal>exec</goal>
+                </goals>
+                <configuration>
+                    <executable>make</executable>
+                    <arguments>
+                        <argument>clean</argument>
+                    </arguments>
+                    <workingDirectory>src/main/c</workingDirectory>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+    </plugins>
+    </pluginManagement>
+    </build>
+
 </project>

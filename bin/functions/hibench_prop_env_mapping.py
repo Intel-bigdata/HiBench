@@ -112,6 +112,9 @@ HiBenchEnvPropMapping=dict(
     STORAGE_LEVEL="hibench.nweight.storage_level",
     DISABLE_KRYO="hibench.nweight.disable_kryo",
     MODEL="hibench.nweight.model",
+    # For TPCDS
+    DSDGEN_PATH="hibench.tpcds.dsdgen",
+    TABLE_SIZE="hibench.tpcds.tablesize",
 
     # For streaming bench
     STREAMING_TESTCASE="hibench.streambench.testCase",
