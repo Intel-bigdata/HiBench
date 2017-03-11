@@ -115,6 +115,7 @@ HiBenchEnvPropMapping=dict(
     # For TPCDS
     DSDGEN_PATH="hibench.tpcds.dsdgen",
     TABLE_SIZE="hibench.tpcds.tablesize",
+    HIVE_METASTORE_URIS="hive.metastore.uris",
 
     # For streaming bench
     STREAMING_TESTCASE="hibench.streambench.testCase",

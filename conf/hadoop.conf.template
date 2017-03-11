@@ -10,6 +10,8 @@ hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
 # The root HDFS path to store HiBench data
 hibench.hdfs.master       hdfs://localhost:8020
 
-
 # Hadoop release provider. Supported value: apache, cdh5, hdp
 hibench.hadoop.release    apache
+
+# Configure this only when you run Sparkbench/sql/tpcds module
+hive.metastore.uris     thrift://HOSTNAME:PORT

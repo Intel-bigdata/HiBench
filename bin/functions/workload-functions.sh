@@ -475,6 +475,30 @@ function getExecTime() {
 }
 
 function runPowerTest() {
+
+    INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
+
+    SET_REDUCE_NUM=()
+    SET_REDUCE_NUM[19]=200
+    SET_REDUCE_NUM[42]=200
+    SET_REDUCE_NUM[43]=200
+    SET_REDUCE_NUM[52]=200
+    SET_REDUCE_NUM[55]=200
+    SET_REDUCE_NUM[63]=200
+    SET_REDUCE_NUM[68]=200
+    SET_REDUCE_NUM[73]=200
+    SET_REDUCE_NUM[98]=200
+
+    echo "${HIVE_METASTORE_URIS}"
+    SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
+    SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
+    DATABASE_NAME="tpcds_${TABLE_SIZE}g"
+    QUERY_BEGIN_NUM=19
+    QUERY_END_NUM=100
+    TUNNING_NAME=256G_mapjoin_32exec_5cores_dfs256m_filesize1g
+
+    echo -e "${BCyan}Running TPC-DS power test${Color_Off}"
+
     len=${#INCLUDED_LIST[@]}
     for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM}; i++)); do
         j=0
@@ -493,18 +517,16 @@ function runPowerTest() {
 
         export QUERY_NUMBER=${i}
         export QUERY_NAME=q${QUERY_NUMBER}
-        export QUERY_FILE_NAME="/home/gcz/Documents/work/tpcds-queries/${QUERY_NAME}.sql"
-        export LOG_FILE_NAME="/home/gcz/Documents/work/tpcds/np_1280_10t_${QUERY_NAME}_${TUNNING_NAME}.log"
+        export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/${QUERY_NAME}.sql"
 
         export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
         export SPARK_SQL_LOCAL_OPTS="--conf spark.sql.shuffle.partitions=${REDUCE_NUM}"
 
         start=$(date +%s.%N)
-        echo -e "${BCyan}Exec script: ${Cyan}This is for query ${i}, shit man!${Color_Off}"
-
-        ${SPARK_SQL_CMD} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME} 2>&1 | tee ${LOG_FILE_NAME}
+        echo -e "${BCyan}Exec script: ${Cyan}This is for query ${i}${Color_Off}"
+        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
+        execute_withlog ${SUBMIT_CMD}
         end=$(date +%s.%N)
-        getExecTime $start $end ${QUERY_NAME} >> ${LOG_FILE_NAME}
 
     done
 }
