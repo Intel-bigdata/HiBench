@@ -530,3 +530,34 @@ function runPowerTest() {
 
     done
 }
+
+function genThroughputTestStream() {
+
+    export throughput_scale=9
+
+    throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources
+    export throughput_test_bin_dir=${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark
+    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py "19 42 43 52 55 63 68 73 98" ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale}
+}
+
+function runThroughputTest() {
+
+    export SPARK_MASTER=${SPARK_MASTER}
+    export SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
+    export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
+    export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
+    export SPARK_PROP_CONF=${SPARK_PROP_CONF}
+
+    for(( i = 0; i < ${throughput_scale}; i++ ))
+    do
+    {
+          sh ${throughput_test_bin_dir}/stream${i}.sh
+    }&
+    done
+    wait
+}
+
+function removeTemporaryFiles() {
+    rm ${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark/stream*
+    rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/stream*
+}
