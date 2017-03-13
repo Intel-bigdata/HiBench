@@ -102,6 +102,11 @@ HiBenchEnvPropMapping=dict(
     NUM_PRODUCTS="hibench.rating.products",
     NUM_RATINGS="hibench.rating.ratings",
     IMPLICITPREFS="hibench.rating.implicitprefs",
+    # ALS
+    RANK="hibench.als.rank",
+    NUM_ITERATIONS_ALS="hibench.als.num_iterations",
+    LAMBDA="hibench.als.Lambda",
+    KYRO="hibench.als.kyro",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
