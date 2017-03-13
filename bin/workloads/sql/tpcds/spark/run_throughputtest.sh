@@ -25,13 +25,13 @@ show_bannar start
 
 genThroughputTestStream
 
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
 runThroughputTest
 END_TIME=`timestamp`
 
 removeTemporaryFiles
 
-gen_report ${START_TIME} ${END_TIME}
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench

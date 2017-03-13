@@ -311,7 +311,7 @@ function ensure-mahout-release (){
 
 function ensure-tpcds-kit-ready (){
     if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
-        make -C "sparkbench/sql/src/main/c"
+        make -C ${HIBENCH_HOME}"/sparkbench/sql/src/main/c"
         if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
             assert 0 "Error: Tpc DS kit is not ready!"
             exit
@@ -560,4 +560,5 @@ function runThroughputTest() {
 function removeTemporaryFiles() {
     rm ${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark/stream*
     rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/stream*
+    make -C ${HIBENCH_HOME}"/sparkbench/sql/src/main/c" clean
 }

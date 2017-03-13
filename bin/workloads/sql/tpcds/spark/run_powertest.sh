@@ -23,12 +23,12 @@ workload_config=${root_dir}/conf/workloads/sql/tpcds.conf
 enter_bench SparkPowerTestTpcDS ${workload_config} ${current_dir}
 show_bannar start
 
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
 runPowerTest
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE:-0}
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 

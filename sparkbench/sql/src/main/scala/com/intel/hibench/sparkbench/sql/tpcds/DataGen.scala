@@ -17,7 +17,8 @@
 
 package com.intel.hibench.sparkbench.sql.tpcds
 
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.hive.HiveContext
 
 object DataGen {
 
@@ -34,40 +35,86 @@ object DataGen {
     val tableSize = args(1).toInt
     val dsdgenPath = args(2)
 
-    val spark = SparkSession
-      .builder()
-      .appName("TPC-DS Gendata")
-      .enableHiveSupport()
-      .getOrCreate()
+    val sc = new SparkContext()
+    val hiveContext = new HiveContext(sc)
 
-    val tables = new Tables(spark.sqlContext, dsdgenPath, tableSize)
+    val tables = new Tables(hiveContext, dsdgenPath, tableSize)
 
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "catalog_sales", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "catalog_returns", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "inventory", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "store_sales", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "store_returns", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "web_sales", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "web_returns", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "call_center", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "catalog_page", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "customer", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "customer_address", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "customer_demographics", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "date_dim", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "household_demographics", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "income_band", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "item", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "promotion", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "reason", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "ship_mode", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "store", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "time_dim", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "warehouse", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "web_page", 1)
-    tables.genData(hdfs, "parquet", true, false, false, false, false, "web_site", 1)
+    val tableFilters = List("catalog_sales",
+                            "catalog_returns",
+                            "inventory",
+                            "store_sales",
+                            "store_returns",
+                            "web_sales",
+                            "web_returns",
+                            "call_center",
+                            "catalog_page",
+                            "customer",
+                            "customer_address",
+                            "customer_demographics",
+                            "date_dim",
+                            "household_demographics",
+                            "income_band",
+                            "item",
+                            "promotion",
+                            "reason",
+                            "ship_mode",
+                            "store",
+                            "time_dim",
+                            "warehouse",
+                            "web_page",
+                            "web_site")
 
+    genDataWithTableFilters(tables, hdfs, "parquet", true, false, false, false, false, tableFilters, tableSize)
     tables.createExternalTables(hdfs, "parquet", s"tpcds_${tableSize}g", true)
+  }
+  def genDataWithTableFilters(
+                               tables: Tables,
+                               location: String,
+                               format: String,
+                               overwrite: Boolean,
+                               partitionTables: Boolean,
+                               useDoubleForDecimal: Boolean,
+                               clusterByPartitionColumns: Boolean,
+                               filterOutNullPartitionValues: Boolean,
+                               tableFilter: List[String],
+                               tableSize: Int): Unit = {
+    val rateMap = Map[String, Int](
+      "catalog_sales" -> 80,
+      "catalog_returns" -> 10,
+      "inventory" -> 5,
+      "store_sales" -> 100,
+      "store_returns" -> 10,
+      "web_sales" -> 40,
+      "web_returns" -> 5,
+      "call_center" -> 1,
+      "catalog_page" -> 1,
+      "customer" -> 1,
+      "customer_address" -> 1,
+      "customer_demographics" -> 1,
+      "date_dim" -> 1,
+      "household_demographics" -> 1,
+      "income_band" -> 1,
+      "item" -> 1,
+      "promotion" -> 1,
+      "reason" -> 1,
+      "ship_mode" -> 1,
+      "store" -> 1,
+      "time_dim" -> 1,
+      "warehouse" -> 1,
+      "web_page" -> 1,
+      "web_site" -> 1
+    )
+    tableFilter.foreach(
+      tableName => {
+        var numPartitions = 1
+        if(rateMap(tableName) != 1) {
+          numPartitions = numPartitions.max(tableSize / 1000 * rateMap(tableName))
+        }
+        tables.genData(location, "parquet", true, false, false, false, false, tableName, numPartitions)
+      }
+    )
+
   }
 
 }
