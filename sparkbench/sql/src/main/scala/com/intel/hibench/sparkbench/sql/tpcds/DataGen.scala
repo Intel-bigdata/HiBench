@@ -40,34 +40,13 @@ object DataGen {
 
     val tables = new Tables(hiveContext, dsdgenPath, tableSize)
 
-    val tableFilters = List("catalog_sales",
-                            "catalog_returns",
-                            "inventory",
-                            "store_sales",
-                            "store_returns",
-                            "web_sales",
-                            "web_returns",
-                            "call_center",
-                            "catalog_page",
-                            "customer",
-                            "customer_address",
-                            "customer_demographics",
-                            "date_dim",
-                            "household_demographics",
-                            "income_band",
-                            "item",
-                            "promotion",
-                            "reason",
-                            "ship_mode",
-                            "store",
-                            "time_dim",
-                            "warehouse",
-                            "web_page",
-                            "web_site")
+    val tableNames = getRateMap().map(_._1).toList
 
-    genDataWithTableFilters(tables, hdfs, "parquet", true, false, false, false, false, tableFilters, tableSize)
+    genDataWithTableFilters(
+      tables, hdfs, "parquet", true, false, false, false, false, tableNames, tableSize)
     tables.createExternalTables(hdfs, "parquet", s"tpcds_${tableSize}g", true)
   }
+
   def genDataWithTableFilters(
                                tables: Tables,
                                location: String,
@@ -77,9 +56,24 @@ object DataGen {
                                useDoubleForDecimal: Boolean,
                                clusterByPartitionColumns: Boolean,
                                filterOutNullPartitionValues: Boolean,
-                               tableFilter: List[String],
+                               tableFilters: List[String],
                                tableSize: Int): Unit = {
-    val rateMap = Map[String, Int](
+    val rateMap = getRateMap()
+    tableFilters.foreach(
+      tableName => {
+        var numPartitions = 1
+        if(rateMap(tableName) != 1) {
+          numPartitions = numPartitions.max(tableSize / 1000 * rateMap(tableName))
+        }
+        tables.genData(
+          location, "parquet", overwrite, partitionTables, useDoubleForDecimal,
+          clusterByPartitionColumns, filterOutNullPartitionValues, tableName, numPartitions)
+      }
+    )
+  }
+
+  def getRateMap(): Map[String, Int] = {
+    Map[String, Int](
       "catalog_sales" -> 80,
       "catalog_returns" -> 10,
       "inventory" -> 5,
@@ -105,16 +99,5 @@ object DataGen {
       "web_page" -> 1,
       "web_site" -> 1
     )
-    tableFilter.foreach(
-      tableName => {
-        var numPartitions = 1
-        if(rateMap(tableName) != 1) {
-          numPartitions = numPartitions.max(tableSize / 1000 * rateMap(tableName))
-        }
-        tables.genData(location, "parquet", true, false, false, false, false, tableName, numPartitions)
-      }
-    )
-
   }
-
 }

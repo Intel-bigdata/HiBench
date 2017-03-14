@@ -35,46 +35,34 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-            <version>1.6.0</version>
-            <executions>
-            <execution>
-                <id>hi</id>
-                <phase>compile</phase>
-                <goals>
-                    <goal>exec</goal>
-                </goals>
-                <configuration>
-                    <executable>make</executable>
-                    <arguments>
-                        <argument>all</argument>
-                    </arguments>
-                    <workingDirectory>src/main/c</workingDirectory>
-                </configuration>
-            </execution>
-            <execution>
-                <id>hi2</id>
-                <phase>clean</phase>
-                <goals>
-                    <goal>exec</goal>
-                </goals>
-                <configuration>
-                    <executable>make</executable>
-                    <arguments>
-                        <argument>clean</argument>
-                    </arguments>
-                    <workingDirectory>src/main/c</workingDirectory>
-                </configuration>
-            </execution>
-        </executions>
-    </plugin>
-    </plugins>
-    </pluginManagement>
-    </build>
 
+    <properties>
+        <repo1>https://github.com</repo1>
+        <file1>davies/tpcds-kit/archive/master.zip</file1>
+        <checksum1>21adadd344bb01a4374e7e642cdf25b7</checksum1>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>${download-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>${repo1}/${file1}</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
+                            <md5>${checksum1}</md5>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

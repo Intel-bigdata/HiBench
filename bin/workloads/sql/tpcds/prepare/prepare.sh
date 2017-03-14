@@ -29,9 +29,10 @@ rmr-hdfs $INPUT_HDFS || true
 echo -e "${On_Blue}Prepare TpcDS: working${Color_Off}"
 
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.sql.tpcds.DataGen ${INPUT_HDFS} ${TABLE_SIZE} ${DSDGEN_PATH}
+run-spark-job com.intel.hibench.sparkbench.sql.tpcds.DataGen ${INPUT_HDFS} ${TABLE_SIZE} ${DSDGEN_DIR}
 END_TIME=`timestamp`
-SIZE="0"
+
+removeTemporaryFiles
 
 show_bannar finish
 leave_bench

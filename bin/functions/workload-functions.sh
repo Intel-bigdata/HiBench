@@ -310,9 +310,10 @@ function ensure-mahout-release (){
 }
 
 function ensure-tpcds-kit-ready (){
-    if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
-        make -C ${HIBENCH_HOME}"/sparkbench/sql/src/main/c"
-        if [ ! -e ${HIBENCH_HOME}"/sparkbench/sql/src/main/c/dsdgen" ]; then
+    if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
+        mv "${DSDGEN_DIR}/Makefile.suite" "${DSDGEN_DIR}/makefile"
+        make -C ${DSDGEN_DIR}
+        if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
             assert 0 "Error: Tpc DS kit is not ready!"
             exit
         fi
@@ -517,7 +518,7 @@ function runPowerTest() {
 
         export QUERY_NUMBER=${i}
         export QUERY_NAME=q${QUERY_NUMBER}
-        export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/${QUERY_NAME}.sql"
+        export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/${QUERY_NAME}.sql"
 
         export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
         export SPARK_SQL_LOCAL_OPTS="--conf spark.sql.shuffle.partitions=${REDUCE_NUM}"
@@ -532,16 +533,14 @@ function runPowerTest() {
 }
 
 function genThroughputTestStream() {
-
     export throughput_scale=9
 
-    throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources
+    throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query
     export throughput_test_bin_dir=${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark
     ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py "19 42 43 52 55 63 68 73 98" ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale}
 }
 
 function runThroughputTest() {
-
     export SPARK_MASTER=${SPARK_MASTER}
     export SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
@@ -560,5 +559,5 @@ function runThroughputTest() {
 function removeTemporaryFiles() {
     rm ${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark/stream*
     rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/stream*
-    make -C ${HIBENCH_HOME}"/sparkbench/sql/src/main/c" clean
+    make -C ${DSDGEN_DIR} clean
 }
