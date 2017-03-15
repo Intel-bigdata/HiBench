@@ -81,8 +81,6 @@ object RunBench {
     val testCase : StructuredBenchBase = TestCase.withValue(config.benchName) match {
       case TestCase.IDENTITY => new StructuredIdentity()
       case TestCase.REPARTITION => new StructuredRepartition()
-      case TestCase.WORDCOUNT => new StructuredWordCount()
-      case TestCase.FIXWINDOW => new StructuredFixWindow(config.windowDuration, config.windowSlideStep)
       case other =>
         throw new Exception(s"test case ${other} in structured streaming is not supported")
     }
