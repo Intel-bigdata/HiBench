@@ -90,19 +90,18 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
-    # For Classification
-    NUM_EXAMPLES="hibench.classification.examples",
-    NUM_FEATURES="hibench.classification.features",
-    LABELTYPE="hibench.classification.labeltype",
-    FRACCATEGORICALFEATURES="hibench.classification.frac_categorical_features",
-    FRACBINARYFEATURES="hibench.classification.frac_binary_features",
-    TREEDEPTH="hibench.classification.tree_depth",
-    # For Rating
-    NUM_USERS="hibench.rating.users",
-    NUM_PRODUCTS="hibench.rating.products",
-    NUM_RATINGS="hibench.rating.ratings",
-    IMPLICITPREFS="hibench.rating.implicitprefs",
-    # ALS
+    # For Logistic Regression
+    NUM_EXAMPLES="hibench.lr.examples",
+    NUM_FEATURES="hibench.lr.features",
+    LABELTYPE="hibench.lr.labeltype",
+    FRACCATEGORICALFEATURES="hibench.lr.frac_categorical_features",
+    FRACBINARYFEATURES="hibench.lr.frac_binary_features",
+    TREEDEPTH="hibench.lr.tree_depth",
+    # For ALS
+    NUM_USERS="hibench.als.users",
+    NUM_PRODUCTS="hibench.als.products",
+    NUM_RATINGS="hibench.als.ratings",
+    IMPLICITPREFS="hibench.als.implicitprefs",
     RANK="hibench.als.rank",
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",
     LAMBDA="hibench.als.Lambda",

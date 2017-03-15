@@ -13,22 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/classification.conf
+workload_config=${root_dir}/conf/workloads/ml/als.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench LogisticRegressionWithLBFGS ${workload_config} ${current_dir}
+enter_bench RatingDataPrepare ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
-
-SIZE=`dir_size $INPUT_HDFS`
+rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.ml.LogisticRegressionWithLBFGSExamples ${INPUT_HDFS}
+
+run-spark-job com.intel.hibench.sparkbench.ml.RatingDataGenerator $INPUT_HDFS $NUM_USERS $NUM_PRODUCTS $NUM_RATINGS $IMPLICITPREFS 
+
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
+
