@@ -494,14 +494,14 @@ function runPowerTest() {
     SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
-    QUERY_BEGIN_NUM=19
-    QUERY_END_NUM=100
+    QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
+    QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
     TUNNING_NAME=256G_mapjoin_32exec_5cores_dfs256m_filesize1g
 
     echo -e "${BCyan}Running TPC-DS power test${Color_Off}"
 
     len=${#INCLUDED_LIST[@]}
-    for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM}; i++)); do
+    for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM} + 1; i++)); do
         j=0
         found=false
         while [ $j -lt $len ]
@@ -537,7 +537,7 @@ function genThroughputTestStream() {
 
     throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query
     export throughput_test_bin_dir=${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark
-    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py "19 42 43 52 55 63 68 73 98" ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale}
+    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale}
 }
 
 function runThroughputTest() {

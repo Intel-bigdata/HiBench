@@ -18,7 +18,7 @@ from sys import argv
 
 def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale):
 
-    sql_index_list = sql_index_list.split(" ")
+    sql_index_list = sql_index_list.split(",")
     sql_list = []
     end_sign = ";\n!echo \"++END++\";\n"
     bin_template = """
