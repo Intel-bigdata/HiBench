@@ -500,7 +500,6 @@ function runPowerTest() {
     QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
     QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
 
-
     echo -e "${BCyan}Running TPC-DS power test${Color_Off}"
 
     len=${#INCLUDED_LIST[@]}
@@ -530,7 +529,7 @@ function runPowerTest() {
         export WORKLOAD_RESULT_FOLDER
 
         MONITOR_PID=`start-monitor`
-        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
+        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
         echo -e "${Cyan}This is for query ${i}${Color_Off}"
         echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
         execute_withlog ${SUBMIT_CMD}
