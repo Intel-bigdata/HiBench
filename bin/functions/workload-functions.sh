@@ -461,20 +461,6 @@ EOF
 
 }
 
-function getExecTime() {
-    start=$1
-    end=$2
-    qname=$3
-    start_s=$(echo $start | cut -d '.' -f 1)
-    start_ns=$(echo $start | cut -d '.' -f 2)
-    end_s=$(echo $end | cut -d '.' -f 1)
-    end_ns=$(echo $end | cut -d '.' -f 2)
-    delta_ms=$(( ( 10#$end_s - 10#$start_s ) * 1000 + ( 10#$end_ns / 1000000 - 10#$start_ns / 1000000 ) ))
-    show_s=$(( $delta_ms / 1000 ))
-    show_ms=$(( $delta_ms % 1000 ))
-    echo "++ Duration: ${show_s}s ${show_ms}ms for ${qname} ++"
-}
-
 function runPowerTest() {
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
@@ -490,13 +476,30 @@ function runPowerTest() {
     SET_REDUCE_NUM[73]=200
     SET_REDUCE_NUM[98]=200
 
-    echo "${HIVE_METASTORE_URIS}"
+    export_withlog SPARKBENCH_PROPERTIES_FILES
+
+    YARN_OPTS=""
+    if [[ "$SPARK_MASTER" == yarn-* ]]; then
+        export_withlog HADOOP_CONF_DIR
+
+        YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
+        if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
+            YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
+       fi
+       if [[ -n "${SPARK_YARN_EXECUTOR_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --executor-memory ${SPARK_YARN_EXECUTOR_MEMORY}"
+       fi
+       if [[ -n "${SPAKR_YARN_DRIVER_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
+       fi
+    fi
+
     SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
     QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
-    TUNNING_NAME=256G_mapjoin_32exec_5cores_dfs256m_filesize1g
+
 
     echo -e "${BCyan}Running TPC-DS power test${Color_Off}"
 
@@ -519,16 +522,20 @@ function runPowerTest() {
         export QUERY_NUMBER=${i}
         export QUERY_NAME=q${QUERY_NUMBER}
         export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/${QUERY_NAME}.sql"
-
         export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
         export SPARK_SQL_LOCAL_OPTS="--conf spark.sql.shuffle.partitions=${REDUCE_NUM}"
 
-        start=$(date +%s.%N)
-        echo -e "${BCyan}Exec script: ${Cyan}This is for query ${i}${Color_Off}"
-        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
-        execute_withlog ${SUBMIT_CMD}
-        end=$(date +%s.%N)
+        WORKLOAD_RESULT_FOLDER="${HIBENCH_HOME}/report/tpcds/spark/power/${QUERY_NAME}"
+        mkdir -p ${WORKLOAD_RESULT_FOLDER}
+        export WORKLOAD_RESULT_FOLDER
 
+        MONITOR_PID=`start-monitor`
+        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
+        echo -e "${Cyan}This is for query ${i}${Color_Off}"
+        echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
+        execute_withlog ${SUBMIT_CMD}
+        result=$?
+        stop-monitor ${MONITOR_PID}
     done
 }
 
