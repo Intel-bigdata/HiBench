@@ -22,9 +22,9 @@ def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_tes
     sql_list = []
     end_sign = ";\n!echo \"++END++\";\n"
     bin_template = """
-SUBMIT_CMD=\"${SPARK_SQL_CMD} --master ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} --database ${DATABASE_NAME} -f %s\"
-${SUBMIT_CMD}
-    """
+SUBMIT_CMD=\"${SPARK_SQL_CMD} --master ${YARN_OPTS} ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} --database ${DATABASE_NAME} -f %s\"
+execute_withlog ${SUBMIT_CMD}
+    """.strip().replace("\t", "")
 
     for i in sql_index_list:
         path = throughtput_test_resource_dir + "/q" + str(i) + ".sql"

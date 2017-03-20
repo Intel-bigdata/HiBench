@@ -535,6 +535,14 @@ function runPowerTest() {
         execute_withlog ${SUBMIT_CMD}
         result=$?
         stop-monitor ${MONITOR_PID}
+
+        if [ $result -ne 0 ]
+        then
+            echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
+            echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+            tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            exit $result
+        fi
     done
 }
 
@@ -553,10 +561,45 @@ function runThroughputTest() {
     export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     export SPARK_PROP_CONF=${SPARK_PROP_CONF}
 
+    export_withlog SPARKBENCH_PROPERTIES_FILES
+
+    YARN_OPTS=""
+    if [[ "$SPARK_MASTER" == yarn-* ]]; then
+        export_withlog HADOOP_CONF_DIR
+
+        YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
+        if [[ -n "${YARN_EXECUTOR_CORES:-}" ]]; then
+            YARN_OPTS="${YARN_OPTS} --executor-cores ${YARN_EXECUTOR_CORES}"
+       fi
+       if [[ -n "${SPARK_YARN_EXECUTOR_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --executor-memory ${SPARK_YARN_EXECUTOR_MEMORY}"
+       fi
+       if [[ -n "${SPAKR_YARN_DRIVER_MEMORY:-}" ]]; then
+           YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
+       fi
+    fi
+
+    export workload_func_bin=${workload_func_bin}
+    export -f execute_withlog
     for(( i = 0; i < ${throughput_scale}; i++ ))
     do
     {
-          sh ${throughput_test_bin_dir}/stream${i}.sh
+        WORKLOAD_RESULT_FOLDER="${HIBENCH_HOME}/report/tpcds/spark/throughput/u${i}"
+        mkdir -p ${WORKLOAD_RESULT_FOLDER}
+        export WORKLOAD_RESULT_FOLDER
+
+        MONITOR_PID=`start-monitor`
+        bash ${throughput_test_bin_dir}/stream${i}.sh
+        result=$?
+
+        if [ $result -ne 0 ]
+        then
+            echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${Color_Off} failed to run successfully."
+            echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
+            tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            exit $result
+        fi
+        stop-monitor ${MONITOR_PID}
     }&
     done
     wait
@@ -564,6 +607,6 @@ function runThroughputTest() {
 
 function removeTemporaryFiles() {
     rm ${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark/stream*
-    rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/stream*
+    rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/stream*
     make -C ${DSDGEN_DIR} clean
 }
