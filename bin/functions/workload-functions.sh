@@ -530,7 +530,6 @@ function runPowerTest() {
 
         MONITOR_PID=`start-monitor`
         SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
-        echo -e "${Cyan}This is for query ${i}${Color_Off}"
         echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
         execute_withlog ${SUBMIT_CMD}
         result=$?
@@ -543,6 +542,7 @@ function runPowerTest() {
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
             exit $result
         fi
+        echo -e "${BGreen}finish subquery ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME ${QUERY_NAME}${Color_Off} ${BGreen} ${Color_Off}"
     done
 }
 
@@ -591,6 +591,7 @@ function runThroughputTest() {
         MONITOR_PID=`start-monitor`
         bash ${throughput_test_bin_dir}/stream${i}.sh
         result=$?
+        stop-monitor ${MONITOR_PID}
 
         if [ $result -ne 0 ]
         then
@@ -599,7 +600,7 @@ function runThroughputTest() {
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
             exit $result
         fi
-        stop-monitor ${MONITOR_PID}
+        echo -e "${BGreen}finish query for ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME stream ${i}${Color_Off} ${BGreen} ${Color_Off}"
     }&
     done
     wait
