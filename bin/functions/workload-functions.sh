@@ -495,7 +495,7 @@ function runPowerTest() {
     fi
 
     SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
-    SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
+    SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
     QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
@@ -549,7 +549,7 @@ function genThroughputTestStream() {
 function runThroughputTest() {
     export SPARK_MASTER=${SPARK_MASTER}
     export SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
-    export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.yarn.executor.memoryOverhead=5120 --conf spark.sql.autoBroadcastJoinThreshold=31457280"
+    export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
     export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     export SPARK_PROP_CONF=${SPARK_PROP_CONF}
 
