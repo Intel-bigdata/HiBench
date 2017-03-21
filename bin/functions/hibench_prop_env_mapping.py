@@ -97,15 +97,6 @@ HiBenchEnvPropMapping=dict(
     FRACCATEGORICALFEATURES="hibench.lr.frac_categorical_features",
     FRACBINARYFEATURES="hibench.lr.frac_binary_features",
     TREEDEPTH="hibench.lr.tree_depth",
-    # For ALS
-    NUM_USERS="hibench.als.users",
-    NUM_PRODUCTS="hibench.als.products",
-    NUM_RATINGS="hibench.als.ratings",
-    IMPLICITPREFS="hibench.als.implicitprefs",
-    RANK="hibench.als.rank",
-    NUM_ITERATIONS_ALS="hibench.als.num_iterations",
-    LAMBDA="hibench.als.Lambda",
-    KYRO="hibench.als.kyro",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
