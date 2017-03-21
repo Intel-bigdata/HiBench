@@ -99,6 +99,13 @@
     </profile>
 
     <profile>
+      <id>structuredStreaming</id>
+      <modules>
+        <module>structuredStreaming</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <modules>
         <module>micro</module>
