@@ -17,23 +17,16 @@
 
 package com.intel.hibench.sparkbench.ml
 
-import java.io._
-
 import com.intel.hibench.sparkbench.common.IOCommon
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.mllib.regression._
-import org.apache.spark.mllib.util.MLUtils
+
 import org.apache.spark.mllib.random._
 import org.apache.spark.mllib.tree.configuration.{Algo, FeatureType}
 import org.apache.spark.mllib.tree.model.{Split, DecisionTreeModel, Node, Predict}
-import org.apache.spark.rdd.{PairRDDFunctions, RDD}
-
-import scala.collection.JavaConverters._
-import scala.util.Random
-import scala.util.control.Breaks._
-
+import org.apache.spark.rdd.RDD
 
 object LabeledPointDataGenerator {
 
