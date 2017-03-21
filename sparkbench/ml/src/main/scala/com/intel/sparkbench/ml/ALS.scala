@@ -27,22 +27,13 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD
 
-/**
- * An example app for ALS on MovieLens data (http://grouplens.org/datasets/movielens/).
- * Run with
- * {{{
- * bin/run-example org.apache.spark.examples.mllib.MovieLensALS
- * }}}
- * A synthetic dataset in MovieLens format can be found at `data/mllib/sample_movielens_data.txt`.
- * If you use it as a template to create your own app, please use `spark-submit` to submit your app.
- */
-object MovieLensALS {
+object ALS {
 
   case class Params(
       training: String = null,
       test: String = null,
       numUsers: Int = 0,
-      numMovies: Int = 0,
+      numProducts: Int = 0,
       numRatings: Long = 0,
       kryo: Boolean = false,
       numIterations: Int = 20,
@@ -55,14 +46,14 @@ object MovieLensALS {
   def main(args: Array[String]) {
     val defaultParams = Params()
 
-    val parser = new OptionParser[Params]("MovieLensALS") {
-      head("MovieLensALS: an example app for ALS on MovieLens data.")
+    val parser = new OptionParser[Params]("ALS") {
+      head("ALS: an example app for ALS on User-Product data.")
       opt[Int]("numUsers")
         .text(s"numUsers, default: ${defaultParams.numUsers}")
         .action((x, c) => c.copy(numUsers = x))
-      opt[Int]("numMovies")
-        .text(s"numMovies, default: ${defaultParams.numMovies}")
-        .action((x, c) => c.copy(numMovies = x))
+      opt[Int]("numProducts")
+        .text(s"numProducts, default: ${defaultParams.numProducts}")
+        .action((x, c) => c.copy(numProducts = x))
       opt[Long]("numRatings")
         .text(s"numRatings, default: ${defaultParams.numRatings}")
         .action((x, c) => c.copy(numRatings = x))
@@ -89,22 +80,13 @@ object MovieLensALS {
         .action((x, c) => c.copy(implicitPrefs = x))
       arg[String]("<training>")
         .required()
-        .text("training input paths to a MovieLens dataset of ratings")
+        .text("training input paths to a User-Product dataset of ratings")
         .action((x, c) => c.copy(training = x))	
       arg[String]("<test>")
         .required()
-        .text("test input paths to a MovieLens dataset of ratings")
+        .text("test input paths to a User-Product dataset of ratings")
         .action((x, c) => c.copy(test = x))
-      note(
-        """
-          |For example, the following command runs this app on a synthetic dataset:
-          |
-          | bin/spark-submit --class org.apache.spark.examples.mllib.MovieLensALS \
-          |  examples/target/scala-*/spark-examples-*.jar \
-          |  --rank 5 --numIterations 20 --lambda 1.0 --kryo \
-        """.stripMargin)
-    }
-
+    }  
     parser.parse(args, defaultParams) match {
       case Some(params) => run(params)
       case _ => sys.exit(1)
@@ -112,7 +94,7 @@ object MovieLensALS {
   }
 
   def run(params: Params): Unit = {
-    val conf = new SparkConf().setAppName(s"MovieLensALS with $params")
+    val conf = new SparkConf().setAppName(s"ALS with $params")
     if (params.kryo) {
       conf.registerKryoClasses(Array(classOf[mutable.BitSet], classOf[Rating]))
         .set("spark.kryoserializer.buffer", "8m")
@@ -122,66 +104,18 @@ object MovieLensALS {
     Logger.getRootLogger.setLevel(Level.WARN)
 
     val implicitPrefs = params.implicitPrefs
-
-/*
-    val ratings = sc.textFile(params.input).map { line =>
-      val fields = line.split("::")
-      if (implicitPrefs) {
-        /*
-         * MovieLens ratings are on a scale of 1-5:
-         * 5: Must see
-         * 4: Will enjoy
-         * 3: It's okay
-         * 2: Fairly bad
-         * 1: Awful
-         * So we should not recommend a movie if the predicted rating is less than 3.
-         * To map ratings to confidence scores, we use
-         * 5 -> 2.5, 4 -> 1.5, 3 -> 0.5, 2 -> -0.5, 1 -> -1.5. This mappings means unobserved
-         * entries are generally between It's okay and Fairly bad.
-         * The semantics of 0 in this expanded world of non-positive weights
-         * are "the same as never having interacted at all".
-         */
-        Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble - 2.5)
-      } else {
-        Rating(fields(0).toInt, fields(1).toInt, fields(2).toDouble)
-      }
-    }.cache()
-
-    val numRatings = ratings.count()
-    val numUsers = ratings.map(_.user).distinct().count()
-    val numMovies = ratings.map(_.product).distinct().count()
-*/
     val training: RDD[Rating]  = sc.objectFile(params.training)
     val test: RDD[Rating] = sc.objectFile(params.test)
 
     val numRatings = params.numRatings
     val numUsers = params.numUsers
-    val numMovies = params.numMovies
+    val numProducts = params.numProducts
 
-    println(s"Got $numRatings ratings from $numUsers users on $numMovies movies.")
-
-/*
-    val splits = ratings.randomSplit(Array(0.8, 0.2))
-    val training = splits(0).cache()
-    val test = if (params.implicitPrefs) {
-      /*
-       * 0 means "don't know" and positive values mean "confident that the prediction should be 1".
-       * Negative values means "confident that the prediction should be 0".
-       * We have in this case used some kind of weighted RMSE. The weight is the absolute value of
-       * the confidence. The error is the difference between prediction and either 1 or 0,
-       * depending on whether r is positive or negative.
-       */
-      splits(1).map(x => Rating(x.user, x.product, if (x.rating > 0) 1.0 else 0.0))
-    } else {
-      splits(1)
-    }.cache()
-*/
+    println(s"Got $numRatings ratings from $numUsers users on $numProducts products.")
 
     val numTraining = training.count()
     val numTest = test.count()
     println(s"Training: $numTraining, test: $numTest.")
-
-//    ratings.unpersist(blocking = false)
 
     val model = new ALS()
       .setRank(params.rank)

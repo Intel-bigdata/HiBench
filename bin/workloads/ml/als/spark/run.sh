@@ -20,7 +20,7 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/als.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench MovieLensALS ${workload_config} ${current_dir}
+enter_bench ALS ${workload_config} ${current_dir}
 show_bannar start
 
 rmr-hdfs $OUTPUT_HDFS || true
@@ -28,7 +28,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-run-spark-job com.intel.hibench.sparkbench.ml.MovieLensALS --numUsers $NUM_USERS --numMovies $NUM_PRODUCTS --numRatings $NUM_RATINGS --rank $RANK --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA --kryo $KYRO --implicitPrefs $IMPLICITPREFS $INPUT_HDFS/Train $INPUT_HDFS/Test
+run-spark-job com.intel.hibench.sparkbench.ml.ALS --numUsers $NUM_USERS --numProducts $NUM_PRODUCTS --numRatings $NUM_RATINGS --rank $RANK --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA --kryo $KYRO --implicitPrefs $IMPLICITPREFS $INPUT_HDFS/Train $INPUT_HDFS/Test
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
