@@ -21,12 +21,12 @@ HiBenchEnvPropMappingMandatory=dict(
     JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     HDFS_MASTER="hibench.hdfs.master",
-    HADOOP_RELEASE="hibench.hadoop.release",        
-    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar", 
-    HADOOP_EXECUTABLE="hibench.hadoop.executable", 
+    HADOOP_RELEASE="hibench.hadoop.release",
+    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar",
+    HADOOP_EXECUTABLE="hibench.hadoop.executable",
     HADOOP_CONF_DIR="hibench.hadoop.configure.dir",
     HIBENCH_HOME="hibench.home",
-    HIBENCH_CONF="hibench.configure.dir", 
+    HIBENCH_CONF="hibench.configure.dir",
 
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
@@ -62,7 +62,7 @@ HiBenchEnvPropMapping=dict(
     YARN_EXECUTOR_CORES="hibench.yarn.executor.cores",
     SPARK_YARN_EXECUTOR_MEMORY="spark.executor.memory",
     SPARK_YARN_DRIVER_MEMORY="spark.driver.memory",
-    DATA_HDFS="hibench.hdfs.data.dir",
+    DATA_HDFS="hibench.hdfs.classification.dir",
     # For Sleep workload
     MAP_SLEEP_TIME="hibench.sleep.mapper.seconds",
     RED_SLEEP_TIME="hibench.sleep.reducer.seconds",
@@ -90,6 +90,13 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
+    # For Data
+    NUM_EXAMPLES="hibench.classification.examples",
+    NUM_FEATURES="hibench.classification.features",
+    LABELTYPE="hibench.classification.labeltype",
+    FRACCATEGORICALFEATURES="hibench.classification.frac_categorical_features",
+    FRACBINARYFEATURES="hibench.classification.frac_binary_features",
+    TREEDEPTH="hibench.classification.tree_depth",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
@@ -150,7 +157,7 @@ HiBenchEnvPropMapping=dict(
     FLINK_HOME="hibench.streambench.flink.home",
     STREAMBENCH_FLINK_JAR="hibench.streambench.flinkbench.jar",
     STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
-    
+
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
