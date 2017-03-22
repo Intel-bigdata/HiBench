@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.intel.hibench.sparkbench.sql.tpcds
+package com.databricks.spark.sql.perf.tpcds
 
 import scala.sys.process._
 
@@ -44,9 +44,8 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       *  converted to `schema`. Otherwise, it just outputs the raw data (as a single STRING column).
       */
     def df(convertToSchema: Boolean, numPartition: Int) = {
-      val partitions = if (partitionColumns.isEmpty) 1 else numPartition
       val generatedData = {
-        sparkContext.parallelize(1 to partitions, partitions).flatMap { i =>
+        sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
           val localToolsDir = if (new java.io.File(dsdgen).exists) {
             dsdgenDir
           } else if (new java.io.File(s"/$dsdgen").exists) {
@@ -56,7 +55,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
           }
 
           // Note: RNGSEED is the RNG seed used by the data generator. Right now, it is fixed to 100.
-          val parallel = if (partitions > 1) s"-parallel $partitions -child $i" else ""
+          val parallel = if (numPartition > 1) s"-parallel $numPartition -child $i" else ""
           val commands = Seq(
             "bash", "-c",
             s"cd $localToolsDir && ./dsdgen -table $name -filter Y -scale $scaleFactor -RNGSEED 100 $parallel")
@@ -129,38 +128,33 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       val tempTableName = s"${name}_text"
       data.registerTempTable(tempTableName)
 
-      val writer = if (partitionColumns.nonEmpty) {
-        if (clusterByPartitionColumns) {
-          val columnString = data.schema.fields.map { field =>
-            field.name
-          }.mkString(",")
-          val partitionColumnString = partitionColumns.mkString(",")
-          val predicates = if (filterOutNullPartitionValues) {
-            partitionColumns.map(col => s"$col IS NOT NULL").mkString("WHERE ", " AND ", "")
-          } else {
-            ""
-          }
-
-          val query =
-            s"""
-               |SELECT
-               |  $columnString
-               |FROM
-               |  $tempTableName
-               |$predicates
-               |DISTRIBUTE BY
-               |  $partitionColumnString
-            """.stripMargin
-          val grouped = sqlContext.sql(query)
-          println(s"Pre-clustering with partitioning columns with query $query.")
-          log.info(s"Pre-clustering with partitioning columns with query $query.")
-          grouped.write
+      val writer = if (partitionColumns.nonEmpty && clusterByPartitionColumns) {
+        val columnString = data.schema.fields.map { field =>
+          field.name
+        }.mkString(",")
+        val partitionColumnString = partitionColumns.mkString(",")
+        val predicates = if (filterOutNullPartitionValues) {
+          partitionColumns.map(col => s"$col IS NOT NULL").mkString("WHERE ", " AND ", "")
         } else {
-          data.write
+          ""
         }
+
+        val query =
+          s"""
+             |SELECT
+             |  $columnString
+             |FROM
+             |  $tempTableName
+             |$predicates
+             |DISTRIBUTE BY
+             |  $partitionColumnString
+            """.stripMargin
+        val grouped = sqlContext.sql(query)
+        println(s"Pre-clustering with partitioning columns with query $query.")
+        log.info(s"Pre-clustering with partitioning columns with query $query.")
+        grouped.write
       } else {
-        // If the table is not partitioned, coalesce the data to a single file.
-        data.coalesce(1).write
+        data.write
       }
       writer.format(format).mode(mode)
       if (partitionColumns.nonEmpty) {
@@ -201,7 +195,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
                clusterByPartitionColumns: Boolean,
                filterOutNullPartitionValues: Boolean,
                tableFilter: String = "",
-               numPartitions: Int = 100): Unit = {
+               numPartitions: Int = 1): Unit = {
     var tablesToBeGenerated = if (partitionTables) {
       tables
     } else {
@@ -234,6 +228,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
     } else {
       tables.filter(_.name == tableFilter)
     }
+
     sqlContext.sql(s"CREATE DATABASE IF NOT EXISTS $databaseName")
     filtered.foreach { table =>
       val tableLocation = s"$location/${table.name}"
