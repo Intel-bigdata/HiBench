@@ -19,14 +19,12 @@
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
-// $example on$
+
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS
-import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
-// $example off$
 
-object LogisticRegressionWithLBFGSExamples {
+object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("LogisticRegressionWithLBFGS")
