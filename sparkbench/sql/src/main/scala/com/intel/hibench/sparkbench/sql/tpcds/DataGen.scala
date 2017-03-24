@@ -37,7 +37,6 @@ object DataGen {
 
     val sc = new SparkContext()
     val hiveContext = new HiveContext(sc)
-
     val tables = new Tables(hiveContext, dsdgenPath, tableSize)
 
     val tableNames = getRateMap().map(_._1).toList

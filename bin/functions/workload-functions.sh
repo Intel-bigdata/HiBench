@@ -462,6 +462,17 @@ EOF
 }
 
 function runPowerTest() {
+    DATABASE_NAME="tpcds_${TABLE_SIZE}g"
+
+    SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
+    SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
+
+    BEELINE_CMD="${SPARK_HOME}/bin/beeline"
+    BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME} -n test -p n"
+
+    START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
+    STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
+    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=200"
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
 
@@ -477,6 +488,10 @@ function runPowerTest() {
     SET_REDUCE_NUM[98]=200
 
     export_withlog SPARKBENCH_PROPERTIES_FILES
+
+    QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
+    QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
+    len=${#INCLUDED_LIST[@]}
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
@@ -494,15 +509,18 @@ function runPowerTest() {
        fi
     fi
 
-    SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
-    SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
-    DATABASE_NAME="tpcds_${TABLE_SIZE}g"
-    QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
-    QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+    then
+        ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+    fi
 
-    echo -e "${BCyan}Running TPC-DS power test${Color_Off}"
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
+    then
+        echo -e "${BCyan}Running TPC-DS power test with Spark SQL CLI${Color_Off}"
+    else
+        echo -e "${BCyan}Running TPC-DS power test with beeline${Color_Off}"
+    fi
 
-    len=${#INCLUDED_LIST[@]}
     for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM} + 1; i++)); do
         j=0
         found=false
@@ -529,22 +547,38 @@ function runPowerTest() {
         export WORKLOAD_RESULT_FOLDER
 
         MONITOR_PID=`start-monitor`
-        SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
-        echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
+        if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
+        then
+            SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
+        else
+            SUBMIT_CMD="${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -f ${QUERY_FILE_NAME}"
+        fi
+
+        echo -e "${BGreen}Submit: ${Green}${SUBMIT_CMD}${Color_Off}"
         execute_withlog ${SUBMIT_CMD}
         result=$?
         stop-monitor ${MONITOR_PID}
 
         if [ $result -ne 0 ]
         then
-            echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
+            echo -e "${BRed}ERROR${Color_Off}: TPC-DS power test${BYellow} ${Color_Off} failed to run successfully."
             echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+            then
+                ${STOP_THRIFTSERVER_CMD}
+            fi
             exit $result
         fi
         echo -e "${BGreen}finish subquery ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME ${QUERY_NAME}${Color_Off} ${BGreen} ${Color_Off}"
     done
+
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+    then
+        ${STOP_THRIFTSERVER_CMD}
+    fi
 }
+
 
 function genThroughputTestStream() {
     export throughput_scale=9
