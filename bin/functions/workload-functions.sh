@@ -461,6 +461,7 @@ EOF
 
 }
 
+
 function runPowerTest() {
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
 
@@ -585,15 +586,28 @@ function genThroughputTestStream() {
 
     throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query
     export throughput_test_bin_dir=${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark
-    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale}
+    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale} ${TPCDS_SPARKSQLCLI_ENABLED}
 }
 
 function runThroughputTest() {
+    DATABASE_NAME="tpcds_${TABLE_SIZE}g"
+
+    START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
+    STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
+    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=200"
+
+#    we should let the subprocess know these variables
     export SPARK_MASTER=${SPARK_MASTER}
     export SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
     export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     export SPARK_PROP_CONF=${SPARK_PROP_CONF}
+
+    export BEELINE_CMD="${SPARK_HOME}/bin/beeline"
+    export BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME} -n test -p n"
+
+    export workload_func_bin=${workload_func_bin}
+    export -f execute_withlog
 
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
@@ -613,8 +627,18 @@ function runThroughputTest() {
        fi
     fi
 
-    export workload_func_bin=${workload_func_bin}
-    export -f execute_withlog
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+    then
+        ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+    fi
+
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
+    then
+        echo -e "${BCyan}Running TPC-DS throughput test with Spark SQL CLI${Color_Off}"
+    else
+        echo -e "${BCyan}Running TPC-DS throughput test with beeline${Color_Off}"
+    fi
+
     for(( i = 0; i < ${throughput_scale}; i++ ))
     do
     {
@@ -632,12 +656,21 @@ function runThroughputTest() {
             echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${Color_Off} failed to run successfully."
             echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+            then
+                ${STOP_THRIFTSERVER_CMD}
+            fi
             exit $result
         fi
         echo -e "${BGreen}finish query for ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME stream ${i}${Color_Off} ${BGreen} ${Color_Off}"
     }&
     done
     wait
+
+#    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+#    then
+#        ${STOP_THRIFTSERVER_CMD}
+#    fi
 }
 
 function removeTemporaryFiles() {
