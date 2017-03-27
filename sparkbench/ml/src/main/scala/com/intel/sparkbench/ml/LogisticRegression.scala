@@ -27,14 +27,18 @@ import org.apache.spark.rdd.RDD
 object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("LogisticRegressionWithLBFGS")
-    val sc = new SparkContext(conf)
-
     var inputPath = ""
+    var maxresultsize = "1g"
 
-    if (args.length == 1) {
+    if (args.length == 2) {
       inputPath = args(0)
+      maxresultsize = args(1)
     }
+
+    val conf = new SparkConf()
+	.setAppName("LogisticRegressionWithLBFGS")
+	.set("spark.driver.maxResultSize", maxresultsize)
+    val sc = new SparkContext(conf)
 
     // $example on$
     // Load training data in LIBSVM format.

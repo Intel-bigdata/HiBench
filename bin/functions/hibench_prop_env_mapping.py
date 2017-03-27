@@ -97,6 +97,7 @@ HiBenchEnvPropMapping=dict(
     FRACCATEGORICALFEATURES="hibench.lr.frac_categorical_features",
     FRACBINARYFEATURES="hibench.lr.frac_binary_features",
     TREEDEPTH="hibench.lr.tree_depth",
+    LR_MAXRESULTSIZE="hibench.lr.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
