@@ -20,7 +20,7 @@ def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_tes
 
     sql_index_list = sql_index_list.split(",")
     sql_list = []
-    end_sign = ";\n!echo \"++END++\";\n"
+    end_sign = ";\n"
     bin_template_cli = """
         SUBMIT_CMD=\"${SPARK_SQL_CMD} --master ${YARN_OPTS} ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} --database ${DATABASE_NAME} -f %s\"
         execute_withlog ${SUBMIT_CMD}

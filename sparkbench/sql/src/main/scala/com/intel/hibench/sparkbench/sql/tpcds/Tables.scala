@@ -239,18 +239,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
     log.info(s"The current database has been set to $databaseName.")
   }
 
-  def createTemporaryTables(location: String, format: String, tableFilter: String = ""): Unit = {
-    val filtered = if (tableFilter.isEmpty) {
-      tables
-    } else {
-      tables.filter(_.name == tableFilter)
-    }
-    filtered.foreach { table =>
-      val tableLocation = s"$location/${table.name}"
-      table.createTemporaryTable(tableLocation, format)
-    }
-  }
-
   val tables = Seq(
     Table("catalog_sales",
       partitionColumns = "cs_sold_date_sk" :: Nil,
