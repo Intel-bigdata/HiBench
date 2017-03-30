@@ -43,8 +43,7 @@ object DataGen {
 
     val tableNames = getRateMap().map(_._1).toList
 
-    genDataWithTableFilters(
-      tables, hdfs, "parquet", true, false, false, false, false, tableNames, tableSize)
+    genDataWithTableFilters(tables, hdfs, "parquet", true, false, tableNames, tableSize)
     tables.createExternalTables(hdfs, "parquet", s"tpcds_${tableSize}g", true)
   }
 
@@ -53,10 +52,7 @@ object DataGen {
                                location: String,
                                format: String,
                                overwrite: Boolean,
-                               partitionTables: Boolean,
                                useDoubleForDecimal: Boolean,
-                               clusterByPartitionColumns: Boolean,
-                               filterOutNullPartitionValues: Boolean,
                                tableFilters: List[String],
                                tableSize: Int): Unit = {
     val rateMap = getRateMap()
@@ -67,8 +63,7 @@ object DataGen {
           numPartitions = numPartitions.max(tableSize / 1000 * rateMap(tableName))
         }
         tables.genData(
-          location, "parquet", overwrite, partitionTables, useDoubleForDecimal,
-          clusterByPartitionColumns, filterOutNullPartitionValues, tableName, numPartitions)
+          location, "parquet", overwrite, useDoubleForDecimal, tableName, numPartitions)
       }
     )
   }

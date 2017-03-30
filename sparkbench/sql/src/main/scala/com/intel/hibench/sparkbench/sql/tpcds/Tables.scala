@@ -32,12 +32,8 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   def sparkContext = sqlContext.sparkContext
   val dsdgen = s"$dsdgenDir/dsdgen"
 
-  case class Table(name: String, partitionColumns: Seq[String], fields: StructField*) {
+  case class Table(name: String, fields: StructField*) {
     val schema = StructType(fields)
-
-    def nonPartitioned: Table = {
-      Table(name, Nil, fields : _*)
-    }
 
     /**
       *  If convertToSchema is true, the data from generator will be parsed into columns and
@@ -112,58 +108,23 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
         field.copy(dataType = newDataType)
       }
 
-      Table(name, partitionColumns, newFields:_*)
+      Table(name, newFields:_*)
     }
 
     def genData(
                  location: String,
                  format: String,
                  overwrite: Boolean,
-                 clusterByPartitionColumns: Boolean,
-                 filterOutNullPartitionValues: Boolean,
                  numPartitions: Int): Unit = {
       val mode = if (overwrite) SaveMode.Overwrite else SaveMode.Ignore
 
       val data = df(format != "text", numPartitions)
-      val tempTableName = s"${name}_text"
-      data.registerTempTable(tempTableName)
 
-      val writer = if (partitionColumns.nonEmpty && clusterByPartitionColumns) {
-        val columnString = data.schema.fields.map { field =>
-          field.name
-        }.mkString(",")
-        val partitionColumnString = partitionColumns.mkString(",")
-        val predicates = if (filterOutNullPartitionValues) {
-          partitionColumns.map(col => s"$col IS NOT NULL").mkString("WHERE ", " AND ", "")
-        } else {
-          ""
-        }
-
-        val query =
-          s"""
-             |SELECT
-             |  $columnString
-             |FROM
-             |  $tempTableName
-             |$predicates
-             |DISTRIBUTE BY
-             |  $partitionColumnString
-            """.stripMargin
-        val grouped = sqlContext.sql(query)
-        println(s"Pre-clustering with partitioning columns with query $query.")
-        log.info(s"Pre-clustering with partitioning columns with query $query.")
-        grouped.write
-      } else {
-        data.write
-      }
+      val writer = data.write
       writer.format(format).mode(mode)
-      if (partitionColumns.nonEmpty) {
-        writer.partitionBy(partitionColumns : _*)
-      }
       println(s"Generating table $name in database to $location with save mode $mode.")
       log.info(s"Generating table $name in database to $location with save mode $mode.")
       writer.save(location)
-      sqlContext.dropTempTable(tempTableName)
     }
 
     def createExternalTable(location: String, format: String, databaseName: String, overwrite: Boolean): Unit = {
@@ -190,17 +151,10 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
                location: String,
                format: String,
                overwrite: Boolean,
-               partitionTables: Boolean,
                useDoubleForDecimal: Boolean,
-               clusterByPartitionColumns: Boolean,
-               filterOutNullPartitionValues: Boolean,
                tableFilter: String = "",
                numPartitions: Int = 1): Unit = {
-    var tablesToBeGenerated = if (partitionTables) {
-      tables
-    } else {
-      tables.map(_.nonPartitioned)
-    }
+    var tablesToBeGenerated = tables
 
     if (!tableFilter.isEmpty) {
       tablesToBeGenerated = tablesToBeGenerated.filter(_.name == tableFilter)
@@ -217,8 +171,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
 
     withSpecifiedDataType.foreach { table =>
       val tableLocation = s"$location/${table.name}"
-      table.genData(tableLocation, format, overwrite, clusterByPartitionColumns,
-        filterOutNullPartitionValues, numPartitions)
+      table.genData(tableLocation, format, overwrite, numPartitions)
     }
   }
 
@@ -241,7 +194,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
 
   val tables = Seq(
     Table("catalog_sales",
-      partitionColumns = "cs_sold_date_sk" :: Nil,
       'cs_sold_date_sk          .int,
       'cs_sold_time_sk          .int,
       'cs_ship_date_sk          .int,
@@ -277,7 +229,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'cs_net_paid_inc_ship_tax .decimal(7,2),
       'cs_net_profit            .decimal(7,2)),
     Table("catalog_returns",
-      partitionColumns = "cr_returned_date_sk" :: Nil,
       'cr_returned_date_sk      .int,
       'cr_returned_time_sk      .int,
       'cr_item_sk               .int,
@@ -306,13 +257,11 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'cr_store_credit          .decimal(7,2),
       'cr_net_loss              .decimal(7,2)),
     Table("inventory",
-      partitionColumns = "inv_date_sk" :: Nil,
       'inv_date_sk          .int,
       'inv_item_sk          .int,
       'inv_warehouse_sk     .int,
       'inv_quantity_on_hand .int),
     Table("store_sales",
-      partitionColumns = "ss_sold_date_sk" :: Nil,
       'ss_sold_date_sk      .int,
       'ss_sold_time_sk      .int,
       'ss_item_sk           .int,
@@ -337,7 +286,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'ss_net_paid_inc_tax  .decimal(7,2),
       'ss_net_profit        .decimal(7,2)),
     Table("store_returns",
-      partitionColumns = "sr_returned_date_sk" ::Nil,
       'sr_returned_date_sk  .long,
       'sr_return_time_sk    .long,
       'sr_item_sk           .long,
@@ -359,7 +307,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'sr_store_credit      .decimal(7,2),
       'sr_net_loss          .decimal(7,2)),
     Table("web_sales",
-      partitionColumns = "ws_sold_date_sk" :: Nil,
       'ws_sold_date_sk          .int,
       'ws_sold_time_sk          .int,
       'ws_ship_date_sk          .int,
@@ -395,7 +342,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'ws_net_paid_inc_ship_tax .decimal(7,2),
       'ws_net_profit            .decimal(7,2)),
     Table("web_returns",
-      partitionColumns = "wr_returned_date_sk" ::Nil,
       'wr_returned_date_sk      .long,
       'wr_returned_time_sk      .long,
       'wr_item_sk               .long,
@@ -421,7 +367,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'wr_account_credit        .decimal(7,2),
       'wr_net_loss              .decimal(7,2)),
     Table("call_center",
-      partitionColumns = Nil,
       'cc_call_center_sk        .int,
       'cc_call_center_id        .string,
       'cc_rec_start_date        .date,
@@ -454,7 +399,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'cc_gmt_offset            .decimal(5,2),
       'cc_tax_percentage        .decimal(5,2)),
     Table("catalog_page",
-      partitionColumns = Nil,
       'cp_catalog_page_sk       .int,
       'cp_catalog_page_id       .string,
       'cp_start_date_sk         .int,
@@ -465,7 +409,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'cp_description           .string,
       'cp_type                  .string),
     Table("customer",
-      partitionColumns = Nil,
       'c_customer_sk             .int,
       'c_customer_id             .string,
       'c_current_cdemo_sk        .int,
@@ -485,7 +428,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'c_email_address           .string,
       'c_last_review_date        .string),
     Table("customer_address",
-      partitionColumns = Nil,
       'ca_address_sk             .int,
       'ca_address_id             .string,
       'ca_street_number          .string,
@@ -500,7 +442,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'ca_gmt_offset             .decimal(5,2),
       'ca_location_type          .string),
     Table("customer_demographics",
-      partitionColumns = Nil,
       'cd_demo_sk                .int,
       'cd_gender                 .string,
       'cd_marital_status         .string,
@@ -511,7 +452,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'cd_dep_employed_count     .int,
       'cd_dep_college_count      .int),
     Table("date_dim",
-      partitionColumns = Nil,
       'd_date_sk                 .int,
       'd_date_id                 .string,
       'd_date                    .string,
@@ -541,19 +481,16 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'd_current_quarter         .string,
       'd_current_year            .string),
     Table("household_demographics",
-      partitionColumns = Nil,
       'hd_demo_sk                .int,
       'hd_income_band_sk         .int,
       'hd_buy_potential          .string,
       'hd_dep_count              .int,
       'hd_vehicle_count          .int),
     Table("income_band",
-      partitionColumns = Nil,
       'ib_income_band_sk         .int,
       'ib_lower_bound            .int,
       'ib_upper_bound            .int),
     Table("item",
-      partitionColumns = Nil,
       'i_item_sk                 .int,
       'i_item_id                 .string,
       'i_rec_start_date          .string,
@@ -577,7 +514,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'i_manager_id              .int,
       'i_product_name            .string),
     Table("promotion",
-      partitionColumns = Nil,
       'p_promo_sk                .int,
       'p_promo_id                .string,
       'p_start_date_sk           .int,
@@ -598,12 +534,10 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'p_purpose                 .string,
       'p_discount_active         .string),
     Table("reason",
-      partitionColumns = Nil,
       'r_reason_sk               .int,
       'r_reason_id               .string,
       'r_reason_desc             .string),
     Table("ship_mode",
-      partitionColumns = Nil,
       'sm_ship_mode_sk           .int,
       'sm_ship_mode_id           .string,
       'sm_type                   .string,
@@ -611,7 +545,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'sm_carrier                .string,
       'sm_contract               .string),
     Table("store",
-      partitionColumns = Nil,
       's_store_sk                .int,
       's_store_id                .string,
       's_rec_start_date          .string,
@@ -642,7 +575,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       's_gmt_offset              .decimal(5,2),
       's_tax_precentage          .decimal(5,2)),
     Table("time_dim",
-      partitionColumns = Nil,
       't_time_sk                 .int,
       't_time_id                 .string,
       't_time                    .int,
@@ -654,7 +586,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       't_sub_shift               .string,
       't_meal_time               .string),
     Table("warehouse",
-      partitionColumns = Nil,
       'w_warehouse_sk           .int,
       'w_warehouse_id           .string,
       'w_warehouse_name         .string,
@@ -670,7 +601,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'w_country                .string,
       'w_gmt_offset             .decimal(5,2)),
     Table("web_page",
-      partitionColumns = Nil,
       'wp_web_page_sk           .int,
       'wp_web_page_id           .string,
       'wp_rec_start_date        .date,
@@ -686,7 +616,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       'wp_image_count           .int,
       'wp_max_ad_count          .int),
     Table("web_site",
-      partitionColumns = Nil,
       'web_site_sk              .int,
       'web_site_id              .string,
       'web_rec_start_date       .date,
