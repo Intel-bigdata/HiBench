@@ -93,7 +93,7 @@ HiBenchEnvPropMapping=dict(
     # For ALS
     NUM_USERS="hibench.als.users",
     NUM_PRODUCTS="hibench.als.products",
-    NUM_RATINGS="hibench.als.ratings",
+    SPARSITY="hibench.als.sparsity",
     IMPLICITPREFS="hibench.als.implicitprefs",
     RANK="hibench.als.rank",
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",

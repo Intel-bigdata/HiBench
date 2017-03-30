@@ -26,15 +26,15 @@ import scopt.OptionParser
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
 import org.apache.spark.rdd.RDD
+import org.apache.spark.mllib.linalg.Vector
 
-object ALS {
+object ALSExample {
 
   case class Params(
-      training: String = null,
-      test: String = null,
+      dataPath: String = null,
       numUsers: Int = 0,
       numProducts: Int = 0,
-      numRatings: Long = 0,
+      sparsity: Double = 0.01,
       kryo: Boolean = false,
       numIterations: Int = 20,
       lambda: Double = 1.0,
@@ -54,9 +54,9 @@ object ALS {
       opt[Int]("numProducts")
         .text(s"numProducts, default: ${defaultParams.numProducts}")
         .action((x, c) => c.copy(numProducts = x))
-      opt[Long]("numRatings")
-        .text(s"numRatings, default: ${defaultParams.numRatings}")
-        .action((x, c) => c.copy(numRatings = x))
+      opt[Double]("sparsity")
+        .text(s"sparsity, default: ${defaultParams.sparsity}")
+        .action((x, c) => c.copy(sparsity = x))
       opt[Int]("rank")
         .text(s"rank, default: ${defaultParams.rank}")
         .action((x, c) => c.copy(rank = x))
@@ -78,14 +78,10 @@ object ALS {
       opt[Boolean]("implicitPrefs")
         .text("implicit preference, default: ${defaultParams.implicitPrefs}")
         .action((x, c) => c.copy(implicitPrefs = x))
-      arg[String]("<training>")
+      arg[String]("<dataPath>")
         .required()
-        .text("training input paths to a User-Product dataset of ratings")
-        .action((x, c) => c.copy(training = x))	
-      arg[String]("<test>")
-        .required()
-        .text("test input paths to a User-Product dataset of ratings")
-        .action((x, c) => c.copy(test = x))
+        .text("Input paths to a User-Product dataset of ratings")
+        .action((x, c) => c.copy(dataPath = x))	
     }  
     parser.parse(args, defaultParams) match {
       case Some(params) => run(params)
@@ -103,15 +99,15 @@ object ALS {
 
     Logger.getRootLogger.setLevel(Level.WARN)
 
-    val implicitPrefs = params.implicitPrefs
-    val training: RDD[Rating]  = sc.objectFile(params.training)
-    val test: RDD[Rating] = sc.objectFile(params.test)
-
-    val numRatings = params.numRatings
     val numUsers = params.numUsers
     val numProducts = params.numProducts
+    val implicitPrefs = params.implicitPrefs
 
-    println(s"Got $numRatings ratings from $numUsers users on $numProducts products.")
+    val rawdata: RDD[Vector] = sc.objectFile(params.dataPath)
+    val data: RDD[Rating] = Vector2Rating(rawdata, numUsers, numProducts)
+    val training: RDD[Rating] = data.randomSplit(Array(1-params.sparsity, params.sparsity))(0).cache()
+    val testsparsity = 0.75 * (1-params.sparsity)
+    val test: RDD[Rating] = data.randomSplit(Array(1-testsparsity, testsparsity))(0)
 
     val numTraining = training.count()
     val numTest = test.count()
@@ -147,5 +143,20 @@ object ALS {
     }.join(data.map(x => ((x.user, x.product), x.rating))).values
     math.sqrt(predictionsAndRatings.map(x => (x._1 - x._2) * (x._1 - x._2)).mean())
   }
+
+  def Vector2Rating(rawdata: RDD[Vector], m: Int, n: Int)
+    : RDD[Rating] = {
+    
+    val Ratingdata: RDD[Rating] = rawdata.zipWithIndex().flatMap(v => {
+      var arr = new Array[Rating](n)
+      var i = 0
+      for (i <- 0 until n){
+        arr(i) = Rating(v._2.toInt, i, v._1.apply(i))
+      }
+      arr
+    })
+    Ratingdata
+  }
+
 }
 // scalastyle:on println

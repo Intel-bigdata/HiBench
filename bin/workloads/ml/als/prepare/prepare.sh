@@ -26,7 +26,7 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run-spark-job com.intel.hibench.sparkbench.ml.RatingDataGenerator $INPUT_HDFS $NUM_USERS $NUM_PRODUCTS $NUM_RATINGS $IMPLICITPREFS 
+run-spark-job com.intel.hibench.sparkbench.ml.RatingDataGenerator $INPUT_HDFS $NUM_USERS $NUM_PRODUCTS $IMPLICITPREFS 
 
 END_TIME=`timestamp`
 
