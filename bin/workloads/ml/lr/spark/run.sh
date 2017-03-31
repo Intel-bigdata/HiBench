@@ -17,7 +17,7 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/lr.conf
-. "${root_dir}/bin/functions/ load_bench_config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench LogisticRegression ${workload_config} ${current_dir}
 show_bannar start
