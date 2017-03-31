@@ -18,15 +18,15 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/dfsioe.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 
 enter_bench HadoopDfsioe-read ${workload_config} ${current_dir}
 show_bannar start
 
 # path check
-rmr-hdfs $INPUT_HDFS/io_read || true
-rmr-hdfs $INPUT_HDFS/_* || true
+rmr_hdfs $INPUT_HDFS/io_read || true
+rmr_hdfs $INPUT_HDFS/_* || true
 
 SIZE=`dir_size $INPUT_HDFS`
 OPTION="-read -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 131072 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -Dtest.build.data=${INPUT_HDFS}"
@@ -34,11 +34,11 @@ OPTION="-read -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 
 OLD_HADOOP_OPTS=${HADOOP_OPTS:-}
 export HADOOP_OPTS="${HADOOP_OPTS:-} -Dtest.build.data=${INPUT_HDFS} "
 
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 
 #run benchmark
-run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
+run_hadoop_job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
     -Dmapreduce.map.java.opts=\"-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS\"    \
     -Dmapreduce.reduce.java.opts=\"-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS\" \
     ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_read.txt                  \
@@ -46,7 +46,7 @@ run-hadoop-job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh            
 
 END_TIME=`timestamp`
 export HADOOP_OPTS="$OLD_HADOOP_OPTS"
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

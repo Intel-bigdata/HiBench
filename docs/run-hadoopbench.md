@@ -36,7 +36,7 @@ To run a single workload i.e. `wordcount`.
      bin/workloads/micro/wordcount/hadoop/run.sh
 
 The `prepare.sh` launches a hadoop job to generate the input data on HDFS. The `run.sh` submits a hadoop job to the cluster. 
-`bin/run-all.sh` can be used to run all workloads listed in conf/benchmarks.lst and conf/frameworks.lst.
+`bin/run_all.sh` can be used to run all workloads listed in conf/benchmarks.lst and conf/frameworks.lst.
 
 ### 4. View the report ###
 

@@ -18,15 +18,15 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/graph/nweight.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench NWeightPrepare ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr_hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run-spark-job com.intel.hibench.sparkbench.graph.nweight.NWeightDataGenerator $MODEL_INPUT $INPUT_HDFS $EDGES
+run_spark_job com.intel.hibench.sparkbench.graph.nweight.NWeightDataGenerator $MODEL_INPUT $INPUT_HDFS $EDGES
 
 END_TIME=`timestamp`
 

@@ -49,7 +49,7 @@ To run a single workload i.e. `wordcount`.
      bin/workloads/micro/wordcount/spark/run.sh
 
 The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `run.sh` submits the spark job to the cluster. 
-`bin/run-all.sh` can be used to run all workloads listed in conf/benchmarks.lst.
+`bin/run_all.sh` can be used to run all workloads listed in conf/benchmarks.lst.
 
 ### 5. View the report ###
 

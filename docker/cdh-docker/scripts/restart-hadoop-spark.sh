@@ -56,5 +56,5 @@ ${SPARK_HOME}/sbin/start-all.sh
 echo "#======================================================================#"
 echo "       Now you can run all workload by:                                 "
 echo "                                                                        "
-echo "         ${HIBENCH_HOME}/bin/run-all.sh         "
+echo "         ${HIBENCH_HOME}/bin/run_all.sh         "
 echo "#======================================================================#"

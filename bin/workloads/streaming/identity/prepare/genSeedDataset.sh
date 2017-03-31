@@ -18,7 +18,7 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
 workload_config=${root_dir}/conf/workloads/streaming/identity.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 
 # generate seed data1 by hive
@@ -28,7 +28,7 @@ show_bannar start
 PAGES=120000
 USERVISITS=1000000
 
-rmr-hdfs $STREAMING_DATA_DIR || true
+rmr_hdfs $STREAMING_DATA_DIR || true
 echo -e "${On_Blue}Pages:${PAGES}, USERVISITS:${USERVISITS}${Color_Off}"
 
 OPTION="-t hive \
@@ -40,7 +40,7 @@ OPTION="-t hive \
         -v ${USERVISITS}"
 
 START_TIME=`timestamp`
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION}
+run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
 END_TIME=`timestamp`
 SIZE="0"
 
@@ -51,9 +51,9 @@ leave_bench
 enter_bench HadoopPrepareDatafile2 ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $STREAMING_DATA2_SAMPLE_DIR || true
+rmr_hdfs $STREAMING_DATA2_SAMPLE_DIR || true
 OPTION="-sampleDir ${STREAMING_DATA2_SAMPLE_DIR} -clusterDir ${STREAMING_DATA2_CLUSTER_DIR} -numClusters 5 -numSamples 3000000 -samplesPerFile 600000 -sampleDimension 20 -textOutput"
-run-hadoop-job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${STREAMING_DATA2_SAMPLE_DIR} ${OPTION} 
+run_hadoop_job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${STREAMING_DATA2_SAMPLE_DIR} ${OPTION}
 END_TIME=`timestamp`
 
 show_bannar finish

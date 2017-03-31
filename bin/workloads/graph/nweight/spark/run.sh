@@ -18,16 +18,16 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/graph/nweight.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench ScalaSparkNWeight ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.graph.nweight.NWeight $INPUT_HDFS $OUTPUT_HDFS $DEGREE $MAX_OUT_EDGES $NUM_PARTITION $STORAGE_LEVEL $DISABLE_KRYO $MODEL
+run_spark_job com.intel.hibench.sparkbench.graph.nweight.NWeight $INPUT_HDFS $OUTPUT_HDFS $DEGREE $MAX_OUT_EDGES $NUM_PARTITION $STORAGE_LEVEL $DISABLE_KRYO $MODEL
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

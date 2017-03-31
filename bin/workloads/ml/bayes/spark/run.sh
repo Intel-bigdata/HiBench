@@ -17,16 +17,16 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/bayes.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench ScalaSparkBayes ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job org.apache.spark.examples.mllib.SparseNaiveBayes ${INPUT_HDFS}
+run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes ${INPUT_HDFS}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
@@ -35,6 +35,6 @@ leave_bench
 
 
 # run bench
-#run-spark-job org.apache.spark.examples.mllib.SparseNaiveBayes --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt || exit 1
+#run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt || exit 1
 #$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
 

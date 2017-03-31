@@ -18,23 +18,23 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/kmeans.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench HadoopKmeans ${workload_config} ${current_dir}
 show_bannar start
 
-ensure-mahout-release
+ensure_mahout_release
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 OPTION="-i ${INPUT_SAMPLE} -c ${INPUT_CLUSTER} -o ${OUTPUT_HDFS} -x ${MAX_ITERATION} -ow -cl -cd 0.5 -dm org.apache.mahout.common.distance.EuclideanDistanceMeasure -xm mapreduce"
 CMD="${MAHOUT_HOME}/bin/mahout kmeans  ${OPTION}"
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 execute_withlog $CMD
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

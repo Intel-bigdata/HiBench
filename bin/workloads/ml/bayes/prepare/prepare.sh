@@ -18,12 +18,12 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/bayes.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench HadoopPrepareBayes ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs ${INPUT_HDFS} || true
+rmr_hdfs ${INPUT_HDFS} || true
 START_TIME=`timestamp`
 OPTION="-t bayes \
         -b ${BAYES_BASE_HDFS} \
@@ -34,7 +34,7 @@ OPTION="-t bayes \
         -class ${CLASSES} \
         -o sequence"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 
+run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
 END_TIME=`timestamp`
 
 show_bannar finish

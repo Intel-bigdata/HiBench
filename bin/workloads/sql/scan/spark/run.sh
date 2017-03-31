@@ -18,18 +18,18 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/scan.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench ScalaSparkScan ${workload_config} ${current_dir}
 show_bannar start
 
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
-prepare-sql-scan ${HIVEBENCH_SQL_FILE}
+prepare_sql_scan ${HIVEBENCH_SQL_FILE}
 
 START_TIME=`timestamp`
-rmr-hdfs $OUTPUT_HDFS
-run-spark-job com.intel.hibench.sparkbench.sql.ScalaSparkSQLBench ScalaScan ${HIVEBENCH_SQL_FILE}
+rmr_hdfs $OUTPUT_HDFS
+run_spark_job com.intel.hibench.sparkbench.sql.ScalaSparkSQLBench ScalaScan ${HIVEBENCH_SQL_FILE}
 END_TIME=`timestamp`
 
 sleep 5

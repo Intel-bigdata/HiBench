@@ -18,13 +18,13 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/bayes.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench HadoopBayes ${workload_config} ${current_dir}
 show_bannar start
 
-ensure-mahout-release
-rmr-hdfs $OUTPUT_HDFS || true
+ensure_mahout_release
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 
@@ -32,7 +32,7 @@ START_TIME=`timestamp`
 
 # strip spaces after "-D"
 COMPRESS_OPT=-Dmapreduce.output.fileoutputformat.compress=false
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 CMD1="$MAHOUT_HOME/bin/mahout seq2sparse ${COMPRESS_OPT} -i ${INPUT_HDFS} -o ${OUTPUT_HDFS}/vectors  -lnorm -nv  -wt tfidf -ng ${NGRAMS} --numReducers $NUM_REDS"
 execute_withlog ${CMD1}
 
@@ -49,7 +49,7 @@ fi
 execute_withlog ${CMD2}
 
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

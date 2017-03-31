@@ -18,30 +18,30 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/join.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/ load_bench_config.sh"
 
 enter_bench HadoopJoin ${workload_config} ${current_dir}
 show_bannar start
 
-ensure-hivebench-release
+ensure_hivebench_release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 
 # path check
-rmr-hdfs $OUTPUT_HDFS
+rmr_hdfs $OUTPUT_HDFS
 
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_join.hive
 
-prepare-sql-join ${HIVEBENCH_SQL_FILE}
+prepare_sql_join ${HIVEBENCH_SQL_FILE}
 
 # run bench
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
 execute_withlog $CMD
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 sleep 5
 SIZE=`dir_size $INPUT_HDFS`
