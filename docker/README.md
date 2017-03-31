@@ -16,11 +16,11 @@ Otherwise, it will progress by default.
 Launch the container by executing:
 
 ```bash
-    $./scripts/run-container.sh cdh
+    $./scripts/run_container.sh cdh
 ```
 OR
 ```bash
-    $./scripts/run-container.sh open-source
+    $./scripts/run_container.sh open-source
 ```
 
 The script will launch all related services and run a workload (by default: wordcount) after initialization.

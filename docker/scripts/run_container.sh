@@ -30,7 +30,7 @@ echo "#=================================================#"
 echo "                                                   "
 echo "                                                   "
 
-${DIR}/build-docker.sh $1
+${DIR}/build_docker.sh $1
 if [ $? == 1 ]; then
     echo "Usage $0 {cdh|open-source}"
     echo " "
