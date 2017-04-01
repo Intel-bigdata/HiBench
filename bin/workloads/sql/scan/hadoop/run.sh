@@ -18,29 +18,29 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/scan.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopScan ${workload_config} ${current_dir}
 show_bannar start
 
-ensure-hivebench-release
+ensure_hivebench_release
 
 cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 
 # path check
-rmr-hdfs $OUTPUT_HDFS
+rmr_hdfs $OUTPUT_HDFS
 
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
-prepare-sql-scan ${HIVEBENCH_SQL_FILE}
+prepare_sql_scan ${HIVEBENCH_SQL_FILE}
 
 # run bench
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 execute_withlog $CMD
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 sleep 5
 SIZE=`dir_size $OUTPUT_HDFS`

@@ -61,13 +61,13 @@ function timestamp(){		# get current timestamp
     echo `expr $tmp + $msec`
 }
 
-function start-monitor(){
+function start_monitor(){
     MONITOR_PID=`${workload_func_bin}/monitor.py ${HIBENCH_CUR_WORKLOAD_NAME} $$ ${WORKLOAD_RESULT_FOLDER}/monitor.log ${WORKLOAD_RESULT_FOLDER}/bench.log ${WORKLOAD_RESULT_FOLDER}/monitor.html ${SLAVES} &`
 #    echo "start monitor, got child pid:${MONITOR_PID}" > /dev/stderr
     echo ${MONITOR_PID}
 }
 
-function stop-monitor(){
+function stop_monitor(){
     MONITOR_PID=$1
     assert $1 "monitor pid missing"
 #    echo "stop monitor, kill ${MONITOR_PID}" > /dev/stderr
@@ -108,7 +108,7 @@ function gen_report() {		# dump the result to report file
     echo "# ${REPORT_LINE}" >> ${HIBENCH_WORKLOAD_CONF}
 }
 
-function rmr-hdfs(){		# rm -r for hdfs
+function rmr_hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
     RMDIR_CMD="fs -rm -r -skipTrash"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
@@ -116,7 +116,7 @@ function rmr-hdfs(){		# rm -r for hdfs
     execute_withlog ${CMD}
 }
 
-function upload-to-hdfs(){
+function upload_to_hdfs(){
     assert $1 "local parameter missing"
     assert $2 "remote parameter missing"
     LOCAL_FILE_PATH=$1
@@ -145,7 +145,7 @@ function upload-to-hdfs(){
     execute_withlog ${CMD}
 }
 
-function dus-hdfs(){                # du -s for hdfs
+function dus_hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
     DUS_CMD="fs -du -s"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
@@ -175,14 +175,14 @@ function check_dir() {                # ensure dir is created
 }
 
 function dir_size() {                
-    for item in $(dus-hdfs $1); do
+    for item in $(dus_hdfs $1); do
         if [[ $item =~ ^[0-9]+$ ]]; then
             echo $item
         fi
     done
 }
 
-function run-spark-job() {
+function run_spark_job() {
     LIB_JARS=
     while (($#)); do
       if [ "$1" = "--jars" ]; then
@@ -221,10 +221,10 @@ function run-spark-job() {
         SUBMIT_CMD="${SPARK_HOME}/bin/spark-submit ${LIB_JARS} --properties-file ${SPARK_PROP_CONF} --class ${CLS} --master ${SPARK_MASTER} ${YARN_OPTS} ${SPARKBENCH_JAR} $@"
     fi
     echo -e "${BGreen}Submit Spark job: ${Green}${SUBMIT_CMD}${Color_Off}"
-    MONITOR_PID=`start-monitor`
+    MONITOR_PID=`start_monitor`
     execute_withlog ${SUBMIT_CMD}
     result=$?
-    stop-monitor ${MONITOR_PID}
+    stop_monitor ${MONITOR_PID}
     if [ $result -ne 0 ]
     then
         echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
@@ -234,25 +234,25 @@ function run-spark-job() {
     fi
 }
 
-function run-storm-job(){
+function run_storm_job(){
     CMD="${STORM_HOME}/bin/storm jar ${STREAMBENCH_STORM_JAR} $@"
     echo -e "${BGreen}Submit Storm Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
-function run-gearpump-app(){
+function run_gearpump_app(){
     CMD="${GEARPUMP_HOME}/bin/gear app -executors ${STREAMBENCH_GEARPUMP_EXECUTORS} -jar ${STREAMBENCH_GEARPUMP_JAR} $@"
     echo -e "${BGreen}Submit Gearpump Application: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
-function run-flink-job(){
+function run_flink_job(){
     CMD="${FLINK_HOME}/bin/flink run -p ${STREAMBENCH_FLINK_PARALLELISM} -m ${HIBENCH_FLINK_MASTER} $@ ${STREAMBENCH_FLINK_JAR} ${SPARKBENCH_PROPERTIES_FILES}"
     echo -e "${BGreen}Submit Flink Job: ${Green}$CMD${Color_Off}"
     execute_withlog $CMD
 }
 
-function run-hadoop-job(){
+function run_hadoop_job(){
     ENABLE_MONITOR=1
     if [ "$1" = "--without-monitor" ]; then
         ENABLE_MONITOR=0
@@ -266,12 +266,12 @@ function run-hadoop-job(){
     local CMD="${HADOOP_EXECUTABLE} --config ${HADOOP_CONF_DIR} jar $job_jar $job_name $tail_arguments"
     echo -e "${BGreen}Submit MapReduce Job: ${Green}$CMD${Color_Off}"
     if [ ${ENABLE_MONITOR} = 1 ]; then
-        MONITOR_PID=`start-monitor`
+        MONITOR_PID=`start_monitor`
     fi
     execute_withlog ${CMD}
     result=$?
     if [ ${ENABLE_MONITOR} = 1 ]; then
-        stop-monitor ${MONITOR_PID}
+        stop_monitor ${MONITOR_PID}
     fi
     if [ $result -ne 0 ]; then
         echo -e "${BRed}ERROR${Color_Off}: Hadoop job ${BYellow}${job_jar} ${job_name}${Color_Off} failed to run successfully."
@@ -281,7 +281,7 @@ function run-hadoop-job(){
     fi
 }
 
-function ensure-hivebench-release(){
+function ensure_hivebench_release(){
     if [ ! -e ${HIBENCH_HOME}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
         assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
         exit
@@ -294,7 +294,7 @@ function ensure-hivebench-release(){
     export_withlog HADOOP_EXECUTABLE
 }
 
-function ensure-mahout-release (){
+function ensure_mahout_release (){
     if [ ! -e ${HIBENCH_HOME}"/hadoopbench/mahout/target/"$MAHOUT_RELEASE".tar.gz" ]; then
         assert 0 "Error: The mahout bin file hasn't be downloaded by maven, please check!"
         exit
@@ -359,7 +359,7 @@ function command_exist ()
     fi  
 }
 
-function ensure-nutchindexing-release () {
+function ensure_nutchindexing_release () {
     if [ ! -e ${HIBENCH_HOME}"/hadoopbench/nutchindexing/target/apache-nutch-1.2-bin.tar.gz" ]; then
         assert 0 "Error: The nutch bin file hasn't be downloaded by maven, please check!"
         exit
@@ -393,7 +393,7 @@ function ensure-nutchindexing-release () {
     echo $NUTCH_HOME_WORKLOAD
 }
 
-function prepare-sql-aggregation () {
+function prepare_sql_aggregation () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
@@ -414,7 +414,7 @@ INSERT OVERWRITE TABLE uservisits_aggre SELECT sourceIP, SUM(adRevenue) FROM use
 EOF
 }
 
-function prepare-sql-join () {
+function prepare_sql_join () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 
@@ -438,7 +438,7 @@ INSERT OVERWRITE TABLE rankings_uservisits_join SELECT sourceIP, avg(pageRank), 
 EOF
 }
 
-function prepare-sql-scan () {
+function prepare_sql_scan () {
     assert $1 "SQL file path not exist"
     HIVEBENCH_SQL_FILE=$1
 

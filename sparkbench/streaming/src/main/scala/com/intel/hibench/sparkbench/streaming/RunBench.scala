@@ -61,7 +61,7 @@ object RunBench {
 
     val producerNum = conf.getProperty(StreamBenchConfig.DATAGEN_PRODUCER_NUMBER).toInt
     val reporterTopic = MetricsUtil.getTopic(Platform.SPARK, topic, producerNum, recordPerInterval, intervalSpan)
-    println("Reporter Topic" + reporterTopic)
+    println("Reporter Topic: " + reporterTopic)
     val reporterTopicPartitions = conf.getProperty(StreamBenchConfig.KAFKA_TOPIC_PARTITIONS).toInt
     MetricsUtil.createTopic(zkHost, reporterTopic, reporterTopicPartitions)
 
@@ -75,7 +75,6 @@ object RunBench {
   }
 
   private def run(config: SparkBenchConfig) {
-
     // select test case based on given benchName
     val testCase : BenchBase = TestCase.withValue(config.benchName) match {
       case TestCase.IDENTITY => new Identity()
@@ -116,4 +115,5 @@ object RunBench {
     ssc.start()
     ssc.awaitTermination()
   }
+
 }

@@ -16,5 +16,5 @@
 
 workload_folder=`dirname "$0"`
 
-${workload_folder}/run-read.sh
-${workload_folder}/run-write.sh
+${workload_folder}/run_read.sh
+${workload_folder}/run_write.sh

@@ -113,6 +113,17 @@
     </profile>
 
     <profile>
+      <id>structuredStreaming</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-structuredStreaming</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <dependencies>
         <dependency>

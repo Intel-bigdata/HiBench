@@ -18,12 +18,12 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
 workload_config=${root_dir}/conf/workloads/websearch/pagerank.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopPagerank ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 
@@ -34,33 +34,33 @@ else
     OPTION=" ${OUTPUT_HDFS} ${PAGES} ${NUM_REDS} ${NUM_ITERATIONS} ${BLOCK_WIDTH}"
 fi
 
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 
 # run bench
 if [ $BLOCK -eq 0 ]
 then
-    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankNaive $OPTION
+    run_hadoop_job ${PEGASUS_JAR} pegasus.PagerankNaive $OPTION
 else
-    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankInitVector  ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
-    rmr-hdfs ${OUTPUT_HDFS}/pr_input
+    run_hadoop_job ${PEGASUS_JAR} pegasus.PagerankInitVector  ${OUTPUT_HDFS}/pr_initvector ${PAGES} ${NUM_REDS}
+    rmr_hdfs ${OUTPUT_HDFS}/pr_input
 
-    rmr-hdfs ${OUTPUT_HDFS}/pr_iv_block
-    run-hadoop-job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep  ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
-    rmr-hdfs ${OUTPUT_HDFS}/pr_initvector
+    rmr_hdfs ${OUTPUT_HDFS}/pr_iv_block
+    run_hadoop_job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep  ${OUTPUT_HDFS}/pr_initvector ${OUTPUT_HDFS}/pr_iv_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} s makesym
+    rmr_hdfs ${OUTPUT_HDFS}/pr_initvector
 
-    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
-    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankPrep  ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
+    rmr_hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
+    run_hadoop_job ${PEGASUS_JAR} pegasus.PagerankPrep  ${INPUT_HDFS}/edges ${OUTPUT_HDFS}/pr_edge_colnorm ${NUM_REDS} makesym
 
-    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_block
-    run-hadoop-job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep  ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
-    rmr-hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
+    rmr_hdfs ${OUTPUT_HDFS}/pr_edge_block
+    run_hadoop_job ${PEGASUS_JAR} pegasus.matvec.MatvecPrep  ${OUTPUT_HDFS}/pr_edge_colnorm ${OUTPUT_HDFS}/pr_edge_block ${PAGES} ${BLOCK_WIDTH} ${NUM_REDS} null nosym
+    rmr_hdfs ${OUTPUT_HDFS}/pr_edge_colnorm
 
-    run-hadoop-job ${PEGASUS_JAR} pegasus.PagerankBlock ${OPTION}
+    run_hadoop_job ${PEGASUS_JAR} pegasus.PagerankBlock ${OPTION}
 fi
 
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

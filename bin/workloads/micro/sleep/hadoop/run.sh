@@ -18,13 +18,13 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/sleep.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopSleep ${workload_config} ${current_dir}
 show_bannar start
 
 START_TIME=`timestamp`
-run-hadoop-job $HADOOP_SLEEP_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
+run_hadoop_job $HADOOP_SLEEP_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -mr $RED_SLEEP_TIME
 END_TIME=`timestamp`
 SIZE="0"
 

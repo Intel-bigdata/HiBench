@@ -1,6 +1,6 @@
 
 ### Build All ###
-To simply build all modules in Hibench, use the below command. This could be time consuming because the hadoopbench relies on 3rd party tools like Mahout and Nutch. The build process automatilly downloads these tools for you. If you won't run these workloads, you can only build a specific framework to speed up the build process.
+To simply build all modules in Hibench, use the below command. This could be time consuming because the hadoopbench relies on 3rd party tools like Mahout and Nutch. The build process automatically downloads these tools for you. If you won't run these workloads, you can only build a specific framework to speed up the build process.
 
     mvn -Dscala=2.11 clean package 
  
@@ -43,4 +43,9 @@ If you are only interested in a single workload in HiBench. You can build a sing
 
     mvn -Psparkbench -Dmodules -Psql -Dscala=2.11 clean package 
 
-Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming.
+Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or 2.1).
+
+### Build Structured Streaming ###
+For Spark 2.0 and Spark 2.1, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or 2.1. You must expilicitly specify it like this:
+
+    mvn -Psparkbench -Dmodules -PstructuredStreaming clean package 

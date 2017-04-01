@@ -60,6 +60,6 @@ PROJECT DIRECTORIES
    |
    >---- gen_base_dockerfile.sh
    |
-   >---- build-docker.sh
+   >---- build_docker.sh
    |
-   >---- run-container.sh
+   >---- run_container.sh

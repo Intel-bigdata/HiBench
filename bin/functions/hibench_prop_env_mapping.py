@@ -21,12 +21,12 @@ HiBenchEnvPropMappingMandatory=dict(
     JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     HDFS_MASTER="hibench.hdfs.master",
-    HADOOP_RELEASE="hibench.hadoop.release",        
-    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar", 
-    HADOOP_EXECUTABLE="hibench.hadoop.executable", 
+    HADOOP_RELEASE="hibench.hadoop.release",
+    HADOOP_EXAMPLES_JAR="hibench.hadoop.examples.jar",
+    HADOOP_EXECUTABLE="hibench.hadoop.executable",
     HADOOP_CONF_DIR="hibench.hadoop.configure.dir",
     HIBENCH_HOME="hibench.home",
-    HIBENCH_CONF="hibench.configure.dir", 
+    HIBENCH_CONF="hibench.configure.dir",
 
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
@@ -90,6 +90,14 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
+    # For Logistic Regression
+    NUM_EXAMPLES="hibench.lr.examples",
+    NUM_FEATURES="hibench.lr.features",
+    LABELTYPE="hibench.lr.labeltype",
+    FRACCATEGORICALFEATURES="hibench.lr.frac_categorical_features",
+    FRACBINARYFEATURES="hibench.lr.frac_binary_features",
+    TREEDEPTH="hibench.lr.tree_depth",
+    LR_MAXRESULTSIZE="hibench.lr.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
@@ -155,7 +163,7 @@ HiBenchEnvPropMapping=dict(
     FLINK_HOME="hibench.streambench.flink.home",
     STREAMBENCH_FLINK_JAR="hibench.streambench.flinkbench.jar",
     STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
-    
+
     )
 
 HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])

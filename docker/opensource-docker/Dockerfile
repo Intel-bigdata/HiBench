@@ -64,8 +64,8 @@ COPY conf/hdfs-site.xml ${HADOOP_CONF_DIR}/
 COPY conf/mapred-site.xml ${HADOOP_CONF_DIR}/
 COPY conf/yarn-site.xml ${HADOOP_CONF_DIR}/
 COPY scripts/hadoop-env.sh ${HADOOP_CONF_DIR}/
-COPY scripts/restart-hadoop-spark.sh /usr/bin
-RUN chmod +x /usr/bin/restart-hadoop-spark.sh
+COPY scripts/restart_hadoop_spark.sh /usr/bin
+RUN chmod +x /usr/bin/restart_hadoop_spark.sh
 #Copy RunExample File
 COPY scripts/runexample.sh /root/runexample.sh
 RUN chmod +x /root/runexample.sh
