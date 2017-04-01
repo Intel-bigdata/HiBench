@@ -18,19 +18,19 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/tpcds.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench SparkThroughputTestTpcDS ${workload_config} ${current_dir}
 show_bannar start
 
-genThroughputTestStream
+gen_throughputtest_stream
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-runThroughputTest
+run_throughputtest
 END_TIME=`timestamp`
 
-removeTemporaryFiles
+remove_temporaryfiles
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish

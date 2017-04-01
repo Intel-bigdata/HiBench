@@ -462,7 +462,7 @@ EOF
 }
 
 
-function runPowerTest() {
+function run_powertest() {
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
 
     SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
@@ -547,7 +547,7 @@ function runPowerTest() {
         mkdir -p ${WORKLOAD_RESULT_FOLDER}
         export WORKLOAD_RESULT_FOLDER
 
-        MONITOR_PID=`start-monitor`
+        MONITOR_PID=`start_monitor`
         if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
         then
             SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
@@ -558,7 +558,7 @@ function runPowerTest() {
         echo -e "${BGreen}Submit: ${Green}${SUBMIT_CMD}${Color_Off}"
         execute_withlog ${SUBMIT_CMD}
         result=$?
-        stop-monitor ${MONITOR_PID}
+        stop_monitor ${MONITOR_PID}
 
         if [ $result -ne 0 ]
         then
@@ -581,7 +581,7 @@ function runPowerTest() {
 }
 
 
-function genThroughputTestStream() {
+function gen_throughputtest_stream() {
     export throughput_scale=9
 
     throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query
@@ -589,7 +589,7 @@ function genThroughputTestStream() {
     ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale} ${TPCDS_SPARKSQLCLI_ENABLED}
 }
 
-function runThroughputTest() {
+function run_throughputtest() {
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
@@ -646,10 +646,10 @@ function runThroughputTest() {
         mkdir -p ${WORKLOAD_RESULT_FOLDER}
         export WORKLOAD_RESULT_FOLDER
 
-        MONITOR_PID=`start-monitor`
+        MONITOR_PID=`start_monitor`
         bash ${throughput_test_bin_dir}/stream${i}.sh
         result=$?
-        stop-monitor ${MONITOR_PID}
+        stop_monitor ${MONITOR_PID}
 
         if [ $result -ne 0 ]
         then
@@ -673,7 +673,7 @@ function runThroughputTest() {
 #    fi
 }
 
-function removeTemporaryFiles() {
+function remove_temporaryfiles() {
     rm ${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark/stream*
     rm ${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/stream*
     make -C ${DSDGEN_DIR} clean
