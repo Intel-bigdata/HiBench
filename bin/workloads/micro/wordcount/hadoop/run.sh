@@ -18,16 +18,16 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/micro/wordcount.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopWordcount ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} wordcount \
+run_hadoop_job ${HADOOP_EXAMPLES_JAR} wordcount \
     -D mapreduce.job.maps=${NUM_MAPS} \
     -D mapreduce.job.reduces=${NUM_REDS} \
     -D mapreduce.inputformat.class=org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat \
