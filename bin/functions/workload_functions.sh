@@ -351,12 +351,12 @@ function export_withlog () {
 function command_exist ()
 {
     result=$(which $1)
-    if [ $? -eq 0 ] 
+    if [ $? -eq 0 ]
     then
         return 0
     else
         return 1
-    fi  
+    fi
 }
 
 function ensure_nutchindexing_release () {
@@ -461,6 +461,27 @@ EOF
 
 }
 
+function ensure_thriftserver_started() {
+    ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+    SUBMIT_CMD="${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -e RESET"
+    echo -e "${BCyan}Testing if Thrift server's successfully started${Color_Off}"
+    execute_withlog ${SUBMIT_CMD}
+    result=$?
+    count=0
+    until [ $result -eq 0 ]
+    do
+        execute_withlog ${SUBMIT_CMD}
+        result=$?
+        count=$((count+1))
+        if [ $count -gt 20 ]; then
+            echo -e "${BRed}ERROR${Color_Off}: Thrift server${BYellow} ${Color_Off} failed to start successfully."
+            break
+        fi
+    done
+    if [ $count -ne 21 ]; then
+        echo -e "${BGreen}Thrift server's successfully started ${Color_Off}"
+    fi
+}
 
 function run_powertest() {
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
@@ -469,7 +490,7 @@ function run_powertest() {
     SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
 
     BEELINE_CMD="${SPARK_HOME}/bin/beeline"
-    BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME} -n test -p n"
+    BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME}"
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
@@ -512,7 +533,7 @@ function run_powertest() {
 
     if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
     then
-        ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+        ensure_thriftserver_started
     fi
 
     if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
@@ -629,7 +650,7 @@ function run_throughputtest() {
 
     if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
     then
-        ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+        ensure_thriftserver_started
     fi
 
     if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
