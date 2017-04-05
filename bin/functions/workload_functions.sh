@@ -309,12 +309,12 @@ function ensure_mahout_release (){
     export_withlog HADOOP_CONF_DIR    
 }
 
-function ensure-tpcds-kit-ready (){
+function ensure_tpcds_kit_ready (){
     if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
         mv "${DSDGEN_DIR}/Makefile.suite" "${DSDGEN_DIR}/makefile"
-        make -C ${DSDGEN_DIR}
+        make -C ${DSDGEN_DIR} dsdgen
         if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
-            assert 0 "Error: Tpc DS kit is not ready!"
+            assert 0 "Error: Tpc-DS kit dsdgen is not ready!"
             exit
         fi
     fi
