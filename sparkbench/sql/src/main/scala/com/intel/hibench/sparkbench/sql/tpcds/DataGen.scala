@@ -48,13 +48,13 @@ object DataGen {
   }
 
   def genDataWithTableFilters(
-                               tables: Tables,
-                               location: String,
-                               format: String,
-                               overwrite: Boolean,
-                               useDoubleForDecimal: Boolean,
-                               tableFilters: List[String],
-                               tableSize: Int): Unit = {
+      tables: Tables,
+      location: String,
+      format: String,
+      overwrite: Boolean,
+      useDoubleForDecimal: Boolean,
+      tableFilters: List[String],
+      tableSize: Int): Unit = {
     val rateMap = getRateMap()
     tableFilters.foreach(
       tableName => {

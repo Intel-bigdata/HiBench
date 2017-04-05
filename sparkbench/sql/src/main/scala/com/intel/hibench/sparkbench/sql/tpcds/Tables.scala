@@ -112,10 +112,10 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
     }
 
     def genData(
-                 location: String,
-                 format: String,
-                 overwrite: Boolean,
-                 numPartitions: Int): Unit = {
+        location: String,
+        format: String,
+        overwrite: Boolean,
+        numPartitions: Int): Unit = {
       val mode = if (overwrite) SaveMode.Overwrite else SaveMode.Ignore
 
       val data = df(format != "text", numPartitions)
@@ -148,12 +148,12 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   }
 
   def genData(
-               location: String,
-               format: String,
-               overwrite: Boolean,
-               useDoubleForDecimal: Boolean,
-               tableFilter: String = "",
-               numPartitions: Int = 1): Unit = {
+      location: String,
+      format: String,
+      overwrite: Boolean,
+      useDoubleForDecimal: Boolean,
+      tableFilter: String = "",
+      numPartitions: Int = 1): Unit = {
     var tablesToBeGenerated = tables
 
     if (!tableFilter.isEmpty) {
