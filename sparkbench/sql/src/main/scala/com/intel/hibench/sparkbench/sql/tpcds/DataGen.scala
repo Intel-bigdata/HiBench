@@ -17,7 +17,6 @@
 
 package com.intel.hibench.sparkbench.sql.tpcds
 
-import com.databricks.spark.sql.perf.tpcds.Tables
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.hive.HiveContext
 
@@ -43,20 +42,20 @@ object DataGen {
 
     val tableNames = getRateMap().map(_._1).toList
 
-    genDataWithTableFilters(tables, hdfs, "parquet", true, false, tableNames, tableSize)
-    tables.createExternalTables(hdfs, "parquet", s"tpcds_${tableSize}g", true)
+    genDataForTables(tables, hdfs, "parquet", true, false, tableNames, tableSize)
+    createExternalTables(tables, hdfs, "parquet", s"tpcds_${tableSize}g", true, tableNames)
   }
 
-  def genDataWithTableFilters(
+  def genDataForTables(
       tables: Tables,
       location: String,
       format: String,
       overwrite: Boolean,
       useDoubleForDecimal: Boolean,
-      tableFilters: List[String],
+      tableNames: List[String],
       tableSize: Int): Unit = {
     val rateMap = getRateMap()
-    tableFilters.foreach(
+    tableNames.foreach(
       tableName => {
         var numPartitions = 1
         if(rateMap(tableName) != 1) {
@@ -66,6 +65,21 @@ object DataGen {
           location, "parquet", overwrite, useDoubleForDecimal, tableName, numPartitions)
       }
     )
+  }
+
+  def createExternalTables(
+      tables: Tables,
+      location: String,
+      format: String,
+      databaseName: String,
+      overwrite: Boolean,
+      tableNames: List[String]): Unit = {
+    tableNames.foreach(
+      tableName => {
+        tables.createExternalTable(location, format, databaseName, overwrite, tableName)
+      }
+    )
+
   }
 
   def getRateMap(): Map[String, Int] = {

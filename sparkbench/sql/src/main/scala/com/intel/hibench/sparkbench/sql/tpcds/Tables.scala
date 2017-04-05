@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.databricks.spark.sql.perf.tpcds
+package com.intel.hibench.sparkbench.sql.tpcds
 
 import scala.sys.process._
 
@@ -39,7 +39,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       *  If convertToSchema is true, the data from generator will be parsed into columns and
       *  converted to `schema`. Otherwise, it just outputs the raw data (as a single STRING column).
       */
-    def df(convertToSchema: Boolean, numPartition: Int) = {
+    def generateAndConvertToDF(convertToSchema: Boolean, numPartition: Int) = {
       val generatedData = {
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
           val localToolsDir = if (new java.io.File(dsdgen).exists) {
@@ -118,7 +118,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
         numPartitions: Int): Unit = {
       val mode = if (overwrite) SaveMode.Overwrite else SaveMode.Ignore
 
-      val data = df(format != "text", numPartitions)
+      val data = generateAndConvertToDF(format != "text", numPartitions)
 
       val writer = data.write
       writer.format(format).mode(mode)
@@ -140,11 +140,6 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       }
     }
 
-    def createTemporaryTable(location: String, format: String): Unit = {
-      println(s"Creating temporary table $name using data stored in $location.")
-      log.info(s"Creating temporary table $name using data stored in $location.")
-      sqlContext.read.format(format).load(location).registerTempTable(name)
-    }
   }
 
   def genData(
@@ -154,19 +149,16 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       useDoubleForDecimal: Boolean,
       tableFilter: String = "",
       numPartitions: Int = 1): Unit = {
-    var tablesToBeGenerated = tables
 
-    if (!tableFilter.isEmpty) {
-      tablesToBeGenerated = tablesToBeGenerated.filter(_.name == tableFilter)
-      if (tablesToBeGenerated.isEmpty) {
-        throw new RuntimeException("Bad table name filter: " + tableFilter)
-      }
+    val tableToGenerate = tables.filter(_.name == tableFilter)
+    if (tableToGenerate.isEmpty) {
+      throw new RuntimeException("Bad table name filter: " + tableFilter)
     }
 
     val withSpecifiedDataType = if (useDoubleForDecimal) {
-      tablesToBeGenerated.map(_.useDoubleForDecimal())
+      tableToGenerate.map(_.useDoubleForDecimal())
     } else {
-      tablesToBeGenerated
+      tableToGenerate
     }
 
     withSpecifiedDataType.foreach { table =>
@@ -175,15 +167,20 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
     }
   }
 
-  def createExternalTables(location: String, format: String, databaseName: String, overwrite: Boolean, tableFilter: String = ""): Unit = {
-    val filtered = if (tableFilter.isEmpty) {
-      tables
-    } else {
-      tables.filter(_.name == tableFilter)
+  def createExternalTable(
+      location: String,
+      format: String,
+      databaseName: String,
+      overwrite: Boolean,
+      tableFilter: String = ""): Unit = {
+
+    val tableToCreateExternalTable = tables.filter(_.name == tableFilter)
+    if (tableToCreateExternalTable.isEmpty) {
+      throw new RuntimeException("Bad table name filter: " + tableFilter)
     }
 
     sqlContext.sql(s"CREATE DATABASE IF NOT EXISTS $databaseName")
-    filtered.foreach { table =>
+    tableToCreateExternalTable.foreach { table =>
       val tableLocation = s"$location/${table.name}"
       table.createExternalTable(tableLocation, format, databaseName, overwrite)
     }
