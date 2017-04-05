@@ -6,7 +6,7 @@
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE_2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,21 +18,21 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/sql/tpcds.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench SparkPrepareTpcDS ${workload_config} ${current_dir}
 show_bannar start
 
-ensure-tpcds-kit-ready
-rmr-hdfs $INPUT_HDFS || true
+ensure_tpcds_kit_ready
+rmr_hdfs $INPUT_HDFS || true
 
 echo -e "${On_Blue}Prepare TpcDS: working${Color_Off}"
 
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.sql.tpcds.DataGen ${INPUT_HDFS} ${TABLE_SIZE} ${DSDGEN_DIR}
+run_spark_job com.intel.hibench.sparkbench.sql.tpcds.DataGen ${INPUT_HDFS} ${TABLE_SIZE} ${DSDGEN_DIR}
 END_TIME=`timestamp`
 
-removeTemporaryFiles
+remove_temporaryfiles
 
 show_bannar finish
 leave_bench
