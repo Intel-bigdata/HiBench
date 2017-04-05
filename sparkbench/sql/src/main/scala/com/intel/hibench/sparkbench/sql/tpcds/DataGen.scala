@@ -22,11 +22,12 @@ import org.apache.spark.sql.hive.HiveContext
 
 object DataGen {
 
+  var HADOOP_EXECUTABLE = ""
   def main(args: Array[String]): Unit = {
 
-    if (args.length != 3){
+    if (args.length != 4){
       System.err.println(
-        s"Usage: $DataGen <INPUT_HDFS> <TABLESIZE>(/G) <DSDGEN_PATH>"
+        s"Usage: $DataGen <INPUT_HDFS> <TABLESIZE>(/G) <DSDGEN_PATH> <HADOOP_HOME>"
       )
       System.exit(1)
     }
@@ -34,6 +35,7 @@ object DataGen {
     val hdfs = args(0)
     val tableSize = args(1).toInt
     val dsdgenPath = args(2)
+    HADOOP_EXECUTABLE = args(3) + "/bin/hadoop"
 
     val sc = new SparkContext()
     val hiveContext = new HiveContext(sc)

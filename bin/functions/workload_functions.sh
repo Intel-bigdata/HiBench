@@ -688,10 +688,10 @@ function run_throughputtest() {
     done
     wait
 
-#    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
-#    then
-#        ${STOP_THRIFTSERVER_CMD}
-#    fi
+    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "false" ]
+    then
+        ${STOP_THRIFTSERVER_CMD}
+    fi
 }
 
 function remove_temporaryfiles() {

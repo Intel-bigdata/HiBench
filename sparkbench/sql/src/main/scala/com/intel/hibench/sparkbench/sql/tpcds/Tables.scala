@@ -30,7 +30,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   private val log = LoggerFactory.getLogger(getClass)
 
   def sparkContext = sqlContext.sparkContext
-  val dsdgen = s"$dsdgenDir/dsdgen"
+  var dsdgen = s"$dsdgenDir/dsdgen"
 
   case class Table(name: String, fields: StructField*) {
     val schema = StructType(fields)
@@ -40,6 +40,17 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       *  converted to `schema`. Otherwise, it just outputs the raw data (as a single STRING column).
       */
     def generateAndConvertToDF(convertToSchema: Boolean, numPartition: Int) = {
+      try {
+        s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgen} /tmp/dsdgen".!!
+      } catch {
+        case e: java.lang.RuntimeException => log.info(e.toString)
+      }
+      try {
+        s"chmod +x /tmp/dsdgen".!!
+      } catch {
+        case e: java.lang.RuntimeException => log.info(e.toString)
+      }
+      dsdgen = "/tmp/dsdgen"
       val generatedData = {
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
           val localToolsDir = if (new java.io.File(dsdgen).exists) {
