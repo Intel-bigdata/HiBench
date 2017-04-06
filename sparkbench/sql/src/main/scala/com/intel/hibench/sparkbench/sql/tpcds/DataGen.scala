@@ -27,20 +27,20 @@ object DataGen {
 
     if (args.length != 4){
       System.err.println(
-        s"Usage: $DataGen <INPUT_HDFS> <TABLESIZE>(/G) <DSDGEN_PATH> <HADOOP_HOME>"
+        s"Usage: $DataGen <INPUT_HDFS> <TABLESIZE>(/G) <DSDGEN_DIR> <HADOOP_HOME>"
       )
       System.exit(1)
     }
 
     val hdfs = args(0)
     val tableSize = args(1).toInt
-    val dsdgenPath = args(2)
+    val dsdgenDir = args(2)
     HADOOP_EXECUTABLE = args(3) + "/bin/hadoop"
 
     val sc = new SparkContext()
     val hiveContext = new HiveContext(sc)
 
-    val tables = new Tables(hiveContext, dsdgenPath, tableSize)
+    val tables = new Tables(hiveContext, dsdgenDir, tableSize)
 
     val tableNames = getRateMap().map(_._1).toList
 

@@ -25,8 +25,9 @@ show_bannar start
 
 ensure_tpcds_kit_ready
 rmr_hdfs $INPUT_HDFS || true
-upload_to_hdfs ${DSDGEN_DIR}/dsdgen ${INPUT_HDFS}/dsdgen
-DSDGEN_DIR=${INPUT_HDFS}
+DSDGEN_DIR=${INPUT_HDFS}/tools
+upload_to_hdfs ${DSDGEN_DIR} ${DSDGEN_DIR}
+
 
 echo -e "${On_Blue}Prepare Tpc-DS: working${Color_Off}"
 

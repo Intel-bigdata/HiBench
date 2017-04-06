@@ -30,7 +30,8 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   private val log = LoggerFactory.getLogger(getClass)
 
   def sparkContext = sqlContext.sparkContext
-  var dsdgen = s"$dsdgenDir/dsdgen"
+  val dsdgenLocalDir = "/tmp/tools"
+  val dsdgenLocalPath = s"${dsdgenLocalDir}/dsdgen"
 
   case class Table(name: String, fields: StructField*) {
     val schema = StructType(fields)
@@ -41,32 +42,30 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       */
     def generateAndConvertToDF(convertToSchema: Boolean, numPartition: Int) = {
       try {
-        s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgen} /tmp/dsdgen".!!
+        s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgenDir} ${dsdgenLocalDir}".!!
       } catch {
         case e: java.lang.RuntimeException => log.info(e.toString)
       }
       try {
-        s"chmod +x /tmp/dsdgen".!!
+        s"chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader".!!
       } catch {
         case e: java.lang.RuntimeException => log.info(e.toString)
       }
-      dsdgen = "/tmp/dsdgen"
       val generatedData = {
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
-          val localToolsDir = if (new java.io.File(dsdgen).exists) {
-            dsdgenDir
-          } else if (new java.io.File(s"/$dsdgen").exists) {
-            s"/$dsdgenDir"
+          val localToolsDir = if (new java.io.File(dsdgenLocalPath).exists) {
+            s"${dsdgenLocalDir}"
+          } else if (new java.io.File(s"/${dsdgenLocalPath}").exists) {
+            s"/${dsdgenLocalDir}"
           } else {
-            sys.error(s"Could not find dsdgen at $dsdgen or /$dsdgen. Run install")
+            sys.error(s"Could not find dsdgen at ${dsdgenLocalPath} or /${dsdgenLocalPath}. Run install")
           }
 
           // Note: RNGSEED is the RNG seed used by the data generator. Right now, it is fixed to 100.
           val parallel = if (numPartition > 1) s"-parallel $numPartition -child $i" else ""
           val commands = Seq(
             "bash", "-c",
-            s"cd $localToolsDir && ./dsdgen -table $name -filter Y -scale $scaleFactor -RNGSEED 100 $parallel")
-          println(commands)
+            s"cd ${dsdgenLocalDir} && ./dsdgen -table $name -filter Y -scale $scaleFactor -RNGSEED 100 $parallel")
           commands.lines
         }
       }
