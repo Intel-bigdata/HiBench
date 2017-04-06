@@ -16,10 +16,10 @@
 
 package com.intel.hibench.sparkbench.sql.tpcds
 
+import java.io.File
+
 import scala.sys.process._
-
 import org.slf4j.LoggerFactory
-
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Row, SQLContext, SaveMode}
@@ -33,6 +33,18 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   val dsdgenLocalDir = "/tmp/tools"
   val dsdgenLocalPath = s"${dsdgenLocalDir}/dsdgen"
 
+  def fetchDsdgenFromHDFS() = {
+    try {
+      s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgenDir} ${dsdgenLocalDir}".!!
+    } catch {
+      case e: java.lang.RuntimeException => log.info(e.toString)
+    }
+    try {
+      s"chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader".!!
+    } catch {
+      case e: java.lang.RuntimeException => log.info(e.toString)
+    }
+  }
   case class Table(name: String, fields: StructField*) {
     val schema = StructType(fields)
 
@@ -41,22 +53,12 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       *  converted to `schema`. Otherwise, it just outputs the raw data (as a single STRING column).
       */
     def generateAndConvertToDF(convertToSchema: Boolean, numPartition: Int) = {
-      try {
-        s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgenDir} ${dsdgenLocalDir}".!!
-      } catch {
-        case e: java.lang.RuntimeException => log.info(e.toString)
-      }
-      try {
-        s"chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader".!!
-      } catch {
-        case e: java.lang.RuntimeException => log.info(e.toString)
-      }
+      if (! new File(dsdgenLocalPath).exists)
+        fetchDsdgenFromHDFS()
       val generatedData = {
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
           val localToolsDir = if (new java.io.File(dsdgenLocalPath).exists) {
             s"${dsdgenLocalDir}"
-          } else if (new java.io.File(s"/${dsdgenLocalPath}").exists) {
-            s"/${dsdgenLocalDir}"
           } else {
             sys.error(s"Could not find dsdgen at ${dsdgenLocalPath} or /${dsdgenLocalPath}. Run install")
           }
