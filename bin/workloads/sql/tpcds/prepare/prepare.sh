@@ -25,17 +25,14 @@ show_bannar start
 
 ensure_tpcds_kit_ready
 rmr_hdfs $INPUT_HDFS || true
+upload_to_hdfs ${DSDGEN_DIR} ${INPUT_HDFS}/tools
 DSDGEN_DIR=${INPUT_HDFS}/tools
-upload_to_hdfs ${DSDGEN_DIR} ${DSDGEN_DIR}
-
 
 echo -e "${On_Blue}Prepare Tpc-DS: working${Color_Off}"
 
 START_TIME=`timestamp`
 run_spark_job com.intel.hibench.sparkbench.sql.tpcds.DataGen ${INPUT_HDFS} ${TABLE_SIZE} ${DSDGEN_DIR} ${HADOOP_HOME}
 END_TIME=`timestamp`
-
-remove_temporaryfiles
 
 show_bannar finish
 leave_bench
