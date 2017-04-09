@@ -490,24 +490,24 @@ function run_powertest() {
     SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
 
     BEELINE_CMD="${SPARK_HOME}/bin/beeline"
-    BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME}"
+    BEELINE_GLOBAL_OPTS="-u ${TPCDS_JDBC_URL}/${DATABASE_NAME}"
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=200"
+    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
 
     SET_REDUCE_NUM=()
-    SET_REDUCE_NUM[19]=200
-    SET_REDUCE_NUM[42]=200
-    SET_REDUCE_NUM[43]=200
-    SET_REDUCE_NUM[52]=200
-    SET_REDUCE_NUM[55]=200
-    SET_REDUCE_NUM[63]=200
-    SET_REDUCE_NUM[68]=200
-    SET_REDUCE_NUM[73]=200
-    SET_REDUCE_NUM[98]=200
+    SET_REDUCE_NUM[19]=${NUM_REDS}
+    SET_REDUCE_NUM[42]=${NUM_REDS}
+    SET_REDUCE_NUM[43]=${NUM_REDS}
+    SET_REDUCE_NUM[52]=${NUM_REDS}
+    SET_REDUCE_NUM[55]=${NUM_REDS}
+    SET_REDUCE_NUM[63]=${NUM_REDS}
+    SET_REDUCE_NUM[68]=${NUM_REDS}
+    SET_REDUCE_NUM[73]=${NUM_REDS}
+    SET_REDUCE_NUM[98]=${NUM_REDS}
 
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
@@ -615,7 +615,7 @@ function run_throughputtest() {
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=200"
+    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
 #    we should let the subprocess know these variables
     export SPARK_MASTER=${SPARK_MASTER}
@@ -625,7 +625,7 @@ function run_throughputtest() {
     export SPARK_PROP_CONF=${SPARK_PROP_CONF}
 
     export BEELINE_CMD="${SPARK_HOME}/bin/beeline"
-    export BEELINE_GLOBAL_OPTS="-u jdbc:hive2://localhost:10000/${DATABASE_NAME} -n test -p n"
+    export BEELINE_GLOBAL_OPTS="-u ${TPCDS_JDBC_URL}/${DATABASE_NAME}"
 
     export workload_func_bin=${workload_func_bin}
     export -f execute_withlog
