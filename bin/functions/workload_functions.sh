@@ -494,7 +494,7 @@ function run_powertest() {
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=${NUM_REDS}"
+    THRIFTSERVER_GLOBAL_OPTS="--conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
 
@@ -615,7 +615,7 @@ function run_throughputtest() {
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS} --conf spark.sql.shuffle.partitions=${NUM_REDS}"
+    THRIFTSERVER_GLOBAL_OPTS="--conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
 #    we should let the subprocess know these variables
     export SPARK_MASTER=${SPARK_MASTER}
