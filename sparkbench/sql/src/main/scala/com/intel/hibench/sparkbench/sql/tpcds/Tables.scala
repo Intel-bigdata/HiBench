@@ -33,13 +33,15 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
   val dsdgenLocalDir = "/tmp/tools"
   val dsdgenLocalPath = s"${dsdgenLocalDir}/dsdgen"
 
-  def fetchDsdgenFromHDFS() = {
+  def fetchDsdgenFromHDFS(hadoopExecutable: String) = {
     try {
-      s"${DataGen.HADOOP_EXECUTABLE} fs -get ${dsdgenDir} ${dsdgenLocalDir}".!!
+      log.info(s"Executing: ${hadoopExecutable} fs -get ${dsdgenDir} ${dsdgenLocalDir}")
+      s"${hadoopExecutable} fs -get ${dsdgenDir} ${dsdgenLocalDir}".!!
     } catch {
       case e: java.lang.RuntimeException => log.info(e.toString)
     }
     try {
+      log.info(s"Executing: chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader")
       s"chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader".!!
     } catch {
       case e: java.lang.RuntimeException => log.info(e.toString)
@@ -52,11 +54,12 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       *  If convertToSchema is true, the data from generator will be parsed into columns and
       *  converted to `schema`. Otherwise, it just outputs the raw data (as a single STRING column).
       */
-    def generateAndConvertToDF(convertToSchema: Boolean, numPartition: Int) = {
-      if (! new File(dsdgenLocalPath).exists)
-        fetchDsdgenFromHDFS()
+    def generateAndConvertToDF(hadoop_executable: String, convertToSchema: Boolean, numPartition: Int) = {
+
       val generatedData = {
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
+          if (! new File(dsdgenLocalPath).exists)
+            fetchDsdgenFromHDFS(hadoop_executable)
           val localToolsDir = if (new java.io.File(dsdgenLocalPath).exists) {
             s"${dsdgenLocalDir}"
           } else {
@@ -130,7 +133,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
         numPartitions: Int): Unit = {
       val mode = if (overwrite) SaveMode.Overwrite else SaveMode.Ignore
 
-      val data = generateAndConvertToDF(format != "text", numPartitions)
+      val data = generateAndConvertToDF(DataGen.HADOOP_EXECUTABLE, format != "text", numPartitions)
 
       val writer = data.write
       writer.format(format).mode(mode)
