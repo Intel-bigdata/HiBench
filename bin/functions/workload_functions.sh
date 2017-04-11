@@ -462,7 +462,7 @@ EOF
 }
 
 function ensure_thriftserver_started() {
-    ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${THRIFTSERVER_GLOBAL_OPTS}
+    ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF}
     SUBMIT_CMD="${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -e RESET"
     echo -e "${BCyan}Testing if Thrift server's successfully started${Color_Off}"
     execute_withlog ${SUBMIT_CMD}
@@ -494,7 +494,6 @@ function run_powertest() {
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
 
@@ -562,7 +561,6 @@ function run_powertest() {
         export QUERY_NAME=q${QUERY_NUMBER}
         export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/${QUERY_NAME}.sql"
         export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
-        export SPARK_SQL_LOCAL_OPTS="--conf spark.sql.shuffle.partitions=${REDUCE_NUM}"
 
         WORKLOAD_RESULT_FOLDER="${HIBENCH_HOME}/report/tpcds/spark/power/${QUERY_NAME}"
         mkdir -p ${WORKLOAD_RESULT_FOLDER}
@@ -571,7 +569,7 @@ function run_powertest() {
         MONITOR_PID=`start_monitor`
         if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
         then
-            SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} ${SPARK_SQL_LOCAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
+            SUBMIT_CMD="${SPARK_SQL_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} --database ${DATABASE_NAME} -f ${QUERY_FILE_NAME}"
         else
             SUBMIT_CMD="${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -f ${QUERY_FILE_NAME}"
         fi
@@ -615,7 +613,6 @@ function run_throughputtest() {
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
-    THRIFTSERVER_GLOBAL_OPTS="--conf spark.sql.shuffle.partitions=${NUM_REDS}"
 
 #    we should let the subprocess know these variables
     export SPARK_MASTER=${SPARK_MASTER}
