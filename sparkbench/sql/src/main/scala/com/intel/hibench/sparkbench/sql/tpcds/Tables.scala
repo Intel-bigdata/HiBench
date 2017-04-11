@@ -1,9 +1,10 @@
 /*
- * Copyright 2015 Databricks Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{Row, SQLContext, SaveMode}
+import org.joda.time.{DateTime, DateTimeZone}
 
 class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extends Serializable {
   import sqlContext.implicits._
@@ -66,11 +68,11 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
             sys.error(s"Could not find dsdgen at ${dsdgenLocalPath} or /${dsdgenLocalPath}. Run install")
           }
 
-          // Note: RNGSEED is the RNG seed used by the data generator. Right now, it is fixed to 100.
+          val rngseed = DateTime.now(DateTimeZone.UTC).getMillis() % 997
           val parallel = if (numPartition > 1) s"-parallel $numPartition -child $i" else ""
           val commands = Seq(
             "bash", "-c",
-            s"cd ${dsdgenLocalDir} && ./dsdgen -table $name -filter Y -scale $scaleFactor -RNGSEED 100 $parallel")
+            s"cd ${dsdgenLocalDir} && ./dsdgen -table $name -filter Y -scale $scaleFactor -RNGSEED $rngseed $parallel")
           commands.lines
         }
       }
