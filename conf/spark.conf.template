@@ -18,7 +18,7 @@ spark.driver.memory    4g
 spark.default.parallelism     ${hibench.default.map.parallelism}
 
 # set spark sql's default shuffle partitions according to hibench's parallelism value
-spark.sql.shuffle.partitions  ${hibench.default.map.parallelism}
+spark.sql.shuffle.partitions  ${hibench.default.shuffle.parallelism}
 
 
 #======================================================
