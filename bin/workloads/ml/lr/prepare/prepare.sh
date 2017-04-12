@@ -26,7 +26,7 @@ show_bannar start
 rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run-spark-job com.intel.hibench.sparkbench.ml.LabeledPointDataGenerator $INPUT_HDFS $NUM_EXAMPLES $NUM_FEATURES $LABELTYPE $FRACCATEGORICALFEATURES $FRACBINARYFEATURES $TREEDEPTH 
+run-spark-job com.intel.hibench.sparkbench.ml.LabeledPointDataGenerator $INPUT_HDFS $NUM_EXAMPLES $NUM_FEATURES 
 
 END_TIME=`timestamp`
 
