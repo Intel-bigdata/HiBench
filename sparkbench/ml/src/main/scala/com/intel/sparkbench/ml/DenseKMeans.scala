@@ -81,7 +81,7 @@ object DenseKMeans {
     val conf = new SparkConf().setAppName(s"DenseKMeans with $params")
     val sc = new SparkContext(conf)
 
-    Logger.getRootLogger.setLevel(Level.WARN)
+//    Logger.getRootLogger.setLevel(Level.WARN)
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
 

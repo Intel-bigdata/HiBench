@@ -18,14 +18,14 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
 workload_config=${root_dir}/conf/workloads/streaming/fixwindow.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench SparkStreamingFixWindow ${workload_config} ${current_dir}
 show_bannar start
 
 START_TIME=`timestamp`
 printFullLog
-run-spark-job com.intel.hibench.sparkbench.streaming.RunBench $SPARKBENCH_PROPERTIES_FILES
+run_spark_job com.intel.hibench.sparkbench.streaming.RunBench $SPARKBENCH_PROPERTIES_FILES
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} 0

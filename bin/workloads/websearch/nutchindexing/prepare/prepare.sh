@@ -18,15 +18,15 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/websearch/nutchindexing.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopPrepareNutchindexing ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr_hdfs $INPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
-MONITOR_PID=`start-monitor`
+MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 
 # generate data
@@ -38,10 +38,10 @@ OPTION="-t nutch \
         -p ${PAGES} \
         -o sequence"
 
-run-hadoop-job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1 
+run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION} 2>&1
 
 END_TIME=`timestamp`
-stop-monitor $MONITOR_PID
+stop_monitor $MONITOR_PID
 
 show_bannar finish
 leave_bench
