@@ -13,23 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/lr.conf
+workload_config=${root_dir}/conf/workloads/ml/pca.conf
 . "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench LogisticRegressionDataPrepare ${workload_config} ${current_dir}
+enter_bench PCA ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr-hdfs $OUTPUT_HDFS || true
+
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-run-spark-job com.intel.hibench.sparkbench.ml.LogisticRegressionDataGenerator $INPUT_HDFS $NUM_EXAMPLES_LR $NUM_FEATURES_LR 
-
+run-spark-job com.intel.hibench.sparkbench.ml.PCAExample ${INPUT_HDFS}
 END_TIME=`timestamp`
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-

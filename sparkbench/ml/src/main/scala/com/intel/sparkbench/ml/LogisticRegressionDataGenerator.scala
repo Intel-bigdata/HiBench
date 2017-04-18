@@ -32,7 +32,7 @@ import org.apache.spark.rdd.RDD
  * Generate test data for LogisticRegression. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
-object LabeledPointDataGenerator {
+object LogisticRegressionDataGenerator {
 
   /**
    * Generate an RDD containing test data for LogisticRegression.
@@ -64,7 +64,7 @@ object LabeledPointDataGenerator {
   }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("LabeledPointDataGenerator")
+    val conf = new SparkConf().setAppName("LogisticRegressionDataGenerator")
     val sc = new SparkContext(conf)
 
     var outputPath = ""
@@ -85,7 +85,7 @@ object LabeledPointDataGenerator {
       println(s"Num of Features: $numFeatures")
     } else {
       System.err.println(
-        s"Usage: $LabeledPointDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $LogisticRegressionDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }

@@ -91,13 +91,11 @@ HiBenchEnvPropMapping=dict(
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
     # For Logistic Regression
-    NUM_EXAMPLES="hibench.lr.examples",
-    NUM_FEATURES="hibench.lr.features",
-    LABELTYPE="hibench.lr.labeltype",
-    FRACCATEGORICALFEATURES="hibench.lr.frac_categorical_features",
-    FRACBINARYFEATURES="hibench.lr.frac_binary_features",
-    TREEDEPTH="hibench.lr.tree_depth",
-    LR_MAXRESULTSIZE="hibench.lr.maxresultsize",
+    NUM_EXAMPLES_LR="hibench.lr.examples",
+    NUM_FEATURES_LR="hibench.lr.features",
+    # For PCA
+    NUM_EXAMPLES_PCA="hibench.pca.examples",
+    NUM_FEATURES_PCA="hibench.pca.features",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
