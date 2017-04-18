@@ -22,11 +22,11 @@ workload_config=${root_dir}/conf/workloads/ml/lr.conf
 enter_bench LogisticRegression ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $OUTPUT_HDFS || true
+rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.ml.LogisticRegression ${INPUT_HDFS}
+run_spark_job com.intel.hibench.sparkbench.ml.LogisticRegression ${INPUT_HDFS}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
