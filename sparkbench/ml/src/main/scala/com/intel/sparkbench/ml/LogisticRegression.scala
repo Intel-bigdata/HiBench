@@ -28,16 +28,13 @@ object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
     var inputPath = ""
-    var maxresultsize = "1g"
 
-    if (args.length == 2) {
+    if (args.length == 1) {
       inputPath = args(0)
-      maxresultsize = args(1)
     }
 
     val conf = new SparkConf()
 	.setAppName("LogisticRegressionWithLBFGS")
-	.set("spark.driver.maxResultSize", maxresultsize)
     val sc = new SparkContext(conf)
 
     // $example on$
