@@ -66,3 +66,4 @@ object RatingDataGenerator {
 
     sc.stop()
   }
+}
