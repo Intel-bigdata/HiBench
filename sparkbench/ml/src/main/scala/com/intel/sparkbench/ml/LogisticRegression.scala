@@ -35,7 +35,6 @@ object LogisticRegression {
 
     val conf = new SparkConf()
 	.setAppName("LogisticRegressionWithLBFGS")
-	//.set("spark.driver.maxResultSize", maxresultsize)
     val sc = new SparkContext(conf)
 
     // $example on$

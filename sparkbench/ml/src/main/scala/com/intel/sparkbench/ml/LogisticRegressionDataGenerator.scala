@@ -79,7 +79,6 @@ object LogisticRegressionDataGenerator {
       outputPath = args(0)
       numExamples = args(1).toInt
       numFeatures = args(2).toInt
-
       println(s"Output Path: $outputPath")
       println(s"Num of Examples: $numExamples")
       println(s"Num of Features: $numFeatures")

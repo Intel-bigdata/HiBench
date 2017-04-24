@@ -1,4 +1,3 @@
-#!/bin/bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,46 +14,37 @@
 # limitations under the License.
 
 
-
-# start ssh service
+# restart ssh service
 service ssh restart
 
-# remove existing data directories
-rm -fr /var/lib/hadoop-hdfs/*
-sudo -u hdfs hdfs namenode -format
-
-sudo -u hdfs chmod -R 777 /var/lib/hadoop-hdfs
-
-# start hadoop nodes
-service hadoop-hdfs-namenode restart
-service hadoop-hdfs-datanode restart
-
-#sudo -u hdfs hdfs dfs -mkdir -p /tmp/hadoop-yarn/staging/history/done_intermediate
-hdfs dfs -mkdir -p /tmp/hadoop-yarn/staging/history/done_intermediate
-hdfs dfs -chown -R mapred:mapred /tmp/hadoop-yarn/staging
-hdfs dfs -chmod -R 1777 /tmp
-hdfs dfs -mkdir -p /var/log/hadoop-yarn
-hdfs dfs -chown yarn:mapred /var/log/hadoop-yarn
-
-# start yarn
-service hadoop-yarn-resourcemanager restart
-service hadoop-yarn-nodemanager restart
-service hadoop-mapreduce-historyserver restart
-
-hdfs dfs -mkdir -p /user/hdfs
-hdfs dfs -chown hdfs:hdfs /user/hdfs
-
-# start spark-history-server
-hdfs dfs -mkdir -p /user/spark/applicationHistory 
-hdfs dfs -chown -R spark:spark /user/spark
-hdfs dfs -chmod 1777 /user/spark/applicationHistory
-
-service spark-history-server restart
+# stop process
+${HADOOP_HOME}/sbin/stop-dfs.sh
+${HADOOP_HOME}/sbin/stop-yarn.sh
 ${SPARK_HOME}/sbin/stop-all.sh
+
+# clear data directories
+mkdir -p /usr/local/hdfs/namenode/
+mkdir -p /usr/local/hdfs/datanode/
+rm -fr /usr/local/hdfs/namenode/*
+rm -fr /usr/local/hdfs/datanode/*
+
+# remove related logs
+rm -fr ${HADOOP_HOME}/logs/*
+
+# hdfs format
+${HADOOP_HOME}/bin/hdfs namenode -format
+
+# restart hdfs
+${HADOOP_HOME}/sbin/start-dfs.sh
+
+# restart yarn
+${HADOOP_HOME}/sbin/start-yarn.sh
+
+# restart spark
 ${SPARK_HOME}/sbin/start-all.sh
 
 echo "#======================================================================#"
 echo "       Now you can run all workload by:                                 "
 echo "                                                                        "
-echo "         ${HIBENCH_HOME}/bin/run-all.sh         "
+echo "         ${HIBENCH_HOME}/bin/run_all.sh         "
 echo "#======================================================================#"

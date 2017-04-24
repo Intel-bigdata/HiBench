@@ -18,14 +18,14 @@ current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../..
 workload_config=${root_dir}/conf/workloads/micro/terasort.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+. "${root_dir}/bin/functions/load_bench_config.sh"
 
 enter_bench HadoopPrepareTerasort ${workload_config} ${current_dir}
 show_bannar start
 
-rmr-hdfs $INPUT_HDFS || true
+rmr_hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
-run-hadoop-job ${HADOOP_EXAMPLES_JAR} teragen \
+run_hadoop_job ${HADOOP_EXAMPLES_JAR} teragen \
     -D mapreduce.job.maps=${NUM_MAPS} \
     -D mapreduce.job.reduces=${NUM_REDS} \
     ${DATASIZE} ${INPUT_HDFS}
