@@ -14,20 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-current_dir=`dirname "$0"`
-current_dir=`cd "$current_dir"; pwd`
-root_dir=${current_dir}/../../../../..
-workload_config=${root_dir}/conf/workloads/streaming/repartition.conf
-. "${root_dir}/bin/functions/load-bench-config.sh"
+set -u
+this="${BASH_SOURCE-$0}"
+bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
+script="$(basename -- "$this")"
+this="$bin/$script"
 
-enter_bench SparkStructuredStreamingRepartition ${workload_config} ${current_dir}
-show_bannar start
+# include function interfaces for workload
+. ${bin}/workload_functions.sh
 
-START_TIME=`timestamp`
-printFullLog
-run-spark-job com.intel.hibench.sparkbench.structuredstreaming.RunBench $SPARKBENCH_PROPERTIES_FILES
-END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} 0
-show_bannar finish
-leave_bench
