@@ -54,9 +54,9 @@ object PCADataGenerator {
     val data = sc.parallelize(0 until nexamples, nparts).map { idx =>
       val rnd = new Random(42 + idx)
 
-      val y = rnd.nextGaussian() * 2.0 + 2.0
+      val y = rnd.nextGaussian()
       val x = Array.fill[Double](nfeatures) {
-        rnd.nextGaussian() + (y * eps)
+        rnd.nextGaussian() - 0.5
       }
       LabeledPoint(y, Vectors.dense(x))
     }
@@ -68,8 +68,8 @@ object PCADataGenerator {
     val sc = new SparkContext(conf)
 
     var outputPath = ""
-    var numExamples: Int = 200000
-    var numFeatures: Int = 20
+    var numExamples: Int = 100
+    var numFeatures: Int = 8
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt

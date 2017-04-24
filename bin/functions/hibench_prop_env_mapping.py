@@ -96,6 +96,7 @@ HiBenchEnvPropMapping=dict(
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
+    MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize", 
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",

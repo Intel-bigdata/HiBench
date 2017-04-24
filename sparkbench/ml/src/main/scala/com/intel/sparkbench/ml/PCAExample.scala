@@ -16,7 +16,7 @@
  */
 
 // scalastyle:off println
-package org.apache.spark.examples.mllib
+package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
@@ -31,13 +31,16 @@ object PCAExample {
 
   def main(args: Array[String]): Unit = {
     var inputPath = ""
+    var maxResultSize = "1g"
 
-    if (args.length == 1) {
+    if (args.length == 2) {
       inputPath = args(0)
+      maxResultSize = args(1)
     }
 
     val conf = new SparkConf()
         .setAppName("PCAExample")
+        .set("spark.driver.maxResultSize", maxResultSize)
     val sc = new SparkContext(conf)
 
     // $example on$
@@ -72,11 +75,6 @@ object PCAExample {
       (score, point.label)
     }
 
-    val MSE = valuesAndPreds.map { case (v, p) => math.pow((v - p), 2) }.mean()
-    val MSE_pca = valuesAndPreds_pca.map { case (v, p) => math.pow((v - p), 2) }.mean()
-
-    println("Mean Squared Error = " + MSE)
-    println("PCA Mean Squared Error = " + MSE_pca)
     // $example off$
 
     sc.stop()

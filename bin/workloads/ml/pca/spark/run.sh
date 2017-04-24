@@ -26,7 +26,7 @@ rmr-hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run-spark-job com.intel.hibench.sparkbench.ml.PCAExample ${INPUT_HDFS}
+run-spark-job com.intel.hibench.sparkbench.ml.PCAExample ${INPUT_HDFS} ${MAX_RESULT_SIZE_PCA}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
