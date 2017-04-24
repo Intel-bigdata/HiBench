@@ -42,15 +42,7 @@ object PCAExample {
         .setAppName("PCAExample")
         .set("spark.driver.maxResultSize", maxResultSize)
     val sc = new SparkContext(conf)
-
-    // $example on$
-    /*
-    val data = sc.textFile("data/mllib/ridge-data/lpsa.data").map { line =>
-      val parts = line.split(',')
-      LabeledPoint(parts(0).toDouble, Vectors.dense(parts(1).split(' ').map(_.toDouble)))
-    }.cache()
-    */
-
+    
     val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
 
     val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)
@@ -74,8 +66,6 @@ object PCAExample {
       val score = model_pca.predict(point.features)
       (score, point.label)
     }
-
-    // $example off$
 
     sc.stop()
   }
