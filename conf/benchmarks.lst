@@ -13,5 +13,6 @@ websearch.pagerank
 
 ml.bayes
 ml.kmeans
+ml.lr
 
 graph.nweight
