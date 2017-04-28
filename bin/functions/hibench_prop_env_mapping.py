@@ -93,6 +93,10 @@ HiBenchEnvPropMapping=dict(
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
+    # For SVD
+    NUM_EXAMPLES_SVD="hibench.svd.examples",
+    NUM_FEATURES_SVD="hibench.svd.features",
+    MAXRESULTSIZE_SVD="hibench.svd.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
