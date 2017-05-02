@@ -32,11 +32,8 @@ object SVDDataGenerator {
       n: Int,
       numPartitions: Int,
       seed: Long = System.currentTimeMillis()): RDD[Vector] = {
-
     val data: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, m, n, numPartitions, seed)
-
     data
-    //new RowMatrix(data,m,n)
   }
 
   def main(args: Array[String]) {
