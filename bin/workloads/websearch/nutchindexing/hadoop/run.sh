@@ -50,7 +50,7 @@ export_withlog HIBENCH_WORKLOAD_CONF
 NUTCH_CONF_DIR=$HADOOP_CONF_DIR:$NUTCH_HOME_WORKLOAD/conf
 export_withlog NUTCH_CONF_DIR
 
-CMD="$NUTCH_HOME_WORKLOAD/bin/nutch index -D mapreduce.output.fileoutputformat.compress=false $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*"
+CMD="$NUTCH_HOME_WORKLOAD/bin/nutch index -D mapreduce.job.reduces=$NUM_REDS -D mapreduce.output.fileoutputformat.compress=false $OUTPUT_HDFS $INPUT_HDFS/crawldb $INPUT_HDFS/linkdb $INPUT_HDFS/segments/*"
 echo $CMD
 execute_withlog $CMD
 
