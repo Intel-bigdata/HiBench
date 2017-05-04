@@ -17,16 +17,16 @@
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/pca.conf
-. "${root_dir}/bin/functions/load_bench_config.sh"
+workload_config=${root_dir}/conf/workloads/ml/als.conf
+. "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench PCADataPrepare ${workload_config} ${current_dir}
+enter_bench RatingDataPrepare ${workload_config} ${current_dir}
 show_bannar start
 
-rmr_hdfs $INPUT_HDFS || true
+rmr-hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run_spark_job com.intel.hibench.sparkbench.ml.PCADataGenerator $INPUT_HDFS $NUM_EXAMPLES_PCA $NUM_FEATURES_PCA
+run-spark-job com.intel.hibench.sparkbench.ml.RatingDataGenerator $INPUT_HDFS $NUM_USERS $NUM_PRODUCTS $IMPLICITPREFS 
 
 END_TIME=`timestamp`
 

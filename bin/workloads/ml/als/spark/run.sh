@@ -17,19 +17,20 @@
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/pca.conf
-. "${root_dir}/bin/functions/load_bench_config.sh"
+workload_config=${root_dir}/conf/workloads/ml/als.conf
+. "${root_dir}/bin/functions/load-bench-config.sh"
 
-enter_bench PCADataPrepare ${workload_config} ${current_dir}
+enter_bench ALS ${workload_config} ${current_dir}
 show_bannar start
 
-rmr_hdfs $INPUT_HDFS || true
+rmr-hdfs $OUTPUT_HDFS || true
+
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 
-run_spark_job com.intel.hibench.sparkbench.ml.PCADataGenerator $INPUT_HDFS $NUM_EXAMPLES_PCA $NUM_FEATURES_PCA
-
+run-spark-job com.intel.hibench.sparkbench.ml.ALSExample --numUsers $NUM_USERS --numProducts $NUM_PRODUCTS --sparsity $SPARSITY --rank $RANK --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA --kryo $KYRO --implicitPrefs $IMPLICITPREFS $INPUT_HDFS
 END_TIME=`timestamp`
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
-
