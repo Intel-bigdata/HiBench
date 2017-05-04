@@ -1,6 +1,7 @@
 micro.sort
 ml.bayes
 ml.als
+ml.svd
 websearch.nutchindexing
 sql.scan
 graph.nweight
