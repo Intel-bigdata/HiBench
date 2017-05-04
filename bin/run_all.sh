@@ -53,11 +53,11 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	    continue
 	fi
 	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
-  if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
+	    continue
+	fi
+	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
         
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
 	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
