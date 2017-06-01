@@ -102,6 +102,10 @@ HiBenchEnvPropMapping=dict(
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",
     LAMBDA="hibench.als.Lambda",
     KYRO="hibench.als.kyro",
+    # For Gradient Boosting Tree
+    NUM_EXAMPLES_GBT="hibench.gbt.examples",
+    NUM_FEATURES_GBT="hibench.gbt.features",
+    NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
