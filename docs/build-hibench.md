@@ -2,17 +2,17 @@
 ### Build All ###
 To simply build all modules in Hibench, use the below command. This could be time consuming because the hadoopbench relies on 3rd party tools like Mahout and Nutch. The build process automatically downloads these tools for you. If you won't run these workloads, you can only build a specific framework to speed up the build process.
 
-    mvn -Dscala=2.11 clean package 
+    mvn -Dspark=2.1 -Dscala=2.11 clean package 
  
 
 ### Build a specific framework benchmark ###
 HiBench 6.0 supports building only bechmarks for a specific framework. For example, to build the hadoop benchmarks only, we can use the below command:
 
-    mvn -Phadoopbench -Dscala=2.11 clean package 
+    mvn -Phadoopbench -Dspark=2.1 -Dscala=2.11 clean package 
 
 To build hadoop and spark benchmarks
 
-    mvn -Phadoopbench -Psparkbench -Dscala=2.11 clean package 
+    mvn -Phadoopbench -Psparkbench -Dspark=2.1 -Dscala=2.11 clean package 
 
 Supported frameworks includs: hadoopbench, sparkbench, flinkbench, stormbench, gearpumpbench.
 
@@ -41,7 +41,7 @@ Similarly , the spark1.6 is associated with the scala2.10 by default.
 ### Build a single module ###
 If you are only interested in a single workload in HiBench. You can build a single module. For example, the below command only builds the sql workloads for Spark.
 
-    mvn -Psparkbench -Dmodules -Psql -Dscala=2.11 clean package 
+    mvn -Psparkbench -Dmodules -Psql -Dspark=2.1 -Dscala=2.11 clean package 
 
 Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or 2.1).
 
