@@ -525,7 +525,7 @@ def probe_masters_slaves_by_Yarn():
         else:
             assert 0, "Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file"
     except Exception as e:
-        assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
+        assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` in hibench.conf manually" % e
 
 
 def probe_masters_slaves_hostnames():
