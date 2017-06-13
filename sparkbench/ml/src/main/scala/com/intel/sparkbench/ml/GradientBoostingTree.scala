@@ -70,13 +70,6 @@ object GradientBoostingTree {
     println("Test Error = " + testErr)
     println("Learned classification GBT model:\n" + model.toDebugString)
 
-    // Save and load model
-    /*
-    model.save(sc, "target/tmp/myGradientBoostingClassificationModel")
-    val sameModel = GradientBoostedTreesModel.load(sc,
-      "target/tmp/myGradientBoostingClassificationModel")
-    */
-
     sc.stop()
   }
 }
