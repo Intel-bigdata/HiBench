@@ -148,7 +148,9 @@ def read_file_content(filepath):
 
 def parse_conf(conf_root, workload_config_file):
     conf_files = sorted(glob.glob(conf_root + "/*.conf")) + sorted(glob.glob(workload_config_file))
-
+    # load hibench.conf first
+    conf_files.insert(0, conf_files.pop(
+        [i for i, filename in enumerate(conf_files) if filename.endswith("hibench.conf")][0]))
     # load values from conf files
     for filename in conf_files:
         log("Parsing conf: %s" % filename)
