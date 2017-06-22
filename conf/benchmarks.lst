@@ -15,5 +15,6 @@ ml.bayes
 ml.kmeans
 ml.lr
 ml.als
+ml.rf
 
 graph.nweight
