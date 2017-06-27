@@ -26,7 +26,7 @@ import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.random.RandomRDDs
 
 object SVDDataGenerator {
-  def generateDistributedSquareMatrix(
+  def generateDistributedRowMatrix(
       sc: SparkContext,
       m: Long,
       n: Int,
@@ -61,7 +61,7 @@ object SVDDataGenerator {
       System.exit(1)
     }
 
-    val data = generateDistributedSquareMatrix(sc, numExamples, numFeatures, numPartitions)
+    val data = generateDistributedRowMatrix(sc, numExamples, numFeatures, numPartitions)
 
     data.saveAsObjectFile(outputPath)
 
