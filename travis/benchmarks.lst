@@ -1,6 +1,5 @@
 micro.sort
 ml.bayes
-ml.als
 ml.pca
 websearch.nutchindexing
 sql.scan

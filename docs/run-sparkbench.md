@@ -1,13 +1,13 @@
 ### 1. Setup ###
 
  * Python 2.x(>=2.6) is required.
- 
- * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
- 
+
+ * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP
+
  * Supported Spark version: 1.6.x, 2.0.x, 2.1.x
 
  * Build HiBench according to [build HiBench](build-hibench.md).
- 
+
  * Start HDFS, Yarn, Spark in the cluster.
 
 
@@ -43,20 +43,20 @@ Set the below properties properly:
 
 
 ### 4. Run a workload ###
-To run a single workload i.e. `wordcount`. 
+To run a single workload i.e. `wordcount`.
 
      bin/workloads/micro/wordcount/prepare/prepare.sh
      bin/workloads/micro/wordcount/spark/run.sh
 
-The `prepare.sh` launchs a hadoop job to genereate the input data on HDFS. The `run.sh` submits the spark job to the cluster. 
+The `prepare.sh` launches a Hadoop job to generate the input data on HDFS. The `run.sh` submits the Spark job to the cluster.
 `bin/run_all.sh` can be used to run all workloads listed in conf/benchmarks.lst.
 
 ### 5. View the report ###
 
    The `<HiBench_Root>/report/hibench.report` is a summarized workload report, including workload name, execution duration, data size, throughput per cluster, throughput per node.
 
-   The report directory also includs further information for debuging and tuning.
-     
+   The report directory also includes further information for debugging and tuning.
+
   * `<workload>/spark/bench.log`: Raw logs on client side.
   * `<workload>/spark/monitor.html`: System utilization monitor results.
   * `<workload>/spark/conf/<workload>.conf`: Generated environment variable configurations for this workload.
