@@ -16,5 +16,6 @@ ml.kmeans
 ml.lr
 ml.als
 ml.rf
+ml.svd
 
 graph.nweight
