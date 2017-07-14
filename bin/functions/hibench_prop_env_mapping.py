@@ -102,6 +102,10 @@ HiBenchEnvPropMapping=dict(
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",
     LAMBDA="hibench.als.Lambda",
     KYRO="hibench.als.kyro",
+    # For Random Forest
+    NUM_EXAMPLES_RF="hibench.rf.examples",
+    NUM_FEATURES_RF="hibench.rf.features",
+    NUMTREES="hibench.rf.numTrees",
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
