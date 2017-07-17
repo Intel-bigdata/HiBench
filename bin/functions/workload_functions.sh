@@ -473,22 +473,25 @@ EOF
 function ensure_thriftserver_started() {
     ${START_THRIFTSERVER_CMD} --master ${SPARK_MASTER} ${YARN_OPTS} --properties-file ${SPARK_PROP_CONF}
     SUBMIT_CMD="${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -e RESET"
-    echo -e "${BCyan}Testing if Thrift server's successfully started${Color_Off}"
+    echo -e "${BCyan}Test if Thrift server's been successfully started:${Color_Off}"
     execute_withlog ${SUBMIT_CMD}
     result=$?
     count=0
     until [ $result -eq 0 ]
     do
+#    Thrift server won't be started immediately, so take a nap
+        sleep 1s
+#    Try to connect to Thrift server using beeline 20 times
         execute_withlog ${SUBMIT_CMD}
         result=$?
         count=$((count+1))
         if [ $count -gt 20 ]; then
-            echo -e "${BRed}ERROR${Color_Off}: Thrift server${BYellow} ${Color_Off} failed to start successfully."
+            echo -e "${BRed}ERROR${Color_Off}: Thrift server${BYellow} ${Color_Off} failed to start successfully"
             break
         fi
     done
     if [ $count -ne 21 ]; then
-        echo -e "${BGreen}Thrift server's successfully started ${Color_Off}"
+        echo -e "${BGreen}Thrift server's been successfully started ${Color_Off}"
     fi
 }
 
