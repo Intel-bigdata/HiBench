@@ -13,5 +13,5 @@ hibench.hdfs.master       hdfs://localhost:8020
 # Hadoop release provider. Supported value: apache, cdh5, hdp
 hibench.hadoop.release    apache
 
-# Configure this only when you run Sparkbench/sql/tpcds module
+# Configure this only if you run Sparkbench/sql/tpcds module throughput test with spark-sql cli enabled
 hive.metastore.uris     thrift://HOSTNAME:PORT
