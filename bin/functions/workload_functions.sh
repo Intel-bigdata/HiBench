@@ -311,8 +311,9 @@ function ensure_mahout_release (){
 
 function ensure_tpcds_kit_ready (){
 
+    mkdir -p $DSDGEN_DIR
     TPCDS_KIT_DIR=`cd $DSDGEN_DIR/../; pwd`
-    rm -rf $TPCDS_KIT_DIR
+    rm -rf $DSDGEN_DIR
     execute "git clone https://github.com/davies/tpcds-kit.git $TPCDS_KIT_DIR"
 
     if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
