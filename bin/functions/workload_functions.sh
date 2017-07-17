@@ -135,7 +135,7 @@ function upload_to_hdfs(){
     execute_withlog ${CMD}
 
     # prepare parent folder
-    CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -mkdir `dirname $REMOTE_FILE_PATH`"
+    CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -mkdir -p `dirname $REMOTE_FILE_PATH`"
     echo -e "${BCyan}hdfs mkdir : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
     execute_withlog ${CMD}
 
