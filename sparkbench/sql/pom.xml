@@ -36,33 +36,4 @@
     </dependency>
   </dependencies>
 
-    <properties>
-        <repo1>https://github.com</repo1>
-        <file1>davies/tpcds-kit/archive/master.zip</file1>
-        <checksum1>21adadd344bb01a4374e7e642cdf25b7</checksum1>
-    </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>${download-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${repo1}/${file1}</url>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
-                            <md5>${checksum1}</md5>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

@@ -310,9 +310,17 @@ function ensure_mahout_release (){
 }
 
 function ensure_tpcds_kit_ready (){
+
+    TPCDS_KIT_DIR=`cd $DSDGEN_DIR/../; pwd`
+    rm -rf $TPCDS_KIT_DIR
+    execute "git clone https://github.com/davies/tpcds-kit.git $TPCDS_KIT_DIR"
+
     if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
         mv "${DSDGEN_DIR}/Makefile.suite" "${DSDGEN_DIR}/makefile"
-        make -C ${DSDGEN_DIR} dsdgen
+
+        echo -e "${BCyan}Executing: ${Cyan}make -C ${DSDGEN_DIR} dsdgen${Color_Off}"
+        execute_withlog "make -C ${DSDGEN_DIR} dsdgen"
+
         if [ ! -e "${DSDGEN_DIR}/dsdgen" ]; then
             assert 0 "Error: Tpc-DS kit dsdgen is not ready!"
             exit
