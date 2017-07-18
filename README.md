@@ -72,7 +72,7 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
 2. TPC-DS(tpcds)
 
-    TPC-DS is the de-facto industry standard benchmark for measuring the performance of decision support solutions including, but not limited to, Big Data systems. This workload includes data preparation(datagen), power test and throughput test. See TPC-DS specification docs for more information. For power test and throughput test in HiBench, Thrift server + Beeline solution is currently supported.
+    TPC-DS is the de-facto industry standard benchmark for measuring the performance of decision support solutions including, but not limited to, Big Data systems. This workload includes data preparation(datagen), power test and throughput test. See TPC-DS specification docs for more information. For power test and throughput test in HiBench, Thrift server + Beeline solution is currently supported. As for test queries, only 9 'interactive' queries are currently supported.
 
 **Websearch Benchmarks:**
 
