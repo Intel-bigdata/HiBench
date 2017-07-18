@@ -479,9 +479,9 @@ function ensure_thriftserver_started() {
     count=0
     until [ $result -eq 0 ]
     do
-#    Thrift server won't be started immediately, so take a nap
-        sleep 1s
-#    Try to connect to Thrift server using beeline 20 times
+        # Thrift server won't be started immediately, so take a nap
+        sleep 2s
+        # Try to connect to Thrift server using beeline 20 times
         execute_withlog ${SUBMIT_CMD}
         result=$?
         count=$((count+1))
