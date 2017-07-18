@@ -512,17 +512,6 @@ function run_powertest() {
 
     INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
 
-    SET_REDUCE_NUM=()
-    SET_REDUCE_NUM[19]=${NUM_REDS}
-    SET_REDUCE_NUM[42]=${NUM_REDS}
-    SET_REDUCE_NUM[43]=${NUM_REDS}
-    SET_REDUCE_NUM[52]=${NUM_REDS}
-    SET_REDUCE_NUM[55]=${NUM_REDS}
-    SET_REDUCE_NUM[63]=${NUM_REDS}
-    SET_REDUCE_NUM[68]=${NUM_REDS}
-    SET_REDUCE_NUM[73]=${NUM_REDS}
-    SET_REDUCE_NUM[98]=${NUM_REDS}
-
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
     QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
@@ -570,7 +559,7 @@ function run_powertest() {
         export QUERY_NUMBER=${i}
         export QUERY_NAME=q${QUERY_NUMBER}
         export QUERY_FILE_NAME="${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query/${QUERY_NAME}.sql"
-        export REDUCE_NUM=${SET_REDUCE_NUM[${QUERY_NUMBER}]}
+        export REDUCE_NUM=${NUM_REDS}
 
         WORKLOAD_RESULT_FOLDER="${HIBENCH_HOME}/report/tpcds/spark/power/${QUERY_NAME}"
         mkdir -p ${WORKLOAD_RESULT_FOLDER}
@@ -611,24 +600,23 @@ function run_powertest() {
 
 
 function gen_throughputtest_stream() {
-    export throughput_scale=9
+    export TPCDS_SPARKSQLCLI_ENABLED="false"
 
     throughtput_test_resource_dir=${HIBENCH_HOME}/sparkbench/sql/src/main/resources/tpcds-query
     export throughput_test_bin_dir=${HIBENCH_HOME}/bin/workloads/sql/tpcds/spark
-    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${throughput_scale} ${TPCDS_SPARKSQLCLI_ENABLED}
+    ${HIBENCH_HOME}/bin/functions/gen_stream_sql.py ${TPCDS_TEST_LIST} ${throughtput_test_resource_dir} ${throughput_test_bin_dir} ${TPCDS_STREAM_SCALE} ${TPCDS_SPARKSQLCLI_ENABLED}
 }
 
 function run_throughputtest() {
-    DATABASE_NAME="tpcds_${TABLE_SIZE}g"
+    export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
 
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
 
-#    we should let the subprocess know these variables
+    # we should let the subprocess know these variables
     export SPARK_MASTER=${SPARK_MASTER}
     export SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     export SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
-    export DATABASE_NAME="tpcds_${TABLE_SIZE}g"
     export SPARK_PROP_CONF=${SPARK_PROP_CONF}
 
     export BEELINE_CMD="${SPARK_HOME}/bin/beeline"
@@ -664,10 +652,10 @@ function run_throughputtest() {
     then
         echo -e "${BCyan}Running TPC-DS throughput test with Spark SQL CLI${Color_Off}"
     else
-        echo -e "${BCyan}Running TPC-DS throughput test with beeline${Color_Off}"
+        echo -e "${BCyan}Running TPC-DS throughput test with Beeline${Color_Off}"
     fi
 
-    for(( i = 0; i < ${throughput_scale}; i++ ))
+    for(( i = 0; i < ${TPCDS_STREAM_SCALE}; i++ ))
     do
     {
         WORKLOAD_RESULT_FOLDER="${HIBENCH_HOME}/report/tpcds/spark/throughput/u${i}"

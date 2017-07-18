@@ -127,6 +127,7 @@ HiBenchEnvPropMapping=dict(
     TPCDS_TEST_LIST="hibench.tpcds.test.list",
     TPCDS_SPARKSQLCLI_ENABLED="hibench.tpcds.sparksqlcli.enabled",
     TPCDS_JDBC_URL="hibench.tpcds.jdbc.url",
+    TPCDS_STREAM_SCALE="hibench.tpcds.stream.scale",
     # For streaming bench
     STREAMING_TESTCASE="hibench.streambench.testCase",
     COMMON_JAR="hibench.common.jar",
