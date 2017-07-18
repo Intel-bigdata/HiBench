@@ -496,11 +496,14 @@ function ensure_thriftserver_started() {
 }
 
 function run_powertest() {
+    TPCDS_SPARKSQLCLI_ENABLED="false"
     DATABASE_NAME="tpcds_${TABLE_SIZE}g"
 
+    # Hive metastore & Spark sql cli are currently not supported
     SPARK_SQL_CMD="${SPARK_HOME}/bin/spark-sql"
     SPARK_SQL_GLOBAL_OPTS="--hiveconf hive.metastore.uris=${HIVE_METASTORE_URIS}"
 
+    # Thrift server & Beeline are currently supported
     BEELINE_CMD="${SPARK_HOME}/bin/beeline"
     BEELINE_GLOBAL_OPTS="-u ${TPCDS_JDBC_URL}/${DATABASE_NAME}"
 
@@ -547,12 +550,7 @@ function run_powertest() {
         ensure_thriftserver_started
     fi
 
-    if [ "$TPCDS_SPARKSQLCLI_ENABLED" = "true" ]
-    then
-        echo -e "${BCyan}Running TPC-DS power test with Spark SQL CLI${Color_Off}"
-    else
-        echo -e "${BCyan}Running TPC-DS power test with beeline${Color_Off}"
-    fi
+    echo -e "${BCyan}Running TPC-DS power test with Beeline${Color_Off}"
 
     for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM} + 1; i++)); do
         j=0

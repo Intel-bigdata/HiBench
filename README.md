@@ -70,6 +70,10 @@ There are totally 17 workloads in HiBench. The workloads are divided into 6 cate
 
     These workloads are developed based on SIGMOD 09 paper "A Comparison of Approaches to Large-Scale Data Analysis" and HIVE-396. It contains Hive queries (Aggregation and Join) performing the typical OLAP queries described in the paper. Its input is also automatically generated Web data with hyperlinks following the Zipfian distribution.
 
+2. TPC-DS(tpcds)
+
+    TPC-DS is the de-facto industry standard benchmark for measuring the performance of decision support solutions including, but not limited to, Big Data systems. This workload includes data preparation(datagen), power test and throughput test. See TPC-DS specification docs for more information. For power test and throughput test in HiBench, Thrift server + Beeline solution is currently supported.
+
 **Websearch Benchmarks:**
 
 1. PageRank (pagerank)
