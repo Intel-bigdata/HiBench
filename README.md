@@ -1,6 +1,7 @@
 # HiBench Suite [![Build Status](https://travis-ci.org/intel-hadoop/HiBench.svg?branch=master)](https://travis-ci.org/intel-hadoop/HiBench)
 ## The bigdata micro benchmark suite ##
 
+test
 
 * Current version: 6.0
 * Homepage: https://github.com/intel-hadoop/HiBench
