@@ -35,7 +35,7 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
     if [ $? -ne 0 ]
     then
 	echo "ERROR: ${benchmark} prepare failed!"
-        continue
+        exit 1
     fi
 
     for framework in `cat $root_dir/conf/frameworks.lst`; do
