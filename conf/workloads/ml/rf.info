@@ -1,0 +1,8 @@
+Spark job
+            tiny   small   large   huge   gigantic   bigdata
+Time cost   9s     10s     13s     11m    17m        28m
+Size        19.4K  427.4K  7.7M    14.9G  22.4G      32.8G
+
+Num. of workers             2
+Cores(used/total)           46/48
+Mem                         180G

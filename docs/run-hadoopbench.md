@@ -2,6 +2,8 @@
 
  * Python 2.x(>=2.6) is required.
 
+ * `bc` is required to generate the HiBench report.
+
  * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP
 
  * Build HiBench according to [build HiBench](build-hibench.md).
