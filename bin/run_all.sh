@@ -33,10 +33,10 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
     "${WORKLOAD}/prepare/prepare.sh"
 
     result=$?
-    if [ result -ne 0 ]
+    if [ $result -ne 0 ]
     then
 	echo "ERROR: ${benchmark} prepare failed!"
-        exit result
+        exit $result
     fi
 
     for framework in `cat $root_dir/conf/frameworks.lst`; do
@@ -59,12 +59,12 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
-  if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
-        continue
-  fi  
-  if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
+        if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi  
+        if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
         
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
 	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
