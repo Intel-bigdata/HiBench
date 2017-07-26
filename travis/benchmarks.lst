@@ -2,6 +2,7 @@ micro.sort
 ml.bayes
 ml.rf
 ml.svd
+ml.svm
 websearch.nutchindexing
 sql.scan
 graph.nweight
