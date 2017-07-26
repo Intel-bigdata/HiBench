@@ -29,14 +29,18 @@ object LDAExample {
     var inputPath = ""
     var outputPath = ""
     var numTopics: Int = 10
+    var maxResultSize = "1g"
 
-    if (args.length == 3) {
+    if (args.length == 4) {
       inputPath = args(0)
       outputPath = args(1)
       numTopics = args(2).toInt
+       maxResultSize = args(3)
     }
 
-    val conf = new SparkConf().setAppName("LDA Example")
+    val conf = new SparkConf()
+        .setAppName("LDA Example")
+        .set("spark.driver.maxResultSize",maxResultSize)
     val sc = new SparkContext(conf)
 
     val corpus: RDD[(Long, Vector)] = sc.objectFile(inputPath)
