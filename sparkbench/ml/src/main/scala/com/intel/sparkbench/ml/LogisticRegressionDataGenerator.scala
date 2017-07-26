@@ -21,9 +21,9 @@ import com.intel.hibench.sparkbench.common.IOCommon
 
 import scala.util.Random
 
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.annotation.{DeveloperApi, Since}
 import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.ml.feature.LabeledPoint
 import org.apache.spark.sql.SparkSession
 
 /**
@@ -50,15 +50,15 @@ object LogisticRegressionDataGenerator {
     eps: Double,
     nparts: Int = 2,
     probOne: Double = 0.5) = {
-	val data: Seq[(Double, org.apache.spark.ml.linalg.Vector)] = Seq.tabulate(nexamples)(idx => {
+	val data = sc.parallelize(0 until nexamples, nparts).map { idx =>
 	    val rnd = new Random(42 + idx)
 	    val y = if (idx % 2 == 0) 0.0 else 1.0
-	    val x = Array.fill[Double](nfeatures) {
-		rnd.nextGaussian() + (y * eps)
+            val x = Array.fill[Double](nfeatures) {
+                rnd.nextGaussian() + (y * eps)
 	    }
-	(y, Vectors.dense(x))
-	})
-	spark.createDataFrame(data).toDF("label","features").repartition(nparts)
+	LabeledPoint(y, Vectors.dense(x))
+	}
+	spark.createDataFrame(data)
     }
 
   def main(args: Array[String]) {
