@@ -93,6 +93,7 @@ HiBenchEnvPropMapping=dict(
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
+    AGGREGATION_DEPTH_LR="hibench.lr.agg.depth",
     # For ALS
     NUM_USERS="hibench.als.users",
     NUM_PRODUCTS="hibench.als.products",

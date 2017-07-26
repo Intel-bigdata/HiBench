@@ -23,9 +23,8 @@ import scala.util.Random
 
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.annotation.{DeveloperApi, Since}
-import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.rdd.RDD
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.sql.SparkSession
 
 /**
  * :: DeveloperApi ::
@@ -33,40 +32,36 @@ import org.apache.spark.rdd.RDD
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object LogisticRegressionDataGenerator {
-
   /**
-   * Generate an RDD containing test data for LogisticRegression.
+   * Generate an DataFrame containing test data for LogisticRegression.
    *
-   * @param sc SparkContext to use for creating the RDD.
-   * @param nexamples Number of examples that will be contained in the RDD.
+   * @param nexamples Number of examples that will be contained in the data.
    * @param nfeatures Number of features to generate for each example.
    * @param eps Epsilon factor by which positive examples are scaled.
-   * @param nparts Number of partitions of the generated RDD. Default value is 2.
+   * @param nparts Number of partitions of the generated DataFrame. Default value is 2.
    * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
    */
-  def generateLogisticRDD(
-    sc: SparkContext,
+
+  val spark = SparkSession.builder.appName("LogisticRegressionDataGenerator").getOrCreate()
+  val sc = spark.sparkContext
+  def generateLogisticDF(
     nexamples: Int,
     nfeatures: Int,
     eps: Double,
     nparts: Int = 2,
-    probOne: Double = 0.5): RDD[LabeledPoint] = {
-    val data = sc.parallelize(0 until nexamples, nparts).map { idx =>
-      val rnd = new Random(42 + idx)
-
-      val y = if (idx % 2 == 0) 0.0 else 1.0
-      val x = Array.fill[Double](nfeatures) {
-        rnd.nextGaussian() + (y * eps)
-      }
-      LabeledPoint(y, Vectors.dense(x))
+    probOne: Double = 0.5) = {
+	val data: Seq[(Double, org.apache.spark.ml.linalg.Vector)] = Seq.tabulate(nexamples)(idx => {
+	    val rnd = new Random(42 + idx)
+	    val y = if (idx % 2 == 0) 0.0 else 1.0
+	    val x = Array.fill[Double](nfeatures) {
+		rnd.nextGaussian() + (y * eps)
+	    }
+	(y, Vectors.dense(x))
+	})
+	spark.createDataFrame(data).toDF("label","features").repartition(nparts)
     }
-    data
-  }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("LogisticRegressionDataGenerator")
-    val sc = new SparkContext(conf)
-
     var outputPath = ""
     var numExamples: Int = 200000
     var numFeatures: Int = 20
@@ -79,20 +74,15 @@ object LogisticRegressionDataGenerator {
       outputPath = args(0)
       numExamples = args(1).toInt
       numFeatures = args(2).toInt
-      println(s"Output Path: $outputPath")
-      println(s"Num of Examples: $numExamples")
-      println(s"Num of Features: $numFeatures")
+      println(s"Output Path: $outputPath, Num of Examples: $numExamples, Num of Features: $numFeatures")
     } else {
       System.err.println(
         s"Usage: $LogisticRegressionDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }
-
-    val data = generateLogisticRDD(sc, numExamples, numFeatures, eps, numPartitions)
-
-    data.saveAsObjectFile(outputPath)
-
-    sc.stop()
+    val df = generateLogisticDF(numExamples, numFeatures, eps, numPartitions)
+    df.write.format("libsvm").save(outputPath)
+    spark.stop()
   }
 }
