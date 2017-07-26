@@ -3,6 +3,7 @@ ml.bayes
 ml.gbt
 ml.rf
 ml.svd
+ml.lda
 websearch.nutchindexing
 sql.scan
 graph.nweight

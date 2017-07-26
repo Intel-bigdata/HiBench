@@ -114,6 +114,13 @@ HiBenchEnvPropMapping=dict(
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
     MAXRESULTSIZE_SVD="hibench.svd.maxresultsize",
+    # For LDA
+    NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
+    NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",
+    NUM_TOPICS_LDA="hibench.lda.num_of_topics",
+    DOC_LEN_MIN_LDA="hibench.lda.doc_len_min",
+    DOC_LEN_MAX_LDA="hibench.lda.doc_len_max",
+    MAXRESULTSIZE_LDA="hibench.lda.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
