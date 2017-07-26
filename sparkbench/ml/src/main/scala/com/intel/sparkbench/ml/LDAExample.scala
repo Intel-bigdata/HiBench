@@ -35,7 +35,12 @@ object LDAExample {
       inputPath = args(0)
       outputPath = args(1)
       numTopics = args(2).toInt
-       maxResultSize = args(3)
+      maxResultSize = args(3)
+    } else {
+       System.err.println(
+         s"Usage: $LDAExample <INPUT_PATH> <OUTPUT_PATH> <NUM_TOPICS> <MAX_RESULT_SIZE>"
+       )
+      System.exit(1)
     }
 
     val conf = new SparkConf()
