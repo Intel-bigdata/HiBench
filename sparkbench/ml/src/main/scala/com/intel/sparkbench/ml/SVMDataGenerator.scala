@@ -69,7 +69,7 @@ object SVMDataGenerator {
   }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("LogisticRegressionDataGenerator")
+    val conf = new SparkConf().setAppName("SVMDataGenerator")
     val sc = new SparkContext(conf)
 
     var outputPath = ""
