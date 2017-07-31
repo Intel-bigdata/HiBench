@@ -18,5 +18,6 @@ ml.als
 ml.gbt
 ml.rf
 ml.svd
+ml.svm
 
 graph.nweight
