@@ -31,13 +31,13 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for LogisticRegression. This class chooses positive labels
+ * Generate test data for SVM. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object SVMDataGenerator {
 
   /**
-   * Generate an RDD containing test data for LogisticRegression.
+   * Generate an RDD containing test data for SVM.
    *
    * @param sc SparkContext to use for creating the RDD.
    * @param nexamples Number of examples that will be contained in the RDD.
@@ -90,7 +90,11 @@ object SVMDataGenerator {
       System.exit(1)
     }
 
+<<<<<<< HEAD
     val data = generateSVMRDD(sc, numExamples, numFeatures,  numPartitions)
+=======
+    val data = generateSVMRDD(sc, numExamples, numFeatures, numPartitions)
+>>>>>>> 8a03a039caad3ab090a95d45c228f0a91e399a7a
 
     data.saveAsObjectFile(outputPath)
 
