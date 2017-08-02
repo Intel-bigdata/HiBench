@@ -31,7 +31,7 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for LogisticRegression. This class chooses positive labels
+ * Generate test data for SVM. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object SVMDataGenerator {
