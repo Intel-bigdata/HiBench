@@ -43,15 +43,12 @@ object SVMDataGenerator {
    * @param nexamples Number of examples that will be contained in the RDD.
    * @param nfeatures Number of features to generate for each example.
    * @param nparts Number of partitions of the generated RDD. Default value is 2.
-   * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
    */
   def generateSVMRDD(
     sc: SparkContext,
     nexamples: Int,
     nfeatures: Int,
-    eps: Double,
-    nparts: Int = 2,
-    probOne: Double = 0.5): RDD[LabeledPoint] = {
+    nparts: Int = 2,): RDD[LabeledPoint] = {
      val globalRnd = new Random(94720)
      val trueWeights = Array.fill[Double](nfeatures)(globalRnd.nextGaussian())
      val data: RDD[LabeledPoint] = sc.parallelize(0 until nexamples,nparts).map { idx =>
@@ -93,7 +90,7 @@ object SVMDataGenerator {
       System.exit(1)
     }
 
-    val data = generateSVMRDD(sc, numExamples, numFeatures, eps, numPartitions)
+    val data = generateSVMRDD(sc, numExamples, numFeatures, numPartitions)
 
     data.saveAsObjectFile(outputPath)
 
