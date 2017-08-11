@@ -44,7 +44,8 @@ object LogisticRegression {
       .setMaxIter(30)
       .setRegParam(0.3)
       .setElasticNetParam(0.8)
-      .setAggregationDepth(aggDepth)
+// uncomment below config for spark 2.1 or above
+//      .setAggregationDepth(aggDepth)
       .fit(df)
     println(s"training complete!")
     spark.stop()
