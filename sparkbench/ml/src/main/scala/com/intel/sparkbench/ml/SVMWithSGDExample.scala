@@ -39,8 +39,6 @@ object SVMWithSGDExample {
     val sc = new SparkContext(conf)
 
     // $example on$
-    // Load training data in LIBSVM format.
-
     val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
 
     // Split data into training (60%) and test (40%).
