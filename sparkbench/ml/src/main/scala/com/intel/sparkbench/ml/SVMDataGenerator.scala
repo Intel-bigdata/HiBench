@@ -74,7 +74,6 @@ object SVMDataGenerator {
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt
-    val eps = 3
 
     if (args.length == 3) {
       outputPath = args(0)
