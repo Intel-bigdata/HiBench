@@ -28,7 +28,7 @@ Because some Maven plugins cannot support Scala version perfectly, there are som
 
 
 ### Specify Spark Version ###
-To specify the spark version, use -Dspark=xxx(1.6, 2.0 or 2.1). By default, it builds for spark 2.0
+To specify the spark version, use -Dspark=xxx(1.6, 2.0, 2.1 or 2.2). By default, it builds for spark 2.0
 
     mvn -Psparkbench -Dspark=1.6 -Dscala=2.11 clean package
 tips:
