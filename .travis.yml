@@ -12,7 +12,7 @@ install:
   - cd /opt/
   - wget http://d3kbcqa49mib13.cloudfront.net/spark-1.6.0-bin-hadoop2.6.tgz
   - tar -xzf spark-1.6.0-bin-hadoop2.6.tgz
-  - wget http://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz
+  - wget http://mirror.reverse.net/pub/apache/hadoop/common/hadoop-2.6.5/hadoop-2.6.5.tar.gz 
   - tar -xzf hadoop-2.6.5.tar.gz
   - cd ${hibench}
   - cp ./travis/spark-env.sh /opt/spark-1.6.0-bin-hadoop2.6/conf/
