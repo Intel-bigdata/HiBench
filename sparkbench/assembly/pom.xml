@@ -58,6 +58,17 @@
     </profile>
 
     <profile>
+      <id>mllib</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-mllib</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>ml</id>
       <dependencies>
         <dependency>
@@ -67,7 +78,6 @@
         </dependency>
       </dependencies>
     </profile>
-
     <profile>
       <id>websearch</id>
       <dependencies>
@@ -129,6 +139,11 @@
         <dependency>
           <groupId>com.intel.hibench.sparkbench</groupId>
           <artifactId>sparkbench-micro</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-mllib</artifactId>
           <version>${project.version}</version>
         </dependency>
         <dependency>

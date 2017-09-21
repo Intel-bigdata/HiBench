@@ -71,6 +71,13 @@
     </profile>
 
     <profile>
+      <id>mllib</id>
+      <modules>
+        <module>mllib</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>ml</id>
       <modules>
         <module>ml</module>
@@ -109,6 +116,7 @@
       <id>allModules</id>
       <modules>
         <module>micro</module>
+        <module>mllib</module>
         <module>ml</module>
         <module>websearch</module>
         <module>graph</module>
