@@ -27,11 +27,8 @@ import org.apache.spark.rdd.RDD
 object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
-    var inputPath = ""
 
-    if (args.length == 1) {
-      inputPath = args(0)
-    }
+    val inputPath = args(0)
 
     val conf = new SparkConf()
 	.setAppName("LogisticRegressionWithLBFGS")
@@ -45,7 +42,7 @@ object LogisticRegression {
     val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)
     val training = splits(0).cache()
     val test = splits(1)
-
+println("****vince:" + inputPath +"," + training.count)
     // Run training algorithm to build the model
     val model = new LogisticRegressionWithLBFGS()
       .setNumClasses(10)

@@ -23,7 +23,6 @@ enter_bench LogisticRegression ${workload_config} ${current_dir}
 show_bannar start
 
 rmr_hdfs $OUTPUT_HDFS || true
-
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 run_spark_job com.intel.hibench.sparkbench.mllib.LogisticRegression ${INPUT_HDFS} $NUM_FEATURES_LR $AGGREGATION_DEPTH_LR

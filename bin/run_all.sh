@@ -52,16 +52,19 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
-	if [ $benchmark == "mllib/lr" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "ml/lr" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-	if [ $benchmark == "mllib/als" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "mllib/lr" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-  if [ $benchmark == "mllib/rf" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "mllib/als" ] && [ $framework == "spark" ]; then
+	    continue
+	fi
+  if [ $benchmark == "mllib/rf" ] && [ $framework == "spark" ]; then
         continue
   fi  
-  if [ $benchmark == "mllib/svd" ] && [ $framework == "hadoop" ]; then
+  if [ $benchmark == "mllib/svd" ] && [ $framework == "spark" ]; then
       continue
   fi
         

@@ -27,7 +27,8 @@ rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
+echo "************"
+echo $INPUT_HDFS
 run_spark_job com.intel.hibench.sparkbench.mllib.ALSTest --numUsers $NUM_USERS --numProducts $NUM_PRODUCTS --sparsity $SPARSITY --rank $RANK --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA --kryo $KYRO --implicitPrefs $IMPLICITPREFS $INPUT_HDFS
 END_TIME=`timestamp`
 

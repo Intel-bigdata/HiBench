@@ -27,18 +27,21 @@ import org.apache.spark.sql.SparkSession
 object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
-    var inputPath = ""
-    var numFeatures = 0
-    var aggDepth = 0
-    if (args.length == 3) {
-      inputPath = args(0)
-      numFeatures = args(1).toInt
-      aggDepth = if (args(2).toInt < 2) 2 else args(2).toInt
-    }
+    val inputPath = args(0)
+    val numFeatures = args(1).toInt
+    val aggDepth = if (args.length >2) {
+        if (args(2).toInt < 2) 2 else args(2).toInt
+    } else 0
+ //  val sqlContext= new org.apache.spark.sql.SQLContext(sc)
+//   import sqlContext.implicits._
+   val spark = SparkSession.builder().appName("LogisticRegression").getOrCreate()
+   val df = spark.read.parquet(args(0))
+/*
     val spark = SparkSession.builder.appName("LogisticRegression").getOrCreate()
     val df = spark.read.format("libsvm")
                        .option("numFeatures", numFeatures)
                        .load(inputPath)
+*/
     // Run training algorithm to build the model
     val model = new LogisticRegression()
       .setMaxIter(30)
