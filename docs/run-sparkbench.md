@@ -10,7 +10,7 @@
  
  * Start HDFS, Yarn, Spark in the cluster.
 
- * gcc and make are required if you run sql/tpcds module
+ * Gcc and make are required if you run sql/tpcds module.
 
 
 
