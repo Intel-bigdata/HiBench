@@ -16,15 +16,11 @@
 
 from sys import argv
 
-def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale, sparksqlcli_enabled):
+def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale):
 
     sql_index_list = sql_index_list.split(",")
     sql_list = []
     end_sign = ";\n"
-    bin_template_cli = """
-        SUBMIT_CMD=\"${SPARK_SQL_CMD} --master ${YARN_OPTS} ${SPARK_MASTER} --properties-file ${SPARK_PROP_CONF} ${SPARK_SQL_GLOBAL_OPTS} --database ${DATABASE_NAME} -f %s\"
-        execute_withlog ${SUBMIT_CMD}
-    """.strip().replace("\t", "")
 
     bin_template_beeline = """
         SUBMIT_CMD=\"${BEELINE_CMD} ${BEELINE_GLOBAL_OPTS} -f %s\"
@@ -46,14 +42,11 @@ def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_tes
         sum_sql.close()
         path_bin = throughput_test_bin_dir + "/stream" + str(i) + ".sh"
         file_bin = open(path_bin, "w")
-        if sparksqlcli_enabled.lower() == "true":
-            file_bin.write(bin_template_cli % path_sql)
-        else:
-            file_bin.write(bin_template_beeline % path_sql)
+        file_bin.write(bin_template_beeline % path_sql)
 
 if __name__ == "__main__":
-    if len(argv) < 5:
+    if len(argv) < 4:
         raise Exception(
-            "Please supply <sql_index_list> <throughtput_test_resource_dir> <throughput_test_bin_dir> <throughput_scale> <sparksqlcli_enabled>")
-    sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale, sparksqlcli_enabled = argv[1], argv[2], argv[3], argv[4], argv[5]
-    gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale, sparksqlcli_enabled)
+            "Please supply <sql_index_list> <throughtput_test_resource_dir> <throughput_test_bin_dir> <throughput_scale>")
+    sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale = argv[1], argv[2], argv[3], argv[4]
+    gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_test_bin_dir, throughput_scale)
