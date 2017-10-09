@@ -228,7 +228,7 @@ function run_spark_job() {
     then
         echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${CLS}${Color_Off} failed to run successfully."
         echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
-        tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+        cat ${WORKLOAD_RESULT_FOLDER}/bench.log
         exit $result
     fi
 }
