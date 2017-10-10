@@ -27,9 +27,14 @@
       <name>yarn.resourcemanager.hostname</name>
       <value>localhost</value>
   </property>
-  <!--property>
+  <property>
+      <name>yarn.resourcemanager.address</name>
+      <value>localhost:8032</value>
+  </property>
+
+  <property>
       <name>yarn.nodemanager.resource.memory-mb</name>
-      <value>1024</value>
+      <value>7168</value>
   </property>
   <property>
       <name>yarn.nodemanager.resource.cpu-vcores</name>
@@ -45,11 +50,11 @@
   </property>
   <property>
       <name>yarn.scheduler.minimum-allocation-mb</name>
-      <value>512</value>
+      <value>1024</value>
   </property>
   <property>
       <name>yarn.scheduler.maximum-allocation-mb</name>
-      <value>1024</value>
+      <value>7168</value>
   </property>
   <property>
       <name>yarn.scheduler.minimum-allocation-vcores</name>
@@ -58,6 +63,6 @@
   <property>
       <name>yarn.scheduler.maximum-allocation-vcores</name>
       <value>2</value>
-  </property-->
+  </property>
 
 </configuration>
