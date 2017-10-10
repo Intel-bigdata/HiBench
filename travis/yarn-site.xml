@@ -27,7 +27,7 @@
       <name>yarn.resourcemanager.hostname</name>
       <value>localhost</value>
   </property>
-  <property>
+  <!--property>
       <name>yarn.nodemanager.resource.memory-mb</name>
       <value>1024</value>
   </property>
@@ -58,6 +58,6 @@
   <property>
       <name>yarn.scheduler.maximum-allocation-vcores</name>
       <value>2</value>
-  </property>
+  </property-->
 
 </configuration>
