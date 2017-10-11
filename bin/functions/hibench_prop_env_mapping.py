@@ -114,6 +114,9 @@ HiBenchEnvPropMapping=dict(
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
     MAXRESULTSIZE_SVD="hibench.svd.maxresultsize",
+    # For Linear Regression
+    NUM_EXAMPLES_LINEAR="hibench.linear.examples",
+    NUM_FEATURES_LINEAR="hibench.linear.features",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
