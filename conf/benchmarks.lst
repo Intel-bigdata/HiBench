@@ -18,5 +18,7 @@ ml.als
 ml.gbt
 ml.rf
 ml.svd
+ml.lda
+ml.linear
 
 graph.nweight
