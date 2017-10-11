@@ -30,6 +30,7 @@ cache:
   directories:
   - $HOME/.m2
 script:
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=1.6 -Dscala=2.10
   - sudo -E ./travis/configssh.sh
