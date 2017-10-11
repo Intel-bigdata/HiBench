@@ -121,6 +121,9 @@ HiBenchEnvPropMapping=dict(
     DOC_LEN_MIN_LDA="hibench.lda.doc_len_min",
     DOC_LEN_MAX_LDA="hibench.lda.doc_len_max",
     MAXRESULTSIZE_LDA="hibench.lda.maxresultsize",
+    # For Linear Regression
+    NUM_EXAMPLES_LINEAR="hibench.linear.examples",
+    NUM_FEATURES_LINEAR="hibench.linear.features",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
