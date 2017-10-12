@@ -8,7 +8,7 @@ public class DataOptions {
 //	private static final Log log = LogFactory.getLog(DataOptions.class.getName());
 	
 	public static final double LINK_SIMULATE_SPACE_RATIO = 0.1;
-	public static final double WORD_SIMULATE_SPACE_RATIO = 0.1;
+	public static final double WORD_SIMULATE_SPACE_RATIO = 1;
 
 	public static final double LINK_ZIPF_EXPONENT = 0.5;
 	public static final double WORD_ZIPF_EXPONENT = 0.9;
