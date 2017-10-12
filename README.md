@@ -25,7 +25,7 @@ HiBench is a big data benchmark suite that helps evaluate different big data fra
 
 There are totally 19 workloads in HiBench. The workloads are divided into 6 categories which are micro, ml(machine learning), sql, graph, websearch and streaming.
 
-  **Micro Bechmarks:**
+  **Micro Benchmarks:**
 
 1. Sort (sort)
 
@@ -113,7 +113,7 @@ There are totally 19 workloads in HiBench. The workloads are divided into 6 cate
 ### Supported Hadoop/Spark/Flink/Storm/Gearpump releases: ###
 
   - Hadoop: Apache Hadoop 2.x, CDH5, HDP
-  - Spark: Spark 1.6.x, Spark 2.0.x
+  - Spark: Spark 1.6.x, Spark 2.0.x, Spark 2.1.x, Spark 2.2.x
   - Flink: 1.0.3
   - Storm: 1.0.1
   - Gearpump: 0.8.1

@@ -105,6 +105,10 @@ HiBenchEnvPropMapping=dict(
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",
     LAMBDA="hibench.als.Lambda",
     KYRO="hibench.als.kyro",
+    # For Gradient Boosting Tree
+    NUM_EXAMPLES_GBT="hibench.gbt.examples",
+    NUM_FEATURES_GBT="hibench.gbt.features",
+    NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
