@@ -20,47 +20,35 @@ package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS
-import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.rdd.RDD
+import org.apache.spark.ml.classification.LogisticRegression
+import org.apache.spark.ml.feature.LabeledPoint
+import org.apache.spark.sql.SparkSession
 
 object LogisticRegression {
 
   def main(args: Array[String]): Unit = {
     var inputPath = ""
-
-    if (args.length == 1) {
+    var numFeatures = 0
+    var aggDepth = 0
+    if (args.length == 3) {
       inputPath = args(0)
+      numFeatures = args(1).toInt
+      aggDepth = if (args(2).toInt < 2) 2 else args(2).toInt
     }
-
-    val conf = new SparkConf()
-	.setAppName("LogisticRegressionWithLBFGS")
-    val sc = new SparkContext(conf)
-
-    // $example on$
-    // Load training data in LIBSVM format.
-    val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
-
-    // Split data into training (60%) and test (40%).
-    val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)
-    val training = splits(0).cache()
-    val test = splits(1)
-
+    val spark = SparkSession.builder.appName("LogisticRegression").getOrCreate()
+    val df = spark.read.format("libsvm")
+                       .option("numFeatures", numFeatures)
+                       .load(inputPath)
     // Run training algorithm to build the model
-    val model = new LogisticRegressionWithLBFGS()
-      .setNumClasses(10)
-      .run(training)
-
-    // Compute raw scores on the test set.
-    val predictionAndLabels = test.map { case LabeledPoint(label, features) =>
-      val prediction = model.predict(features)
-      (prediction, label)
-    }
-
-    val accuracy = predictionAndLabels.filter(x => x._1 == x._2).count().toDouble / predictionAndLabels.count()
-    println(s"Accuracy = $accuracy")
-
-    sc.stop()
+    val model = new LogisticRegression()
+      .setMaxIter(30)
+      .setRegParam(0.3)
+      .setElasticNetParam(0.8)
+// uncomment below config for spark 2.1 or above
+//      .setAggregationDepth(aggDepth)
+      .fit(df)
+    println(s"training complete!")
+    spark.stop()
   }
 }
 // scalastyle:on println
