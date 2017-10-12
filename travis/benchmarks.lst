@@ -4,6 +4,7 @@ ml.pca
 ml.gbt
 ml.rf
 ml.svd
+ml.svm
 websearch.nutchindexing
 sql.scan
 graph.nweight
