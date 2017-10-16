@@ -93,6 +93,9 @@ HiBenchEnvPropMapping=dict(
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
+    # For SVM
+    NUM_EXAMPLES_SVM="hibench.svm.examples",
+    NUM_FEATURES_SVM="hibench.svm.examples",
     # For ALS
     NUM_USERS="hibench.als.users",
     NUM_PRODUCTS="hibench.als.products",
@@ -102,6 +105,12 @@ HiBenchEnvPropMapping=dict(
     NUM_ITERATIONS_ALS="hibench.als.num_iterations",
     LAMBDA="hibench.als.Lambda",
     KYRO="hibench.als.kyro",
+
+    # For PCA
+    NUM_EXAMPLES_PCA="hibench.pca.examples",
+    NUM_FEATURES_PCA="hibench.pca.features",
+    MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize",
+
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
     NUM_FEATURES_GBT="hibench.gbt.features",
@@ -117,6 +126,13 @@ HiBenchEnvPropMapping=dict(
     # For Linear Regression
     NUM_EXAMPLES_LINEAR="hibench.linear.examples",
     NUM_FEATURES_LINEAR="hibench.linear.features",
+    # For LDA
+    NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
+    NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",
+    NUM_TOPICS_LDA="hibench.lda.num_of_topics",
+    DOC_LEN_MIN_LDA="hibench.lda.doc_len_min",
+    DOC_LEN_MAX_LDA="hibench.lda.doc_len_max",
+    MAXRESULTSIZE_LDA="hibench.lda.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",
     PAGERANK_INPUT="hibench.pagerank.dir.name.input",
