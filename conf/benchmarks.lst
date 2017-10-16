@@ -19,6 +19,7 @@ ml.pca
 ml.gbt
 ml.rf
 ml.svd
+ml.lda
 ml.svm
 
 graph.nweight
