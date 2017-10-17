@@ -59,6 +59,12 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
+	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
+  if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
+      continue
+  fi
   if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
        continue
   fi
@@ -69,6 +75,9 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
       continue
   fi      
   if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+      continue
+  fi
+  if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
       continue
   fi
 
