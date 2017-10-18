@@ -1,8 +1,1 @@
-micro.sort
-ml.bayes
-ml.gbt
-ml.rf
-ml.svd
-websearch.nutchindexing
-sql.scan
-graph.nweight
+ml.linear

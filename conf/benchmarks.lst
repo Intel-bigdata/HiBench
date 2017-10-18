@@ -15,9 +15,13 @@ mllib.bayes
 mllib.kmeans
 mllib.lr
 mllib.als
+mllib.gbt
 mllib.rf
 mllib.svd
+mllib.svm
 
 ml.lr
+ml.linear
+ml.lda
 
 graph.nweight

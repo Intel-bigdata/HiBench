@@ -62,13 +62,28 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "mllib/als" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-  if [ $benchmark == "mllib/rf" ] && [ $framework == "spark" ]; then
+	if [ $benchmark == "mllib/svm" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
+  if [ $benchmark == "mllib/pca" ] && [ $framework == "hadoop" ]; then
+      continue
+  fi
+  if [ $benchmark == "mllib/gbt" ] && [ $framework == "hadoop" ]; then
+       continue
+  fi
+  if [ $benchmark == "mllib/rf" ] && [ $framework == "hadoop" ]; then
         continue
   fi  
   if [ $benchmark == "mllib/svd" ] && [ $framework == "spark" ]; then
       continue
+  fi      
+  if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+      continue
   fi
-        
+  if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
+      continue
+  fi
+
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
 	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
 	$WORKLOAD/${framework}/run.sh
