@@ -11,16 +11,17 @@ sql.scan
 websearch.nutchindexing
 websearch.pagerank
 
-ml.bayes
-ml.kmeans
+mllib.bayes
+mllib.kmeans
+mllib.lr
+mllib.als
+mllib.gbt
+mllib.rf
+mllib.svd
+mllib.svm
+
 ml.lr
-ml.als
-ml.pca
-ml.gbt
-ml.rf
-ml.svd
 ml.linear
 ml.lda
-ml.svm
 
 graph.nweight

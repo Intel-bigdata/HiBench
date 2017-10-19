@@ -53,25 +53,28 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
-	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "ml/lr" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "mllib/lr" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "mllib/als" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
-  if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
+	if [ $benchmark == "mllib/svm" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
+  if [ $benchmark == "mllib/pca" ] && [ $framework == "hadoop" ]; then
       continue
   fi
-  if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
+  if [ $benchmark == "mllib/gbt" ] && [ $framework == "hadoop" ]; then
        continue
   fi
-  if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+  if [ $benchmark == "mllib/rf" ] && [ $framework == "hadoop" ]; then
         continue
   fi  
-  if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+  if [ $benchmark == "mllib/svd" ] && [ $framework == "spark" ]; then
       continue
   fi      
   if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
