@@ -19,7 +19,7 @@ package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-import org.apache.spark.mllib.clustering.{DistributedLDAModel, LDA}
+import org.apache.spark.mllib.clustering.{LDA, DistributedLDAModel, LocalLDAModel}
 import org.apache.spark.mllib.linalg.{Vector, Vectors}
 import org.apache.spark.rdd.RDD
 
@@ -51,11 +51,11 @@ object LDAExample {
     val corpus: RDD[(Long, Vector)] = sc.objectFile(inputPath)
     
     // Cluster the documents into numTopics topics using LDA
-    val ldaModel = new LDA().setK(numTopics).run(corpus)
+    val ldaModel = new LDA().setK(numTopics).setOptimizer("online").run(corpus)
 
     // Save and load model.
     ldaModel.save(sc, outputPath)
-    val sameModel = DistributedLDAModel.load(sc, outputPath)
+    val savedModel = LocalLDAModel.load(sc, outputPath)
 
     sc.stop()
   }
