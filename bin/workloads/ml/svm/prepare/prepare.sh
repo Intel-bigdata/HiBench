@@ -17,20 +17,19 @@
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/als.conf
+workload_config=${root_dir}/conf/workloads/ml/svm.conf
 . "${root_dir}/bin/functions/load_bench_config.sh"
 
-enter_bench ALS ${workload_config} ${current_dir}
+enter_bench SVMDataPrepare ${workload_config} ${current_dir}
 show_bannar start
 
-rmr_hdfs $OUTPUT_HDFS || true
-
-SIZE=`dir_size $INPUT_HDFS`
+rmr_hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run_spark_job com.intel.hibench.sparkbench.ml.ALSExample --numUsers $NUM_USERS_ALS --numProducts $NUM_PRODUCTS_ALS --rank $RANK_ALS --numRecommends $NUM_RECOMMENDS_ALS --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA_ALS --kryo $KYRO_ALS --implicitPrefs $IMPLICITPREFS_ALS $INPUT_HDFS
+run_spark_job com.intel.hibench.sparkbench.ml.SVMDataGenerator $INPUT_HDFS $NUM_EXAMPLES_SVM $NUM_FEATURES_SVM 
+
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
+

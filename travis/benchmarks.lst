@@ -1,8 +1,11 @@
 micro.sort
 ml.bayes
+ml.pca
 ml.gbt
 ml.rf
 ml.svd
+ml.lda
+ml.svm
 websearch.nutchindexing
 sql.scan
 graph.nweight
