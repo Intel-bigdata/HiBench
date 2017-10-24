@@ -29,13 +29,17 @@ object LDAExample {
     var inputPath = ""
     var outputPath = ""
     var numTopics: Int = 10
+    var maxIterations: Int = 10
+    var optimizer = "online"
     var maxResultSize = "1g"
 
-    if (args.length == 4) {
+    if (args.length == 6) {
       inputPath = args(0)
       outputPath = args(1)
       numTopics = args(2).toInt
-      maxResultSize = args(3)
+      maxIterations = args(3).toInt
+      optimizer = args(4)
+      maxResultSize = args(5)
     } else {
        System.err.println(
          s"Usage: $LDAExample <INPUT_PATH> <OUTPUT_PATH> <NUM_TOPICS> <MAX_RESULT_SIZE>"
@@ -51,7 +55,7 @@ object LDAExample {
     val corpus: RDD[(Long, Vector)] = sc.objectFile(inputPath)
     
     // Cluster the documents into numTopics topics using LDA
-    val ldaModel = new LDA().setK(numTopics).setOptimizer("online").run(corpus)
+    val ldaModel = new LDA().setK(numTopics).setMaxIterations(maxIterations).setOptimizer(optimizer).run(corpus)
 
     // Save and load model.
     ldaModel.save(sc, outputPath)
