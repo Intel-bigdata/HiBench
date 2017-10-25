@@ -67,7 +67,6 @@ object RandomForestClassification {
     }
     val testErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / testData.count()
     println("Test Error = " + testErr)
-    println("Learned classification forest model:\n" + model.toDebugString)
 
     sc.stop()
   }
