@@ -29,13 +29,13 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for LogisticRegression. This class chooses positive labels
+ * Generate test data for Gradient Boosting Tree. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object GradientBoostingTreeDataGenerator {
 
   /**
-   * Generate an RDD containing test data for LogisticRegression.
+   * Generate an RDD containing test data for Gradient Boosting Tree.
    *
    * @param sc SparkContext to use for creating the RDD.
    * @param nexamples Number of examples that will be contained in the RDD.
@@ -44,7 +44,7 @@ object GradientBoostingTreeDataGenerator {
    * @param nparts Number of partitions of the generated RDD. Default value is 2.
    * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
    */
-  def generateLogisticRDD(
+  def generateGBTRDD(
     sc: SparkContext,
     nexamples: Int,
     nfeatures: Int,
@@ -73,7 +73,7 @@ object GradientBoostingTreeDataGenerator {
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt
-    val eps = 3
+    val eps = 0.3
 
     if (args.length == 3) {
       outputPath = args(0)
@@ -84,12 +84,12 @@ object GradientBoostingTreeDataGenerator {
       println(s"Num of Features: $numFeatures")
     } else {
       System.err.println(
-        s"Usage: $LogisticRegressionDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $GradientBoostingTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }
 
-    val data = generateLogisticRDD(sc, numExamples, numFeatures, eps, numPartitions)
+    val data = generateGBTRDD(sc, numExamples, numFeatures, eps, numPartitions)
 
     data.saveAsObjectFile(outputPath)
 

@@ -126,10 +126,11 @@ object ALSExample {
 
     println(s"Test RMSE = $rmse.")
     
-    // Recommend products for all users
+    // Recommend products for all users, enable the following code to test recommendForAll
+    /*
     val userRecommend = model.recommendProductsForUsers(numRecommends)
     userRecommend.count()
-
+    */
     sc.stop()
   }
 

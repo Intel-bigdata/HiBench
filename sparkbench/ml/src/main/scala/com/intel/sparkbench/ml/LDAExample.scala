@@ -59,7 +59,6 @@ object LDAExample {
 
     // Save and load model.
     ldaModel.save(sc, outputPath)
-    val savedModel = LocalLDAModel.load(sc, outputPath)
 
     sc.stop()
   }
