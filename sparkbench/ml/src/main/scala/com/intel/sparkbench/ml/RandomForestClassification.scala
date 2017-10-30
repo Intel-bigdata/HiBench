@@ -18,31 +18,64 @@
 package com.intel.hibench.sparkbench.ml
 
 import com.intel.hibench.sparkbench.common.IOCommon
-
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.tree.RandomForest
 import org.apache.spark.mllib.tree.model.RandomForestModel
 import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
+import scopt.OptionParser
 
 object RandomForestClassification {
-
-  def main(args: Array[String]): Unit = {
-    var inputPath = ""
-    var numTrees = 3
-
-    if (args.length == 2) {
-      inputPath = args(0)
-      numTrees = args(1).toInt
+  case class Params(
+    inputPath: String = null,
+	numTrees: Int = 3,
+	numClasses: Int = 2,
+	featureSubsetStrategy: String = "auto",
+	impurity: String = "gini",
+	maxDepth: Int = 4,
+	maxBins: Int = 32)
+	
+  def main(args: Array[String]) {
+    val defaultParams = Params()
+    val parser = new OptionParser[Params]("RF") {
+      head("RF: an example app.")
+      opt[Int]("numTrees")
+        .text(s"numTrees, default: ${defaultParams.numTrees}")
+        .action((x, c) => c.copy(numTrees = x))
+      opt[Int]("numClasses")
+        .text(s"numClasses, default: ${defaultParams.numClasses}")
+        .action((x, c) => c.copy(numClasses = x))
+      opt[Int]("maxDepth")
+        .text(s"maxDepth, default: ${defaultParams.maxDepth}")
+        .action((x, c) => c.copy(maxDepth = x))
+      opt[Int]("maxBins")
+        .text(s"maxBins, default: ${defaultParams.maxBins}")
+        .action((x, c) => c.copy(maxBins = x))
+      opt[String]("featureSubsetStrategy")
+        .text(s"featureSubsetStrategy, default: ${defaultParams.featureSubsetStrategy}")
+        .action((x, c) => c.copy(featureSubsetStrategy = x))
+      opt[String]("impurity")
+        .text(s"impurity (smoothing constant), default: ${defaultParams.impurity}")
+        .action((x, c) => c.copy(impurity = x))
+      arg[String]("<inputPath>")
+        .required()
+        .text("Input path of dataset")
+        .action((x, c) => c.copy(inputPath = x))	
+    }  
+    parser.parse(args, defaultParams) match {
+      case Some(params) => run(params)
+      case _ => sys.exit(1)
     }
-
-    val conf = new SparkConf().setAppName("RandomForestClassification")
+  }
+  
+  def run(params: Params): Unit = {
+    val conf = new SparkConf().setAppName(s"RFC with $params")
     val sc = new SparkContext(conf)
 
     // $example on$
     // Load and parse the data file.
-    val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
+    val data: RDD[LabeledPoint] = sc.objectFile(params.inputPath)
 
     // Split the data into training and test sets (30% held out for testing)
     val splits = data.randomSplit(Array(0.7, 0.3))
@@ -50,15 +83,11 @@ object RandomForestClassification {
 
     // Train a RandomForest model.
     // Empty categoricalFeaturesInfo indicates all features are continuous.
-    val numClasses = 2
-    val categoricalFeaturesInfo = Map[Int, Int]()
-    val featureSubsetStrategy = "auto" // Let the algorithm choose.
-    val impurity = "gini"
-    val maxDepth = 4
-    val maxBins = 32
 
-    val model = RandomForest.trainClassifier(trainingData, numClasses, categoricalFeaturesInfo,
-      numTrees, featureSubsetStrategy, impurity, maxDepth, maxBins)
+    val categoricalFeaturesInfo = Map[Int, Int]()
+
+    val model = RandomForest.trainClassifier(trainingData, params.numClasses, categoricalFeaturesInfo,
+      params.numTrees, params.featureSubsetStrategy, params.impurity, params.maxDepth, params.maxBins)
 
     // Evaluate model on test instances and compute test error
     val labelAndPreds = testData.map { point =>
