@@ -28,10 +28,10 @@ SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
 OPTION="--numTrees $NUMTREES \
         --numClasses $NUMCLASSES \
-		--featureSubsetStrategy $FEATURESUBSETSTRATEGY \
-		--impurity $IMPURITY \
-		--maxDepth $MAXDEPTH \
-		--maxBins $MAXBINS"
+        --featureSubsetStrategy $FEATURESUBSETSTRATEGY \
+        --impurity $IMPURITY \
+        --maxDepth $MAXDEPTH \
+        --maxBins $MAXBINS"
 run_spark_job com.intel.hibench.sparkbench.ml.RandomForestClassification $OPTION $INPUT_HDFS
 END_TIME=`timestamp`
 
