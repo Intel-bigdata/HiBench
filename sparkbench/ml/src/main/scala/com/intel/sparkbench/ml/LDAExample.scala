@@ -26,7 +26,7 @@ import scopt.OptionParser
 object LDAExample {
   case class Params(
       inputPath: String = null,
-	  outputPath: String = null,
+      outputPath: String = null,
       numTopics: Int = 10,
       maxIterations: Int = 10,
       optimizer: String = "online",
@@ -67,8 +67,8 @@ object LDAExample {
   
   def run(params: Params): Unit = {
     val conf = new SparkConf()
-        .setAppName("LDA Example with $params")
-        .set("spark.driver.maxResultSize",params.maxResultSize)
+        .setAppName(s"LDA Example with $params")
+        .set("spark.driver.maxResultSize", params.maxResultSize)
     val sc = new SparkContext(conf)
 
     val corpus: RDD[(Long, Vector)] = sc.objectFile(params.inputPath)
@@ -80,6 +80,6 @@ object LDAExample {
     ldaModel.save(sc, params.outputPath)
     val savedModel = LocalLDAModel.load(sc, params.outputPath)
 
-    sc.stop()  
+    sc.stop()
   }
 }
