@@ -34,8 +34,8 @@ OPTION="--numUsers $NUM_USERS_ALS \
         --numIterations $NUM_ITERATIONS_ALS \
         --kryo $KYRO_ALS \
         --implicitPrefs $IMPLICITPREFS_ALS \
-        --numProductBlocks PRODUCTBLOCKS_ALS \
-        --numUserBlocks USERBLOCKS_ALS \
+        --numProductBlocks $PRODUCTBLOCKS_ALS \
+        --numUserBlocks $USERBLOCKS_ALS \
         --lambda $LAMBDA_ALS"
 run_spark_job com.intel.hibench.sparkbench.ml.ALSExample $OPTION $INPUT_HDFS
 END_TIME=`timestamp`
