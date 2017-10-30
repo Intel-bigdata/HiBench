@@ -29,12 +29,12 @@ import scopt.OptionParser
 object RandomForestClassification {
   case class Params(
     inputPath: String = null,
-	numTrees: Int = 3,
-	numClasses: Int = 2,
-	featureSubsetStrategy: String = "auto",
-	impurity: String = "gini",
-	maxDepth: Int = 4,
-	maxBins: Int = 32)
+    numTrees: Int = 3,
+    numClasses: Int = 2,
+    featureSubsetStrategy: String = "auto",
+    impurity: String = "gini",
+    maxDepth: Int = 4,
+    maxBins: Int = 32)
 	
   def main(args: Array[String]) {
     val defaultParams = Params()
