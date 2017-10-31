@@ -119,12 +119,12 @@ HiBenchEnvPropMapping=dict(
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
-    NUMTREES="hibench.rf.numTrees",
-    NUMCLASSES="hibench.rf.numClasses",
-    FEATURESUBSETSTRATEGY="hibench.rf.featureSubsetStrategy",
-    IMPURITY="hibench.rf.impurity",
-    MAXDEPTH="hibench.rf.maxDepth",
-    MAXBINS="hibench.rf.maxBins",
+    NUM_TREES_RF="hibench.rf.numTrees",
+    NUM_CLASSES_RF="hibench.rf.numClasses",
+    FEATURE_SUBSET_STRATEGY_RF="hibench.rf.featureSubsetStrategy",
+    IMPURITY_RF="hibench.rf.impurity",
+    MAX_DEPTH_RF="hibench.rf.maxDepth",
+    MAX_BINS_RF="hibench.rf.maxBins",
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
