@@ -32,7 +32,7 @@ import org.apache.spark.rdd.RDD
  * Generate test data for Gradient Boosting Tree. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
-object GradientBoostingTreeDataGenerator {
+object GradientBoostedTreeDataGenerator {
 
   /**
    * Generate an RDD containing test data for Gradient Boosting Tree.

@@ -60,10 +60,10 @@ object GradientBoostedTree {
       arg[String]("<dataPath>")
         .required()
         .text("data path for Gradient Boosted Tree")
-        .action((xc) => c.copy(dataPath = x))
+        .action((x,c) => c.copy(dataPath = x))
     }
     parser.parse(args, defaultParams) match {
-      case some(params) => run(params)
+      case Some(params) => run(params)
       case _ => sys.exit(1)
     }
   }
