@@ -103,9 +103,11 @@ HiBenchEnvPropMapping=dict(
     IMPLICITPREFS_ALS="hibench.als.implicitprefs",
     RANK_ALS="hibench.als.rank",
     NUM_RECOMMENDS_ALS="hibench.als.recommends",
-    NUM_ITERATIONS_ALS="hibench.als.num_iterations",
+    NUM_ITERATIONS_ALS="hibench.als.numIterations",
     LAMBDA_ALS="hibench.als.Lambda",
     KYRO_ALS="hibench.als.kyro",
+    USERBLOCKS_ALS="hibench.als.numUserBlocks",
+    PRODUCTBLOCKS_ALS="hibench.als.numProductBlocks",
 
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
@@ -120,6 +122,11 @@ HiBenchEnvPropMapping=dict(
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
     NUMTREES="hibench.rf.numTrees",
+    NUMCLASSES="hibench.rf.numClasses",
+    FEATURESUBSETSTRATEGY="hibench.rf.featureSubsetStrategy",
+    IMPURITY="hibench.rf.impurity",
+    MAXDEPTH="hibench.rf.maxDepth",
+    MAXBINS="hibench.rf.maxBins",
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",

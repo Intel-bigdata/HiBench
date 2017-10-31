@@ -27,8 +27,17 @@ rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-run_spark_job com.intel.hibench.sparkbench.ml.ALSExample --numUsers $NUM_USERS_ALS --numProducts $NUM_PRODUCTS_ALS --rank $RANK_ALS --numRecommends $NUM_RECOMMENDS_ALS --numIterations $NUM_ITERATIONS_ALS --lambda $LAMBDA_ALS --kryo $KYRO_ALS --implicitPrefs $IMPLICITPREFS_ALS $INPUT_HDFS
+OPTION="--numUsers $NUM_USERS_ALS \
+        --numProducts $NUM_PRODUCTS_ALS \
+        --rank $RANK_ALS \
+        --numRecommends $NUM_RECOMMENDS_ALS \
+        --numIterations $NUM_ITERATIONS_ALS \
+        --kryo $KYRO_ALS \
+        --implicitPrefs $IMPLICITPREFS_ALS \
+        --numProductBlocks $PRODUCTBLOCKS_ALS \
+        --numUserBlocks $USERBLOCKS_ALS \
+        --lambda $LAMBDA_ALS"
+run_spark_job com.intel.hibench.sparkbench.ml.ALSExample $OPTION $INPUT_HDFS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
