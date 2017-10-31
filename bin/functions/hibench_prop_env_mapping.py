@@ -124,7 +124,7 @@ HiBenchEnvPropMapping=dict(
     # For Linear Regression
     NUM_EXAMPLES_LINEAR="hibench.linear.examples",
     NUM_FEATURES_LINEAR="hibench.linear.features",
-    NUM_ITERATIONS_LINEAR="hibench.linear.nunIterations",
+    NUM_ITERATIONS_LINEAR="hibench.linear.numIterations",
     STEPSIZE_LINEAR="hibench.linear.stepSize",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
