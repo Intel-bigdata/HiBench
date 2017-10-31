@@ -54,10 +54,11 @@ object RatingDataGenerator {
       println(s"Output Path: $outputPath")
       println(s"Num of Users: $numUsers")
       println(s"Num of Products: $numProducts")
+      println(s"Sparsity: $sparsity")
       println(s"Implicit Prefs: $implicitPrefs")
     } else {
       System.err.println(
-        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <IMPLICITPREFS>"
+        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <SPARSITY>  <IMPLICITPREFS>"
       )
       System.exit(1)
     }

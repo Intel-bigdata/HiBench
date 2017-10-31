@@ -29,13 +29,13 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for LogisticRegression. This class chooses positive labels
+ * Generate test data for Random Forest. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object RandomForestDataGenerator {
 
   /**
-   * Generate an RDD containing test data for LogisticRegression.
+   * Generate an RDD containing test data for RandomForest.
    *
    * @param sc SparkContext to use for creating the RDD.
    * @param nexamples Number of examples that will be contained in the RDD.
@@ -44,7 +44,7 @@ object RandomForestDataGenerator {
    * @param nparts Number of partitions of the generated RDD. Default value is 2.
    * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
    */
-  def generateLogisticRDD(
+  def generateRFRDD(
     sc: SparkContext,
     nexamples: Int,
     nfeatures: Int,
@@ -73,7 +73,7 @@ object RandomForestDataGenerator {
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt
-    val eps = 3
+    val eps = 0.3
 
     if (args.length == 3) {
       outputPath = args(0)
@@ -89,7 +89,7 @@ object RandomForestDataGenerator {
       System.exit(1)
     }
 
-    val data = generateLogisticRDD(sc, numExamples, numFeatures, eps, numPartitions)
+    val data = generateRFRDD(sc, numExamples, numFeatures, eps, numPartitions)
 
     data.saveAsObjectFile(outputPath)
 
