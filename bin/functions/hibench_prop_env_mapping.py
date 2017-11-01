@@ -115,7 +115,11 @@ HiBenchEnvPropMapping=dict(
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
     NUM_FEATURES_GBT="hibench.gbt.features",
+    NUM_CLASSES_GBT="hibench.gbt.numClasses",
+    MAX_DEPTH_GBT="hibench.gbt.maxDepth",
+    MAX_BINS_GBT="hibench.gbt.maxBins",
     NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
+    LEARNING_RATE_GBT="hibench.gbt.learningRate",
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
