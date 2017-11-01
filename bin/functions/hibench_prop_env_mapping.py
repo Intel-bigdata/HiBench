@@ -108,20 +108,27 @@ HiBenchEnvPropMapping=dict(
     KYRO_ALS="hibench.als.kyro",
     USERBLOCKS_ALS="hibench.als.numUserBlocks",
     PRODUCTBLOCKS_ALS="hibench.als.numProductBlocks",
-
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
     MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize",
-
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
     NUM_FEATURES_GBT="hibench.gbt.features",
+    NUM_CLASSES_GBT="hibench.gbt.numClasses",
+    MAX_DEPTH_GBT="hibench.gbt.maxDepth",
+    MAX_BINS_GBT="hibench.gbt.maxBins",
     NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
+    LEARNING_RATE_GBT="hibench.gbt.learningRate",
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
-    NUMTREES="hibench.rf.numTrees",
+    NUM_TREES_RF="hibench.rf.numTrees",
+    NUM_CLASSES_RF="hibench.rf.numClasses",
+    FEATURE_SUBSET_STRATEGY_RF="hibench.rf.featureSubsetStrategy",
+    IMPURITY_RF="hibench.rf.impurity",
+    MAX_DEPTH_RF="hibench.rf.maxDepth",
+    MAX_BINS_RF="hibench.rf.maxBins",
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
@@ -129,6 +136,8 @@ HiBenchEnvPropMapping=dict(
     # For Linear Regression
     NUM_EXAMPLES_LINEAR="hibench.linear.examples",
     NUM_FEATURES_LINEAR="hibench.linear.features",
+    NUM_ITERATIONS_LINEAR="hibench.linear.numIterations",
+    STEPSIZE_LINEAR="hibench.linear.stepSize",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
     NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",
