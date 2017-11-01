@@ -27,7 +27,7 @@ import org.apache.spark.mllib.random._
 import org.apache.spark.rdd.{PairRDDFunctions, RDD}
 import org.apache.spark.mllib.linalg.{Vectors, Vector}
 
-import scala.collection.mutable
+import scala.util.Random
 
 object RatingDataGenerator {
 
@@ -38,29 +38,43 @@ object RatingDataGenerator {
     var outputPath = ""
     var numUsers: Int = 100
     var numProducts: Int = 100
+    var sparsity: Double = 0.05
     var implicitPrefs: Boolean = false
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((parallel / 2).toString).toInt
 
-    if (args.length == 4) {
+    if (args.length == 5) {
       outputPath = args(0)
       numUsers = args(1).toInt
       numProducts = args(2).toInt
-      implicitPrefs = args(3).toBoolean
+      sparsity = args(3).toDouble
+      implicitPrefs = args(4).toBoolean
 
       println(s"Output Path: $outputPath")
       println(s"Num of Users: $numUsers")
       println(s"Num of Products: $numProducts")
+      println(s"Sparsity: $sparsity")
       println(s"Implicit Prefs: $implicitPrefs")
     } else {
       System.err.println(
-        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <IMPLICITPREFS>"
+        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <SPARSITY>  <IMPLICITPREFS>"
       )
       System.exit(1)
     }
 
-    val data: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, numUsers, numProducts, numPartitions)
+    val rawData: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, numUsers, numProducts, numPartitions)
+    val rng = new Random()
+    val data = rawData.map{v =>
+      val a = Array.fill[Double](v.size)(0.0)
+      v.foreachActive{(i,vi) =>
+         if(rng.nextDouble <= sparsity){
+           a(i) = vi
+         }
+      }
+      Vectors.dense(a).toSparse
+   }
+
 
     data.saveAsObjectFile(outputPath)
 

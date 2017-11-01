@@ -113,11 +113,20 @@ HiBenchEnvPropMapping=dict(
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
     NUM_FEATURES_GBT="hibench.gbt.features",
+    NUM_CLASSES_GBT="hibench.gbt.numClasses",
+    MAX_DEPTH_GBT="hibench.gbt.maxDepth",
+    MAX_BINS_GBT="hibench.gbt.maxBins",
     NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
+    LEARNING_RATE_GBT="hibench.gbt.learningRate",
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
-    NUMTREES="hibench.rf.numTrees",
+    NUM_TREES_RF="hibench.rf.numTrees",
+    NUM_CLASSES_RF="hibench.rf.numClasses",
+    FEATURE_SUBSET_STRATEGY_RF="hibench.rf.featureSubsetStrategy",
+    IMPURITY_RF="hibench.rf.impurity",
+    MAX_DEPTH_RF="hibench.rf.maxDepth",
+    MAX_BINS_RF="hibench.rf.maxBins",
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
@@ -133,6 +142,8 @@ HiBenchEnvPropMapping=dict(
     NUM_TOPICS_LDA="hibench.lda.num_of_topics",
     DOC_LEN_MIN_LDA="hibench.lda.doc_len_min",
     DOC_LEN_MAX_LDA="hibench.lda.doc_len_max",
+    NUM_ITERATIONS_LDA="hibench.lda.num_iterations",
+    OPTIMIZER_LDA="hibench.lda.optimizer",
     MAXRESULTSIZE_LDA="hibench.lda.maxresultsize",
     # For Pagerank
     PAGERANK_BASE_HDFS="hibench.pagerank.base.hdfs",

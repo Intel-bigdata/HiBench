@@ -29,13 +29,13 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for Random Forest. This class chooses positive labels
+ * Generate test data for Gradient Boosting Tree. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
-object RandomForestDataGenerator {
+object GradientBoostedTreeDataGenerator {
 
   /**
-   * Generate an RDD containing test data for RandomForest.
+   * Generate an RDD containing test data for Gradient Boosting Tree.
    *
    * @param sc SparkContext to use for creating the RDD.
    * @param nexamples Number of examples that will be contained in the RDD.
@@ -44,7 +44,7 @@ object RandomForestDataGenerator {
    * @param nparts Number of partitions of the generated RDD. Default value is 2.
    * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
    */
-  def generateRFRDD(
+  def generateGBTRDD(
     sc: SparkContext,
     nexamples: Int,
     nfeatures: Int,
@@ -64,7 +64,7 @@ object RandomForestDataGenerator {
   }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("RandomForestDataGenerator")
+    val conf = new SparkConf().setAppName("GradientBoostingTreeDataGenerator")
     val sc = new SparkContext(conf)
 
     var outputPath = ""
@@ -84,12 +84,12 @@ object RandomForestDataGenerator {
       println(s"Num of Features: $numFeatures")
     } else {
       System.err.println(
-        s"Usage: $RandomForestDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $GradientBoostingTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }
 
-    val data = generateRFRDD(sc, numExamples, numFeatures, eps, numPartitions)
+    val data = generateGBTRDD(sc, numExamples, numFeatures, eps, numPartitions)
 
     data.saveAsObjectFile(outputPath)
 

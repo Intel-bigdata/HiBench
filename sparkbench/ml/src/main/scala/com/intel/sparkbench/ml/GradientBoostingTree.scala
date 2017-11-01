@@ -53,7 +53,7 @@ object GradientBoostingTree {
     // Train a GradientBoostedTrees model.
     // The defaultParams for Classification use LogLoss by default.
     val boostingStrategy = BoostingStrategy.defaultParams("Classification")
-    boostingStrategy.numIterations = numIterations // Note: Use more iterations in practice.
+    boostingStrategy.numIterations = numIterations
     boostingStrategy.treeStrategy.numClasses = numClasses
     boostingStrategy.treeStrategy.maxDepth = maxDepth
     // Empty categoricalFeaturesInfo indicates all features are continuous.
@@ -68,7 +68,6 @@ object GradientBoostingTree {
     }
     val testErr = labelAndPreds.filter(r => r._1 != r._2).count.toDouble / testData.count()
     println("Test Error = " + testErr)
-    println("Learned classification GBT model:\n" + model.toDebugString)
 
     sc.stop()
   }
