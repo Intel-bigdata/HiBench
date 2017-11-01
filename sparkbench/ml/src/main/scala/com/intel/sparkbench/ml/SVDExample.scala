@@ -22,32 +22,64 @@ import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.SingularValueDecomposition
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.rdd.RDD
 
+import scopt.OptionParser
+
 object SVDExample {
 
-  def main(args: Array[String]): Unit = {
-    var inputPath = ""
-    var numFeatures = 0
-    var maxResultSize = "1g"
+  case class Params(
+    numFeatures: Int = 0,
+    numSingularValues: Int = 0,
+    computeU: Boolean = true,
+    maxResultSize: String = "1g",
+    dataPath: String = null
+  )
 
-    if (args.length == 3) {
-      inputPath = args(0)
-      numFeatures = args(1).toInt
-      maxResultSize = args(2)
+  def main(args: Array[String]): Unit = {
+    val defaultParams = Params()
+    val parser = new OptionParser[Params]("SVD") {
+      head("SVD: an example of SVD for matrix decomposition.")
+      opt[Int]("numFeatures")
+        .text(s"numFeatures, default: ${defaultParams.numFeatures}")
+        .action((x,c) => c.copy(numFeatures = x))
+      opt[Int]("numSingularValues")
+        .text(s"numSingularValues, default: ${defaultParams.numSingularValues}")
+        .action((x,c) => c.copy(numSingularValues = x))
+      opt[Boolean]("computeU")
+        .text(s"computeU, default: ${defaultParams.computeU}")
+        .action((x,c) => c.copy(computeU = x))
+      opt[String]("maxResultSize")
+        .text(s"maxResultSize, default: ${defaultParams.maxResultSize}")
+        .action((x,c) => c.copy(maxResultSize = x))
+      arg[String]("<dataPath>")
+        .required()
+        .text("data path of SVD")
+        .action((x,c) => c.copy(dataPath = x))
     }
+     parser.parse(args, defaultParams) match {
+       case Some(params) => run(params)
+       case _ => sys.exit(1)
+     }
+  }
+
+  def run(params: Params): Unit = {
 
     val conf = new SparkConf()
-        .setAppName("SVDExample")
-        .set("spark.driver.maxResultSize",maxResultSize)
+        .setAppName(s"SVD with $params")
+        .set("spark.driver.maxResultSize", params.maxResultSize)
     val sc = new SparkContext(conf)
 
-    val dataRDD: RDD[Vector] = sc.objectFile(inputPath) 
-    val mat: RowMatrix = new RowMatrix(dataRDD)
+    val dataPath = params.dataPath
+    val numFeatures = params.numFeatures
+    val numSingularValues = params.numSingularValues
+    val computeU = params.computeU
 
-    val svd: SingularValueDecomposition[RowMatrix, Matrix] = mat.computeSVD(numFeatures-1, computeU = true)
+    val data: RDD[Vector] = sc.objectFile(dataPath) 
+    val mat: RowMatrix = new RowMatrix(data)
+
+    val svd: SingularValueDecomposition[RowMatrix, Matrix] = mat.computeSVD(numSingularValues, computeU)
     val U: RowMatrix = svd.U  // The U factor is a RowMatrix.
     val s: Vector = svd.s  // The singular values are stored in a local dense vector.
     val V: Matrix = svd.V  // The V factor is a local dense matrix.
