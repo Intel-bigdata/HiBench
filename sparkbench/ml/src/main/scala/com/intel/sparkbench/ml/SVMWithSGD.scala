@@ -25,7 +25,7 @@ import org.apache.spark.mllib.regression.LabeledPoint
 
 import scopt.OptionParser
 
-object SVMWithSGDExample {
+object SVMWithSGD {
 
    case class Params(
      numIterations: Int = 100,

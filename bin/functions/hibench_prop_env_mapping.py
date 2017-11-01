@@ -96,6 +96,9 @@ HiBenchEnvPropMapping=dict(
     # For SVM
     NUM_EXAMPLES_SVM="hibench.svm.examples",
     NUM_FEATURES_SVM="hibench.svm.examples",
+    NUM_ITERATIONS_SVM="hibench.svm.numIterations",
+    STEPSIZE_SVM="hibench.svm.stepSize",
+    REGPARAM_SVM="hibench.svm.regParam",
     # For ALS
     NUM_USERS_ALS="hibench.als.users",
     NUM_PRODUCTS_ALS="hibench.als.products",
