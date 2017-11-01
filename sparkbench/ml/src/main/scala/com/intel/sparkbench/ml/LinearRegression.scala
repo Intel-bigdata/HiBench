@@ -24,24 +24,50 @@ import org.apache.spark.mllib.regression.LinearRegressionModel
 import org.apache.spark.mllib.regression.LinearRegressionWithSGD
 import org.apache.spark.rdd.RDD
 
+import scopt.OptionParser
+
 object LinearRegression {
 
+  case class Params(
+      dataPath: String = null,
+      numIterations: Int = 100,
+      stepSize: Double = 0.00000001
+  )
+
   def main(args: Array[String]): Unit = {
-    var inputPath = ""
+    val defaultParams = Params()
 
-    if (args.length == 1) {
-      inputPath = args(0)
+    val parser = new OptionParser[Params]("Linear"){
+      head("Linear Regression: an example of linear regression with SGD optimizer")
+      opt[Int]("numIterations")
+        .text(s"numIterations, default: ${defaultParams.numIterations}")
+        .action((x,c) => c.copy(numIterations = x))
+      opt[Double]("stepSize")
+        .text(s"stepSize, default: ${defaultParams.stepSize}")
+        .action((x,c) => c.copy(stepSize = x))
+      arg[String]("<dataPath>")
+        .required()
+        .text("Input path for data")
+        .action((x,c) => c.copy(dataPath = x))
     }
-
-    val conf = new SparkConf().setAppName("LinearRegressionWithSGD")
+    parser.parse(args, defaultParams) match {
+      case Some(params) => run(params)
+      case _ => sys.exit(1)
+    }
+  }
+   
+  def run(params: Params): Unit = {
+    val conf = new SparkConf().setAppName(s"LinearRegressionWithSGD with $params")
     val sc = new SparkContext(conf)
+    
+    val dataPath = params.dataPath
+    val numIterations = params.numIterations
+    val stepSize = params.stepSize
 
-    // Load training data in LIBSVM format.
-    val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
+    // Load training data in LabeledPoint format.
+    val data: RDD[LabeledPoint] = sc.objectFile(dataPath)
     
     // Building the model
-    val numIterations = 100
-    val stepSize = 0.00000001
     val model = LinearRegressionWithSGD.train(data, numIterations, stepSize)
 
     // Evaluate model on training examples and compute training error
