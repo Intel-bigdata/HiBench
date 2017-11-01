@@ -132,6 +132,8 @@ HiBenchEnvPropMapping=dict(
     # For SVD
     NUM_EXAMPLES_SVD="hibench.svd.examples",
     NUM_FEATURES_SVD="hibench.svd.features",
+    NUM_SINGULAR_VALUES_SVD="hibench.svd.singularvalues",
+    COMPUTEU_SVD="hibench.svd.computeU",
     MAXRESULTSIZE_SVD="hibench.svd.maxresultsize",
     # For Linear Regression
     NUM_EXAMPLES_LINEAR="hibench.linear.examples",
