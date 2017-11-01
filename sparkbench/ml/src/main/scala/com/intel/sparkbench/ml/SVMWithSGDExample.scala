@@ -15,31 +15,61 @@
  * limitations under the License.
  */
 
-// scalastyle:off println
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
-// $example on$
 import org.apache.spark.mllib.classification.{SVMModel, SVMWithSGD}
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
-import org.apache.spark.mllib.util.MLUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
-// $example off$
+
+import scopt.OptionParser
 
 object SVMWithSGDExample {
 
-  def main(args: Array[String]): Unit = {
-    var inputPath = ""
-    if (args.length == 1) {
-       inputPath = args(0)
-     }
+   case class Params(
+     numIterations: Int = 100,
+     stepSize: Double = 1.0,
+     regParam: Double = 0.01,
+     dataPath: String = null
+   )
 
-    val conf = new SparkConf().setAppName("SVMWithSGDExample")
+  def main(args: Array[String]): Unit = {
+    val defaultParams = Params()
+
+    val parser = new OptionParser[Params]("SVM") {
+      head("SVM: an example of SVM for classification.")
+      opt[Int]("numIterations")
+        .text(s"numIterations, default: ${defaultParams.numIterations}")
+        .action((x,c) => c.copy(numIterations = x))
+      opt[Double]("stepSize")
+        .text(s"stepSize, default: ${defaultParams.stepSize}")
+        .action((x,c) => c.copy(stepSize = x))
+      opt[Double]("regParam")
+        .text(s"regParam, default: ${defaultParams.regParam}")
+        .action((x,c) => c.copy(regParam = x))
+      arg[String]("<dataPath>")
+        .required()
+        .text("data path of SVM")
+        .action((x, c) => c.copy(dataPath = x)) 
+    }
+    parser.parse(args, defaultParams) match {
+      case Some(params) => run(params)
+      case _ => sys.exit(1)
+    }
+  }
+
+  def run(params: Params): Unit = {
+
+    val conf = new SparkConf().setAppName(s"SVM with $params")
     val sc = new SparkContext(conf)
 
-    // $example on$
-    val data: RDD[LabeledPoint] = sc.objectFile(inputPath)
+    val dataPath = params.dataPath
+    val numIterations = params.numIterations
+    val stepSize = params.stepSize
+    val regParam = params.regParam
+
+    val data: RDD[LabeledPoint] = sc.objectFile(dataPath)
 
     // Split data into training (60%) and test (40%).
     val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)
@@ -47,8 +77,7 @@ object SVMWithSGDExample {
     val test = splits(1)
 
     // Run training algorithm to build the model
-    val numIterations = 100
-    val model = SVMWithSGD.train(training, numIterations)
+    val model = SVMWithSGD.train(training, numIterations, stepSize, regParam)
 
     // Clear the default threshold.
     model.clearThreshold()
@@ -65,8 +94,6 @@ object SVMWithSGDExample {
 
     println("Area under ROC = " + auROC)
 
-    // Save and load model
     sc.stop()
   }
 }
-// scalastyle:on println
