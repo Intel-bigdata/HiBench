@@ -103,9 +103,11 @@ HiBenchEnvPropMapping=dict(
     IMPLICITPREFS_ALS="hibench.als.implicitprefs",
     RANK_ALS="hibench.als.rank",
     NUM_RECOMMENDS_ALS="hibench.als.recommends",
-    NUM_ITERATIONS_ALS="hibench.als.num_iterations",
+    NUM_ITERATIONS_ALS="hibench.als.numIterations",
     LAMBDA_ALS="hibench.als.Lambda",
     KYRO_ALS="hibench.als.kyro",
+    USERBLOCKS_ALS="hibench.als.numUserBlocks",
+    PRODUCTBLOCKS_ALS="hibench.als.numProductBlocks",
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
