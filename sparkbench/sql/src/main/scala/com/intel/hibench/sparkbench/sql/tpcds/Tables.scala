@@ -42,6 +42,9 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
     } catch {
       case e: java.lang.RuntimeException => log.info(e.toString)
     }
+  }
+
+  def changeDsdgenPermission() = {
     try {
       log.info(s"Executing: chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader")
       s"chmod +x ${dsdgenLocalPath} ${dsdgenLocalDir}/distcomp ${dsdgenLocalDir}/mkheader".!!
@@ -49,6 +52,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
       case e: java.lang.RuntimeException => log.info(e.toString)
     }
   }
+
   case class Table(name: String, fields: StructField*) {
     val schema = StructType(fields)
 
@@ -62,6 +66,7 @@ class Tables(sqlContext: SQLContext, dsdgenDir: String, scaleFactor: Int) extend
         sparkContext.parallelize(1 to numPartition, numPartition).flatMap { i =>
           if (! new File(dsdgenLocalPath).exists)
             fetchDsdgenFromHDFS(hadoop_executable)
+          changeDsdgenPermission()
           val localToolsDir = if (new java.io.File(dsdgenLocalPath).exists) {
             s"${dsdgenLocalDir}"
           } else {
