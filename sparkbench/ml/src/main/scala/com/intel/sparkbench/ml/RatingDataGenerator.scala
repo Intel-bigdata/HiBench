@@ -27,8 +27,6 @@ import org.apache.spark.mllib.random._
 import org.apache.spark.rdd.{PairRDDFunctions, RDD}
 import org.apache.spark.mllib.linalg.{Vectors, Vector}
 
-import scala.util.Random
-
 object RatingDataGenerator {
 
   def main(args: Array[String]): Unit = {
@@ -63,7 +61,7 @@ object RatingDataGenerator {
     }
 
     val rawData: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, numUsers, numProducts, numPartitions)
-    val rng = new Random()
+    val rng = new java.util.Random()
     val data = rawData.map{v =>
       val a = Array.fill[Double](v.size)(0.0)
       v.foreachActive{(i,vi) =>
