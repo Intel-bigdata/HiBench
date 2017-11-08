@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>sparkbench</artifactId>
-    <version>6.1-SNAPSHOT</version>
+    <version>7.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench.sparkbench</groupId>
