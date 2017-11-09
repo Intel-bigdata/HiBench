@@ -23,13 +23,13 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hibench</artifactId>
-    <version>7.0</version>
+    <version>7.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench</groupId>
   <artifactId>hibench-common</artifactId>
   <packaging>jar</packaging>
-  <version>7.0</version>
+  <version>7.1-SNAPSHOT</version>
   <name>hibench-common</name>
 
   <dependencies>
