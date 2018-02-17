@@ -148,7 +148,9 @@ def read_file_content(filepath):
 
 def parse_conf(conf_root, workload_config_file):
     conf_files = sorted(glob.glob(conf_root + "/*.conf")) + sorted(glob.glob(workload_config_file))
-
+    # load hibench.conf first
+    conf_files.insert(0, conf_files.pop(
+        [i for i, filename in enumerate(conf_files) if filename.endswith("hibench.conf")][0]))
     # load values from conf files
     for filename in conf_files:
         log("Parsing conf: %s" % filename)
@@ -525,7 +527,7 @@ def probe_masters_slaves_by_Yarn():
         else:
             assert 0, "Unknown resourcemanager, please check `hibench.hadoop.configure.dir` and \"yarn-site.xml\" file"
     except Exception as e:
-        assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` manually" % e
+        assert 0, "Get workers from yarn-site.xml page failed, reason:%s\nplease set `hibench.masters.hostnames` and `hibench.slaves.hostnames` in hibench.conf manually" % e
 
 
 def probe_masters_slaves_hostnames():
