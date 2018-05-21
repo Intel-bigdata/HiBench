@@ -28,7 +28,7 @@ def gen_stream_sql(sql_index_list, throughtput_test_resource_dir, throughput_tes
     """.strip().replace("\t", "")
 
     for i in sql_index_list:
-        path = throughtput_test_resource_dir + "/q" + str(i) + ".sql"
+        path = throughtput_test_resource_dir + "/q" + str(i.strip()) + ".sql"
         single_sql = open(path, "r")
         sql_list.append(single_sql.read())
 

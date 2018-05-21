@@ -505,13 +505,9 @@ function run_powertest() {
     START_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/start-thriftserver.sh"
     STOP_THRIFTSERVER_CMD="${SPARK_HOME}/sbin/stop-thriftserver.sh"
 
-    INCLUDED_LIST=(19 42 43 52 55 63 68 73 98)
-
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
-    QUERY_BEGIN_NUM=${TPCDS_TEST_LIST:0:2}
-    QUERY_END_NUM=${TPCDS_TEST_LIST: -2}
-    len=${#INCLUDED_LIST[@]}
+    IFS=', ' read -r -a QUERY_IDS <<< "${TPCDS_TEST_LIST}"
 
     YARN_OPTS=""
     if [[ "$SPARK_MASTER" == yarn-* ]]; then
@@ -533,20 +529,7 @@ function run_powertest() {
 
     echo -e "${BCyan}Running TPC-DS power test ${Color_Off}"
 
-    for (( i=${QUERY_BEGIN_NUM}; i<${QUERY_END_NUM} + 1; i++)); do
-        j=0
-        found=false
-        while [ $j -lt $len ]
-        do
-            if [ "${INCLUDED_LIST[$j]}" == "${i}" ]; then
-                found=true
-                break
-            fi
-            let j++
-        done
-        if [ "${found}" == "false" ]; then
-            continue
-        fi
+    for i in "${QUERY_IDS[@]}"; do
 
         export QUERY_NUMBER=${i}
         export QUERY_NAME=q${QUERY_NUMBER}
