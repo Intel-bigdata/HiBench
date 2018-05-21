@@ -6,13 +6,13 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hibench</artifactId>
-    <version>6.1-SNAPSHOT</version>
+    <version>7.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench</groupId>
   <artifactId>flinkbench</artifactId>
   <packaging>pom</packaging>
-  <version>6.1-SNAPSHOT</version>
+  <version>7.1-SNAPSHOT</version>
   <name>flinkbench</name>
 
   <properties>

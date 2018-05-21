@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hadoopbench</artifactId>
-    <version>6.1-SNAPSHOT</version>
+    <version>7.1-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench.hadoopbench</groupId>
