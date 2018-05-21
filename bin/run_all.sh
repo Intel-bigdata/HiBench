@@ -62,28 +62,42 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
-  if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
-  if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
-       continue
-  fi
-  if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+    if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
         continue
-  fi  
-  if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+    fi
+    if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
+        continue
+    fi
+    if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+        continue
+    fi
+    if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+        continue
+    fi
+    if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+        continue
+    fi
+    if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
+        continue
+    fi
+    if [ $benchmark == "sql/tpcds_power" ] && [ $framework == "hadoop" ]; then
       continue
-  fi      
-  if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+    fi
+    if [ $benchmark == "sql/tpcds_throughput" ] && [ $framework == "hadoop" ]; then
       continue
-  fi
-  if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
+    fi
 
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
 	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
 	$WORKLOAD/${framework}/run.sh
+
+    if [ $benchmark == "sql/tpcds_power" ] && [ $framework == "spark" ]; then
+      $WORKLOAD/${framework}/run_powertest.sh
+    fi
+
+    if [ $benchmark == "sql/tpcds_throughput" ] && [ $framework == "spark" ]; then
+      $WORKLOAD/${framework}/run_throughputtest.sh
+    fi
 
 	result=$?
 	if [ $result -ne 0 ]
