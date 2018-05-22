@@ -16,7 +16,7 @@
 
 function assert(){		# assertion help function
     if [ -z "$1" ]; then 
-	echo -e "${IRed}ASSERT! $2${Color_Off}" > /dev/stderr
+	echo -e "${IRed}ASSERT! $2${Color_Off}" 1>&2
 	exit 1
     fi;
 }

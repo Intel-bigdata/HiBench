@@ -112,7 +112,7 @@ function rmr_hdfs(){		# rm -r for hdfs
     assert $1 "dir parameter missing"
     RMDIR_CMD="fs -rm -r -skipTrash"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $RMDIR_CMD $1"
-    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    echo -e "${BCyan}hdfs rm -r: ${Cyan}${CMD}${Color_Off}" 1>&2
     execute_withlog ${CMD}
 }
 
@@ -121,27 +121,27 @@ function upload_to_hdfs(){
     assert $2 "remote parameter missing"
     LOCAL_FILE_PATH=$1
     REMOTE_FILE_PATH=$2
-    echo "REMOTE_FILE_PATH:$REMOTE_FILE_PATH" > /dev/stderr
+    echo "REMOTE_FILE_PATH:$REMOTE_FILE_PATH" 1>&2
     if [[ `echo $REMOTE_FILE_PATH | tr A-Z a-z` = hdfs://* ]]; then # strip leading "HDFS://xxx:xxx/" string
-        echo "HDFS_MASTER:$HDFS_MASTER" > /dev/stderr
+        echo "HDFS_MASTER:$HDFS_MASTER" 1>&2
         local LEADING_HDFS_STRING_LENGTH=${#HDFS_MASTER}
         REMOTE_FILE_PATH=${REMOTE_FILE_PATH:$LEADING_HDFS_STRING_LENGTH}
-        echo "stripped REMOTE_FILE_PATH:$REMOTE_FILE_PATH" > /dev/stderr
+        echo "stripped REMOTE_FILE_PATH:$REMOTE_FILE_PATH" 1>&2
     fi
 
     # clear previous package file
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -rm $REMOTE_FILE_PATH"
-    echo -e "${BCyan}hdfs rm : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    echo -e "${BCyan}hdfs rm : ${Cyan}${CMD}${Color_Off}" 1>&2
     execute_withlog ${CMD}
 
     # prepare parent folder
     CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -mkdir -p `dirname $REMOTE_FILE_PATH`"
-    echo -e "${BCyan}hdfs mkdir : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    echo -e "${BCyan}hdfs mkdir : ${Cyan}${CMD}${Color_Off}" 1>&2
     execute_withlog ${CMD}
 
     # upload
     CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR fs -put $LOCAL_FILE_PATH $REMOTE_FILE_PATH"
-    echo -e "${BCyan}hdfs put : ${Cyan}${CMD}${Color_Off}" > /dev/stderr
+    echo -e "${BCyan}hdfs put : ${Cyan}${CMD}${Color_Off}" 1>&2
     execute_withlog ${CMD}
 }
 
@@ -149,7 +149,7 @@ function dus_hdfs(){                # du -s for hdfs
     assert $1 "dir parameter missing"
     DUS_CMD="fs -du -s"
     local CMD="$HADOOP_EXECUTABLE --config $HADOOP_CONF_DIR $DUS_CMD $1"
-    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" > /dev/stderr
+    echo -e "${BPurple}hdfs du -s: ${Purple}${CMD}${Color_Off}" 1>&2
     execute_withlog ${CMD}
 }
 
