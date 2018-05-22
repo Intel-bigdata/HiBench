@@ -21,7 +21,9 @@ root_dir=`cd "${current_dir}/.."; pwd`
 . ${root_dir}/bin/functions/color.sh
 
 for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
+    echo "${benchmark}"
     if [[ $benchmark == \#* ]]; then
+
         continue
     fi
 
@@ -30,60 +32,60 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 
     WORKLOAD=$root_dir/bin/workloads/${benchmark}
     echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
-    "${WORKLOAD}/prepare/prepare.sh"
-
-    result=$?
-    if [ $result -ne 0 ]
-    then
-	echo "ERROR: ${benchmark} prepare failed!"
-        exit $result
-    fi
-
+#    "${WORKLOAD}/prepare/prepare.sh"
+#
+#    result=$?
+#    if [ $result -ne 0 ]
+#    then
+#	echo "ERROR: ${benchmark} prepare failed!"
+#        exit $result
+#    fi
+#
     for framework in `cat $root_dir/conf/frameworks.lst`; do
 	if [[ $framework == \#* ]]; then
 	    continue
 	fi
-
-	if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
-	    continue
-	fi
-	if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
-	    continue
-	fi
-	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-  if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
-  if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
-       continue
-  fi
-  if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
-        continue
-  fi  
-  if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi      
-  if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
-  if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
-      continue
-  fi
+#
+#	if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
+#	    continue
+#	fi
+#	if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
+#	    continue
+#	fi
+#	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
+#	    continue
+#	fi
+#	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
+#	    continue
+#	fi
+#	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
+#	    continue
+#	fi
+#	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
+#	    continue
+#	fi
+#  if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
+#      continue
+#  fi
+#  if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
+#       continue
+#  fi
+#  if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+#        continue
+#  fi
+#  if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+#      continue
+#  fi
+#  if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+#      continue
+#  fi
+#  if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
+#      continue
+#  fi
 
 	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
 	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
-	$WORKLOAD/${framework}/run.sh
+#	$WORKLOAD/${framework}/run.sh
 
 	result=$?
 	if [ $result -ne 0 ]
