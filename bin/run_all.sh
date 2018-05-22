@@ -21,7 +21,9 @@ root_dir=`cd "${current_dir}/.."; pwd`
 . ${root_dir}/bin/functions/color.sh
 
 for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
+    echo "${benchmark}"
     if [[ $benchmark == \#* ]]; then
+
         continue
     fi
 
