@@ -40,71 +40,82 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
     fi
 
     for framework in `cat $root_dir/conf/frameworks.lst`; do
-	if [[ $framework == \#* ]]; then
-	    continue
-	fi
+        if [[ $framework == \#* ]]; then
+            continue
+        fi
 
-	if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
-	    continue
-	fi
-	if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
-	    continue
-	fi
-	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-	if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
-	    continue
-	fi
-    if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
-        continue
-    fi
-    if [ $benchmark == "sql/tpcds_power" ] && [ $framework == "hadoop" ]; then
-      continue
-    fi
-    if [ $benchmark == "sql/tpcds_throughput" ] && [ $framework == "hadoop" ]; then
-      continue
-    fi
+        if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
+            continue
+        fi
+        if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
+            continue
+        fi
+        if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/als" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/svm" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/pca" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/gbt" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/rf" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/svd" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/linear" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "ml/lda" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
+        if [ $benchmark == "sql/tpcds" ] && [ $framework == "hadoop" ]; then
+            continue
+        fi
 
-	echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
-	echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
-	$WORKLOAD/${framework}/run.sh
+        if [ $benchmark == "sql/tpcds" ]; then
+            echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}TPC-DS power test/${framework}${Color_Off}"
+            echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run_powertest.sh${Color_Off}"
+            $WORKLOAD/${framework}/run_powertest.sh
+            result=$?
+            if [ $result -ne 0 ]
+            then
+                echo -e "${On_IRed}ERROR: TPC-DS power test/${framework} failed to run successfully.${Color_Off}"
+                    exit $result
+            fi
 
-    if [ $benchmark == "sql/tpcds_power" ] && [ $framework == "spark" ]; then
-      $WORKLOAD/${framework}/run_powertest.sh
-    fi
+            echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}TPC-DS throughput test/${framework}${Color_Off}"
+            echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run_throughputtest.sh${Color_Off}"
+            $WORKLOAD/${framework}/run_throughputtest.sh
+            result=$?
+            if [ $result -ne 0 ]
+            then
+                echo -e "${On_IRed}ERROR: TPC-DS throughput test/${framework} failed to run successfully.${Color_Off}"
+                    exit $result
+            fi
+        else
+            echo -e "${UYellow}${BYellow}Run ${Yellow}${UYellow}${benchmark}/${framework}${Color_Off}"
+            echo -e "${BCyan}Exec script: ${Cyan}$WORKLOAD/${framework}/run.sh${Color_Off}"
+            $WORKLOAD/${framework}/run.sh
 
-    if [ $benchmark == "sql/tpcds_throughput" ] && [ $framework == "spark" ]; then
-      $WORKLOAD/${framework}/run_throughputtest.sh
-    fi
-
-	result=$?
-	if [ $result -ne 0 ]
-	then
-	    echo -e "${On_IRed}ERROR: ${benchmark}/${framework} failed to run successfully.${Color_Off}"
-            exit $result
-	fi
+            result=$?
+            if [ $result -ne 0 ]
+            then
+                echo -e "${On_IRed}ERROR: ${benchmark}/${framework} failed to run successfully.${Color_Off}"
+                    exit $result
+            fi
+        fi
     done
 done
 

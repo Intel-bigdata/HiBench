@@ -7,8 +7,7 @@ micro.dfsioe
 sql.aggregation
 sql.join
 sql.scan
-sql.tpcds_power
-sql.tpcds_throughput
+sql.tpcds
 
 websearch.nutchindexing
 websearch.pagerank

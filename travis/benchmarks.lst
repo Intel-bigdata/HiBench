@@ -8,4 +8,5 @@ ml.lda
 ml.svm
 websearch.nutchindexing
 sql.scan
+sql.tpcds
 graph.nweight
