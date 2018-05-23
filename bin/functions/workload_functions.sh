@@ -553,6 +553,7 @@ function run_powertest() {
             echo -e "${BRed}ERROR${Color_Off}: TPC-DS power test${BYellow} ${Color_Off} failed to run successfully."
             echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            ${STOP_THRIFTSERVER_CMD}
             exit $result
         fi
         echo -e "${BGreen}finish subquery ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME ${QUERY_NAME}${Color_Off} ${BGreen} ${Color_Off}"
@@ -623,6 +624,7 @@ function run_throughputtest() {
             echo -e "${BRed}ERROR${Color_Off}: Spark job ${BYellow}${Color_Off} failed to run successfully."
             echo -e "${BBlue}Hint${Color_Off}: You can goto ${BYellow}${WORKLOAD_RESULT_FOLDER}/bench.log${Color_Off} to check for detailed log.\nOpening log tail for you:\n"
             tail ${WORKLOAD_RESULT_FOLDER}/bench.log
+            ${STOP_THRIFTSERVER_CMD}
             exit $result
         fi
         echo -e "${BGreen}finish query for ${Color_Off}${UGreen}$HIBENCH_CUR_WORKLOAD_NAME stream ${i}${Color_Off} ${BGreen} ${Color_Off}"
