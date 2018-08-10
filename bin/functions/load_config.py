@@ -563,8 +563,9 @@ def probe_masters_slaves_hostnames():
                     with closing(urllib.urlopen('http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port), proxies={})) as page:
                         worker_hostnames = []
                         for x in page.readlines():
-                            if worker_port in x and "worker" in x:
-                                worker_hostnames.append(re.findall("http:\/\/([a-zA-Z\-\._0-9]+):%s" % worker_port, x)[0])
+                            matches = re.findall("http:\/\/([a-zA-Z\-\._0-9]+):%s" % worker_port, x)
+                            if matches:
+                                worker_hostnames.append(matches[0])
                         HibenchConf['hibench.slaves.hostnames'] = " ".join(worker_hostnames)
                         HibenchConfRef['hibench.slaves.hostnames'] = "Probed by parsing " + \
                             'http://%s:%s' % (HibenchConf['hibench.masters.hostnames'], master_port)
