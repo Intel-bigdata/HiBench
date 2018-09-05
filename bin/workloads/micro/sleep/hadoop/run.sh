@@ -24,7 +24,7 @@ enter_bench HadoopSleep ${workload_config} ${current_dir}
 show_bannar start
 
 START_TIME=`timestamp`
-run_hadoop_job $HADOOP_SLEEP_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $MAP_SLEEP_TIME -rt $RED_SLEEP_TIME
+run_hadoop_job $HADOOP_SLEEP_JAR sleep -m $NUM_MAPS -r $NUM_REDS -mt $(($MAP_SLEEP_TIME*1000)) -rt $(($RED_SLEEP_TIME*1000))
 END_TIME=`timestamp`
 SIZE="0"
 
