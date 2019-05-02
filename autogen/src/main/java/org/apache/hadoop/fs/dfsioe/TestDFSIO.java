@@ -23,9 +23,7 @@ import java.io.*;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-//import org.apache.commons.logging.*;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.mapred.*;
