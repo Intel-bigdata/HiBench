@@ -119,5 +119,23 @@
       </activation>
     </profile>
 
+    <profile>
+      <id>spark2.3</id>
+      <dependencies>
+      <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka -->
+        <dependency>
+           <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_2.11</artifactId>
+            <version>1.6.3</version>
+         </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.3</value>
+        </property>
+      </activation>
+    </profile>
+
   </profiles>
 </project>

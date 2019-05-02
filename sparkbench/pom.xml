@@ -125,8 +125,8 @@
     <profile>
       <id>defaultSpark</id>
       <properties>
-        <spark.version>2.0.0</spark.version>
-        <spark.bin.version>2.0</spark.bin.version>
+        <spark.version>2.3.2</spark.version>
+        <spark.bin.version>2.3</spark.bin.version>
       </properties>
       <activation>
         <property>
@@ -187,6 +187,20 @@
         <property>
           <name>spark</name>
           <value>2.2</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark2.3</id>
+      <properties>
+        <spark.version>2.3.2</spark.version>
+        <spark.bin.version>2.3</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.3</value>
         </property>
       </activation>
     </profile>
