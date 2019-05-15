@@ -86,13 +86,13 @@ object DataGen {
 
   def getRateMap(): Map[String, Int] = {
     Map[String, Int](
-      "catalog_sales" -> 80,
-      "catalog_returns" -> 10,
-      "inventory" -> 5,
-      "store_sales" -> 100,
-      "store_returns" -> 10,
-      "web_sales" -> 40,
-      "web_returns" -> 5,
+      "catalog_sales" -> 1000,
+      "catalog_returns" -> 125,
+      "inventory" -> 1,
+      "store_sales" -> 400,
+      "store_returns" -> 200,
+      "web_sales" -> 500,
+      "web_returns" -> 100,
       "call_center" -> 1,
       "catalog_page" -> 1,
       "customer" -> 1,
