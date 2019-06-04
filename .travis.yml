@@ -1,7 +1,7 @@
 sudo: required
 language: java
 jdk:
-  - openjdk7
+  - openjdk8
 before_install:
   - cat /etc/hosts # optionally check the content *before*
   - sudo hostname "$(hostname | cut -c1-63)"
@@ -30,6 +30,7 @@ cache:
   directories:
   - $HOME/.m2
 script:
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.12
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=1.6 -Dscala=2.10
