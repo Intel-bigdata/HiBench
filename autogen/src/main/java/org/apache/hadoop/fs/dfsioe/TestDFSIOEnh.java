@@ -22,11 +22,14 @@ import java.io.*;
 
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.apache.commons.logging.*;
+//import org.apache.commons.logging.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.mapreduce.Job;
@@ -84,8 +87,7 @@ import org.apache.hadoop.fs.dfsioe.Analyzer._Reducer;
  */
 
 public class TestDFSIOEnh extends Configured implements Tool {
-
-  private static final Log LOG = LogFactory.getLog(TestDFSIOEnh.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TestDFSIOEnh.class);
   private static final int TEST_TYPE_READ = 0;
   private static final int TEST_TYPE_WRITE = 1;
   private static final int TEST_TYPE_CLEANUP = 2;
@@ -952,7 +954,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 			 e.printStackTrace();
 		 } finally {
 			 fs.delete(DfsioeConfig.getInstance().getReportTmp(fsConfig), true);
-			 FileUtil.copyMerge(fs, DfsioeConfig.getInstance().getReportDir(fsConfig), fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), false, fsConfig, null);
+			 copyMerge(fs, DfsioeConfig.getInstance().getReportDir(fsConfig), fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), false, fsConfig, null);
 			 LOG.info("remote report file " + DfsioeConfig.getInstance().getReportTmp(fsConfig) + " merged.");
 			 BufferedReader lines = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(DfsioeConfig.getInstance().getReportTmp(fsConfig)))));
 			 String line = null;
@@ -1001,8 +1003,60 @@ public class TestDFSIOEnh extends Configured implements Tool {
 		 }
 		 res.println("\n-- Result Analyse -- : " + ((System.currentTimeMillis() - t1)/1000) + "s");
 		 res.close();
-	 }
-	 
+     }
+
+    /** Copy all files in a directory to one output file (merge). */
+    @Deprecated
+	public static boolean copyMerge(FileSystem srcFS, Path srcDir, FileSystem dstFS, Path dstFile, boolean deleteSource,
+			Configuration conf, String addString) throws IOException {
+        dstFile = checkDest(srcDir.getName(), dstFS, dstFile, false);
+
+        if (!srcFS.getFileStatus(srcDir).isDirectory())
+            return false;
+
+		OutputStream out = dstFS.create(dstFile);
+
+		try {
+			FileStatus contents[] = srcFS.listStatus(srcDir);
+			Arrays.sort(contents);
+			for (int i = 0; i < contents.length; i++) {
+				if (contents[i].isFile()) {
+					InputStream in = srcFS.open(contents[i].getPath());
+					try {
+						IOUtils.copyBytes(in, out, conf, false);
+						if (addString != null)
+							out.write(addString.getBytes("UTF-8"));
+
+					} finally {
+						in.close();
+					}
+				}
+			}
+		} finally {
+			out.close();
+		}
+
+		if (deleteSource) {
+			return srcFS.delete(srcDir, true);
+		} else {
+			return true;
+		}
+    }
+
+	private static Path checkDest(String srcName, FileSystem dstFS, Path dst, boolean overwrite) throws IOException {
+		if (dstFS.exists(dst)) {
+			FileStatus sdst = dstFS.getFileStatus(dst);
+			if (sdst.isDirectory()) {
+				if (null == srcName) {
+					throw new IOException("Target " + dst + " is a directory");
+				}
+				return checkDest(null, dstFS, new Path(dst, srcName), overwrite);
+			} else if (!overwrite) {
+				throw new IOException("Target " + dst + " already exists");
+			}
+		}
+		return dst;
+	}
 	 @Deprecated
 	 protected static void analyzeResult( FileSystem fs, 
                                      int testType,
