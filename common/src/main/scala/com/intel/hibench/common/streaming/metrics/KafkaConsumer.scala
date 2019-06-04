@@ -23,8 +23,11 @@ import kafka.common.ErrorMapping._
 import kafka.common.TopicAndPartition
 import kafka.consumer.{ConsumerConfig, SimpleConsumer}
 import kafka.message.MessageAndOffset
-import kafka.utils.{ZKStringSerializer, ZkUtils, Utils}
+import kafka.utils.{ZKStringSerializer$, ZkUtils}
 import org.I0Itec.zkclient.ZkClient
+import org.apache.kafka.common.utils.Utils
+import org.apache.kafka.common.protocol.SecurityProtocol
+import org.apache.kafka.common.network.ListenerName
 
 class KafkaConsumer(zookeeperConnect: String, topic: String, partition: Int) {
 
@@ -67,15 +70,15 @@ class KafkaConsumer(zookeeperConnect: String, topic: String, partition: Int) {
   }
 
   private def createConsumer: SimpleConsumer = {
-    val zkClient = new ZkClient(zookeeperConnect, 6000, 6000, ZKStringSerializer)
+    val zkClient = new ZkClient(zookeeperConnect, 6000, 6000, ZKStringSerializer$.MODULE$)
+    val zkUtils = ZkUtils.apply(zkClient, false);
     try {
-      val leader = ZkUtils.getLeaderForPartition(zkClient, topic, partition)
-          .getOrElse(throw new RuntimeException(
-            s"leader not available for TopicAndPartition($topic, $partition)"))
-      val broker = ZkUtils.getBrokerInfo(zkClient, leader)
-          .getOrElse(throw new RuntimeException(s"broker info not found for leader $leader"))
-      new SimpleConsumer(broker.host, broker.port,
-        config.socketTimeoutMs, config.socketReceiveBufferBytes, CLIENT_ID)
+      val leader = zkUtils.getLeaderForPartition(topic, partition)
+        .getOrElse(throw new RuntimeException(s"leader not available for TopicAndPartition($topic, $partition)"))
+      val brokerInfo = zkUtils.getBrokerInfo(leader)
+        .getOrElse(throw new RuntimeException(s"broker info not found for leader $leader"))
+      val broker = brokerInfo.getBrokerEndPoint(ListenerName.forSecurityProtocol(SecurityProtocol.PLAINTEXT))
+      new SimpleConsumer(broker.host, broker.port , config.socketTimeoutMs, config.socketReceiveBufferBytes, CLIENT_ID)
     } catch {
       case e: Exception =>
         throw e
