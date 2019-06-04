@@ -13,31 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# stop process
-/opt/$HADOOP_BINARIES_FOLDER/sbin/stop-dfs.sh
-/opt/$HADOOP_BINARIES_FOLDER/sbin/stop-yarn.sh
-/opt/$HADOOP_BINARIES_FOLDER/sbin/stop-all.sh
-
-# clear data directories
-mkdir -p /usr/local/hdfs/namenode/
-mkdir -p /usr/local/hdfs/datanode/
-rm -fr /usr/local/hdfs/namenode/*
-rm -fr /usr/local/hdfs/datanode/*
-
-# remove related logs
-rm -fr /opt/$HADOOP_BINARIES_FOLDER/logs/*
-
-# hdfs format
-/opt/$HADOOP_BINARIES_FOLDER/bin/hdfs namenode -format
-
-# restart hdfs
-/opt/$HADOOP_BINARIES_FOLDER/sbin/start-dfs.sh
-
-# restart yarn
-/opt/$HADOOP_BINARIES_FOLDER/sbin/start-yarn.sh
-
-# restart spark
-/opt/$SPARK_BINARIES_FOLDER/sbin/start-all.sh
-
-# list nodes
-/opt/$HADOOP_BINARIES_FOLDER/bin/yarn node -list 2
+# Download binaries
+SPARK_URL=https://archive.apache.org/dist/spark/spark-$SPARK_VER/spark-$SPARK_VER-bin-$SPARK_PACKAGE_TYPE.tgz
+HADOOP_URL=https://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VER/hadoop-$HADOOP_VER.tar.gz
+echo $SPARK_URL
+echo $HADOOP_URL
+cd /opt
+wget $SPARK_URL
+wget $HADOOP_URL
+# Uncompress tarballs
+tar -xzf /opt/$(ls /opt | grep $SPARK_VER)
+tar -xzf /opt/$(ls /opt | grep $HADOOP_VER)

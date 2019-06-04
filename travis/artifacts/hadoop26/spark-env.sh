@@ -46,7 +46,7 @@
 # - SPARK_YARN_DIST_ARCHIVES, Comma separated list of archives to be distributed with the job.
 
 # Options for the daemons used in the standalone deploy mode
-export  SPARK_MASTER_IP= localhost 
+export  SPARK_MASTER_IP= localhost
 #i, to bind the master to a different IP address or hostname
 # - SPARK_MASTER_PORT / SPARK_MASTER_WEBUI_PORT, to use non-default ports for the master
 # - SPARK_MASTER_OPTS, to set config properties only for the master (e.g. "-Dx=y")
