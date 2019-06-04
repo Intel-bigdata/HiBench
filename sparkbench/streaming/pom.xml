@@ -119,5 +119,22 @@
       </activation>
     </profile>
 
+    <profile>
+      <id>spark2.4</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+          <version>2.4.0</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.4</value>
+        </property>
+      </activation>
+    </profile>
+
   </profiles>
 </project>
