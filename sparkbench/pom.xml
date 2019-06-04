@@ -192,6 +192,20 @@
     </profile>
 
     <profile>
+      <id>spark2.4</id>
+      <properties>
+        <spark.version>2.4.0</spark.version>
+        <spark.bin.version>2.4</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.4</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
       <id>defaultScalaVersion</id>
       <properties>
           <scala.version>2.11.8</scala.version>
@@ -228,6 +242,20 @@
         <property>
           <name>scala</name>
           <value>2.11</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>scala2.12</id>
+      <properties>
+        <scala.version>2.12.8</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>scala</name>
+          <value>2.12</value>
         </property>
       </activation>
     </profile>
