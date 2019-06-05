@@ -28,7 +28,7 @@ Because some Maven plugins cannot support Scala version perfectly, there are som
 
 
 ### Specify Spark Version ###
-To specify the spark version, use -Dspark=xxx(1.6, 2.0, 2.1 or 2.2). By default, it builds for spark 2.0
+To specify the spark version, use -Dspark=xxx(1.6, 2.0, 2.1, 2.2 or 2.4). By default, it builds for spark 2.0
 
     mvn -Psparkbench -Dspark=1.6 -Dscala=2.11 clean package
 tips:
@@ -36,6 +36,11 @@ when the spark version is specified to spark2.0(1.6) , the scala version will be
 default . For example , if we want use spark2.0 and scala2.11 to build hibench. we just use the command `mvn -Dspark=2.0 clean
 package` , but for spark2.0 and scala2.10 , we need use the command `mvn -Dspark=2.0 -Dscala=2.10 clean package` .
 Similarly , the spark1.6 is associated with the scala2.10 by default.
+
+### Specify Hadoop Version ###
+To specify the spark version, use -Dhadoop=xxx(3.2). By default, it builds for hadoop 2.4
+
+    mvn -Psparkbench -Dhadoop=3.2 -Dspark=2.4 clean package
 
 ### Build a single module ###
 If you are only interested in a single workload in HiBench. You can build a single module. For example, the below command only builds the SQL workloads for Spark.
@@ -48,3 +53,13 @@ Supported modules includes: micro, ml(machine learning), sql, websearch, graph, 
 For Spark 2.0 and Spark 2.1, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or 2.1. You must explicitly specify it like this:
 
     mvn -Psparkbench -Dmodules -PstructuredStreaming clean package 
+
+### Build using JDK 1.11
+**For Java 11 it is suitable to be built for Spark 2.4 _(Compiled with Scala 2.12)_ and/or Hadoop 3.2 only**
+
+If you are interested in building using Java 11 indicate that streaming benchmarks won't be compiled, and specify scala, spark, hadoop and maven compiler version as below
+
+    mvn clean package -Psparkbench -Phadoopbench -Dhadoop=3.2 -Dspark=2.4 -Dscala=2.12 -Dexclude-streaming -Dmaven-compiler-plugin.version=3.8.0
+
+Supported frameworks only: hadoopbench, sparkbench (Does not support flinkbench, stormbench, gearpumpbench)
+Supported modules includes: micro, ml(machine learning), websearch and graph (does not support streaming, structuredStreaming and sql)
