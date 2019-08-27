@@ -60,7 +60,7 @@
             <phase>process-resources</phase>
             <goals>
               <goal>add-source</goal>
-              <goal>compile</goal>
+              <goal>${maven.assembly.plugin.goal}</goal>
             </goals>
           </execution>
           <execution>
@@ -99,6 +99,7 @@
       <properties>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
+        <maven.assembly.plugin.goal>compile</maven.assembly.plugin.goal>
       </properties>
       <activation>
         <property>
@@ -112,6 +113,7 @@
       <properties>
         <scala.version>2.10.4</scala.version>
         <scala.binary.version>2.10</scala.binary.version>
+        <maven.assembly.plugin.goal>compile</maven.assembly.plugin.goal>
       </properties>
       <activation>
         <property>
@@ -126,6 +128,7 @@
       <properties>
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
+        <maven.assembly.plugin.goal>compile</maven.assembly.plugin.goal>
       </properties>
       <activation>
         <property>
@@ -134,5 +137,18 @@
         </property>
       </activation>
     </profile>
+
+    <profile>
+      <id>exclude-streaming</id>
+      <properties>
+        <maven.assembly.plugin.goal>doc</maven.assembly.plugin.goal>
+      </properties>
+      <activation>
+        <property>
+          <name>exclude-streaming</name>
+        </property>
+      </activation>
+    </profile>
+
   </profiles>
 </project>

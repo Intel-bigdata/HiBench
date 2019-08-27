@@ -159,7 +159,43 @@
       </dependencies>
       <activation>
         <property>
-          <name>!modules</name>
+          <name>!exclude-streaming</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>exclude-streaming</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-micro</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-ml</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-websearch</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-graph</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-sql</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+      <activation>
+        <property>
+          <name>exclude-streaming</name>
         </property>
       </activation>
     </profile>
