@@ -500,10 +500,10 @@ public class TestDFSIOEnh extends Configured implements Tool {
     int analyzeNumReduceTasks = 1;
 
     String version="TestFDSIO.0.0.4 Enhanced Version";
-    String usage = "Usage: TestFDSIOEnh -read | -write | -skipAnalyze | -clean [-nrFiles N] [-fileSize MB]" +
-            " [-resFile resultFileName] [-bufferSize Bytes] [-tputFile AggregatedThroughputCSVFileName] " +
-            "[-sampleInterval Miliseconds] [-plotInterval Miliseconds] [-sampleUnit g|m|k|b] [-sumThreshold 0.0~1.0]" +
-            " [-tputReportEach] [-tputReportTotal] [-analyzeNumReduceTasks]";
+    String usage = "Usage: TestFDSIOEnh -read | -write | -skipAnalyze | -clean [-nrFiles N] [-fileSize MB] " +
+                   "[-resFile resultFileName] [-bufferSize Bytes] [-tputFile AggregatedThroughputCSVFileName] " +
+                   "[-sampleInterval Miliseconds] [-plotInterval Miliseconds] [-sampleUnit g|m|k|b] " +
+                   "[-sumThreshold 0.0~1.0] [-tputReportEach] [-tputReportTotal] [-analyzeNumReduceTasks]";
     
     System.out.println(version);
     if (args.length == 0) {
