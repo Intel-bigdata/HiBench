@@ -42,7 +42,7 @@ object DenseKMeans {
       input: String = null,
       k: Int = -1,
       numIterations: Int = 10,
-      initializationMode: InitializationMode = Parallel)
+      initializationMode: InitializationMode = Random)
 
   def main(args: Array[String]) {
     val defaultParams = Params()
@@ -74,7 +74,7 @@ object DenseKMeans {
   }
 
   def run(params: Params) {
-    val conf = new SparkConf().setAppName(s"DenseKMeans with $params")
+    val conf = new SparkConf().setAppName(s"DAL DenseKMeans with $params")
     val sc = new SparkContext(conf)
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
