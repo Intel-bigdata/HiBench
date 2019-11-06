@@ -106,6 +106,13 @@
     </profile>
 
     <profile>
+      <id>dal</id>
+      <modules>
+        <module>dal</module>
+      </modules>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <modules>
         <module>micro</module>

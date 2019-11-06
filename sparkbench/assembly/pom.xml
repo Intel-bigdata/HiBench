@@ -124,6 +124,17 @@
     </profile>
 
     <profile>
+      <id>dal</id>
+      <dependencies>
+        <dependency>
+          <groupId>com.intel.hibench.sparkbench</groupId>
+          <artifactId>sparkbench-dal</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
       <id>allModules</id>
       <dependencies>
         <dependency>
