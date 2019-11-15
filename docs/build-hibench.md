@@ -42,7 +42,9 @@ If you are only interested in a single workload in HiBench. You can build a sing
 
     mvn -Psparkbench -Dmodules -Psql -Dspark=2.1 -Dscala=2.11 clean package
 
-Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or 2.1).
+Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or 2.1) and dal.
+
+Note by default the dal module will not be built and needs to be enabled explicitly. 
 
 ### Build Structured Streaming ###
 For Spark 2.0 and Spark 2.1, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or 2.1. You must explicitly specify it like this:
