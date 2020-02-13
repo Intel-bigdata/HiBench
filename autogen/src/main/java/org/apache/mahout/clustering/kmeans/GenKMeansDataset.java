@@ -494,7 +494,7 @@ public class GenKMeansDataset extends Configured implements Tool {
         int dimension = 2;
         double meanMin = 0;
         double meanMax = 1000;
-        double stdMin = -100;
+        double stdMin = 0.01;
         double stdMax = 100;
         String datasetFile = "";
         String sampleDir = TEST_INPUT_PATH_SAMPLES;
