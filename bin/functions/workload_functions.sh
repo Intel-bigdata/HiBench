@@ -199,7 +199,7 @@ function run_spark_job() {
     export_withlog SPARKBENCH_PROPERTIES_FILES
 
     YARN_OPTS=""
-    if [[ "$SPARK_MASTER" == yarn-* ]]; then
+    if [[ "$SPARK_MASTER" == yarn-* ]] || [[ "$SPARK_MASTER" == yarn ]]; then
         export_withlog HADOOP_CONF_DIR
         
         YARN_OPTS="--num-executors ${YARN_NUM_EXECUTORS}"
