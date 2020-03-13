@@ -108,6 +108,7 @@ object DenseKMeans {
       .setInitializationMode(initMode)
       .setK(params.k)
       .setMaxIterations(params.numIterations)
+      .setSeed(1L)
       .run(examples)
 
     val cost = model.computeCost(examples)
