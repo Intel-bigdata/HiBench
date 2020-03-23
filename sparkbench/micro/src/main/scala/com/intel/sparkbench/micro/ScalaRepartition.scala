@@ -36,7 +36,7 @@ object ScalaRepartition {
     val sc = new SparkContext(sparkConf)
 
     val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0)).map {
-      case (k,v) => (k.copyBytes, v.copyBytes)
+      case (k,v) => k.copyBytes ++ v.copyBytes
     }
 
     data.persist(StorageLevel.MEMORY_ONLY)
