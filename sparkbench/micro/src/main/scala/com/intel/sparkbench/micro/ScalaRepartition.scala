@@ -26,9 +26,9 @@ import org.apache.spark.storage.StorageLevel
 object ScalaRepartition {
 
   def main(args: Array[String]) {
-    if (args.length != 2) {
+    if (args.length != 3) {
       System.err.println(
-        s"Usage: $ScalaRepartition <INPUT_HDFS> <OUTPUT_HDFS>"
+        s"Usage: $ScalaRepartition <INPUT_HDFS> <OUTPUT_HDFS> <CACHE_IN_MEMORY>"
       )
       System.exit(1)
     }
@@ -39,8 +39,13 @@ object ScalaRepartition {
       case (k,v) => k.copyBytes ++ v.copyBytes
     }
 
-    data.persist(StorageLevel.MEMORY_ONLY)
-    data.count()
+    if (args(2) == "true") {
+      data.persist(StorageLevel.MEMORY_ONLY)
+      data.count()
+    } else if (args(2) != "false") {
+      throw new IllegalArgumentException(
+        s"Unrecognizable parameter CACHE_IN_MEMORY: ${args(2)}, should be true or false")
+    }
 
     val mapParallelism = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reduceParallelism  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
