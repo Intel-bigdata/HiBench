@@ -22,6 +22,7 @@ import java.util.Properties
 
 import org.apache.hadoop.io.compress.CompressionCodec
 import org.apache.hadoop.io.{NullWritable, Text}
+import org.apache.hadoop.mapred.lib.NullOutputFormat
 import org.apache.hadoop.mapred.SequenceFileOutputFormat
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkContext, SparkException}
@@ -65,6 +66,10 @@ class IOCommon(val sc:SparkContext) {
            sequence_data.saveAsHadoopFile[SequenceFileOutputFormat[NullWritable, Text]](filename,
              output_format_codec.get)
          }
+
+       case "Null" =>
+         data.map(x => (NullWritable.get(), new Text(x.toString)))
+           .saveAsHadoopFile[NullOutputFormat[NullWritable, Text]](filename)
 
        case _ => throw new UnsupportedOperationException(s"Unknown output format: $output_format")
      }
