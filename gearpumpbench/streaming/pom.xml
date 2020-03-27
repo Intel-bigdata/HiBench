@@ -49,7 +49,7 @@
     <repository>
       <id>gearpump-shaded-repo</id>
       <name>Vincent at Bintray</name>
-      <url>http://dl.bintray.com/fvunicorn/maven</url>
+      <url>https://dl.bintray.com/fvunicorn/maven</url>
     </repository>
   </repositories>
 
