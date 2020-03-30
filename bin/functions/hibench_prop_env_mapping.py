@@ -71,6 +71,7 @@ HiBenchEnvPropMapping=dict(
     DATASIZE="hibench.workload.datasize",
     # For repartition
     CACHE_IN_MEMORY="hibench.repartition.cacheinmemory",
+    DISABLE_OUTPUT="hibench.repartition.disableoutput",
 
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",

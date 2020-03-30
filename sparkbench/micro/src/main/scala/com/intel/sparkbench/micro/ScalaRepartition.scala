@@ -20,21 +20,26 @@ package com.intel.hibench.sparkbench.micro
 import java.util.Random
 
 import com.intel.hibench.sparkbench.common.IOCommon
-import org.apache.hadoop.examples.terasort.TeraInputFormat
+import org.apache.hadoop.examples.terasort.{TeraInputFormat, TeraOutputFormat}
 import org.apache.hadoop.io.Text
 import org.apache.spark._
-import org.apache.spark.rdd.{CoalescedRDD, RDD, ShuffledRDD}
+import org.apache.spark.rdd.{RDD, ShuffledRDD}
 import org.apache.spark.storage.StorageLevel
+
+import scala.util.hashing
 
 object ScalaRepartition {
 
   def main(args: Array[String]) {
-    if (args.length != 3) {
+    if (args.length != 4) {
       System.err.println(
-        s"Usage: $ScalaRepartition <INPUT_HDFS> <OUTPUT_HDFS> <CACHE_IN_MEMORY>"
+        s"Usage: $ScalaRepartition <INPUT_HDFS> <OUTPUT_HDFS> <CACHE_IN_MEMORY> <DISABLE_OUTPUT>"
       )
       System.exit(1)
     }
+    val cache = toBoolean(args(2), ("CACHE_IN_MEMORY"))
+    val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
+
     val sparkConf = new SparkConf().setAppName("ScalaRepartition")
     val sc = new SparkContext(sparkConf)
 
@@ -42,28 +47,43 @@ object ScalaRepartition {
       case (k,v) => k.copyBytes ++ v.copyBytes
     }
 
-    if (args(2) == "true") {
+    if (cache) {
       data.persist(StorageLevel.MEMORY_ONLY)
       data.count()
-    } else if (args(2) != "false") {
-      throw new IllegalArgumentException(
-        s"Unrecognizable parameter CACHE_IN_MEMORY: ${args(2)}, should be true or false")
     }
 
     val mapParallelism = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val reduceParallelism  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((mapParallelism / 2).toString).toInt
 
-    reparition(data, reduceParallelism).foreach(_ => {})
+    val postShuffle = repartition(data, reduceParallelism)
+    if (disableOutput) {
+      postShuffle.foreach(_ => {})
+    } else {
+      postShuffle.map {
+        case (_, v) => (new Text(v.slice(0, 10)), new Text(v.slice(10, 100)))
+      }.saveAsNewAPIHadoopFile[TeraOutputFormat](args(1))
+    }
 
     sc.stop()
   }
 
+  // More hints on Exceptions
+  private def toBoolean(str: String, parameterName: String): Boolean = {
+    try {
+      str.toBoolean
+    } catch {
+      case e: IllegalArgumentException =>
+        throw new IllegalArgumentException(
+        s"Unrecognizable parameter ${parameterName}: ${str}, should be true or false")
+    }
+  }
+
   // Save a CoalescedRDD than RDD.repartition API
-  private def reparition(previous: RDD[Array[Byte]], numReducers: Int): ShuffledRDD[Int, Array[Byte], Array[Byte]] = {
+  private def repartition(previous: RDD[Array[Byte]], numReducers: Int): ShuffledRDD[Int, Array[Byte], Array[Byte]] = {
     /** Distributes elements evenly across output partitions, starting from a random partition. */
     val distributePartition = (index: Int, items: Iterator[Array[Byte]]) => {
-      var position = (new Random(index)).nextInt(numReducers)
+      var position = new Random(hashing.byteswap32(index)).nextInt(numReducers)
       items.map { t =>
         // Note that the hash code of the key will just be the key itself. The HashPartitioner
         // will mod it with the number of total partitions.
