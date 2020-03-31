@@ -2,6 +2,7 @@ micro.sleep
 micro.sort
 micro.terasort
 micro.wordcount
+micro.repartition
 micro.dfsioe
 
 sql.aggregation
