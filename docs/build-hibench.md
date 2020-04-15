@@ -23,12 +23,12 @@ tips:
 Because some Maven plugins cannot support Scala version perfectly, there are some exceptions.
 
 1. No matter what Scala version is specified, the module (gearpumpbench/streaming) is always built in Scala 2.11.
-2. When the spark version is specified to 2.0, the module (sparkbench/streaming) is only supported for Scala 2.11.
+2. When the spark version is specified to 2.0 or higher, the module (sparkbench/streaming) is only supported for Scala 2.11.
 
 
 
 ### Specify Spark Version ###
-To specify the spark version, use -Dspark=xxx(1.6, 2.0, 2.1 or 2.2). By default, it builds for spark 2.0
+To specify the spark version, use -Dspark=xxx(1.6, 2.0, 2.1, 2.2, 2.3 or 2.4). By default, it builds for spark 2.0
 
     mvn -Psparkbench -Dspark=1.6 -Dscala=2.11 clean package
 tips:
@@ -42,10 +42,10 @@ If you are only interested in a single workload in HiBench. You can build a sing
 
     mvn -Psparkbench -Dmodules -Psql -Dspark=2.1 -Dscala=2.11 clean package
 
-Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or 2.1) and dal.
+Supported modules includes: micro, ml(machine learning), sql, websearch, graph, streaming, structuredStreaming(spark 2.0 or higher) and dal.
 
 ### Build Structured Streaming ###
-For Spark 2.0 and Spark 2.1, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or 2.1. You must explicitly specify it like this:
+For Spark 2.0 or higher versions, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or higher. You must explicitly specify it like this:
 
     mvn -Psparkbench -Dmodules -PstructuredStreaming clean package 
 
