@@ -27,7 +27,7 @@ rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run_spark_job org.apache.spark.examples.graphx.GraphXPageRank $INPUT_HDFS/edges $OUTPUT_HDFS $NUM_ITERATIONS
+run_spark_job com.intel.hibench.sparkbench.graph.pagerank.GraphXPageRank $INPUT_HDFS/edges $OUTPUT_HDFS $NUM_ITERATIONS
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}

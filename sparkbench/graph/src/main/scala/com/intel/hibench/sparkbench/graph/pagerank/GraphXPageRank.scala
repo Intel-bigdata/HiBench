@@ -22,7 +22,7 @@
  *   * Use saveAsText instead of print to present the result.
  */
 
-package org.apache.spark.examples.graphx
+package com.intel.hibench.sparkbench.graph.pagerank
 
 import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark.graphx.GraphLoader
