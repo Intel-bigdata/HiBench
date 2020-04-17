@@ -26,7 +26,7 @@ package org.apache.spark.examples.graphx
 
 import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark.graphx.GraphLoader
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.{SparkConf, SparkContext}
 
 /**
   * Computes the PageRank of URLs from an input file. It's implemented with GraphX.
@@ -50,12 +50,9 @@ object GraphXPageRank {
     val output_path = args(1)
     val iters = if (args.length > 2) args(2).toInt else 10
 
-    // Creates a SparkSession.
-    val spark = SparkSession
-      .builder
-      .appName("GraphXPageRank")
-      .getOrCreate()
-    val sc = spark.sparkContext
+    // Create SparkContext
+    val sparkConf = new SparkConf().setAppName("GraphXPageRank")
+    val sc = new SparkContext(sparkConf)
 
     // Load the edges as a graph
     val graph0 = GraphLoader.edgeListFile(sc, input_path)
@@ -68,7 +65,7 @@ object GraphXPageRank {
     val io = new IOCommon(sc)
     io.save(output_path, ranks)
 
-    spark.stop()
+    sc.stop()
   }
 }
 
