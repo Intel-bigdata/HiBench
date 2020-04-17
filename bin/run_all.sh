@@ -56,6 +56,9 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "graph/nweight" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
+	if [ $benchmark == "graph/pagerank" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
 	if [ $benchmark == "ml/lr" ] && [ $framework == "hadoop" ]; then
 	    continue
 	fi
