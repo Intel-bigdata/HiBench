@@ -47,6 +47,9 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $benchmark == "micro/dfsioe" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
+	if [ $benchmark == "micro/repartition" ] && [ $framework == "hadoop" ]; then
+	    continue
+	fi
 	if [ $benchmark == "websearch/nutchindexing" ] && [ $framework == "spark" ]; then
 	    continue
 	fi
