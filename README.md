@@ -23,7 +23,7 @@ HiBench is a big data benchmark suite that helps evaluate different big data fra
 
 ### Workloads ###
 
-There are totally 19 workloads in HiBench. The workloads are divided into 6 categories which are micro, ml(machine learning), sql, graph, websearch and streaming.
+There are totally 27 workloads in HiBench. The workloads are divided into 6 categories which are micro, ml(machine learning), sql, graph, websearch and streaming.
 
   **Micro Benchmarks:**
 
@@ -101,7 +101,7 @@ There are totally 19 workloads in HiBench. The workloads are divided into 6 cate
 
 **SQL:**
 
-1. Scan (scan), Join(join), Aggregate(aggregation)
+1. Scan (scan) 2. Join (join), 3. Aggregate (aggregation)
 
     These workloads are developed based on SIGMOD 09 paper "A Comparison of Approaches to Large-Scale Data Analysis" and HIVE-396. It contains Hive queries (Aggregation and Join) performing the typical OLAP queries described in the paper. Its input is also automatically generated Web data with hyperlinks following the Zipfian distribution.
 
