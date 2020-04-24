@@ -22,6 +22,7 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.mahout.math.VectorWritable
 import org.apache.spark.mllib.clustering.KMeans
 import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{SparkConf, SparkContext}
 import scopt.OptionParser
 
@@ -46,6 +47,7 @@ object DenseKMeans {
       input: String = null,
       k: Int = -1,
       numIterations: Int = 10,
+      storageLevel: String= "MEMORY_ONLY",
       initializationMode: InitializationMode = Parallel)
 
   def main(args: Array[String]) {
@@ -64,6 +66,9 @@ object DenseKMeans {
         .text(s"initialization mode (${InitializationMode.values.mkString(",")}), " +
         s"default: ${defaultParams.initializationMode}")
         .action((x, c) => c.copy(initializationMode = InitializationMode.withName(x)))
+      opt[String]("storageLevel")
+        .text(s"storage level, default: ${defaultParams.storageLevel}")
+        .action((x, c) => c.copy(storageLevel = x))
       arg[String]("<input>")
         .text("input paths to examples")
         .required()
@@ -85,11 +90,12 @@ object DenseKMeans {
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
 
+    val storageLevel = StorageLevel.fromString(params.storageLevel)
     val examples = data.map { case (k, v) =>
       var vector: Array[Double] = new Array[Double](v.get().size)
       for (i <- 0 until v.get().size) vector(i) = v.get().get(i)
       Vectors.dense(vector)
-    }.cache()
+    }.persist(storageLevel)
 
 //    val examples = sc.textFile(params.input).map { line =>
 //      Vectors.dense(line.split(' ').map(_.toDouble))

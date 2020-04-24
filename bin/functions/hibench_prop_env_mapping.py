@@ -93,6 +93,7 @@ HiBenchEnvPropMapping=dict(
     DIMENSIONS="hibench.kmeans.dimensions",
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
+    K_STORAGE_LEVEL="hibench.kmeans.storage.level",
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
