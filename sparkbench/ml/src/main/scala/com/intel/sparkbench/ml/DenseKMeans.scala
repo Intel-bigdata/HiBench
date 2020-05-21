@@ -104,8 +104,8 @@ object DenseKMeans {
 
     val numExamples = examples.count()
 
+    println(s"load data time (ms) = ${System.currentTimeMillis() - cacheStart}")
     println(s"numExamples = $numExamples.")
-    println(s"load data time = ${System.currentTimeMillis() - cacheStart}")
     val trainingStart = System.currentTimeMillis()
 
     val initMode = params.initializationMode match {
@@ -122,7 +122,7 @@ object DenseKMeans {
 
     val cost = model.computeCost(examples)
 
-    println(s"training time = ${System.currentTimeMillis() - trainingStart}")
+    println(s"training time (ms) = ${System.currentTimeMillis() - trainingStart}")
     println(s"Total cost = $cost.")
 
     sc.stop()
