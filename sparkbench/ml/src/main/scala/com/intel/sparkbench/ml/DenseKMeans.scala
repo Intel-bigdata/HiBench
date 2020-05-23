@@ -87,6 +87,7 @@ object DenseKMeans {
     val sc = new SparkContext(conf)
 
 //    Logger.getRootLogger.setLevel(Level.WARN)
+    val cacheStart = System.currentTimeMillis()
 
     val data = sc.sequenceFile[LongWritable, VectorWritable](params.input)
 
@@ -103,7 +104,9 @@ object DenseKMeans {
 
     val numExamples = examples.count()
 
+    println(s"load data time (ms) = ${System.currentTimeMillis() - cacheStart}")
     println(s"numExamples = $numExamples.")
+    val trainingStart = System.currentTimeMillis()
 
     val initMode = params.initializationMode match {
       case Random => KMeans.RANDOM
@@ -119,6 +122,7 @@ object DenseKMeans {
 
     val cost = model.computeCost(examples)
 
+    println(s"training time (ms) = ${System.currentTimeMillis() - trainingStart}")
     println(s"Total cost = $cost.")
 
     sc.stop()
