@@ -31,7 +31,7 @@
   <packaging>jar</packaging>
   <name>gearpumpbench-streaming</name>
   <properties>
-    <eclipseCollectionsVersion>8.0-SNAPSHOT.0</eclipseCollectionsVersion>
+    <eclipseCollectionsVersion>7.1.0</eclipseCollectionsVersion>
   </properties>
 
   <repositories>
