@@ -6,13 +6,13 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>hibench</artifactId>
-    <version>7.1</version>
+    <version>8.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench</groupId>
   <artifactId>gearpumpbench</artifactId>
   <packaging>pom</packaging>
-  <version>7.1</version>
+  <version>8.0-SNAPSHOT</version>
   <name>gearpumpbench</name>
   <properties>
   <gearpumpVersion>0.8.1</gearpumpVersion>

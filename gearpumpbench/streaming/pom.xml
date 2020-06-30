@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>gearpumpbench</artifactId>
-    <version>7.1</version>
+    <version>8.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.intel.hibench.gearpumpbench</groupId>
@@ -31,7 +31,7 @@
   <packaging>jar</packaging>
   <name>gearpumpbench-streaming</name>
   <properties>
-    <eclipseCollectionsVersion>7.1.0</eclipseCollectionsVersion>
+    <eclipseCollectionsVersion>8.0-SNAPSHOT.0</eclipseCollectionsVersion>
   </properties>
 
   <repositories>
