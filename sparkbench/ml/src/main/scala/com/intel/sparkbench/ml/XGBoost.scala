@@ -99,9 +99,6 @@ object XGBoost {
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
 
-    val numWorkers = sc.getConf.getInt("spark.executor.instances", 2)
-    val numThreads = sc.getConf.getInt("spark.executor.cores", 1)
-
     val xgbParam = Map("eta" -> learningRate,
       "num_round" -> numIterations,
       "eta" -> learningRate,
