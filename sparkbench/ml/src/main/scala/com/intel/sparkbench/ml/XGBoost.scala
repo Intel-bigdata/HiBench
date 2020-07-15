@@ -99,13 +99,25 @@ object XGBoost {
     val splits = data.randomSplit(Array(0.7, 0.3))
     val (trainingData, testData) = (splits(0), splits(1))
 
+    val numWorkers = sc.getConf.getInt("spark.executor.instances", -1)
+    val numThreads = sc.getConf.getInt("spark.executor.cores", -1)
+    val taskCPUs = sc.getConf.getInt("spark.task.cpus", -1)
+
+    if (numWorkers == -1 || numThreads == -1 || taskCPUs == -1) {
+      println("XGBoost error: should set spark.executor.instances, " +
+        "spark.executor.cores and spark.task.cpus in Spark Config")
+      sys.exit(1)
+    }
+
     val xgbParam = Map("eta" -> learningRate,
       "num_round" -> numIterations,
       "eta" -> learningRate,
       "num_class" -> numClasses,
       "max_depth" -> maxDepth,
       "max_bin" -> maxBins,
-      "objective" -> "multi:softprob"
+      "objective" -> "multi:softprob",
+      "num_workers" -> numWorkers,
+      "nthread" -> numThreads
     )
     val xgbClassifier = new XGBoostClassifier(xgbParam).
       setFeaturesCol("features").
