@@ -127,6 +127,14 @@ HiBenchEnvPropMapping=dict(
     MAX_BINS_GBT="hibench.gbt.maxBins",
     NUM_ITERATIONS_GBT="hibench.gbt.numIterations",
     LEARNING_RATE_GBT="hibench.gbt.learningRate",
+    # For XGBoost
+    NUM_EXAMPLES_XGBOOST="hibench.xgboost.examples",
+    NUM_FEATURES_XGBOOST="hibench.xgboost.features",
+    NUM_CLASSES_XGBOOST="hibench.xgboost.numClasses",
+    MAX_DEPTH_XGBOOST="hibench.xgboost.maxDepth",
+    MAX_BINS_XGBOOST="hibench.xgboost.maxBins",
+    NUM_ITERATIONS_XGBOOST="hibench.xgboost.numIterations",
+    LEARNING_RATE_XGBOOST="hibench.xgboost.learningRate",
     # For Random Forest
     NUM_EXAMPLES_RF="hibench.rf.examples",
     NUM_FEATURES_RF="hibench.rf.features",
