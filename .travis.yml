@@ -2,7 +2,7 @@ sudo: required
 dist: trusty
 language: java
 jdk:
-  - openjdk7
+  - openjdk8
 before_install:
   - cat /etc/hosts # optionally check the content *before*
   - sudo hostname "$(hostname | cut -c1-63)"
@@ -13,16 +13,16 @@ before_install:
 install:
   - hibench=$(pwd)
   - cd /opt/
-  - wget http://d3kbcqa49mib13.cloudfront.net/spark-1.6.0-bin-hadoop2.6.tgz
-  - tar -xzf spark-1.6.0-bin-hadoop2.6.tgz
-  - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.5/hadoop-2.6.5.tar.gz
-  - tar -xzf hadoop-2.6.5.tar.gz
+  - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz 
+  - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+  - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz 
+  - tar -xzf hadoop-2.7.7.tar.gz
   - cd ${hibench}
-  - cp ./travis/spark-env.sh /opt/spark-1.6.0-bin-hadoop2.6/conf/
-  - cp ./travis/core-site.xml /opt/hadoop-2.6.5/etc/hadoop/
-  - cp ./travis/hdfs-site.xml /opt/hadoop-2.6.5/etc/hadoop/
-  - cp ./travis/mapred-site.xml /opt/hadoop-2.6.5/etc/hadoop/
-  - cp ./travis/yarn-site.xml /opt/hadoop-2.6.5/etc/hadoop/
+  - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+  - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+  - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+  - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+  - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
   - cp ./travis/hibench.conf ./conf/
   - cp ./travis/benchmarks.lst ./conf/
 before_script:
@@ -31,15 +31,15 @@ cache:
   directories:
   - $HOME/.m2
 script:
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11
   - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=1.6 -Dscala=2.10
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
   - sudo -E ./travis/configssh.sh
   - sudo -E ./travis/restart_hadoop_spark.sh
   - cp ./travis/hadoop.conf ./conf/
   - cp ./travis/spark.conf ./conf/
-  - /opt/hadoop-2.6.5/bin/yarn node -list 2
+  - /opt/hadoop-2.7.7/bin/yarn node -list 2
   - sudo -E ./bin/run_all.sh

@@ -120,7 +120,6 @@
         <module>websearch</module>
         <module>graph</module>
         <module>sql</module>
-        <module>streaming</module>
       </modules>
       <activation>
         <property>
@@ -138,20 +137,6 @@
       <activation>
         <property>
           <name>!spark</name>
-        </property>
-      </activation>
-    </profile>
-
-    <profile>
-      <id>spark1.6</id>
-      <properties>
-        <spark.version>1.6.0</spark.version>
-        <spark.bin.version>1.6</spark.bin.version>
-      </properties>
-      <activation>
-        <property>
-          <name>spark</name>
-          <value>1.6</value>
         </property>
       </activation>
     </profile>
@@ -222,6 +207,20 @@
         <property>
           <name>spark</name>
           <value>2.4</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark3.0</id>
+      <properties>
+        <spark.version>3.0.0</spark.version>
+        <spark.bin.version>3.0</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>3.0</value>
         </property>
       </activation>
     </profile>
