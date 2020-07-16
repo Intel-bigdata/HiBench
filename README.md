@@ -2,7 +2,7 @@
 ## The bigdata micro benchmark suite ##
 
 
-* Current version: 7.1
+* Current version: 7.1.1
 * Homepage: https://github.com/intel-hadoop/HiBench
 * Contents:
   1. Overview

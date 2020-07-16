@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.intel.hibench</groupId>
         <artifactId>hadoopbench</artifactId>
-        <version>7.1</version>
+        <version>7.1.1</version>
     </parent>
 
     <groupId>com.intel.hibench.hadoopbench</groupId>
     <artifactId>nutchindexing</artifactId>
-    <version>7.1</version>
+    <version>7.1.1</version>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -6,13 +6,13 @@
   <parent>
     <groupId>com.intel.hibench</groupId>
     <artifactId>sparkbench</artifactId>
-    <version>7.1</version>
+    <version>7.1.1</version>
   </parent>
 
   <groupId>com.intel.hibench.sparkbench</groupId>
   <artifactId>sparkbench-websearch</artifactId>
   <packaging>jar</packaging>
-  <version>7.1</version>
+  <version>7.1.1</version>
   <name>sparkbench-websearch</name>
 
   <dependencies>
