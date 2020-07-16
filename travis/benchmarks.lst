@@ -6,7 +6,6 @@ websearch.nutchindexing
 ml.bayes
 ml.kmeans
 ml.lr
-ml.als
 ml.pca
 ml.gbt
 ml.rf
