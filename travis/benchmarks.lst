@@ -1,1 +1,13 @@
-ml.als
+micro.sleep
+micro.sort
+micro.terasort
+micro.wordcount
+micro.repartition
+micro.dfsioe
+
+sql.aggregation
+sql.join
+sql.scan
+
+websearch.nutchindexing
+websearch.pagerank
