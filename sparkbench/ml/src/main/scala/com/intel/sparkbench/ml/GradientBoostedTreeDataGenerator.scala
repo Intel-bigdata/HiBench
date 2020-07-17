@@ -64,7 +64,7 @@ object GradientBoostedTreeDataGenerator {
   }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("GradientBoostingTreeDataGenerator")
+    val conf = new SparkConf().setAppName("GradientBoostedTreeDataGenerator")
     val sc = new SparkContext(conf)
 
     var outputPath = ""
@@ -84,7 +84,7 @@ object GradientBoostedTreeDataGenerator {
       println(s"Num of Features: $numFeatures")
     } else {
       System.err.println(
-        s"Usage: $GradientBoostingTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $GradientBoostedTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }
