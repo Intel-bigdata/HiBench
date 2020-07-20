@@ -29,13 +29,13 @@ import org.apache.spark.rdd.RDD
 
 /**
  * :: DeveloperApi ::
- * Generate test data for Gradient Boosting Tree. This class chooses positive labels
+ * Generate test data for Gradient Boosted Tree. This class chooses positive labels
  * with probability `probOne` and scales features for positive examples by `eps`.
  */
 object GradientBoostedTreeDataGenerator {
 
   /**
-   * Generate an RDD containing test data for Gradient Boosting Tree.
+   * Generate an RDD containing test data for Gradient Boosted Tree.
    *
    * @param sc SparkContext to use for creating the RDD.
    * @param nexamples Number of examples that will be contained in the RDD.
@@ -64,7 +64,7 @@ object GradientBoostedTreeDataGenerator {
   }
 
   def main(args: Array[String]) {
-    val conf = new SparkConf().setAppName("GradientBoostingTreeDataGenerator")
+    val conf = new SparkConf().setAppName("GradientBoostedTreeDataGenerator")
     val sc = new SparkContext(conf)
 
     var outputPath = ""
@@ -84,7 +84,7 @@ object GradientBoostedTreeDataGenerator {
       println(s"Num of Features: $numFeatures")
     } else {
       System.err.println(
-        s"Usage: $GradientBoostingTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $GradientBoostedTreeDataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
       )
       System.exit(1)
     }
