@@ -3,43 +3,431 @@ dist: trusty
 language: java
 jdk:
   - openjdk8
-before_install:
-  - cat /etc/hosts # optionally check the content *before*
-  - sudo hostname "$(hostname | cut -c1-63)"
-  - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
-  - cat /etc/hosts # optionally check the content *after*
-  - cat /proc/cpuinfo | grep cores | wc -l
-  - free -h
-install:
-  - hibench=$(pwd)
-  - cd /opt/
-  - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz 
-  - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
-  - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz 
-  - tar -xzf hadoop-2.7.7.tar.gz
-  - cd ${hibench}
-  - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
-  - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-  - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-  - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-  - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-  - cp ./travis/hibench.conf ./conf/
-  - cp ./travis/benchmarks.lst ./conf/
-before_script:
-  - "export JAVA_OPTS=-Xmx512m"
-cache:
-  directories:
-  - $HOME/.m2
-script:
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
-  - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-  - sudo -E ./travis/configssh.sh
-  - sudo -E ./travis/restart_hadoop_spark.sh
-  - cp ./travis/hadoop.conf ./conf/
-  - cp ./travis/spark.conf ./conf/
-  - /opt/hadoop-2.7.7/bin/yarn node -list 2
-  - sudo -E ./bin/run_all.sh
+jobs:
+  include:
+    - name: hibench-mvn
+      before_install:
+      - cat /etc/hosts # optionally check the content *before*
+      - sudo hostname "$(hostname | cut -c1-63)"
+      - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+      - cat /etc/hosts # optionally check the content *after*
+      - cat /proc/cpuinfo | grep cores | wc -l
+      - free -h
+      install:
+      - hibench=$(pwd)
+      - cd /opt/
+      - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+      - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+      - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+      - tar -xzf hadoop-2.7.7.tar.gz
+      - cd ${hibench}
+      - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+      - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+      - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+      - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+      - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+      before_script:
+      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+      - "export SPARK_VERSION=spark3.0"
+      - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+
+    - name: hibench-spark-3.0_micro
+      before_install:
+          - cat /etc/hosts # optionally check the content *before*
+          - sudo hostname "$(hostname | cut -c1-63)"
+          - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+          - cat /etc/hosts # optionally check the content *after*
+          - cat /proc/cpuinfo | grep cores | wc -l
+          - free -h
+      install:
+          - whereis java
+          - hibench=$(pwd)
+          - cd /opt/
+          - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+          - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+          - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+          - tar -xzf hadoop-2.7.7.tar.gz
+          - cd ${hibench}
+          - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+          - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+          - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+          - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+          - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+          - cp ./travis/hibench.conf ./conf/
+          - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+          - cp ./travis/hadoop.conf ./conf/
+          - cp ./travis/spark_3.0.conf ./conf/spark.conf
+      before_script:
+          - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+          - "export SPARK_VERSION=spark3.0"
+          - "export JAVA_OPTS=-Xmx512m"
+      cache:
+          directories:
+          - $HOME/.m2
+      script:
+          - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+          - sudo -E ./travis/configssh.sh
+          - sudo -E ./travis/restart_hadoop_spark.sh
+          - /opt/hadoop-2.7.7/bin/yarn node -list 2
+          - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-3.0_sql
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_3.0.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark3.0"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-3.0_websearch
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_3.0.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark3.0"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-3.0_ml
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_3.0.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark3.0"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-3.0_graph
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_3.0.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark3.0"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-2.4_micro
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_2.4.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark2.4"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-2.4_sql
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_2.4.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark2.4"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-2.4_websearch
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_2.4.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark2.4"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-2.4_ml
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_2.4.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark2.4"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh
+
+    - name: hibench-spark-2.4_graph
+      before_install:
+        - cat /etc/hosts # optionally check the content *before*
+        - sudo hostname "$(hostname | cut -c1-63)"
+        - sed -n '/^127.0.0.1/!p' /etc/hosts | sed -e '1 i\127.0.0.1 localhost' -e "1 i\127.0.0.1 $(hostname | cut -c1-63)" | sudo tee /etc/hosts
+        - cat /etc/hosts # optionally check the content *after*
+        - cat /proc/cpuinfo | grep cores | wc -l
+        - free -h
+      install:
+        - hibench=$(pwd)
+        - cd /opt/
+        - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
+        - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
+        - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+        - tar -xzf hadoop-2.7.7.tar.gz
+        - cd ${hibench}
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
+        - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hibench.conf ./conf/
+        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+        - cp ./travis/hadoop.conf ./conf/
+        - cp ./travis/spark_2.4.conf ./conf/spark.conf
+      before_script:
+        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
+        - "export SPARK_VERSION=spark2.4"
+        - "export JAVA_OPTS=-Xmx512m"
+      cache:
+        directories:
+        - $HOME/.m2
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
+        - sudo -E ./travis/configssh.sh
+        - sudo -E ./travis/restart_hadoop_spark.sh
+        - /opt/hadoop-2.7.7/bin/yarn node -list 2
+        - sudo -E ./bin/run_all.sh

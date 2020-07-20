@@ -9,12 +9,12 @@ import scopt.OptionParser
 
 object LinearRegressionWithElasticNet {
   case class Params(
-                     input: String = null,
-                     regParam: Double = 0.3,
-                     elasticNetParam: Double = 0.8,
-                     maxIter: Int = 10,
-                     tol: Double = 1E-6,
-                     fracTest: Double = 0.25)
+      input: String = null,
+      regParam: Double = 0.3,
+      elasticNetParam: Double = 0.8,
+      maxIter: Int = 10,
+      tol: Double = 1E-6,
+      fracTest: Double = 0.25)
 
   def main(args: Array[String]): Unit = {
     val defaultParams = Params()
@@ -92,8 +92,8 @@ object LinearRegressionWithElasticNet {
   }
 
   private[ml] def loadDatasets(input: String,
-                               algo: String,
-                               fracTest: Double): DataFrame ={
+      algo: String,
+      fracTest: Double): DataFrame ={
     val spark = SparkSession
       .builder
       .getOrCreate()

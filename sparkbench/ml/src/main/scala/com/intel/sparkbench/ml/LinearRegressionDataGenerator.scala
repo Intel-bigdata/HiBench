@@ -73,7 +73,6 @@ object LinearRegressionDataGenerator {
   }
 
   def main(args: Array[String]) {
-    println(s"start !!")
     val conf = new SparkConf().setAppName("LinearRegressionDataGenerator")
     val sc = new SparkContext(conf)
 
