@@ -1,5 +1,5 @@
 sudo: required
-dist: trusty
+dist: xenial
 language: java
 before_install:
   - cat /etc/hosts # optionally check the content *before*
@@ -55,6 +55,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
@@ -84,6 +85,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
@@ -113,6 +115,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
@@ -142,6 +145,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
@@ -171,6 +175,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
@@ -195,11 +200,12 @@ jobs:
         - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
         - tar -xzf hadoop-2.7.7.tar.gz
         - cd ${hibench}
-        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
         - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
@@ -224,11 +230,12 @@ jobs:
         - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
         - tar -xzf hadoop-2.7.7.tar.gz
         - cd ${hibench}
-        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
         - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
@@ -253,11 +260,12 @@ jobs:
         - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
         - tar -xzf hadoop-2.7.7.tar.gz
         - cd ${hibench}
-        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
         - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
@@ -282,11 +290,12 @@ jobs:
         - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
         - tar -xzf hadoop-2.7.7.tar.gz
         - cd ${hibench}
-        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
         - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
@@ -311,11 +320,12 @@ jobs:
         - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
         - tar -xzf hadoop-2.7.7.tar.gz
         - cd ${hibench}
-        - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop2.7/conf/
+        - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
         - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
