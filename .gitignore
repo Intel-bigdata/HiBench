@@ -14,5 +14,8 @@ report/
 .classpath
 .project
 .settings/
+conf/benchmarks.lst
+conf/frameworks.lst
+conf/hibench.conf
 conf/hadoop.conf
 conf/spark.conf
