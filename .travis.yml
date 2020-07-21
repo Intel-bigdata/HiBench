@@ -55,7 +55,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
@@ -85,7 +85,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
@@ -115,7 +115,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
@@ -145,7 +145,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
@@ -175,7 +175,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
@@ -205,7 +205,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
@@ -235,7 +235,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
@@ -265,7 +265,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
@@ -295,7 +295,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
@@ -325,7 +325,7 @@ jobs:
         - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/yarn-site.xml /opt/hadoop-2.7.7/etc/hadoop/
-        - cp ./travis/yarn-env.sh /opt/hadoop-2.7.7/etc/hadoop/
+        - cp ./travis/hadoop-env.sh /opt/hadoop-2.7.7/etc/hadoop/
         - cp ./travis/hibench.conf ./conf/
         - cp ./travis/hadoop.conf ./conf/
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
