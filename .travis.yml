@@ -50,7 +50,7 @@ jobs:
 
     - name: hibench-spark-3.0_micro
       install:
-        - cd ${hibench}
+        - echo $(pwd)
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - cp ./travis/spark_3.0.conf ./conf/spark.conf
       before_script:
@@ -66,7 +66,6 @@ jobs:
 
     - name: hibench-spark-3.0_sql
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - cp ./travis/spark_3.0.conf ./conf/spark.conf
       before_script:
@@ -82,7 +81,6 @@ jobs:
 
     - name: hibench-spark-3.0_websearch
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - cp ./travis/spark_3.0.conf ./conf/spark.conf
       before_script:
@@ -98,7 +96,6 @@ jobs:
 
     - name: hibench-spark-3.0_ml
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
         - cp ./travis/spark_3.0.conf ./conf/spark.conf
       before_script:
@@ -114,7 +111,6 @@ jobs:
 
     - name: hibench-spark-3.0_graph
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - cp ./travis/spark_3.0.conf ./conf/spark.conf
       before_script:
@@ -130,7 +126,6 @@ jobs:
 
     - name: hibench-spark-2.4_micro
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - cp ./travis/spark_2.4.conf ./conf/spark.conf
       before_script:
@@ -146,7 +141,6 @@ jobs:
 
     - name: hibench-spark-2.4_sql
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - cp ./travis/spark_2.4.conf ./conf/spark.conf
       before_script:
@@ -162,7 +156,6 @@ jobs:
 
     - name: hibench-spark-2.4_websearch
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - cp ./travis/spark_2.4.conf ./conf/spark.conf
       before_script:
@@ -178,7 +171,6 @@ jobs:
 
     - name: hibench-spark-2.4_ml
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
         - cp ./travis/spark_2.4.conf ./conf/spark.conf
       before_script:
@@ -194,7 +186,6 @@ jobs:
 
     - name: hibench-spark-2.4_graph
       install:
-        - cd ${hibench}
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - cp ./travis/spark_2.4.conf ./conf/spark.conf
       before_script:
