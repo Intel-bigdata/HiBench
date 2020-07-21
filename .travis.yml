@@ -15,7 +15,7 @@ cache:
   - $HOME/.m2
 install:
   - hibench=$(pwd)
-  - echo hibench
+  - echo ${hibench}
   - cd /opt/
   - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
   - tar -xzf spark-3.0.0-bin-hadoop2.7.tgz
