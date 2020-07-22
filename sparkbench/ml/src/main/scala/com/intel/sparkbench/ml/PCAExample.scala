@@ -19,8 +19,8 @@ package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.ml.feature.{LabeledPoint, PCA}
 import org.apache.spark.rdd.RDD
-
 import org.apache.spark.sql.SparkSession
+
 
 object PCAExample {
   def main(args: Array[String]): Unit = {
@@ -35,7 +35,7 @@ object PCAExample {
       println(s"input Path: $inputPath")
     } else {
       System.err.println(
-        s"Usage: $PCADataGenerator <OUTPUT_PATH> <NUM_EXAMPLES> <NUM_FEATURES>"
+        s"Usage: $PCAExample <INPUT_PATH>"
       )
       System.exit(1)
     }
@@ -51,7 +51,6 @@ object PCAExample {
       .fit(df)
 
     val result = pca.transform(df).select("pcaFeatures")
-    result.show(false)
 
     spark.stop()
   }

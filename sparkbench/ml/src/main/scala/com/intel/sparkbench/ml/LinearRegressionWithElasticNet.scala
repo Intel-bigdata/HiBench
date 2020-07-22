@@ -5,6 +5,7 @@ import org.apache.spark.ml.linalg.Vector
 import org.apache.spark.ml.regression.LinearRegression
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, SparkSession}
+
 import scopt.OptionParser
 
 object LinearRegressionWithElasticNet {
