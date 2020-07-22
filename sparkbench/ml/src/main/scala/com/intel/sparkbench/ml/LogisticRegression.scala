@@ -18,11 +18,10 @@
 // scalastyle:off println
 package com.intel.hibench.sparkbench.ml
 
-import org.apache.spark.{SparkConf, SparkContext}
-
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
 
 object LogisticRegression {
 

@@ -162,11 +162,6 @@
           <artifactId>sparkbench-sql</artifactId>
           <version>${project.version}</version>
         </dependency>
-        <dependency>
-          <groupId>com.intel.hibench.sparkbench</groupId>
-          <artifactId>sparkbench-streaming</artifactId>
-          <version>${project.version}</version>
-        </dependency>
       </dependencies>
       <activation>
         <property>
