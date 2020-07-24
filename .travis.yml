@@ -209,6 +209,7 @@ jobs:
     - name: hibench_spark-3.0_hadoop-3.2_micro
       before_script:
       - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+      - "export HADOOP_HOME=/opt/hadoop-3.2.1"
       - "export SPARK_VERSION=spark3.0"
       - "export JAVA_OPTS=-Xmx512m"
       script:
@@ -216,68 +217,69 @@ jobs:
       - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
       - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
       - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
+      - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
       - sudo -E ./travis/configssh.sh
       - sudo -E ./travis/restart_hadoop_spark.sh
       - /opt/hadoop-3.2.1/bin/yarn node -list 2
       - sudo -E ./bin/run_all.sh
 
-    - name: hibench_spark-3.0_hadoop-3.2_sql
-      before_script:
-      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
-      - "export HADOOP_HOME=/opt/hadoop-3.2.1"
-      - "export SPARK_VERSION=spark3.0"
-      - "export JAVA_OPTS=-Xmx512m"
-      script:
-      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-      - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
-      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
-      - sudo -E ./travis/configssh.sh
-      - sudo -E ./travis/restart_hadoop_spark.sh
-      - /opt/hadoop-3.2.1/bin/yarn node -list 2
-      - sudo -E ./bin/run_all.sh
-
-    - name: hibench_spark-3.0_hadoop-3.2_websearch
-      before_script:
-      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
-      - "export SPARK_VERSION=spark3.0"
-      - "export JAVA_OPTS=-Xmx512m"
-      script:
-      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-      - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
-      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
-      - sudo -E ./travis/configssh.sh
-      - sudo -E ./travis/restart_hadoop_spark.sh
-      - /opt/hadoop-3.2.1/bin/yarn node -list 2
-      - sudo -E ./bin/run_all.sh
-
-    - name: hibench_spark-3.0_hadoop-3.2_ml
-      before_script:
-      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
-      - "export SPARK_VERSION=spark3.0"
-      - "export JAVA_OPTS=-Xmx512m"
-      script:
-      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-      - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
-      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
-      - sudo -E ./travis/configssh.sh
-      - sudo -E ./travis/restart_hadoop_spark.sh
-      - /opt/hadoop-3.2.1/bin/yarn node -list 2
-      - sudo -E ./bin/run_all.sh
-
-    - name: hibench_spark-3.0_hadoop-3.2_graph
-      before_script:
-      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
-      - "export SPARK_VERSION=spark3.0"
-      - "export JAVA_OPTS=-Xmx512m"
-      script:
-      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-      - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
-      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
-      - sudo -E ./travis/configssh.sh
-      - sudo -E ./travis/restart_hadoop_spark.sh
-      - /opt/hadoop-3.2.1/bin/yarn node -list 2
-      - sudo -E ./bin/run_all.sh
+#    - name: hibench_spark-3.0_hadoop-3.2_sql
+#      before_script:
+#      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+#      - "export HADOOP_HOME=/opt/hadoop-3.2.1"
+#      - "export SPARK_VERSION=spark3.0"
+#      - "export JAVA_OPTS=-Xmx512m"
+#      script:
+#      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+#      - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
+#      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
+#      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
+#      - sudo -E ./travis/configssh.sh
+#      - sudo -E ./travis/restart_hadoop_spark.sh
+#      - /opt/hadoop-3.2.1/bin/yarn node -list 2
+#      - sudo -E ./bin/run_all.sh
+#
+#    - name: hibench_spark-3.0_hadoop-3.2_websearch
+#      before_script:
+#      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+#      - "export SPARK_VERSION=spark3.0"
+#      - "export JAVA_OPTS=-Xmx512m"
+#      script:
+#      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+#      - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+#      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
+#      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
+#      - sudo -E ./travis/configssh.sh
+#      - sudo -E ./travis/restart_hadoop_spark.sh
+#      - /opt/hadoop-3.2.1/bin/yarn node -list 2
+#      - sudo -E ./bin/run_all.sh
+#
+#    - name: hibench_spark-3.0_hadoop-3.2_ml
+#      before_script:
+#      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+#      - "export SPARK_VERSION=spark3.0"
+#      - "export JAVA_OPTS=-Xmx512m"
+#      script:
+#      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+#      - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
+#      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
+#      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
+#      - sudo -E ./travis/configssh.sh
+#      - sudo -E ./travis/restart_hadoop_spark.sh
+#      - /opt/hadoop-3.2.1/bin/yarn node -list 2
+#      - sudo -E ./bin/run_all.sh
+#
+#    - name: hibench_spark-3.0_hadoop-3.2_graph
+#      before_script:
+#      - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+#      - "export SPARK_VERSION=spark3.0"
+#      - "export JAVA_OPTS=-Xmx512m"
+#      script:
+#      - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+#      - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+#      - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
+#      - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
+#      - sudo -E ./travis/configssh.sh
+#      - sudo -E ./travis/restart_hadoop_spark.sh
+#      - /opt/hadoop-3.2.1/bin/yarn node -list 2
+#      - sudo -E ./bin/run_all.sh
