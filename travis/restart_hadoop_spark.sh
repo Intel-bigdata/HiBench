@@ -14,9 +14,9 @@
 # limitations under the License.
 
 # stop process
-/opt/hadoop-2.7.7/sbin/stop-dfs.sh
-/opt/hadoop-2.7.7/sbin/stop-yarn.sh
-/opt/hadoop-2.7.7/sbin/stop-all.sh
+${HADOOP_HOME}/sbin/stop-dfs.sh
+${HADOOP_HOME}/sbin/stop-yarn.sh
+${HADOOP_HOME}/sbin/stop-all.sh
 
 # clear data directories
 mkdir -p /usr/local/hdfs/namenode/
@@ -25,16 +25,16 @@ rm -fr /usr/local/hdfs/namenode/*
 rm -fr /usr/local/hdfs/datanode/*
 
 # remove related logs
-rm -fr /opt/hadoop-2.7.7/logs/*
+rm -fr ${HADOOP_HOME}/logs/*
 
 # hdfs format
-/opt/hadoop-2.7.7/bin/hdfs namenode -format
+${HADOOP_HOME}/bin/hdfs namenode -format
 
 # restart hdfs
-/opt/hadoop-2.7.7/sbin/start-dfs.sh
+${HADOOP_HOME}/sbin/start-dfs.sh
 
 # restart yarn
-/opt/hadoop-2.7.7/sbin/start-yarn.sh
+${HADOOP_HOME}/sbin/start-yarn.sh
 
 # restart spark
 ${SPARK_HOME}/sbin/start-all.sh

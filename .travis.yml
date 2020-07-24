@@ -224,6 +224,7 @@ jobs:
     - name: hibench_spark-3.0_hadoop-3.2_sql
       before_script:
       - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
+      - "export HADOOP_HOME=/opt/hadoop-3.2.1"
       - "export SPARK_VERSION=spark3.0"
       - "export JAVA_OPTS=-Xmx512m"
       script:
