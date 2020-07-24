@@ -209,7 +209,6 @@ jobs:
     - name: hibench_spark-3.0_hadoop-3.2_micro
       before_script:
       - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2"
-      - "export HADOOP_HOME=/opt/hadoop-3.2.1"
       - "export SPARK_VERSION=spark3.0"
       - "export JAVA_OPTS=-Xmx512m"
       script:
@@ -218,6 +217,9 @@ jobs:
       - cp ./travis/spark_3.0_hadoop_3.2.conf ./conf/spark.conf
       - cp ./travis/hadoop_3.2.conf ./conf/hadoop.conf
       - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
+      - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
+      - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
+      - source ~/.branchrc
       - sudo -E ./travis/configssh.sh
       - sudo -E ./travis/restart_hadoop_spark.sh
       - /opt/hadoop-3.2.1/bin/yarn node -list 2
