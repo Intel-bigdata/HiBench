@@ -16,8 +16,8 @@
   <name>hadoopbench-sql</name>
 
   <properties>
-    <repo>http://archive.apache.org</repo>
-    <file>dist/hive/hive-0.14.0/apache-hive-0.14.0-bin.tar.gz</file>
+    <repo>https://mirrors.huaweicloud.com</repo>
+    <file>apache/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
   </properties>
 
   <build>
