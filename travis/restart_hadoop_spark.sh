@@ -14,6 +14,7 @@
 # limitations under the License.
 
 # stop process
+echo ${HADOOP_HOME}
 ${HADOOP_HOME}/sbin/stop-dfs.sh
 ${HADOOP_HOME}/sbin/stop-yarn.sh
 ${HADOOP_HOME}/sbin/stop-all.sh
