@@ -17,37 +17,58 @@
 
 package com.intel.hibench.sparkbench.ml
 
+import com.intel.hibench.sparkbench.ml.SVDExample.{Params, run}
 import org.apache.spark.ml.feature.{LabeledPoint, PCA}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
-
+import scopt.OptionParser
 
 object PCAExample {
+
+  case class Params(
+    k: Int = 2,
+    maxResultSize: String = "1g",
+    dataPath: String = null
+  )
+
   def main(args: Array[String]): Unit = {
+    val defaultParams = Params()
+    val parser = new OptionParser[Params]("PCA") {
+      head("PCA: an example of principal component analysis.")
+      opt[Int]("k")
+        .text(s"k, default: ${defaultParams.k}")
+        .action((x, c) => c.copy(k = x))
+      opt[String]("maxResultSize")
+        .text(s"maxResultSize, default: ${defaultParams.maxResultSize}")
+        .action((x, c) => c.copy(maxResultSize = x))
+      arg[String]("<dataPath>")
+        .required()
+        .text("data path of PCA")
+        .action((x, c) => c.copy(dataPath = x))
+    }
+    parser.parse(args, defaultParams) match {
+      case Some(params) => run(params)
+      case _ => sys.exit(1)
+    }
+  }
+
+  def run(params: Params): Unit = {
     val spark = SparkSession
       .builder
       .appName("PCAExample")
+      .config("spark.driver.maxResultSize", params.maxResultSize)
       .getOrCreate()
 
-    var inputPath = ""
-    if (args.length == 1) {
-      inputPath = args(0)
-      println(s"input Path: $inputPath")
-    } else {
-      System.err.println(
-        s"Usage: $PCAExample <INPUT_PATH>"
-      )
-      System.exit(1)
-    }
     // Load training data
-    val data: RDD[LabeledPoint] = spark.sparkContext.objectFile(inputPath)
+    val data: RDD[LabeledPoint] = spark.sparkContext.objectFile(params.dataPath)
     import spark.implicits._
+
     val df = data.toDF()
 
     val pca = new PCA()
       .setInputCol("features")
       .setOutputCol("pcaFeatures")
-      .setK(3)
+      .setK(params.k)
       .fit(df)
 
     val result = pca.transform(df).select("pcaFeatures")

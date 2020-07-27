@@ -118,6 +118,7 @@ HiBenchEnvPropMapping=dict(
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
+    PCA_K="hibench.pca.k",
     MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize",
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
