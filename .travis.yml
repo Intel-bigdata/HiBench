@@ -223,6 +223,7 @@ jobs:
       - sudo -E ./travis/configssh.sh
       - sudo -E ./travis/restart_hadoop_spark.sh
       - /opt/hadoop-3.2.1/bin/yarn node -list 2
+      - echo ${hibench.hadoop.home}
       - sudo -E ./bin/run_all.sh
 
 #    - name: hibench_spark-3.0_hadoop-3.2_sql
