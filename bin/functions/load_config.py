@@ -387,7 +387,6 @@ def probe_hadoop_release():
 def probe_hadoop_examples_jars():
     # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
-        print("hibench.hadoop.home==" + HibenchConf['hibench.hadoop.home'])
         examples_jars_candidate_apache0 = HibenchConf[
             'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
         examples_jars_candidate_cdh0 = HibenchConf[
