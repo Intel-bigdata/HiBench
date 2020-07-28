@@ -59,16 +59,8 @@ jobs:
         - "export JAVA_OPTS=-Xmx512m"
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
-        - cat ./conf/hadoop.conf
-        - source ~/.branchrc
+        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -80,15 +72,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -100,15 +84,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -120,15 +96,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -140,15 +108,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -160,15 +120,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-2.4_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -180,15 +132,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-2.4_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -200,15 +144,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-2.4_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -220,15 +156,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-2.4_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -240,15 +168,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-2.4_hadoop-2.7_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-2.7.7/bin/yarn node -list 2
@@ -260,17 +180,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-3.2.1' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop3.2\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
-        - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-3.2_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-3.2.1/bin/yarn node -list 2
@@ -282,17 +192,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-3.2.1' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop3.2\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
-        - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-3.2_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-3.2.1/bin/yarn node -list 2
@@ -304,17 +204,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-3.2.1' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop3.2\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
-        - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-3.2_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-3.2.1/bin/yarn node -list 2
@@ -326,17 +216,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-3.2.1' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop3.2\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
-        - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-3.2_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-3.2.1/bin/yarn node -list 2
@@ -348,17 +228,7 @@ jobs:
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-        - cp ./travis/hibench.conf ./conf/
-        - cp ./travis/spark.conf ./conf/
-        - cp ./travis/hadoop.conf ./conf/
-        - cp ./travis/hadoop-layout.sh /opt/hadoop-3.2.1/libexec
-        - sed -i '1 i hibench.hadoop.home /opt/hadoop-3.2.1' ./conf/hadoop.conf
-        - sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop3.2\nhibench.spark.version spark3.0' ./conf/spark.conf
-        - sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.2.1.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar' ./conf/hibench.conf
-        - echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
-        - echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
-        - echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
-        - source ~/.branchrc
+        - ./travis/set_spark-3.0_hadoop-3.2_env.sh
         - sudo -E ./travis/configssh.sh
         - sudo -E ./travis/restart_hadoop_spark.sh
         - /opt/hadoop-3.2.1/bin/yarn node -list 2
