@@ -32,7 +32,7 @@ rm -fr ${HADOOP_HOME}/logs/*
 ${HADOOP_HOME}/bin/hdfs namenode -format
 
 # restart hdfs
-${HADOOP_HOME}/sbin/start-dfs.sh
+${HADOOP_HOME}/ sbin/start-dfs.sh
 
 # restart yarn
 ${HADOOP_HOME}/sbin/start-yarn.sh
