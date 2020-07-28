@@ -3,7 +3,6 @@
 #set hadoop and spark env
 
 echo "=="
-ls -l ./travis
 cp ./travis/hibench.conf ./conf/
 cp ./travis/spark.conf ./conf/
 cp ./travis/hadoop.conf ./conf/
