@@ -61,7 +61,7 @@ jobs:
         - ls -l ./travis
 #        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-        - ./travis/set_spark-3.0_hadoop-2.7_env.sh
+        - sh ./travis/set_spark-3.0_hadoop-2.7_env.sh
         - echo ${HADOOP_HOME}
         - echo ${SPARK_HOME}
 #        - cp ./travis/hibench.conf ./conf/
