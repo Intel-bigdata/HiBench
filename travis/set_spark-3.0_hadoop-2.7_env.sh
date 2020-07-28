@@ -11,5 +11,3 @@ sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/map
 echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
 echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
 source ~/.branchrc
-echo ${HADOOP_HOME}
-echo ${SPARK_HOME}
