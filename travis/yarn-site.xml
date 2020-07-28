@@ -31,5 +31,4 @@
         <name>yarn.nodemanager.vmem-check-enabled</name>
         <value>false</value>
     </property>
-
 </configuration>
