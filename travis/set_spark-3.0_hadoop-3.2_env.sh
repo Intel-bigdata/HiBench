@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+#set hadoop and spark env
+
 cp ./travis/hibench.conf ./conf/
 cp ./travis/spark.conf ./conf/
 cp ./travis/hadoop.conf ./conf/
