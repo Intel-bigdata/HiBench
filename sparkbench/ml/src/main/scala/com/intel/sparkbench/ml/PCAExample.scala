@@ -17,7 +17,6 @@
 
 package com.intel.hibench.sparkbench.ml
 
-import com.intel.hibench.sparkbench.ml.SVDExample.{Params, run}
 import org.apache.spark.ml.feature.{LabeledPoint, PCA}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
