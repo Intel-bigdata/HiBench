@@ -62,10 +62,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-2.7_sql
       before_script:
@@ -74,10 +70,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-2.7_websearch
       before_script:
@@ -86,10 +78,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-2.7_ml
       before_script:
@@ -98,10 +86,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-2.7_graph
       before_script:
@@ -110,10 +94,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_micro
       before_script:
@@ -122,10 +102,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_sql
       before_script:
@@ -134,10 +110,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_websearch
       before_script:
@@ -146,10 +118,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_ml
       before_script:
@@ -158,10 +126,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_graph
       before_script:
@@ -170,10 +134,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_micro
       before_script:
@@ -182,10 +142,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-3.2.1/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_sql
       before_script:
@@ -194,10 +150,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-3.2.1/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_websearch
       before_script:
@@ -206,10 +158,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-3.2.1/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_ml
       before_script:
@@ -218,10 +166,6 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-3.2.1/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_graph
       before_script:
@@ -230,7 +174,3 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-3.2.1/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh

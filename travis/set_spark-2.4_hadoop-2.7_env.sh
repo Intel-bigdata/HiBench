@@ -11,3 +11,7 @@ sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/map
 echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
 echo "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7" >> ~/.branchrc
 source ~/.branchrc
+sudo -E ./travis/configssh.sh
+sudo -E ./travis/restart_hadoop_spark.sh
+${HADOOP_HOME}/bin/yarn node -list 2
+sudo -E ./bin/run_all.sh

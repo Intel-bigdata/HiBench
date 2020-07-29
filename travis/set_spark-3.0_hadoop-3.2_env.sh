@@ -13,3 +13,7 @@ echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
 echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
 echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
 source ~/.branchrc
+sudo -E ./travis/configssh.sh
+sudo -E ./travis/restart_hadoop_spark.sh
+${HADOOP_HOME}/bin/yarn node -list 2
+sudo -E ./bin/run_all.sh
