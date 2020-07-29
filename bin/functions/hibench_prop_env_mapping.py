@@ -99,7 +99,7 @@ HiBenchEnvPropMapping=dict(
     NUM_FEATURES_LR="hibench.lr.features",
     # For SVM
     NUM_EXAMPLES_SVM="hibench.svm.examples",
-    NUM_FEATURES_SVM="hibench.svm.examples",
+    NUM_FEATURES_SVM="hibench.svm.features",
     NUM_ITERATIONS_SVM="hibench.svm.numIterations",
     STEPSIZE_SVM="hibench.svm.stepSize",
     REGPARAM_SVM="hibench.svm.regParam",
