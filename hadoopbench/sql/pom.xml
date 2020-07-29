@@ -15,10 +15,34 @@
   <packaging>jar</packaging>
   <name>hadoopbench-sql</name>
 
-  <properties>
-    <repo>https://mirrors.huaweicloud.com</repo>
-    <file>apache/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
-  </properties>
+  <profiles>
+    <profile>
+      <id>hive3.0</id>
+      <properties>
+        <repo>http://archive.apache.org</repo>
+        <file>dist/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
+      </properties>
+      <activation>
+        <property>
+          <name>hive</name>
+          <value>3.0</value>
+        </property>
+      </activation>
+    </profile>
+    <profile>
+      <id>hive0.14</id>
+        <properties>
+          <repo>http://archive.apache.org</repo>
+          <file>dist/hive/hive-0.14.0/apache-hive-0.14.0-bin.tar.gz</file>
+        </properties>
+      <activation>
+        <property>
+          <name>hive</name>
+          <value>0.14</value>
+        </property>
+      </activation>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
