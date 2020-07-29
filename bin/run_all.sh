@@ -92,7 +92,6 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 	if [ $result -ne 0 ]
 	then
 	    echo -e "${On_IRed}ERROR: ${benchmark}/${framework} failed to run successfully.${Color_Off}"
-	    tailf -n 50 /home/
             exit $result
 	fi
     done
