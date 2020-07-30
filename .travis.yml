@@ -36,10 +36,6 @@ install:
 jobs:
   include:
     - name: build-multi-version
-      before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
       script:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11
@@ -50,90 +46,70 @@ jobs:
 
     - name: spark-3.0_micro
       before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_3.0.sh
       script:
           - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
           - ./travis/build_and_run_all_spark_3.0.sh
 
     - name: spark-3.0_sql
       before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_3.0.sh
       script:
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_3.0.sh
 
     - name: spark-3.0_websearch
       before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_3.0.sh
       script:
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_3.0.sh
 
     - name: spark-3.0_ml
       before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_3.0.sh
       script:
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
         - ./travis/build_and_run_all_spark_3.0.sh
 
     - name: spark-3.0_graph
       before_script:
-        - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark3.0"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_3.0.sh
       script:
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_3.0.sh
 
     - name: spark-2.4_micro
       before_script:
-        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark2.4"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_2.4.sh
       script:
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_2.4.sh
 
     - name: spark-2.4_sql
       before_script:
-        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark2.4"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_2.4.sh
       script:
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_2.4.sh
 
     - name: spark-2.4_websearch
       before_script:
-        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark2.4"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_2.4.sh
       script:
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_2.4.sh
 
     - name: spark-2.4_ml
       before_script:
-        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark2.4"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_2.4.sh
       script:
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_2.4.sh
 
     - name: spark-2.4_graph
       before_script:
-        - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
-        - "export SPARK_VERSION=spark2.4"
-        - "export JAVA_OPTS=-Xmx512m"
+        - ./travis/export_environment_variables_spark_2.4.sh
       script:
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - ./travis/build_and_run_all_spark_2.4.sh
