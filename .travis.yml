@@ -35,7 +35,7 @@ install:
   - cp ./travis/hadoop.conf ./conf/
 jobs:
   include:
-    - name: hibench-build-multi-version
+    - name: build-multi-version
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
@@ -48,142 +48,92 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
 
-    - name: hibench-spark-3.0_micro
+    - name: spark-3.0_micro
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-          - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
           - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-          - cp ./travis/spark_3.0.conf ./conf/spark.conf
-          - sudo -E ./travis/configssh.sh
-          - sudo -E ./travis/restart_hadoop_spark.sh
-          - /opt/hadoop-2.7.7/bin/yarn node -list 2
-          - sudo -E ./bin/run_all.sh
+          - ./travis/build_and_run_all_spark_3.0.sh
 
-    - name: hibench-spark-3.0_sql
+    - name: spark-3.0_sql
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_3.0.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_3.0.sh
 
-    - name: hibench-spark-3.0_websearch
+    - name: spark-3.0_websearch
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_3.0.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_3.0.sh
 
-    - name: hibench-spark-3.0_ml
+    - name: spark-3.0_ml
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
-        - cp ./travis/spark_3.0.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_3.0.sh
 
-    - name: hibench-spark-3.0_graph
+    - name: spark-3.0_graph
       before_script:
         - "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark3.0"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_3.0.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_3.0.sh
 
-    - name: hibench-spark-2.4_micro
+    - name: spark-2.4_micro
       before_script:
         - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark2.4"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_2.4.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_2.4.sh
 
-    - name: hibench-spark-2.4_sql
+    - name: spark-2.4_sql
       before_script:
         - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark2.4"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_2.4.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_2.4.sh
 
-    - name: hibench-spark-2.4_websearch
+    - name: spark-2.4_websearch
       before_script:
         - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark2.4"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_2.4.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_2.4.sh
 
-    - name: hibench-spark-2.4_ml
+    - name: spark-2.4_ml
       before_script:
         - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark2.4"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_2.4.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_2.4.sh
 
-    - name: hibench-spark-2.4_graph
+    - name: spark-2.4_graph
       before_script:
         - "export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7"
         - "export SPARK_VERSION=spark2.4"
         - "export JAVA_OPTS=-Xmx512m"
       script:
-        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-        - cp ./travis/spark_2.4.conf ./conf/spark.conf
-        - sudo -E ./travis/configssh.sh
-        - sudo -E ./travis/restart_hadoop_spark.sh
-        - /opt/hadoop-2.7.7/bin/yarn node -list 2
-        - sudo -E ./bin/run_all.sh
+        - ./travis/build_and_run_all_spark_2.4.sh
