@@ -80,6 +80,17 @@
       <name>Scala-tools Maven 2 Repository</name>
       <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
     </repository>
+    <repository>
+      <id>xgboostrepo</id>
+      <name>XGBoost Maven Repo</name>
+      <url>https://s3-us-west-2.amazonaws.com/xgboost-maven-repo/release</url>
+      <releases>
+	      <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
