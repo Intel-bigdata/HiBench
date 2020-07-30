@@ -18,11 +18,12 @@
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.tree.GradientBoostedTrees
-import org.apache.spark.mllib.tree.configuration.BoostingStrategy
-import org.apache.spark.mllib.tree.model.GradientBoostedTreesModel
+// import org.apache.spark.mllib.tree.GradientBoostedTrees
+// import org.apache.spark.mllib.tree.configuration.BoostingStrategy
+// import org.apache.spark.mllib.tree.model.GradientBoostedTreesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.feature.{LabeledPoint => NewLabeledPoint}
 import ml.dmlc.xgboost4j.scala.spark.XGBoostClassifier
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
@@ -33,7 +34,7 @@ object XGBoost {
 
   case class Params(
     numClasses: Int = 2,
-    maxDepth: Int = 30,
+    maxDepth: Int = 8,
     maxBins: Int = 32,
     numIterations: Int = 20,
     learningRate: Double = 0.1,
@@ -93,7 +94,7 @@ object XGBoost {
     val mllibRDD: RDD[LabeledPoint] = sc.objectFile(dataPath)
     // Convert to ML LabeledPoint and to DataFrame
     val mlRDD: RDD[NewLabeledPoint] = mllibRDD.map { p => NewLabeledPoint(p.label, p.features.asML) }
-    val data = mlRDD.toDF
+    val data = mlRDD.toDF("label", "features")
 
     // Split the data into training and test sets (30% held out for testing)
     val splits = data.randomSplit(Array(0.7, 0.3))
@@ -123,7 +124,9 @@ object XGBoost {
       setFeaturesCol("features").
       setLabelCol("label")
 
-    val model = xgbClassifier.fit(trainingData)
+    val pipeline = new Pipeline().setStages(Array(xgbClassifier))
+
+    val model = pipeline.fit(trainingData)
 
     // Make predictions.
     val predictions = model.transform(testData)
