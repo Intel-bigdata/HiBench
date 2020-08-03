@@ -94,6 +94,16 @@ HiBenchEnvPropMapping=dict(
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
     K_STORAGE_LEVEL="hibench.kmeans.storage.level",
+    # For gmm
+    INPUT_SAMPLE_GMM="hibench.gmm.input.sample",
+    INPUT_CLUSTER_GMM="hibench.gmm.input.cluster",
+    NUM_OF_CLUSTERS_GMM="hibench.gmm.num_of_clusters",
+    NUM_OF_SAMPLES_GMM="hibench.gmm.num_of_samples",
+    SAMPLES_PER_INPUTFILE_GMM="hibench.gmm.samples_per_inputfile",
+    DIMENSIONS_GMM="hibench.gmm.dimensions",
+    MAX_ITERATION_GMM="hibench.gmm.max_iteration",
+    K_GMM="hibench.gmm.k",
+    STORAGE_LEVEL_GMM="hibench.gmm.storage.level",
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
