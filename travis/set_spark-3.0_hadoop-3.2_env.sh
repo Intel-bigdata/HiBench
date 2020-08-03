@@ -12,6 +12,7 @@ sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/map
 echo "export HADOOP_HOME=/opt/hadoop-3.2.1" >> ~/.branchrc
 echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop3.2" >> ~/.branchrc
 echo "source /opt/hadoop-3.2.1/libexec/hadoop-layout.sh" >> ~/.branchrc
+echo "export JAVA_OPTS=-Xmx512m" >> ~/.branchrc
 source ~/.branchrc
 sudo -E ./travis/configssh.sh
 sudo -E ./travis/restart_hadoop_spark.sh

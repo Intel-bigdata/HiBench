@@ -10,6 +10,7 @@ sed -i '1 i hibench.spark.home /opt/spark-3.0.0-bin-hadoop2.7\nhibench.spark.ver
 sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar\nhibench.hive.release		apache-hive-0.14.0-bin' ./conf/hibench.conf
 echo "export HADOOP_HOME=/opt/hadoop-2.7.7" >> ~/.branchrc
 echo "export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> ~/.branchrc
+echo "export JAVA_OPTS=-Xmx512m" >> ~/.branchrc
 source ~/.branchrc
 sudo -E ./travis/configssh.sh
 sudo -E ./travis/restart_hadoop_spark.sh

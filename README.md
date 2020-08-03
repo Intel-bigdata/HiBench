@@ -147,7 +147,7 @@ There are totally 27 workloads in HiBench. The workloads are divided into 6 cate
     
 ### Supported Hadoop/Spark/Flink/Storm/Gearpump releases: ###
 
-  - Hadoop: Apache Hadoop 2.x, CDH5, HDP
+  - Hadoop: Apache Hadoop 3.x,Apache Hadoop 2.x, CDH5, HDP
   - Spark: Spark 2.0.x, Spark 2.1.x, Spark 2.2.x, Spark 2.3.x, Spark 2.4.x, Spark 3.0.x
   - Flink: 1.0.3
   - Storm: 1.0.1
