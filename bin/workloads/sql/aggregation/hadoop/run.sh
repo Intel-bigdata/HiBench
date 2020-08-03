@@ -34,7 +34,7 @@ HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare_sql_aggregation ${HIVEBENCH_SQL_FILE}
 
 
-if [[ $HADOOP_HOME =~ "3.2.1" ]];then
+if [[ $HADOOP_HOME =~ "3.2" || $HADOOP_HOME =~ "3.1" ]];then
     echo " replace guava jar nad create metadata schema"
     # replace guava jar
     rm -rf $HIVE_HOME/lib/guava-19.0.jar

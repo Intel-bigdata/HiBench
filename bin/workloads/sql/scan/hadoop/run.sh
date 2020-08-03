@@ -32,7 +32,7 @@ rmr_hdfs $OUTPUT_HDFS
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare_sql_scan ${HIVEBENCH_SQL_FILE}
 
-if [[ $HADOOP_HOME =~ "3.2.1" ]];then
+if [[ $HADOOP_HOME =~ "3.2" || $HADOOP_HOME =~ "3.1" ]];then
     echo " replace guava jar nad create metada schema"
     # replace guava jar
     rm -rf $HIVE_HOME/lib/guava-19.0.jar
