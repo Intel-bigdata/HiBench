@@ -43,25 +43,25 @@ install:
   - cp ./travis/hadoop-env.sh /opt/hadoop-3.2.1/etc/hadoop/
 jobs:
   include:
-#    - name: hibench-build-multi-version
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11 -Dhive=3.0
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11 -Dhive=3.0
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11 -Dhive=3.0
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11 -Dhive=3.0
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=3.0
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=3.0
+    - name: hibench-build-multi-version
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.0 -Dscala=2.11 -Dhive=3.0
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.1 -Dscala=2.11 -Dhive=3.0
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.2 -Dscala=2.11 -Dhive=3.0
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.3 -Dscala=2.11 -Dhive=3.0
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=3.0
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=3.0
 
-#    - name: hibench_spark-3.0_hadoop-2.7_micro
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - ls -l ./travis
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-#        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
+    - name: hibench_spark-3.0_hadoop-2.7_micro
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - ls -l ./travis
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
 
     - name: hibench_spark-3.0_hadoop-2.7_sql
       before_script:
@@ -72,37 +72,37 @@ jobs:
         - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
 
 
-#    - name: hibench-spark-3.0_hadoop-2.7_websearch
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-3.0_hadoop-2.7_ml
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-3.0_hadoop-2.7_graph
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-2.4_hadoop-2.7_micro
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
+    - name: hibench-spark-3.0_hadoop-2.7_websearch
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
+
+    - name: hibench_spark-3.0_hadoop-2.7_ml
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_ml.lst ./conf//benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
+
+    - name: hibench_spark-3.0_hadoop-2.7_graph
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-2.7_env.sh
+
+    - name: hibench_spark-2.4_hadoop-2.7_micro
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
 
     - name: hibench_spark-2.4_hadoop-2.7_sql
       before_script:
@@ -112,37 +112,37 @@ jobs:
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
 
-#    - name: hibench_spark-2.4_hadoop-2.7_websearch
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-2.4_hadoop-2.7_ml
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-2.4_hadoop-2.7_graph
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
-#        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
-#
-#    - name: hibench_spark-3.0_hadoop-3.2_micro
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-#        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
+    - name: hibench_spark-2.4_hadoop-2.7_websearch
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
+
+    - name: hibench_spark-2.4_hadoop-2.7_ml
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
+
+    - name: hibench_spark-2.4_hadoop-2.7_graph
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
+        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-2.4_hadoop-2.7_env.sh
+
+    - name: hibench_spark-3.0_hadoop-3.2_micro
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
 
     - name: hibench_spark-3.0_hadoop-3.2_sql
       before_script:
@@ -152,26 +152,26 @@ jobs:
         - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
         - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
 
-#    - name: hibench_spark-3.0_hadoop-3.2_websearch
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-#        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-#
-#    - name: hibench_spark-3.0_hadoop-3.2_ml
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-#        - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
-#
-#    - name: hibench_spark-3.0_hadoop-3.2_graph
-#      before_script:
-#        - "export JAVA_OPTS=-Xmx512m"
-#      script:
-#        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
-#        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
-#        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
+    - name: hibench_spark-3.0_hadoop-3.2_websearch
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
+
+    - name: hibench_spark-3.0_hadoop-3.2_ml
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - cp ./travis/benchmarks_ml.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
+
+    - name: hibench_spark-3.0_hadoop-3.2_graph
+      before_script:
+        - "export JAVA_OPTS=-Xmx512m"
+      script:
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+        - source ./travis/set_spark-3.0_hadoop-3.2_env.sh
