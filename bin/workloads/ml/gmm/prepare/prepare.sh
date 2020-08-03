@@ -13,24 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
 root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/linear.conf
+workload_config=${root_dir}/conf/workloads/ml/gmm.conf
 . "${root_dir}/bin/functions/load_bench_config.sh"
 
-enter_bench LinearRegression ${workload_config} ${current_dir}
+enter_bench HadoopPrepareGMM ${workload_config} ${current_dir}
 show_bannar start
 
-rmr_hdfs $OUTPUT_HDFS || true
+rmr_hdfs $INPUT_HDFS || true
 
-SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run_spark_job com.intel.hibench.sparkbench.ml.LinearRegressionWithElasticNet \
-    --regParam ${REG_PARAM_LINEAR} --elasticNetParam ${ELASTICNET_PARAM_LINEAR} \
-    --maxIter ${NUM_ITERATIONS_LINEAR} --tol ${TOL_LINEAR} ${INPUT_HDFS}
+
+OPTION="-sampleDir ${INPUT_SAMPLE_GMM} -clusterDir ${INPUT_CLUSTER_GMM} -numClusters ${NUM_OF_CLUSTERS_GMM} -numSamples ${NUM_OF_SAMPLES_GMM} -samplesPerFile ${SAMPLES_PER_INPUTFILE_GMM} -sampleDimension ${DIMENSIONS_GMM}"
+run_hadoop_job ${DATATOOLS} org.apache.mahout.clustering.kmeans.GenKMeansDataset -D hadoop.job.history.user.location=${INPUT_SAMPLE_GMM} ${OPTION}
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench

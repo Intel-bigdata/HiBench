@@ -94,6 +94,16 @@ HiBenchEnvPropMapping=dict(
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
     K_STORAGE_LEVEL="hibench.kmeans.storage.level",
+    # For gmm
+    INPUT_SAMPLE_GMM="hibench.gmm.input.sample",
+    INPUT_CLUSTER_GMM="hibench.gmm.input.cluster",
+    NUM_OF_CLUSTERS_GMM="hibench.gmm.num_of_clusters",
+    NUM_OF_SAMPLES_GMM="hibench.gmm.num_of_samples",
+    SAMPLES_PER_INPUTFILE_GMM="hibench.gmm.samples_per_inputfile",
+    DIMENSIONS_GMM="hibench.gmm.dimensions",
+    MAX_ITERATION_GMM="hibench.gmm.max_iteration",
+    K_GMM="hibench.gmm.k",
+    STORAGE_LEVEL_GMM="hibench.gmm.storage.level",
     # For Logistic Regression
     NUM_EXAMPLES_LR="hibench.lr.examples",
     NUM_FEATURES_LR="hibench.lr.features",
@@ -118,6 +128,7 @@ HiBenchEnvPropMapping=dict(
     # For PCA
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
+    PCA_K="hibench.pca.k",
     MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize",
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
@@ -153,8 +164,10 @@ HiBenchEnvPropMapping=dict(
     # For Linear Regression
     NUM_EXAMPLES_LINEAR="hibench.linear.examples",
     NUM_FEATURES_LINEAR="hibench.linear.features",
-    NUM_ITERATIONS_LINEAR="hibench.linear.numIterations",
-    STEPSIZE_LINEAR="hibench.linear.stepSize",
+    NUM_ITERATIONS_LINEAR="hibench.linear.num_iterations",
+    REG_PARAM_LINEAR="hibench.linear.regularization_param",
+    ELASTICNET_PARAM_LINEAR="hibench.linear.elasticnet_param",
+    TOL_LINEAR="hibench.linear.tolerance",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
     NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",

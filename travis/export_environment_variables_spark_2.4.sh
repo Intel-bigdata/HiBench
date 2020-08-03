@@ -13,24 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-current_dir=`dirname "$0"`
-current_dir=`cd "$current_dir"; pwd`
-root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/linear.conf
-. "${root_dir}/bin/functions/load_bench_config.sh"
 
-enter_bench LinearRegression ${workload_config} ${current_dir}
-show_bannar start
-
-rmr_hdfs $OUTPUT_HDFS || true
-
-SIZE=`dir_size $INPUT_HDFS`
-START_TIME=`timestamp`
-run_spark_job com.intel.hibench.sparkbench.ml.LinearRegressionWithElasticNet \
-    --regParam ${REG_PARAM_LINEAR} --elasticNetParam ${ELASTICNET_PARAM_LINEAR} \
-    --maxIter ${NUM_ITERATIONS_LINEAR} --tol ${TOL_LINEAR} ${INPUT_HDFS}
-END_TIME=`timestamp`
-
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
-show_bannar finish
-leave_bench
+export SPARK_HOME=/opt/spark-2.4.0-bin-hadoop2.7
+export SPARK_VERSION=spark2.4
+export JAVA_OPTS=-Xmx512m

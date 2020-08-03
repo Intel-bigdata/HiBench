@@ -18,9 +18,6 @@
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.{SparkConf, SparkContext}
-// import org.apache.spark.mllib.tree.GradientBoostedTrees
-// import org.apache.spark.mllib.tree.configuration.BoostingStrategy
-// import org.apache.spark.mllib.tree.model.GradientBoostedTreesModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.ml.Pipeline
