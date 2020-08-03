@@ -25,6 +25,13 @@ show_bannar start
 
 ensure_hivebench_release
 
+# path check
+rmr_hdfs $OUTPUT_HDFS
+
+# prepare SQL
+HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
+prepare_sql_scan ${HIVEBENCH_SQL_FILE}
+
 if [[ $HADOOP_HOME =~ "3.2.1" ]];then
     echo " replace guava jar nad create metada schema"
     # replace guava jar
@@ -42,16 +49,6 @@ elif [[ $HADOOP_HOME =~ "3.0" ]];then
     $HIVE_HOME/bin/schematool -initSchema -dbType derby
 fi
 
-# path check
-rmr_hdfs $OUTPUT_HDFS
-
-# prepare SQL
-HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
-prepare_sql_scan ${HIVEBENCH_SQL_FILE}
-
-# create metada schema
-rm -rf $HIVE_HOME/metastore_db
-$HIVE_HOME/bin/schematool -initSchema -dbType derby
 
 # run bench
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"

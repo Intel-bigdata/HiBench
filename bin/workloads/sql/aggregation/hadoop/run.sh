@@ -35,17 +35,17 @@ prepare_sql_aggregation ${HIVEBENCH_SQL_FILE}
 
 
 if [[ $HADOOP_HOME =~ "3.2.1" ]];then
-    echo " replace guava jar nad create metada schema"
+    echo " replace guava jar nad create metadata schema"
     # replace guava jar
     rm -rf $HIVE_HOME/lib/guava-19.0.jar
     cp ${HIVEBENCH_TEMPLATE}/lib/guava-27.0.1-jre.jar $HIVE_HOME/lib
-    # create metada schema
+    # create metadata schema
     rm -rf $HIVE_HOME/../metastore_db
     echo "$HIVE_HOME/bin/schematool -initSchema -dbType derby"
     $HIVE_HOME/bin/schematool -initSchema -dbType derby
 elif [[ $HADOOP_HOME =~ "3.0" ]];then
-    echo " create metada schema"
-    # create metada schema
+    echo " create metadata schema"
+    # create metadata schema
     rm -rf $HIVE_HOME/../metastore_db
     echo "$HIVE_HOME/bin/schematool -initSchema -dbType derby"
     $HIVE_HOME/bin/schematool -initSchema -dbType derby
