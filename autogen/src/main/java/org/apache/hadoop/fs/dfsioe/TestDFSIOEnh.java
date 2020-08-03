@@ -22,6 +22,8 @@ import java.io.*;
 
 import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.StringUtils;
@@ -81,7 +83,7 @@ import org.slf4j.LoggerFactory;
 
 public class TestDFSIOEnh extends Configured implements Tool {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TestDFSIOEnh.class);
+  private static final Log LOG = LogFactory.getLog(TestDFSIOEnh.class);
   private static final int TEST_TYPE_READ = 0;
   private static final int TEST_TYPE_WRITE = 1;
   private static final int TEST_TYPE_CLEANUP = 2;

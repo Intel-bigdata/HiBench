@@ -17,10 +17,22 @@
 
   <profiles>
     <profile>
+      <id>defaultHive</id>
+      <properties>
+         <repo>http://archive.apache.org</repo>
+         <file>dist/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
+      </properties>
+      <activation>
+        <property>
+          <name>!hive</name>
+        </property>
+      </activation>
+    </profile>
+    <profile>
       <id>hive3.0</id>
       <properties>
-        <repo>http://archive.apache.org</repo>
-        <file>dist/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
+          <repo>http://archive.apache.org</repo>
+          <file>dist/hive/hive-3.0.0/apache-hive-3.0.0-bin.tar.gz</file>
       </properties>
       <activation>
         <property>

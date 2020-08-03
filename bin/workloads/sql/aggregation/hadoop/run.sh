@@ -25,7 +25,6 @@ show_bannar start
 
 ensure_hivebench_release
 
-cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
 
 # path check
 rmr_hdfs $OUTPUT_HDFS
@@ -34,10 +33,30 @@ rmr_hdfs $OUTPUT_HDFS
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
 prepare_sql_aggregation ${HIVEBENCH_SQL_FILE}
 
+
+if [[ $HADOOP_HOME =~ "3.2.1" ]];then
+    echo " replace guava jar nad create metada schema"
+    # replace guava jar
+    rm -rf $HIVE_HOME/lib/guava-19.0.jar
+    cp ${HIVEBENCH_TEMPLATE}/lib/guava-27.0.1-jre.jar $HIVE_HOME/lib
+    # create metada schema
+    rm -rf $HIVE_HOME/../metastore_db
+    echo "$HIVE_HOME/bin/schematool -initSchema -dbType derby"
+    $HIVE_HOME/bin/schematool -initSchema -dbType derby
+elif [[ $HADOOP_HOME =~ "3.0" ]];then
+    echo " create metada schema"
+    # create metada schema
+    rm -rf $HIVE_HOME/../metastore_db
+    echo "$HIVE_HOME/bin/schematool -initSchema -dbType derby"
+    $HIVE_HOME/bin/schematool -initSchema -dbType derby
+fi
+
+
 # run bench
 MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
+echo $CMD
 execute_withlog $CMD
 END_TIME=`timestamp`
 stop_monitor $MONITOR_PID
