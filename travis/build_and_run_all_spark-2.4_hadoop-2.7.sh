@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-#set hadoop and spark env
-
+mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.4
 cp ./travis/hibench.conf ./conf/
 cp ./travis/spark.conf ./conf/
 cp ./travis/hadoop.conf ./conf/
