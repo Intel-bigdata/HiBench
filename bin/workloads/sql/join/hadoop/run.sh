@@ -25,15 +25,15 @@ show_bannar start
 
 ensure_hivebench_release
 
-cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-
 # path check
 rmr_hdfs $OUTPUT_HDFS
 
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_join.hive
-
 prepare_sql_join ${HIVEBENCH_SQL_FILE}
+
+#set hive env
+. ${root_dir}/bin/workloads/sql/common/set_hive_env.sh
 
 # run bench
 MONITOR_PID=`start_monitor`

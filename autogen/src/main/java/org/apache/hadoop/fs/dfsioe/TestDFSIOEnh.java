@@ -20,14 +20,10 @@ package org.apache.hadoop.fs.dfsioe;
 
 import java.io.*;
 
-import java.util.Date;
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
-import org.apache.commons.logging.*;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.util.StringUtils;
@@ -39,6 +35,8 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.dfsioe.Analyzer._Mapper;
 import org.apache.hadoop.fs.dfsioe.Analyzer._Reducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enhanced Distributed i/o benchmark.
@@ -952,7 +950,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 			 e.printStackTrace();
 		 } finally {
 			 fs.delete(DfsioeConfig.getInstance().getReportTmp(fsConfig), true);
-			 FileUtil.copyMerge(fs, DfsioeConfig.getInstance().getReportDir(fsConfig), fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), false, fsConfig, null);
+             copyMerge(fs, DfsioeConfig.getInstance().getReportDir(fsConfig), fs, DfsioeConfig.getInstance().getReportTmp(fsConfig), false, fsConfig, null);
 			 LOG.info("remote report file " + DfsioeConfig.getInstance().getReportTmp(fsConfig) + " merged.");
 			 BufferedReader lines = new BufferedReader(new InputStreamReader(new DataInputStream(fs.open(DfsioeConfig.getInstance().getReportTmp(fsConfig)))));
 			 String line = null;
@@ -1139,6 +1137,61 @@ public class TestDFSIOEnh extends Configured implements Tool {
 		 fs.delete(new Path(DfsioeConfig.getInstance().getTestRootDir(fsConfig)), true);
 	 }
 
+    /** Copy all files in a directory to one output file (merge). */
+    private static boolean copyMerge(FileSystem srcFS, Path srcDir,
+                                    FileSystem dstFS, Path dstFile,
+                                    boolean deleteSource,
+                                    Configuration conf, String addString) throws IOException {
+        dstFile = checkDest(srcDir.getName(), dstFS, dstFile, false);
+
+        if (!srcFS.getFileStatus(srcDir).isDirectory())
+            return false;
+
+        OutputStream out = dstFS.create(dstFile);
+
+        try {
+            FileStatus contents[] = srcFS.listStatus(srcDir);
+            Arrays.sort(contents);
+            for (int i = 0; i < contents.length; i++) {
+                if (contents[i].isFile()) {
+                    InputStream in = srcFS.open(contents[i].getPath());
+                    try {
+                        IOUtils.copyBytes(in, out, conf, false);
+                        if (addString!=null)
+                            out.write(addString.getBytes("UTF-8"));
+
+                    } finally {
+                        in.close();
+                    }
+                }
+            }
+        } finally {
+            out.close();
+        }
+
+
+        if (deleteSource) {
+            return srcFS.delete(srcDir, true);
+        } else {
+            return true;
+        }
+    }
+
+    private static Path checkDest(String srcName, FileSystem dstFS, Path dst,
+                                  boolean overwrite) throws IOException {
+        if (dstFS.exists(dst)) {
+            FileStatus sdst = dstFS.getFileStatus(dst);
+            if (sdst.isDirectory()) {
+                if (null == srcName) {
+                    throw new IOException("Target " + dst + " is a directory");
+                }
+                return checkDest(null, dstFS, new Path(dst, srcName), overwrite);
+            } else if (!overwrite) {
+                throw new IOException("Target " + dst + " already exists");
+            }
+        }
+        return dst;
+    }
 }//end 
 
 
