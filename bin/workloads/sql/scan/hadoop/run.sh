@@ -25,14 +25,16 @@ show_bannar start
 
 ensure_hivebench_release
 
-cp ${HIVEBENCH_TEMPLATE}/bin/hive $HIVE_HOME/bin
-
 # path check
 rmr_hdfs $OUTPUT_HDFS
 
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/rankings_uservisits_scan.hive
 prepare_sql_scan ${HIVEBENCH_SQL_FILE}
+
+#set hive env
+. ${root_dir}/bin/workloads/sql/common/set_hive_env.sh
+
 
 # run bench
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"

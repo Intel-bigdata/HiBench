@@ -33,6 +33,8 @@ import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.conf.*;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Distributed i/o benchmark.
@@ -70,7 +72,7 @@ public class TestDFSIO extends Configured implements Tool {
   private static final String BASE_FILE_NAME = "test_io_";
   private static final String DEFAULT_RES_FILE_NAME = "TestDFSIO_results.log";
   
-  private static final Log LOG = FileInputFormat.LOG;
+  private static final Logger LOG = LoggerFactory.getLogger(TestDFSIO.class);;
   private static Configuration fsConfig = new Configuration();
   private static final long MEGA = 0x100000;
   private static String TEST_ROOT_DIR = System.getProperty("test.build.data","/benchmarks/TestDFSIO");

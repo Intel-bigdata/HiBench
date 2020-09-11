@@ -4,15 +4,15 @@
  
  * `bc` is required to generate the HiBench report.
 
- * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP
+ * Supported Hadoop version: Apache Hadoop 2.x, 3.0.x, 3.1.x, 3.2.x, CDH5.x, HDP
 
- * Supported Spark version: 1.6.x, 2.0.x, 2.1.x, 2.2.x
+ * Supported Spark version: 2.4.x, 3.0.x
 
  * Build HiBench according to [build HiBench](build-hibench.md).
 
  * Start HDFS, Yarn, Spark in the cluster.
 
-
+Note: Starting from HiBench 8.0, the support of Spark before 2.3.x(inclusive) was deprecated, please either leverage former version HiBench or upgrade your Spark.
 
 ### 2. Configure `hadoop.conf` ###
 
