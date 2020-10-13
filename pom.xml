@@ -21,7 +21,7 @@
     <scopt.version>3.2.0</scopt.version>
     <mahout.version>0.9</mahout.version>
     <uncommons-maths.version>1.2.2a</uncommons-maths.version>
-    <junit.version>3.8.1</junit.version>
+    <junit.version>4.13.1</junit.version>
     <hadoop.mr1.version>1.2.1</hadoop.mr1.version>
     <scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
     <maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
