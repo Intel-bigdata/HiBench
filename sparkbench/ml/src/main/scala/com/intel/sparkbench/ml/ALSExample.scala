@@ -27,8 +27,6 @@ object ALSExample {
 
   case class Params(
     dataPath: String = null,
-    numUsers: Int = 0,
-    numItems: Int = 0,
     numIterations: Int = 10,
     lambda: Double = 0.1,
     rank: Int = 10,
