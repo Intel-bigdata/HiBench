@@ -15,74 +15,55 @@
  * limitations under the License.
  */
 
-// scalastyle:off println
 package com.intel.hibench.sparkbench.ml
 
-import scala.collection.mutable
-
-import org.apache.log4j.{Level, Logger}
+import org.apache.spark.ml.evaluation.RegressionEvaluator
+import org.apache.spark.ml.recommendation.ALS
+import org.apache.spark.ml.recommendation.ALS.Rating
+import org.apache.spark.sql.SparkSession
 import scopt.OptionParser
-
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.recommendation.{ALS, MatrixFactorizationModel, Rating}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.mllib.linalg.SparseVector
 
 object ALSExample {
 
   case class Params(
-      dataPath: String = null,
-      numUsers: Int = 0,
-      numProducts: Int = 0,
-      kryo: Boolean = false,
-      numIterations: Int = 20,
-      lambda: Double = 1.0,
-      rank: Int = 10,
-      numRecommends: Int = 20,
-      numUserBlocks: Int = -1,
-      numProductBlocks: Int = -1,
-      implicitPrefs: Boolean = false)
+    dataPath: String = null,
+    numUsers: Int = 0,
+    numItems: Int = 0,
+    numIterations: Int = 10,
+    lambda: Double = 0.1,
+    rank: Int = 10,
+    numUserBlocks: Int = 10,
+    numItemBlocks: Int = 10,
+    implicitPrefs: Boolean = false)
 
   def main(args: Array[String]) {
     val defaultParams = Params()
 
     val parser = new OptionParser[Params]("ALS") {
-      head("ALS: an example app for ALS on User-Product data.")
-      opt[Int]("numUsers")
-        .text(s"numUsers, default: ${defaultParams.numUsers}")
-        .action((x, c) => c.copy(numUsers = x))
-      opt[Int]("numProducts")
-        .text(s"numProducts, default: ${defaultParams.numProducts}")
-        .action((x, c) => c.copy(numProducts = x))
+      head("ALS: an example app for ALS on User-Item data.")
       opt[Int]("rank")
         .text(s"rank, default: ${defaultParams.rank}")
         .action((x, c) => c.copy(rank = x))
-      opt[Int]("numRecommends")
-        .text(s"numRecommends, default: ${defaultParams.numRecommends}")
-        .action((x, c) => c.copy(numRecommends = x))
       opt[Int]("numIterations")
         .text(s"number of iterations, default: ${defaultParams.numIterations}")
         .action((x, c) => c.copy(numIterations = x))
       opt[Double]("lambda")
-        .text(s"lambda (smoothing constant), default: ${defaultParams.lambda}")
+        .text(s"regularization parameter, default: ${defaultParams.lambda}")
         .action((x, c) => c.copy(lambda = x))
-      opt[Boolean]("kryo")
-        .text("Kryo serialization, default: ${defaultParams.kryo}")
-        .action((x, c) => c.copy(kryo = x))
       opt[Int]("numUserBlocks")
         .text(s"number of user blocks, default: ${defaultParams.numUserBlocks}")
         .action((x, c) => c.copy(numUserBlocks = x))
       opt[Int]("numProductBlocks")
-        .text(s"number of product blocks, default: ${defaultParams.numProductBlocks}")
-        .action((x, c) => c.copy(numProductBlocks = x))
+        .text(s"number of product blocks, default: ${defaultParams.numItemBlocks}")
+        .action((x, c) => c.copy(numItemBlocks = x))
       opt[Boolean]("implicitPrefs")
         .text("implicit preference, default: ${defaultParams.implicitPrefs}")
         .action((x, c) => c.copy(implicitPrefs = x))
       arg[String]("<dataPath>")
         .required()
         .text("Input paths to a User-Product dataset of ratings")
-        .action((x, c) => c.copy(dataPath = x))	
-    }  
+        .action((x, c) => c.copy(dataPath = x))
+    }
     parser.parse(args, defaultParams) match {
       case Some(params) => run(params)
       case _ => sys.exit(1)
@@ -90,76 +71,43 @@ object ALSExample {
   }
 
   def run(params: Params): Unit = {
-    val conf = new SparkConf().setAppName(s"ALS with $params")
-    if (params.kryo) {
-      conf.registerKryoClasses(Array(classOf[mutable.BitSet], classOf[Rating]))
-        .set("spark.kryoserializer.buffer", "8m")
-    }
-    val sc = new SparkContext(conf)
+    val spark = SparkSession
+      .builder
+      .appName(s"ALS with $params")
+      .getOrCreate()
+    val sc = spark.sparkContext
 
-    Logger.getRootLogger.setLevel(Level.WARN)
+    import spark.implicits._
 
-    val numUsers = params.numUsers
-    val numProducts = params.numProducts
-    val numRecommends = params.numRecommends
-    val implicitPrefs = params.implicitPrefs
+    val ratings = sc.objectFile[Rating[Int]](params.dataPath).toDF()
 
-    val rawdata: RDD[SparseVector] = sc.objectFile(params.dataPath)
-    val data: RDD[Rating] = Vector2Rating(rawdata)
-    val splits = data.randomSplit(Array(0.7, 0.3))
-    val (trainingData, testData) = (splits(0), splits(1))
+    val Array(training, test) = ratings.randomSplit(Array(0.8, 0.2))
 
-    val numTraining = trainingData.count()
-    val numTest = testData.count()
-    println(s"Num of Training: $numTraining, Num of Test: $numTest.")
-
-    val model = new ALS()
+    // Build the recommendation model using ALS on the training data
+    val als = new ALS()
       .setRank(params.rank)
-      .setIterations(params.numIterations)
-      .setLambda(params.lambda)
+      .setMaxIter(params.numIterations)
+      .setRegParam(params.lambda)
       .setImplicitPrefs(params.implicitPrefs)
-      .setUserBlocks(params.numUserBlocks)
-      .setProductBlocks(params.numProductBlocks)
-      .run(trainingData)
+      .setNumUserBlocks(params.numUserBlocks)
+      .setNumItemBlocks(params.numItemBlocks)
+      .setUserCol("user")
+      .setItemCol("item")
+      .setRatingCol("rating")
+    val model = als.fit(training)
 
-    val rmse = computeRmse(model, testData, params.implicitPrefs)
+    // Evaluate the model by computing the RMSE on the test data
+    // Note we set cold start strategy to 'drop' to ensure we don't get NaN evaluation metrics
+    model.setColdStartStrategy("drop")
+    val predictions = model.transform(test)
 
-    println(s"Test RMSE = $rmse.")
-    
-    // Recommend products for all users, enable the following code to test recommendForAll
-    /*
-    val userRecommend = model.recommendProductsForUsers(numRecommends)
-    userRecommend.count()
-    */
-    sc.stop()
+    val evaluator = new RegressionEvaluator()
+      .setMetricName("rmse")
+      .setLabelCol("rating")
+      .setPredictionCol("prediction")
+    val rmse = evaluator.evaluate(predictions)
+    println(s"Root-mean-square error = $rmse")
+
+    spark.stop()
   }
-
-  /** Compute RMSE (Root Mean Squared Error). */
-  def computeRmse(model: MatrixFactorizationModel, data: RDD[Rating], implicitPrefs: Boolean)
-    : Double = {
-
-    def mapPredictedRating(r: Double): Double = {
-      if (implicitPrefs) math.max(math.min(r, 1.0), 0.0) else r
-    }
-
-    val predictions: RDD[Rating] = model.predict(data.map(x => (x.user, x.product)))
-    val predictionsAndRatings = predictions.map{ x =>
-      ((x.user, x.product), mapPredictedRating(x.rating))
-    }.join(data.map(x => ((x.user, x.product), x.rating))).values
-    math.sqrt(predictionsAndRatings.map(x => (x._1 - x._2) * (x._1 - x._2)).mean())
-  }
-
-  def Vector2Rating(rawdata: RDD[SparseVector]) : RDD[Rating] = {
-    val Ratingdata: RDD[Rating] = rawdata.zipWithIndex().flatMap{
-      case(v,i) =>
-        val arr = mutable.ArrayBuilder.make[Rating]
-        arr.sizeHint(v.numActives)
-        v.foreachActive{(ii, vi) =>
-          arr += Rating(i.toInt, ii, vi)
-        }
-        arr.result()
-    }
-    Ratingdata
-  }
-
 }

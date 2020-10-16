@@ -18,14 +18,14 @@
 package com.intel.hibench.sparkbench.ml
 
 import com.intel.hibench.sparkbench.common.IOCommon
-
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.recommendation.Rating
+import org.apache.spark.ml.recommendation.ALS.Rating
+import org.apache.spark.mllib.linalg.{Vector => OldVector}
+import org.apache.spark.ml.linalg.{Vector, Vectors}
+import org.apache.spark.mllib.random.RandomRDDs
 import org.apache.spark.rdd.RDD
-import org.apache.spark.SparkContext
-import org.apache.spark.mllib.random._
-import org.apache.spark.rdd.{PairRDDFunctions, RDD}
-import org.apache.spark.mllib.linalg.{Vectors, Vector}
+import org.apache.spark.{SparkConf, SparkContext}
+
+import scala.collection.mutable
 
 object RatingDataGenerator {
 
@@ -36,7 +36,7 @@ object RatingDataGenerator {
     var outputPath = ""
     var numUsers: Int = 100
     var numProducts: Int = 100
-    var sparsity: Double = 0.05
+    var numRatings: Int = 10
     var implicitPrefs: Boolean = false
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
@@ -46,35 +46,55 @@ object RatingDataGenerator {
       outputPath = args(0)
       numUsers = args(1).toInt
       numProducts = args(2).toInt
-      sparsity = args(3).toDouble
+      numRatings = args(3).toInt
       implicitPrefs = args(4).toBoolean
+
+      require(numRatings <= numUsers * numProducts,
+        s"RatingDataGenerator: numRatings=$numRatings is too large, should be <= numUsers * numProducts"
+      )
 
       println(s"Output Path: $outputPath")
       println(s"Num of Users: $numUsers")
       println(s"Num of Products: $numProducts")
-      println(s"Sparsity: $sparsity")
+      println(s"Num of Ratings: $numRatings")
       println(s"Implicit Prefs: $implicitPrefs")
     } else {
       System.err.println(
-        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <SPARSITY>  <IMPLICITPREFS>"
+        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <NUM_RATINGS> <IMPLICITPREFS>"
       )
       System.exit(1)
     }
 
-    val rawData: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, numUsers, numProducts, numPartitions)
-    val rng = new java.util.Random()
-    val data = rawData.map{v =>
-      val a = Array.fill[Double](v.size)(0.0)
-      v.foreachActive{(i,vi) =>
-         if(rng.nextDouble <= sparsity){
-           a(i) = vi
-         }
+    // ratingID from 1 to numRatings
+    val ratingData = sc.parallelize(1 to numRatings, numPartitions)
+      .mapPartitionsWithIndex { case (_, iter) =>
+        val rng = new java.util.Random()
+        // ratingIDs in current partition
+        val ratingIDs = iter.toArray
+        // generate unique rating location (user, product) for each ratingID
+        val ratingLocations = mutable.HashSet.empty[(Int, Int)]
+        var i = 0
+        while (i < ratingIDs.length) {
+          val user = rng.nextInt(numUsers)
+          val product = rng.nextInt(numProducts)
+          if (!ratingLocations.contains((user, product))) {
+            ratingLocations.add((user, product))
+            i = i + 1
+          }
+        }
+
+        ratingLocations.map { location =>
+          val user = location._1
+          val product = location._2
+          val rating = if (implicitPrefs)
+             (rng.nextInt(5)+1).toFloat - 2.5f
+            else
+             (rng.nextInt(5)+1).toFloat
+          Rating(user, product, rating)
+        }.toIterator
       }
-      Vectors.dense(a).toSparse
-   }
 
-
-    data.saveAsObjectFile(outputPath)
+    ratingData.saveAsObjectFile(outputPath)
 
     sc.stop()
   }
