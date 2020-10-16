@@ -67,31 +67,18 @@ object RatingDataGenerator {
 
     // ratingID from 1 to numRatings
     val ratingData = sc.parallelize(1 to numRatings, numPartitions)
-      .mapPartitionsWithIndex { case (_, iter) =>
+      .mapPartitions { p =>
         val rng = new java.util.Random()
-        // ratingIDs in current partition
-        val ratingIDs = iter.toArray
-        // generate unique rating location (user, product) for each ratingID
-        val ratingLocations = mutable.HashSet.empty[(Int, Int)]
-        var i = 0
-        while (i < ratingIDs.length) {
+        p.map { _ =>
+          // possible to generate duplicated (user, product), it does not affect the results
           val user = rng.nextInt(numUsers)
           val product = rng.nextInt(numProducts)
-          if (!ratingLocations.contains((user, product))) {
-            ratingLocations.add((user, product))
-            i = i + 1
-          }
-        }
-
-        ratingLocations.map { location =>
-          val user = location._1
-          val product = location._2
           val rating = if (implicitPrefs)
              (rng.nextInt(5)+1).toFloat - 2.5f
             else
              (rng.nextInt(5)+1).toFloat
           Rating(user, product, rating)
-        }.toIterator
+        }
       }
 
     ratingData.saveAsObjectFile(outputPath)
