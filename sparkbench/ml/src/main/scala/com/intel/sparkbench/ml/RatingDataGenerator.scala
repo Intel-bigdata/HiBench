@@ -65,7 +65,6 @@ object RatingDataGenerator {
       System.exit(1)
     }
 
-    // ratingID from 1 to numRatings
     val ratingData = sc.parallelize(1 to numRatings, numPartitions)
       .mapPartitions { p =>
         val rng = new java.util.Random()
@@ -73,6 +72,10 @@ object RatingDataGenerator {
           // possible to generate duplicated (user, product), it does not affect the results
           val user = rng.nextInt(numUsers)
           val product = rng.nextInt(numProducts)
+          // Use MovieLens ratings that are on a scale of 1-5
+          // To map ratings to confidence scores, we use:
+          //   5 -> 2.5, 4 -> 1.5, 3 -> 0.5, 2 -> -0.5, 1 -> -1.5
+          // See Spark example "MovieLensALS.scala" for details.
           val rating = if (implicitPrefs)
              (rng.nextInt(5)+1).toFloat - 2.5f
             else
