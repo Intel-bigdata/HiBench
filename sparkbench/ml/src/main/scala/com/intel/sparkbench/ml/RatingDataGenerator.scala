@@ -19,13 +19,7 @@ package com.intel.hibench.sparkbench.ml
 
 import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark.ml.recommendation.ALS.Rating
-import org.apache.spark.mllib.linalg.{Vector => OldVector}
-import org.apache.spark.ml.linalg.{Vector, Vectors}
-import org.apache.spark.mllib.random.RandomRDDs
-import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
-
-import scala.collection.mutable
 
 object RatingDataGenerator {
 
@@ -66,8 +60,8 @@ object RatingDataGenerator {
     }
 
     val ratingData = sc.parallelize(1 to numRatings, numPartitions)
-      .mapPartitions { p =>
-        val rng = new java.util.Random()
+      .mapPartitionsWithIndex { (index, p) =>
+        val rng = new java.util.Random(index)
         p.map { _ =>
           // possible to generate duplicated (user, product), it does not affect the results
           val user = rng.nextInt(numUsers)
