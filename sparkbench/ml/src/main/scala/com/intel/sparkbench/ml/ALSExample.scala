@@ -79,7 +79,7 @@ object ALSExample {
 
     val ratings = sc.objectFile[Rating[Int]](params.dataPath).toDF()
 
-    val Array(training, test) = ratings.randomSplit(Array(0.8, 0.2))
+    val Array(training, test) = ratings.randomSplit(Array(0.8, 0.2), 1L)
 
     // Build the recommendation model using ALS on the training data
     val als = new ALS()
