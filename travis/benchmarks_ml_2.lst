@@ -3,4 +3,3 @@ ml.linear
 ml.lda
 ml.svm
 ml.gmm
-ml.xgboost
