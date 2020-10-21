@@ -18,14 +18,8 @@
 package com.intel.hibench.sparkbench.ml
 
 import com.intel.hibench.sparkbench.common.IOCommon
-
+import org.apache.spark.ml.recommendation.ALS.Rating
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.recommendation.Rating
-import org.apache.spark.rdd.RDD
-import org.apache.spark.SparkContext
-import org.apache.spark.mllib.random._
-import org.apache.spark.rdd.{PairRDDFunctions, RDD}
-import org.apache.spark.mllib.linalg.{Vectors, Vector}
 
 object RatingDataGenerator {
 
@@ -36,7 +30,7 @@ object RatingDataGenerator {
     var outputPath = ""
     var numUsers: Int = 100
     var numProducts: Int = 100
-    var sparsity: Double = 0.05
+    var numRatings: Int = 10
     var implicitPrefs: Boolean = false
     val parallel = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
     val numPartitions = IOCommon.getProperty("hibench.default.shuffle.parallelism")
@@ -46,35 +40,45 @@ object RatingDataGenerator {
       outputPath = args(0)
       numUsers = args(1).toInt
       numProducts = args(2).toInt
-      sparsity = args(3).toDouble
+      numRatings = args(3).toInt
       implicitPrefs = args(4).toBoolean
+
+      require(numRatings <= numUsers * numProducts,
+        s"RatingDataGenerator: numRatings=$numRatings is too large, should be <= numUsers * numProducts"
+      )
 
       println(s"Output Path: $outputPath")
       println(s"Num of Users: $numUsers")
       println(s"Num of Products: $numProducts")
-      println(s"Sparsity: $sparsity")
+      println(s"Num of Ratings: $numRatings")
       println(s"Implicit Prefs: $implicitPrefs")
     } else {
       System.err.println(
-        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <SPARSITY>  <IMPLICITPREFS>"
+        s"Usage: $RatingDataGenerator <OUTPUT_PATH> <NUM_USERS> <NUM_PRODUCTS> <NUM_RATINGS> <IMPLICITPREFS>"
       )
       System.exit(1)
     }
 
-    val rawData: RDD[Vector] = RandomRDDs.normalVectorRDD(sc, numUsers, numProducts, numPartitions)
-    val rng = new java.util.Random()
-    val data = rawData.map{v =>
-      val a = Array.fill[Double](v.size)(0.0)
-      v.foreachActive{(i,vi) =>
-         if(rng.nextDouble <= sparsity){
-           a(i) = vi
-         }
+    val ratingData = sc.parallelize(1 to numRatings, numPartitions)
+      .mapPartitionsWithIndex { (index, p) =>
+        val rng = new java.util.Random(index)
+        p.map { _ =>
+          // possible to generate duplicated (user, product), it does not affect the results
+          val user = rng.nextInt(numUsers)
+          val product = rng.nextInt(numProducts)
+          // Use MovieLens ratings that are on a scale of 1-5
+          // To map ratings to confidence scores, we use:
+          //   5 -> 2.5, 4 -> 1.5, 3 -> 0.5, 2 -> -0.5, 1 -> -1.5
+          // See Spark example "MovieLensALS.scala" for details.
+          val rating = if (implicitPrefs)
+             (rng.nextInt(5)+1).toFloat - 2.5f
+            else
+             (rng.nextInt(5)+1).toFloat
+          Rating(user, product, rating)
+        }
       }
-      Vectors.dense(a).toSparse
-   }
 
-
-    data.saveAsObjectFile(outputPath)
+    ratingData.saveAsObjectFile(outputPath)
 
     sc.stop()
   }

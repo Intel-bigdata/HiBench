@@ -27,12 +27,8 @@ rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-OPTION="--numUsers $NUM_USERS_ALS \
-        --numProducts $NUM_PRODUCTS_ALS \
-        --rank $RANK_ALS \
-        --numRecommends $NUM_RECOMMENDS_ALS \
+OPTION="--rank $RANK_ALS \
         --numIterations $NUM_ITERATIONS_ALS \
-        --kryo $KYRO_ALS \
         --implicitPrefs $IMPLICITPREFS_ALS \
         --numProductBlocks $PRODUCTBLOCKS_ALS \
         --numUserBlocks $USERBLOCKS_ALS \
