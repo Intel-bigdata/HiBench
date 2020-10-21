@@ -13,18 +13,21 @@ jdk:
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/downloads
 install:
   - hibench=$(pwd)
   - echo ${hibench}
+  - "[ -d $HOME/downloads ] || mkdir $HOME/downloads"
+  - cd $HOME/downloads
+  - "[ -f spark-2.4.0-bin-hadoop2.7.tgz ] || wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz"
+  - "[ -f spark-3.0.0-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz"
+  - "[ -f hadoop-2.7.7.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz"
+  - "[ -f hadoop-3.2.1.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-3.2.1/hadoop-3.2.1.tar.gz"
   - cd /opt/
-  - wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz
-  - tar -xzf spark-2.4.0-bin-hadoop2.7.tgz
-  - wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz
-  - tar -xzf spark-3.0.0-bin-hadoop3.2.tgz
-  - wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
-  - tar -xzf hadoop-2.7.7.tar.gz
-  - wget https://archive.apache.org/dist/hadoop/core/hadoop-3.2.1/hadoop-3.2.1.tar.gz
-  - tar -xzf hadoop-3.2.1.tar.gz
+  - tar -xzf $HOME/downloads/spark-2.4.0-bin-hadoop2.7.tgz
+  - tar -xzf $HOME/downloads/spark-3.0.0-bin-hadoop3.2.tgz
+  - tar -xzf $HOME/downloads/hadoop-2.7.7.tar.gz
+  - tar -xzf $HOME/downloads/hadoop-3.2.1.tar.gz
   - cd ${hibench}
   - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
   - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop3.2/conf/
