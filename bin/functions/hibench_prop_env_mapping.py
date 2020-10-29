@@ -112,6 +112,7 @@ HiBenchEnvPropMapping=dict(
     NUM_FEATURES_SVM="hibench.svm.features",
     NUM_ITERATIONS_SVM="hibench.svm.numIterations",
     STEPSIZE_SVM="hibench.svm.stepSize",
+    SVM_STORAGE_LEVEL="hibench.svm.storage.level",
     REGPARAM_SVM="hibench.svm.regParam",
     # For ALS
     NUM_USERS_ALS="hibench.als.users",
