@@ -110,6 +110,7 @@ object DenseKMeans {
       .setK(params.k)
       .setMaxIter(params.numIterations)
       .setSeed(1L)
+      .setTol(0)
       .fit(examples)
 
     val cost = model.summary.trainingCost
