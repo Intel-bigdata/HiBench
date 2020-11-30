@@ -22,6 +22,7 @@ import org.apache.spark.mllib.classification.{SVMModel, SVMWithSGD}
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.storage.StorageLevel
 
 import scopt.OptionParser
 
@@ -31,7 +32,8 @@ object SVMWithSGDExample {
      numIterations: Int = 100,
      stepSize: Double = 1.0,
      regParam: Double = 0.01,
-     dataPath: String = null
+     dataPath: String = null,
+     storageLevel: String= "MEMORY_ONLY"
    )
 
   def main(args: Array[String]): Unit = {
@@ -48,6 +50,9 @@ object SVMWithSGDExample {
       opt[Double]("regParam")
         .text(s"regParam, default: ${defaultParams.regParam}")
         .action((x,c) => c.copy(regParam = x))
+      opt[String]("storageLevel")
+        .text(s"storage level, default: ${defaultParams.storageLevel}")
+        .action((x, c) => c.copy(storageLevel = x))
       arg[String]("<dataPath>")
         .required()
         .text("data path of SVM")
@@ -68,12 +73,13 @@ object SVMWithSGDExample {
     val numIterations = params.numIterations
     val stepSize = params.stepSize
     val regParam = params.regParam
+    val storageLevel = StorageLevel.fromString(params.storageLevel)
 
     val data: RDD[LabeledPoint] = sc.objectFile(dataPath)
 
     // Split data into training (60%) and test (40%).
     val splits = data.randomSplit(Array(0.6, 0.4), seed = 11L)
-    val training = splits(0).cache()
+    val training = splits(0).persist(storageLevel)
     val test = splits(1)
 
     // Run training algorithm to build the model
