@@ -110,7 +110,7 @@ object DenseKMeans {
       .setK(params.k)
       .setMaxIter(params.numIterations)
       .setSeed(1L)
-      .setTol(0)
+      .setTol(0)       //set convergence to 0, aiming to execute the number of iterations of the algorithm without being affected by the convergence parameters.
       .fit(examples)
 
     val cost = model.summary.trainingCost
