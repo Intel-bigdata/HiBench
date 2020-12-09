@@ -39,7 +39,7 @@ object DenseKMeans {
       k: Int = -1,
       numIterations: Int = 10,
       storageLevel: String= "MEMORY_ONLY",
-      initializationMode: InitializationMode = Parallel)
+      initializationMode: InitializationMode = Random)
 
   def main(args: Array[String]) {
     val defaultParams = Params()

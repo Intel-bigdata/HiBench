@@ -94,6 +94,7 @@ HiBenchEnvPropMapping=dict(
     MAX_ITERATION="hibench.kmeans.max_iteration",
     K="hibench.kmeans.k",
     K_STORAGE_LEVEL="hibench.kmeans.storage.level",
+    K_INIT_MODE="hibench.kmeans.initializationmode",
     # For gmm
     INPUT_SAMPLE_GMM="hibench.gmm.input.sample",
     INPUT_CLUSTER_GMM="hibench.gmm.input.cluster",
