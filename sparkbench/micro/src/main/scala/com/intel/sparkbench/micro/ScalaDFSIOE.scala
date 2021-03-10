@@ -17,8 +17,8 @@
 
 package com.intel.sparkbench.micro
 
-import org.apache.hadoop.io.{BytesWritable, LongWritable, NullWritable, Text}
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat
+import org.apache.hadoop.examples.terasort.TeraInputFormat
+import org.apache.hadoop.io.{BytesWritable, NullWritable, Text}
 import org.apache.hadoop.mapreduce.lib.output.MapFileOutputFormat
 import org.apache.spark._
 import org.apache.spark.internal.Logging
@@ -40,18 +40,19 @@ object ScalaDFSIOE extends Logging {
     val nbrOfFiles = toLong(args(2), "RD_NUM_OF_FILES")
     val fileSize = toLong(args(3), "RD_FILE_SIZE")
     val totalSizeM = nbrOfFiles * fileSize
-    val totalSizeBytes = totalSizeM * 1024 * 1024
 
     val sparkConf = new SparkConf().setAppName("ScalaDFSIOE")
     val sc = new SparkContext(sparkConf)
     try {
-      val data = sc.newAPIHadoopFile[LongWritable, Text, TextInputFormat](args(0) + "/io_data").map {
-        case (_, v) => v.copyBytes
+      val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0) + "/io_data").map {
+        case (k, v) => k.copyBytes() ++ v.copyBytes
       }
 
-      data.persist(StorageLevel.MEMORY_ONLY_SER)
+      if (!readOnly) {
+        data.persist(StorageLevel.MEMORY_ONLY_SER)
+      }
       val readStart = System.currentTimeMillis()
-      data.foreachPartition(_ => ())
+      data.foreach(_ => ())
       val readEnd = System.currentTimeMillis()
       val dur = readEnd - readStart
       val durSec = dur/1000
