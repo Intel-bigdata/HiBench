@@ -22,7 +22,7 @@ The streaming benchmark consists of the following parts:
 
  * Python 2.x(>=2.6) is required.
  
- * Supported Hadoop version: Apache Hadoop 2.x, CDH5.x, HDP 
+ * Supported Hadoop version: Apache Hadoop 2.x
  
  * Supported Spark version: 1.6.x, 2.0.x, 2.1.x, 2.2.x 
 
@@ -60,7 +60,7 @@ hibench.hadoop.home     |      The Hadoop installation location
 hibench.hadoop.executable  |   The path of hadoop executable. For Apache Hadoop, it is /YOUR/HADOOP/HOME/bin/hadoop
 hibench.hadoop.configure.dir | Hadoop configuration directory. For Apache Hadoop, it is /YOUR/HADOOP/HOME/etc/hadoop
 hibench.hdfs.master       |    The root HDFS path to store HiBench data, i.e. hdfs://localhost:8020/user/username
-hibench.hadoop.release    |    Hadoop release provider. Supported value: apache, cdh5, hdp
+hibench.hadoop.release    |    Hadoop release provider. Supported value: apache
 
 Note: For CDH and HDP users, please update `hibench.hadoop.executable`, `hibench.hadoop.configure.dir` and `hibench.hadoop.release` properly. The default value is for Apache release.
 
