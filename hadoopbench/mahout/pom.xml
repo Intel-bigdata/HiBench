@@ -39,7 +39,7 @@
               <md5>${checksum1}</md5>
             </configuration>
           </execution>
-          <execution>
+          <!-- execution>
             <id>extra-download-execution</id>
             <phase>process-sources</phase>
             <goals>
@@ -49,7 +49,7 @@
               <url>${repo2}/${file2}</url>
               <md5>${checksum2}</md5>
             </configuration>
-          </execution>
+          </execution -->
         </executions>
       </plugin>
     </plugins>
