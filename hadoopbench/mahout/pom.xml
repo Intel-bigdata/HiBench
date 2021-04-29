@@ -17,9 +17,6 @@
     <repo1>http://archive.apache.org</repo1>
     <file1>dist/mahout/0.11.0/apache-mahout-distribution-0.11.0.tar.gz</file1>
     <checksum1>32bb8d9429671c651ff8233676739f1f</checksum1>
-    <repo2>http://archive.cloudera.com</repo2>
-    <file2>cdh5/cdh/5/mahout-0.9-cdh5.1.0.tar.gz</file2>
-    <checksum2>aa953e0353ac104a22d314d15c88d78f</checksum2>
   </properties>
 
   <build>
@@ -37,17 +34,6 @@
             <configuration>
               <url>${repo1}/${file1}</url>
               <md5>${checksum1}</md5>
-            </configuration>
-          </execution>
-          <execution>
-            <id>extra-download-execution</id>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>${repo2}/${file2}</url>
-              <md5>${checksum2}</md5>
             </configuration>
           </execution>
         </executions>
