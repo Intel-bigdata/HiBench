@@ -21,6 +21,7 @@ install:
   - cd $HOME/downloads
   - "[ -f spark-2.4.0-bin-hadoop2.7.tgz ] || wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz"
   - "[ -f spark-3.0.0-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz"
+  - "[ -f spark-3.0.0-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz"
   - "[ -f hadoop-2.7.7.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz"
   - "[ -f hadoop-3.2.1.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-3.2.1/hadoop-3.2.1.tar.gz"
   - cd /opt/
@@ -31,6 +32,7 @@ install:
   - cd ${hibench}
   - cp ./travis/spark-env.sh /opt/spark-2.4.0-bin-hadoop2.7/conf/
   - cp ./travis/spark-env.sh /opt/spark-3.0.0-bin-hadoop3.2/conf/
+  - cp ./travis/spark-env.sh /opt/spark-3.1.1-bin-hadoop3.2/conf/
   - cp ./travis/core-site.xml /opt/hadoop-2.7.7/etc/hadoop/
   - cp ./travis/hdfs-site.xml /opt/hadoop-2.7.7/etc/hadoop/
   - cp ./travis/mapred-site.xml /opt/hadoop-2.7.7/etc/hadoop/
@@ -49,6 +51,7 @@ jobs:
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhadoop=3.0 -Dhive=3.0
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhadoop=3.1 -Dhive=3.0
         - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+        - mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.1 -Dscala=2.12
 
     - name: spark_2.4_hadoop_2.7_micro
       before_script:
@@ -119,3 +122,38 @@ jobs:
       script:
         - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
         - . ./travis/build_and_run_all_spark_3.0_hadoop_3.2.sh
+
+    - name: spark_3.01_hadoop_3.2_micro
+      before_script:
+      - . ./travis/export_env_spark_3.1_hadoop_3.2.sh
+      script:
+      - cp ./travis/benchmarks_micro.lst ./conf/benchmarks.lst
+      - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
+
+    - name: spark_3.1_hadoop_3.2_sql
+      before_script:
+      - . ./travis/export_env_spark_3.1_hadoop_3.2.sh
+      script:
+      - cp ./travis/benchmarks_sql.lst ./conf/benchmarks.lst
+      - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
+
+    - name: spark_3.1_hadoop_3.2_websearch
+      before_script:
+      - . ./travis/export_env_spark_3.1_hadoop_3.2.sh
+      script:
+      - cp ./travis/benchmarks_websearch.lst ./conf/benchmarks.lst
+      - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
+
+    - name: spark_3.1_hadoop_3.2_ml
+      before_script:
+      - . ./travis/export_env_spark_3.1_hadoop_3.2.sh
+      script:
+      - cp ./travis/benchmarks_ml_2.lst ./conf/benchmarks.lst
+      - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
+
+    - name: spark_3.1_hadoop_3.2_graph
+      before_script:
+      - . ./travis/export_env_spark_3.1_hadoop_3.2.sh
+      script:
+      - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
+      - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
