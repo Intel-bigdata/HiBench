@@ -21,7 +21,7 @@ install:
   - cd $HOME/downloads
   - "[ -f spark-2.4.0-bin-hadoop2.7.tgz ] || wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz"
   - "[ -f spark-3.0.0-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop3.2.tgz"
-  - "[ -f spark-3.0.0-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz"
+  - "[ -f spark-3.1.1-bin-hadoop3.2.tgz ] || wget https://archive.apache.org/dist/spark/spark-3.1.1/spark-3.1.1-bin-hadoop3.2.tgz"
   - "[ -f hadoop-2.7.7.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz"
   - "[ -f hadoop-3.2.1.tar.gz ] || wget https://archive.apache.org/dist/hadoop/core/hadoop-3.2.1/hadoop-3.2.1.tar.gz"
   - cd /opt/
