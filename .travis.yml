@@ -157,3 +157,4 @@ jobs:
       script:
       - cp ./travis/benchmarks_graph.lst ./conf/benchmarks.lst
       - . ./travis/build_and_run_all_spark_3.1_hadoop_3.2.sh
+      
