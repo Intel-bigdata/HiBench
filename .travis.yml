@@ -27,6 +27,7 @@ install:
   - cd /opt/
   - tar -xzf $HOME/downloads/spark-2.4.0-bin-hadoop2.7.tgz
   - tar -xzf $HOME/downloads/spark-3.0.0-bin-hadoop3.2.tgz
+  - tar -xzf $HOME/downloads/spark-3.1.1-bin-hadoop3.2.tgz
   - tar -xzf $HOME/downloads/hadoop-2.7.7.tar.gz
   - tar -xzf $HOME/downloads/hadoop-3.2.1.tar.gz
   - cd ${hibench}
