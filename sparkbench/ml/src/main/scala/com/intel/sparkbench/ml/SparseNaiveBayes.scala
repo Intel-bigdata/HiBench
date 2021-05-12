@@ -21,15 +21,16 @@
 package org.apache.spark.examples.mllib
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.ml.feature.LabeledPoint
 import org.apache.spark.storage.StorageLevel
 import scopt.OptionParser
-
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.mllib.classification.NaiveBayes
+import org.apache.spark.ml.classification.NaiveBayes
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.hadoop.io.Text
 import org.apache.spark.SparkContext._
+import org.apache.spark.sql.SparkSession
 
 /**
  * An example naive Bayes app. Run with
@@ -74,10 +75,13 @@ object SparseNaiveBayes {
   }
 
   def run(params: Params) {
-    val conf = new SparkConf().setAppName(s"SparseNaiveBayes with $params")
-    val sc = new SparkContext(conf)
+    val spark = SparkSession
+      .builder
+      .appName(s"SparseNaiveBayes with $params")
+      .getOrCreate()
+    val sc = spark.sparkContext
 
-//    Logger.getRootLogger.setLevel(Level.WARN)
+    import spark.implicits._
 
     val minPartitions =
       if (params.minPartitions > 0) params.minPartitions else sc.defaultMinPartitions
@@ -116,10 +120,12 @@ object SparseNaiveBayes {
 
     val examples = vector.map{ case (label, indices, values) =>
       LabeledPoint(label, Vectors.sparse(d, indices, values))
-    }
+    }.toDF()
 
     // Cache examples because it will be used in both training and evaluation.
     examples.cache()
+
+    examples.show()
 
     val splits = examples.randomSplit(Array(0.8, 0.2))
     val training = splits(0)
@@ -130,14 +136,18 @@ object SparseNaiveBayes {
 
     println(s"numTraining = $numTraining, numTest = $numTest.")
 
-    val model = new NaiveBayes().setLambda(params.lambda).run(training)
+    val model = new NaiveBayes().setSmoothing(params.lambda).fit(training)
 
-    val prediction = model.predict(test.map(_.features))
-    val predictionAndLabel = prediction.zip(test.map(_.label))
-    val accuracy = predictionAndLabel.filter(x => x._1 == x._2).count().toDouble / numTest
+    val predictions = model.transform(test)
 
-    println(s"Test accuracy = $accuracy.")
+    // Select (prediction, true label) and compute test error
+    val evaluator = new MulticlassClassificationEvaluator()
+      .setLabelCol("label")
+      .setPredictionCol("prediction")
+      .setMetricName("accuracy")
+    val accuracy = evaluator.evaluate(predictions)
+    println(s"Test set accuracy = $accuracy")
 
-    sc.stop()
+    spark.stop()
   }
 }
