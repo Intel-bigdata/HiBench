@@ -24,6 +24,8 @@ enter_bench HadoopPrepareBayes ${workload_config} ${current_dir}
 show_bannar start
 
 rmr_hdfs ${INPUT_HDFS} || true
+rmr_hdfs ${INPUT_HDFS}.parquet || true
+
 START_TIME=`timestamp`
 OPTION="-t bayes \
         -b ${BAYES_BASE_HDFS} \
