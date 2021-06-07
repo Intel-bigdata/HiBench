@@ -14,7 +14,6 @@ object BayesDataGen {
 
   case class Params(input: String = null,
                     output: String = null,
-                    minPartitions: Int = 0,
                     numFeatures: Int = -1
                    )
 
@@ -23,9 +22,6 @@ object BayesDataGen {
 
     val parser = new OptionParser[Params]("BayesDataGen") {
       head("BayesDataGen: convert old HiBench bayes input dataset file to parquet dataset.")
-      opt[Int]("numPartitions")
-        .text("min number of partitions")
-        .action((x, c) => c.copy(minPartitions = x))
       opt[Int]("numFeatures")
         .text("number of features")
         .action((x, c) => c.copy(numFeatures = x))
@@ -55,9 +51,6 @@ object BayesDataGen {
     val sc = spark.sparkContext
 
     import spark.implicits._
-
-    val minPartitions =
-      if (params.minPartitions > 0) params.minPartitions else sc.defaultMinPartitions
 
     // Generate vectors according to input documents
     val data = sc.sequenceFile[Text, Text](params.input).map { case (k, v) => (k.toString, v.toString) }
