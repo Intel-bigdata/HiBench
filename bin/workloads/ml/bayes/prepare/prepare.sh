@@ -35,6 +35,8 @@ OPTION="-t bayes \
         -o sequence"
 
 run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
+run_spark_job --jars ${DATATOOLS} HiBench.BayesDataGen --input ${BAYES_BASE_HDFS}/Input --output ${BAYES_BASE_HDFS}/Input.parquet
+
 END_TIME=`timestamp`
 
 show_bannar finish

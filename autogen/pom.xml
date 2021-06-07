@@ -56,10 +56,58 @@
       <artifactId>hadoop-client</artifactId>
       <version>${hadoop.mr2.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.scopt</groupId>
+      <artifactId>scopt_2.10</artifactId>
+      <version>${scopt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <configuration>
+          <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+          <scalaVersion>${scala.version}</scalaVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scala-compile-first</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>add-source</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>scala-test-compile</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>${maven-assembly-plugin.version}</version>
@@ -80,4 +128,91 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+
+    <profile>
+      <id>defaultSpark</id>
+      <properties>
+        <spark.version>2.4.0</spark.version>
+        <spark.bin.version>2.4</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>!spark</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark2.4</id>
+      <properties>
+        <spark.version>2.4.0</spark.version>
+        <spark.bin.version>2.4</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>2.4</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>spark3.0</id>
+      <properties>
+        <spark.version>3.0.0</spark.version>
+        <spark.bin.version>3.0</spark.bin.version>
+      </properties>
+      <activation>
+        <property>
+          <name>spark</name>
+          <value>3.0</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>defaultScalaVersion</id>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>!scala</name>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>scala2.11</id>
+      <properties>
+        <scala.version>2.11.8</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>scala</name>
+          <value>2.11</value>
+        </property>
+      </activation>
+    </profile>
+
+    <profile>
+      <id>scala2.12</id>
+      <properties>
+        <scala.version>2.12.7</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
+      </properties>
+      <activation>
+        <property>
+          <name>scala</name>
+          <value>2.12</value>
+        </property>
+      </activation>
+    </profile>
+
+  </profiles>
+
 </project>

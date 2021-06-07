@@ -20,17 +20,15 @@
  */
 package org.apache.spark.examples.mllib
 
-import org.apache.log4j.{Level, Logger}
-import org.apache.spark.ml.linalg.Vectors
-import org.apache.spark.ml.feature.LabeledPoint
-import org.apache.spark.storage.StorageLevel
-import scopt.OptionParser
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.hadoop.io.Text
 import org.apache.spark.ml.classification.NaiveBayes
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
-import org.apache.hadoop.io.Text
-import org.apache.spark.SparkContext._
+import org.apache.spark.ml.feature.StringIndexer
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.storage.StorageLevel
+import scopt.OptionParser
 
 /**
  * An example naive Bayes app. Run with
@@ -43,26 +41,18 @@ object SparseNaiveBayes {
 
   case class Params(
       input: String = null,
-      minPartitions: Int = 0,
-      numFeatures: Int = -1,
       lambda: Double = 1.0)
 
   def main(args: Array[String]) {
     val defaultParams = Params()
 
     val parser = new OptionParser[Params]("SparseNaiveBayes") {
-      head("SparseNaiveBayes: an example naive Bayes app for LIBSVM data.")
-      opt[Int]("numPartitions")
-        .text("min number of partitions")
-        .action((x, c) => c.copy(minPartitions = x))
-      opt[Int]("numFeatures")
-        .text("number of features")
-        .action((x, c) => c.copy(numFeatures = x))
+      head("SparseNaiveBayes: an example naive Bayes app for parquet data.")
       opt[Double]("lambda")
         .text(s"lambda (smoothing constant), default: ${defaultParams.lambda}")
         .action((x, c) => c.copy(lambda = x))
       arg[String]("<input>")
-        .text("input paths to labeled examples in LIBSVM format")
+        .text("input paths to labeled examples in parquet format")
         .required()
         .action((x, c) => c.copy(input = x))
     }
@@ -79,66 +69,20 @@ object SparseNaiveBayes {
       .builder
       .appName(s"SparseNaiveBayes with $params")
       .getOrCreate()
-    val sc = spark.sparkContext
 
     import spark.implicits._
 
-    val minPartitions =
-      if (params.minPartitions > 0) params.minPartitions else sc.defaultMinPartitions
+    val df = spark.read.parquet(params.input)
 
-    // Generate vectors according to input documents
-    val data = sc.sequenceFile[Text, Text](params.input).map{case (k, v) => (k.toString, v.toString)}
-    val wordCount = data
-      .flatMap{ case (key, doc) => doc.split(" ")}
-      .map((_, 1L))
-      .reduceByKey(_ + _)
-    val wordSum = wordCount.map(_._2).reduce(_ + _)
-    val wordDict = wordCount.zipWithIndex()
-      .map{case ((key, count), index) => (key, (index.toInt, count.toDouble / wordSum)) }
-      .collectAsMap()
-    val sharedWordDict = sc.broadcast(wordDict)
+    // Split the data into training and test sets (30% held out for testing)
+    val Array(trainingData, testData) = df.randomSplit(Array(0.8, 0.2), seed = 1234L)
 
-    // for each document, generate vector based on word freq
-    val vector = data.map { case (dockey, doc) =>
-      val docVector = doc.split(" ").map(x => sharedWordDict.value(x)) //map to word index: freq
-        .groupBy(_._1) // combine freq with same word
-        .map { case (k, v) => (k, v.map(_._2).sum)}
+    // Train a NaiveBayes model.
+    val model = new NaiveBayes().fit(trainingData)
 
-      val (indices, values) = docVector.toList.sortBy(_._1).unzip
-      val label = dockey.substring(6).head.toDouble
-      (label, indices.toArray, values.toArray)
-    }
-
-    val d = if (params.numFeatures > 0){
-      params.numFeatures
-    } else {
-      vector.persist(StorageLevel.MEMORY_ONLY)
-      vector.map { case (label, indices, values) =>
-        indices.lastOption.getOrElse(0)
-      }.reduce(math.max) + 1
-    }
-
-    val examples = vector.map{ case (label, indices, values) =>
-      LabeledPoint(label, Vectors.sparse(d, indices, values))
-    }.toDF()
-
-    // Cache examples because it will be used in both training and evaluation.
-    examples.cache()
-
-    examples.show()
-
-    val splits = examples.randomSplit(Array(0.8, 0.2))
-    val training = splits(0)
-    val test = splits(1)
-
-    val numTraining = training.count()
-    val numTest = test.count()
-
-    println(s"numTraining = $numTraining, numTest = $numTest.")
-
-    val model = new NaiveBayes().setSmoothing(params.lambda).fit(training)
-
-    val predictions = model.transform(test)
+    // Select example rows to display.
+    val predictions = model.transform(testData)
+    predictions.show()
 
     // Select (prediction, true label) and compute test error
     val evaluator = new MulticlassClassificationEvaluator()
