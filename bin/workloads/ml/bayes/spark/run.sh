@@ -24,9 +24,12 @@ show_bannar start
 
 rmr_hdfs $OUTPUT_HDFS || true
 
-SIZE=`dir_size $INPUT_HDFS`
+# Use converted parquet file as input
+INPUT_PARQUET_FILE=${INPUT_HDFS}.parquet
+
+SIZE=`dir_size $INPUT_PARQUET_FILE`
 START_TIME=`timestamp`
-run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes ${INPUT_HDFS}
+run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes ${INPUT_PARQUET_FILE}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
