@@ -71,7 +71,8 @@ object BayesDataGen {
         .map { case (k, v) => (k, v.map(_._2).sum) }
 
       val (indices, values) = docVector.toList.sortBy(_._1).unzip
-      val label = dockey.substring(6).head.toDouble
+      // dockey: /class123 => label: 123.0
+      val label = dockey.substring(6).toDouble
       (label, indices.toArray, values.toArray)
     }
 
