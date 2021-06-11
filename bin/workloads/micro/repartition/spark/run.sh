@@ -38,6 +38,6 @@ START_TIME=`timestamp`
 run_spark_job com.intel.hibench.sparkbench.micro.$CLASSNAME $FIRST_ARG $OUTPUT_HDFS $CACHE_IN_MEMORY $DISABLE_OUTPUT
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
+gen_report ${START_TIME} ${END_TIME} 0
 show_bannar finish
 leave_bench
