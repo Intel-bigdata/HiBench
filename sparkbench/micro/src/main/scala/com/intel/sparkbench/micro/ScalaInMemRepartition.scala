@@ -41,7 +41,7 @@ object ScalaInMemRepartition {
     val nbrOfRecords = toInt(args(0), ("NBR_OF_RECORD"))
     val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
     if (!disableOutput) {
-      throw new IllegalArgumentException("DISABLE_OUTPUT should be set to true")
+      throw new IllegalArgumentException("DISABLE_OUTPUT should be set to true for in memory repartition")
     }
 
     val localData = Range(0, 200).map(i => i.toByte).toArray
