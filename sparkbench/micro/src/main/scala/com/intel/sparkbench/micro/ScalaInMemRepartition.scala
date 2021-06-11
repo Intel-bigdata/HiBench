@@ -21,6 +21,8 @@ import com.intel.hibench.sparkbench.common.IOCommon
 import org.apache.spark._
 import org.apache.spark.rdd.{MemoryDataRDD, PairRDDFunctions, RDD, ShuffledRDD}
 import org.apache.spark.storage.StorageLevel
+import org.apache.hadoop.io.{Text, NullWritable}
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 
 import java.util.Random
 import scala.util.hashing
@@ -39,11 +41,8 @@ object ScalaInMemRepartition {
     }
     val cache = toBoolean(args(2), ("CACHE_IN_MEMORY"))
     val nbrOfRecords = toInt(args(0), ("NBR_OF_RECORD"))
+    val outputDir = args(1)
     val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
-    if (!disableOutput) {
-      throw new IllegalArgumentException("DISABLE_OUTPUT should be set to true for in memory repartition")
-    }
-
     val localData = Range(0, 200).map(i => i.toByte).toArray
 
     val sparkConf = new SparkConf().setAppName("ScalaInMemRepartition")
@@ -73,7 +72,12 @@ object ScalaInMemRepartition {
     }
 
     val shuffled = paired.partitionBy(new HashPartitioner(reduceParallelism))
-    shuffled.foreach(_ => {})
+    if (disableOutput) {
+      shuffled.foreach(_ => {})
+    } else {
+      shuffled.map { case (_, v) => (NullWritable.get(), new Text(v)) }
+        .saveAsNewAPIHadoopFile[TextOutputFormat[NullWritable, Text]](outputDir)
+    }
 
     sc.stop()
   }
