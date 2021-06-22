@@ -29,15 +29,11 @@ INPUT_PARQUET_FILE=${INPUT_HDFS}.parquet
 
 SIZE=`dir_size $INPUT_PARQUET_FILE`
 START_TIME=`timestamp`
-run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes ${INPUT_PARQUET_FILE}
+run_spark_job com.intel.hibench.sparkbench.ml.NaiveBayesExample ${INPUT_PARQUET_FILE}
 END_TIME=`timestamp`
 
 gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
 
-
-# run bench
-#run_spark_job org.apache.spark.examples.mllib.SparseNaiveBayes --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt || exit 1
-#$SPARK_HOME/bin/spark-submit --class org.apache.spark.examples.mllib.SparseNaiveBayes --master ${SPARK_MASTER} ${SPARK_EXAMPLES_JAR} --numFeatures ${NUM_FEATURES} ${INPUT_HDFS}/vectors.txt
 

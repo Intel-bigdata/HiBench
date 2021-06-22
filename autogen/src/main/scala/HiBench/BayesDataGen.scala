@@ -7,21 +7,31 @@ import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.StringIndexer
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.storage.StorageLevel
 
+import scala.util.Random
+
+//
+// If use_dense is true: generate dense dataset in parquet format
+// Otherwise, convert old HiBench bayes input dataset file to parquet dataset
+//
 object BayesDataGen {
 
   case class Params(input: String = null,
                     output: String = null,
-                    numFeatures: Int = -1
+                    numFeatures: Int = -1,
+                    useDense: Boolean = false,
+                    examples: Int = -1,
+                    features: Int = -1,
+                    classes: Int = -1
                    )
 
   def main(args: Array[String]) {
     val defaultParams = Params()
 
     val parser = new OptionParser[Params]("BayesDataGen") {
-      head("BayesDataGen: convert old HiBench bayes input dataset file to parquet dataset.")
+      head("BayesDataGen: generate Bayes dense dataset in parquet or convert old input dataset to parquet.")
       opt[Int]("numFeatures")
         .text("number of features")
         .action((x, c) => c.copy(numFeatures = x))
@@ -33,6 +43,22 @@ object BayesDataGen {
         .text("output path to converted parquet dataset")
         .required()
         .action((x, c) => c.copy(output = x))
+      opt[Boolean]("useDense")
+        .text("if generate dense dataset or convert old dataset")
+        .required()
+        .action((x, c) => c.copy(useDense = x))
+      opt[Int]("examples")
+        .text("example number of dense dataset")
+        .required()
+        .action((x, c) => c.copy(examples = x))
+      opt[Int]("features")
+        .text("features number of dense dataset")
+        .required()
+        .action((x, c) => c.copy(features = x))
+      opt[Int]("classes")
+        .text("classes number of dense dataset")
+        .required()
+        .action((x, c) => c.copy(classes = x))
     }
 
     parser.parse(args, defaultParams).map { params =>
@@ -42,12 +68,7 @@ object BayesDataGen {
     }
   }
 
-  def run(params: Params) {
-    val spark = SparkSession
-      .builder
-      .appName(s"BayesDataGen with $params")
-      .getOrCreate()
-
+  def convertOldDataset(spark: SparkSession, params: Params): DataFrame = {
     val sc = spark.sparkContext
 
     import spark.implicits._
@@ -91,6 +112,41 @@ object BayesDataGen {
 
     val df = examples.map { case LabeledPoint(label, features) => (label, features.asML) }
       .toDF("origin_label", "features")
+
+    df
+  }
+
+  def genDenseDataset(spark: SparkSession, params: Params, seed: Int = 1234): DataFrame = {
+    val sc = spark.sparkContext
+    import spark.implicits._
+
+    val nparts = sc.defaultParallelism
+    val eps = 3
+
+    val df = sc.parallelize(0 until params.examples, nparts).map { idx =>
+      val rnd = new Random(seed + idx)
+
+      val label: Double = rnd.nextInt(params.classes).toDouble
+      val features = Array.fill[Double](params.features) {
+        (rnd.nextGaussian() + (label * eps)).abs
+      }
+
+      Tuple2(label, Vectors.dense(features))
+    }.toDF("origin_label", "features")
+
+    df
+  }
+
+  def run(params: Params) {
+    val spark = SparkSession
+      .builder
+      .appName(s"BayesDataGen with $params")
+      .getOrCreate()
+
+    val df = if (!params.useDense)
+      convertOldDataset(spark, params)
+    else
+      genDenseDataset(spark, params)
 
     val stringIndexer = new StringIndexer()
       .setInputCol("origin_label")

@@ -15,29 +15,17 @@
  * limitations under the License.
  */
 
-/*
- * Copied from org.apache.spark.examples.mllib.SparkNaiveBayes
+/**
+ * Modified from Spark Naive Bayes example
  */
-package org.apache.spark.examples.mllib
+package com.intel.hibench.sparkbench.ml
 
-import org.apache.hadoop.io.Text
 import org.apache.spark.ml.classification.NaiveBayes
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
-import org.apache.spark.ml.feature.StringIndexer
-import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.storage.StorageLevel
 import scopt.OptionParser
 
-/**
- * An example naive Bayes app. Run with
- * {{{
- * ./bin/run-example org.apache.spark.examples.mllib.SparseNaiveBayes [options] <input>
- * }}}
- * If you use it as a template to create your own app, please use `spark-submit` to submit your app.
- */
-object SparseNaiveBayes {
+object NaiveBayesExample {
 
   case class Params(
       input: String = null,
@@ -46,8 +34,8 @@ object SparseNaiveBayes {
   def main(args: Array[String]) {
     val defaultParams = Params()
 
-    val parser = new OptionParser[Params]("SparseNaiveBayes") {
-      head("SparseNaiveBayes: an example naive Bayes app for parquet data.")
+    val parser = new OptionParser[Params]("NaiveBayesExample") {
+      head("NaiveBayesExample: an example Naive Bayes app for parquet dataset.")
       opt[Double]("lambda")
         .text(s"lambda (smoothing constant), default: ${defaultParams.lambda}")
         .action((x, c) => c.copy(lambda = x))
@@ -67,10 +55,8 @@ object SparseNaiveBayes {
   def run(params: Params) {
     val spark = SparkSession
       .builder
-      .appName(s"SparseNaiveBayes with $params")
+      .appName(s"NaiveBayesExample with $params")
       .getOrCreate()
-
-    import spark.implicits._
 
     val df = spark.read.parquet(params.input)
 
