@@ -1,14 +1,11 @@
 package HiBench
 
-import scopt.OptionParser
 import org.apache.hadoop.io.Text
-import org.apache.spark.ml.classification.NaiveBayes
-import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
-import org.apache.spark.ml.feature.StringIndexer
-import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.ml.feature.{LabeledPoint, StringIndexer}
+import org.apache.spark.ml.linalg.Vectors
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.storage.StorageLevel
+import scopt.OptionParser
 
 import scala.util.Random
 
@@ -107,11 +104,10 @@ object BayesDataGen {
     }
 
     val examples = vector.map { case (label, indices, values) =>
-      LabeledPoint(label, Vectors.sparse(d, indices, values))
+      (label, Vectors.sparse(d, indices, values))
     }
 
-    val df = examples.map { case LabeledPoint(label, features) => (label, features.asML) }
-      .toDF("origin_label", "features")
+    val df = examples.toDF("origin_label", "features")
 
     df
   }
