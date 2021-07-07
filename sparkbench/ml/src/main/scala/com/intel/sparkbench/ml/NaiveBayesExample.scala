@@ -60,7 +60,7 @@ object NaiveBayesExample {
 
     val df = spark.read.parquet(params.input)
 
-    // Split the data into training and test sets (30% held out for testing)
+    // Split the data into training and test sets (20% held out for testing)
     val Array(trainingData, testData) = df.randomSplit(Array(0.8, 0.2), seed = 1234L)
 
     // Train a NaiveBayes model.
