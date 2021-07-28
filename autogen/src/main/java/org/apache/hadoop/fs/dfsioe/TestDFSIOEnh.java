@@ -495,9 +495,13 @@ public class TestDFSIOEnh extends Configured implements Tool {
     int tputPlotInterval = DEFAULT_TPUT_PLOT_INTERVAL;
     long tputSampleUnit = DEFAULT_TPUT_SAMPLE_UNIT;
     float threshold = 0.5f;
+    int analyzeNumReduceTasks = 1;
 
     String version="TestFDSIO.0.0.4 Enhanced Version";
-    String usage = "Usage: TestFDSIOEnh -read | -write | -skipAnalyze | -clean [-nrFiles N] [-fileSize MB] [-resFile resultFileName] [-bufferSize Bytes] [-tputFile AggregatedThroughputCSVFileName] [-sampleInterval Miliseconds] [-plotInterval Miliseconds] [-sampleUnit g|m|k|b] [-sumThreshold 0.0~1.0] [-tputReportEach] [-tputReportTotal]";
+    String usage = "Usage: TestFDSIOEnh -read | -write | -skipAnalyze | -clean [-nrFiles N] [-fileSize MB] " +
+                   "[-resFile resultFileName] [-bufferSize Bytes] [-tputFile AggregatedThroughputCSVFileName] " +
+                   "[-sampleInterval Miliseconds] [-plotInterval Miliseconds] [-sampleUnit g|m|k|b] " +
+                   "[-sumThreshold 0.0~1.0] [-tputReportEach] [-tputReportTotal] [-analyzeNumReduceTasks]";
     
     System.out.println(version);
     if (args.length == 0) {
@@ -559,6 +563,8 @@ public class TestDFSIOEnh extends Configured implements Tool {
             else {
                 LOG.warn("Illegal format of parameter \"sampleUnit\", Ignored.");
             }
+        } else if (args[i].equals("-analyzeNumReduceTasks")) {
+            analyzeNumReduceTasks = Integer.parseInt(args[++i]);
         }
     }
 
@@ -611,7 +617,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
                     tputFileName, tputReportEach, tputReportTotal);*/
             runAnalyse(fs, fsConfig, testType, execTime, resFileName, nrFiles, fileSize*MEGA, 
                     tStart, tputPlotInterval, tputSampleUnit,(int)(mapSlots*threshold),
-                    tputFileName, tputReportEach, tputReportTotal);
+                    tputFileName, tputReportEach, tputReportTotal, analyzeNumReduceTasks);
         }
     } catch(Exception e) {
         System.err.print(StringUtils.stringifyException(e));
@@ -836,7 +842,8 @@ public class TestDFSIOEnh extends Configured implements Tool {
 								         long fileSize, long tStart,
 								         int plotInterval, long sampleUnit,
 								         int threshold, String tputResFileName,
-								         boolean tputReportEach, boolean tputReportTotal) throws IOException {
+								         boolean tputReportEach, boolean tputReportTotal,
+                                         int analyzeNumReduceTasks) throws IOException {
 		 long t1 = System.currentTimeMillis();
 		 Path reduceFile;
 		 if (testType == TEST_TYPE_WRITE)
@@ -940,7 +947,7 @@ public class TestDFSIOEnh extends Configured implements Tool {
 			 job.setReducerClass(_Reducer.class);
 			 job.setOutputKeyClass(Text.class);
 			 job.setOutputValueClass(Text.class);
-//			 job.setNumReduceTasks(1);
+			 job.setNumReduceTasks(analyzeNumReduceTasks);
 			 org.apache.hadoop.mapreduce.lib.input.FileInputFormat.addInputPath(job, reduceFile);
 			 org.apache.hadoop.mapreduce.lib.output.FileOutputFormat.setOutputPath(job, DfsioeConfig.getInstance().getReportDir(fsConfig));
 			 job.waitForCompletion(true);

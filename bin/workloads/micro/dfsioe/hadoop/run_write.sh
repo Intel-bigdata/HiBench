@@ -29,7 +29,7 @@ rmr_hdfs ${OUTPUT_HDFS} || true
 
 # pre-running
 SIZE=`dir_size $INPUT_HDFS`
-OPTION="-write -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -Dtest.build.data=${INPUT_HDFS}"
+OPTION="-write -nrFiles ${WT_NUM_OF_FILES} -fileSize ${WT_FILE_SIZE} -bufferSize 4096 -plotInteval 1000 -sampleUnit m -sampleInteval 200 -sumThreshold 0.5 -tputReportTotal -Dtest.build.data=${INPUT_HDFS} -analyzeNumReduceTasks ${NUM_REDUCE_TASKS_ANALYZE}"
 
 OLD_HADOOP_OPTS=${HADOOP_OPTS:-}
 export HADOOP_OPTS="${HADOOP_OPTS:-} -Dtest.build.data=${INPUT_HDFS} "

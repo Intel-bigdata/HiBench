@@ -188,6 +188,7 @@ HiBenchEnvPropMapping=dict(
     RD_FILE_SIZE="hibench.dfsioe.read.file_size",
     WT_NUM_OF_FILES="hibench.dfsioe.write.number_of_files",
     WT_FILE_SIZE="hibench.dfsioe.write.file_size",
+    NUM_REDUCE_TASKS_ANALYZE="hibench.dfsioe.analyze.num_reduce_tasks",
     MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
     # For NWeight
