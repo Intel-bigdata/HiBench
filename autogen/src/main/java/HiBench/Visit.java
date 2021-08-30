@@ -44,7 +44,7 @@ public class Visit {
 					// examples of user agents
 					
 					BufferedReader br =
-							new BufferedReader(new FileReader(cachePath.toString()));
+							new BufferedReader(new FileReader(cachePath.toUri().getPath()));
 
 					StringBuffer all = new StringBuffer();
 					String line = null;
@@ -57,7 +57,7 @@ public class Visit {
 				} else if (cachePath.getName().contains(HiveData.countryf)) {
 					// examples of country codes
 					BufferedReader br =
-							new BufferedReader(new FileReader(cachePath.toString()));
+							new BufferedReader(new FileReader(cachePath.toUri().getPath()));
 
 					StringBuffer all = new StringBuffer();
 					String line = null;
@@ -70,7 +70,7 @@ public class Visit {
 				} else if (cachePath.getName().contains(HiveData.searchkeyf)) {
 					// examples of search keys
 					BufferedReader br =
-							new BufferedReader(new FileReader(cachePath.toString()));
+							new BufferedReader(new FileReader(cachePath.toUri().getPath()));
 
 					StringBuffer all = new StringBuffer();
 					String line = null;
