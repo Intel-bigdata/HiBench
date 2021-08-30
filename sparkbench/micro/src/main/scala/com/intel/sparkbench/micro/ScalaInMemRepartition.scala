@@ -26,11 +26,14 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 
 import java.util.Random
 import scala.util.hashing
+import scala.compat.java8.FunctionConverters._
 
 object ScalaInMemRepartition {
 
   val localData = Range(0, 200).map(i => i.toByte).toArray
-  val local = ThreadLocal.withInitial[Array[Byte]](() => localData.clone())
+  val local = ThreadLocal.withInitial[Array[Byte]](
+    (() => localData.clone).asJava
+    )
 
   def main(args: Array[String]) {
     if (args.length != 4) {
