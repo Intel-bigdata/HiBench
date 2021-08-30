@@ -33,27 +33,26 @@ object ScalaRepartition {
   def main(args: Array[String]) {
     if (args.length != 4) {
       System.err.println(
-        s"Usage: $ScalaRepartition <MAP_SIZE> <OUTPUT_HDFS> <CACHE_IN_MEMORY> <DISABLE_OUTPUT>"
+        s"Usage: $ScalaRepartition <INPUT_HDFS> <OUTPUT_HDFS> <CACHE_IN_MEMORY> <DISABLE_OUTPUT>"
       )
       System.exit(1)
     }
     val cache = toBoolean(args(2), ("CACHE_IN_MEMORY"))
-    if (!cache) {
-      throw new IllegalArgumentException("CACHE_IN_MEMORY should be set to true")
-    }
-
-    val mapSize = toLong(args(0), ("MAP_SIZE"))
-    MockedData.dataSize = mapSize
-
     val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
 
     val sparkConf = new SparkConf().setAppName("ScalaRepartition")
     val sc = new SparkContext(sparkConf)
 
+    val data = sc.newAPIHadoopFile[Text, Text, TeraInputFormat](args(0)).map {
+      case (k,v) => k.copyBytes ++ v.copyBytes
+    }
+
+    if (cache) {
+      data.persist(StorageLevel.MEMORY_ONLY)
+      data.count()
+    }
+
     val mapParallelism = sc.getConf.getInt("spark.default.parallelism", sc.defaultParallelism)
-
-    val data = sc.parallelize(Range(0, mapParallelism - 1))
-
     val reduceParallelism  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((mapParallelism / 2).toString).toInt
 
@@ -80,38 +79,22 @@ object ScalaRepartition {
     }
   }
 
-  private def toLong(str: String, parameterName: String): Long = {
-    try {
-      str.toLong
-    } catch {
-      case e: IllegalArgumentException =>
-        throw new IllegalArgumentException(
-          s"Unrecognizable parameter ${parameterName}: ${str}, should be integer")
-    }
-  }
-
   // Save a CoalescedRDD than RDD.repartition API
-  private def repartition(previous: RDD[Int], numReducers: Int):
-      ShuffledRDD[Int, Array[Byte], Array[Byte]] = {
+  private def repartition(previous: RDD[Array[Byte]], numReducers: Int): ShuffledRDD[Int, Array[Byte], Array[Byte]] = {
     /** Distributes elements evenly across output partitions, starting from a random partition. */
-    val distributePartition = (index: Int, items: Iterator[Int]) => {
+    val distributePartition = (index: Int, items: Iterator[Array[Byte]]) => {
       var position = new Random(hashing.byteswap32(index)).nextInt(numReducers)
-      items.map { i =>
+      items.map { t =>
         // Note that the hash code of the key will just be the key itself. The HashPartitioner
         // will mod it with the number of total partitions.
         position = position + 1
-        (position, MockedData.data)
+        (position, t)
       }
     } : Iterator[(Int, Array[Byte])]
 
     // include a shuffle step so that our upstream tasks are still distributed
     new ShuffledRDD[Int, Array[Byte], Array[Byte]](previous.mapPartitionsWithIndex(distributePartition),
       new HashPartitioner(numReducers))
-  }
-
-  object MockedData {
-    var dataSize: Long = _
-    lazy val data: Array[Byte] = Seq(0, dataSize).map(i => i.toByte).toArray
   }
 
 }
