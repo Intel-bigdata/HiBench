@@ -168,6 +168,10 @@ HiBenchEnvPropMapping=dict(
     REG_PARAM_LINEAR="hibench.linear.regularization_param",
     ELASTICNET_PARAM_LINEAR="hibench.linear.elasticnet_param",
     TOL_LINEAR="hibench.linear.tolerance",
+    # For Correlation
+    NUM_EXAMPLES_CORRELATION="hibench.correlation.examples",
+    NUM_FEATURES_CORRELATION="hibench.correlation.features",
+    CORR_TYPE="hibench.correlation.corrType",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
     NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",
