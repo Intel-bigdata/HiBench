@@ -72,6 +72,7 @@ HiBenchEnvPropMapping=dict(
     # For repartition
     CACHE_IN_MEMORY="hibench.repartition.cacheinmemory",
     DISABLE_OUTPUT="hibench.repartition.disableoutput",
+    FROM_HDFS="hibench.repartition.fromhdfs",
 
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",
@@ -191,6 +192,7 @@ HiBenchEnvPropMapping=dict(
     RD_FILE_SIZE="hibench.dfsioe.read.file_size",
     WT_NUM_OF_FILES="hibench.dfsioe.write.number_of_files",
     WT_FILE_SIZE="hibench.dfsioe.write.file_size",
+    READ_ONLY="hibench.dfsioe.read_only",
     MAP_JAVA_OPTS="hibench.dfsioe.map.java_opts",
     RED_JAVA_OPTS="hibench.dfsioe.red.java_opts",
     # For NWeight
