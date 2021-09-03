@@ -84,6 +84,9 @@ HiBenchEnvPropMapping=dict(
     DATATOOLS="hibench.hibench.datatool.dir",
     BAYES_BASE_HDFS="hibench.bayes.base.hdfs",
     NGRAMS="hibench.bayes.ngrams",
+    BAYES_USE_DENSE="hibench.bayes.use_dense",
+    BAYES_DENSE_EXAMPLES="hibench.bayes.dense.examples",
+    BAYES_DENSE_FEATURES="hibench.bayes.dense.features",
     # For kmeans
     INPUT_SAMPLE="hibench.kmeans.input.sample",
     INPUT_CLUSTER="hibench.kmeans.input.cluster",
