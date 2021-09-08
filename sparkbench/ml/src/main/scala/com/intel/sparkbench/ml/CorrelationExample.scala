@@ -18,8 +18,8 @@ object CorrelationExample {
 
     val defaultParams = Params()
 
-    val parser = new OptionParser[Params]("LinearRegressionWithElasticNet") {
-      head("LinearRegressionExample: an example Linear Regression with Elastic-Net app.")
+    val parser = new OptionParser[Params]("Correlation") {
+      head("Correlation: an example app for computing correlations.")
       opt[String]("corrType")
         .text(s"String specifying the method to use for computing correlation. " +
           s"Supported: `pearson` (default), `spearman`, default: ${defaultParams.corrType}")
