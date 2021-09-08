@@ -44,22 +44,11 @@ object CorrelationExample {
 
     val data: RDD[LabeledPoint] = spark.sparkContext.objectFile(params.input)
     import spark.implicits._
-    val training = data.toDF().cache()
-
-
-    val numTraining = training.count()
-
-    val numFeatures = training.select("features").first().getAs[Vector](0).size
-    println(s"  numTraining = $numTraining")
-    println(s"  numFeatures = $numFeatures")
-
-
-    println(s"Correlation ${params.corrType} between label and each feature")
-    println(s"Feature\tCorrelation")
+    val training = data.toDF()
 
     val df = training.toDF("label", "features")
-    val Row(coeff1: Matrix) = Correlation.corr(df, "features", params.corrType)
-    println(s"Pearson correlation matrix:\n $coeff1.")
+    val Row(coeff1: Matrix) = Correlation.corr(df, "features", params.corrType).head()
+    println(s"Correlation matrix:\n $coeff1.")
 
     spark.stop()
   }
