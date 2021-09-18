@@ -58,7 +58,7 @@
     </dependency>
     <dependency>
       <groupId>com.github.scopt</groupId>
-      <artifactId>scopt_2.10</artifactId>
+      <artifactId>scopt_2.12</artifactId>
       <version>${scopt.version}</version>
     </dependency>
     <dependency>

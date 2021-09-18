@@ -18,7 +18,7 @@
     <scala.binary.version>2.10</scala.binary.version>
     <slf4j.version>1.7.5</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
-    <scopt.version>3.2.0</scopt.version>
+    <scopt.version>3.7.0</scopt.version>
     <mahout.version>0.9</mahout.version>
     <uncommons-maths.version>1.2.2a</uncommons-maths.version>
     <junit.version>3.8.1</junit.version>
