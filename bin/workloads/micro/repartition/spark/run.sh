@@ -23,13 +23,21 @@ workload_config=${root_dir}/conf/workloads/micro/repartition.conf
 enter_bench ScalaRepartition ${workload_config} ${current_dir}
 show_bannar start
 
+CLASSNAME=ScalaRepartition
+FIRST_ARG=${INPUT_HDFS}
+if [ ${FROM_HDFS,,} == "false" ]
+then
+        CLASSNAME=ScalaInMemRepartition
+        FIRST_ARG=${DATASIZE}
+fi
+
 rmr_hdfs $OUTPUT_HDFS || true
 
 SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-run_spark_job com.intel.hibench.sparkbench.micro.ScalaRepartition $INPUT_HDFS $OUTPUT_HDFS $CACHE_IN_MEMORY $DISABLE_OUTPUT
+run_spark_job com.intel.hibench.sparkbench.micro.$CLASSNAME $FIRST_ARG $OUTPUT_HDFS $CACHE_IN_MEMORY $DISABLE_OUTPUT
 END_TIME=`timestamp`
 
-gen_report ${START_TIME} ${END_TIME} ${SIZE}
+gen_report ${START_TIME} ${END_TIME} 0
 show_bannar finish
 leave_bench

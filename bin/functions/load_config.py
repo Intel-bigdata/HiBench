@@ -363,47 +363,30 @@ def probe_java_bin():
 
 
 def probe_hadoop_release():
-    # probe hadoop release. CDH(only support CDH 5 in HiBench 6.0), HDP, or
-    # apache
+    # probe hadoop release. only support apache
     if not HibenchConf.get("hibench.hadoop.release", ""):
         cmd_release_and_version = HibenchConf['hibench.hadoop.executable'] + ' version | head -1'
         # version here means, for example apache hadoop {2.7.3}
         hadoop_release_and_version = shell(cmd_release_and_version).strip()
 
         HibenchConf["hibench.hadoop.release"] = \
-            "cdh4" if "cdh4" in hadoop_release_and_version else \
-            "cdh5" if "cdh5" in hadoop_release_and_version else \
             "apache" if "Hadoop" in hadoop_release_and_version else \
             "UNKNOWN"
         HibenchConfRef["hibench.hadoop.release"] = "Inferred by: hadoop executable, the path is:\"%s\"" % HibenchConf[
             'hibench.hadoop.executable']
 
-        assert HibenchConf["hibench.hadoop.release"] in ["cdh4", "cdh5", "apache",
-                                                         "hdp"], "Unknown hadoop release. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property"
-        assert HibenchConf[
-            "hibench.hadoop.release"] != "cdh4", "Hadoop release CDH4 is not supported in HiBench6.0, please upgrade to CDH5 or use Apache Hadoop/HDP"
-
+        assert HibenchConf["hibench.hadoop.release"] in ["apache"], "Unknown hadoop release. Auto probe failed, please override `hibench.hadoop.release` to explicitly define this property, only apache is supported"
+        
 
 def probe_hadoop_examples_jars():
     # probe hadoop example jars
     if not HibenchConf.get("hibench.hadoop.examples.jar", ""):
         examples_jars_candidate_apache0 = HibenchConf[
             'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar"
-        examples_jars_candidate_cdh0 = HibenchConf[
-            'hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-examples-*.jar"
-        examples_jars_candidate_cdh1 = HibenchConf[
-            'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-examples-*.jar"
-        examples_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-examples.jar"
-        examples_jars_candidate_hdp1 = HibenchConf[
-            'hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-examples.jar"
 
         examples_jars_candidate_list = [
-            examples_jars_candidate_apache0,
-            examples_jars_candidate_cdh0,
-            examples_jars_candidate_cdh1,
-            examples_jars_candidate_hdp0,
-            examples_jars_candidate_hdp1]
+            examples_jars_candidate_apache0
+            ]
 
         HibenchConf["hibench.hadoop.examples.jar"] = exactly_one_file(
             examples_jars_candidate_list, "hibench.hadoop.examples.jar")
@@ -416,21 +399,10 @@ def probe_hadoop_examples_test_jars():
     if not HibenchConf.get("hibench.hadoop.examples.test.jar", ""):
         examples_test_jars_candidate_apache0 = HibenchConf[
             'hibench.hadoop.home'] + "/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient*-tests.jar"
-        examples_test_jars_candidate_cdh0 = HibenchConf[
-            'hibench.hadoop.home'] + "/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient*-tests.jar"
-        examples_test_jars_candidate_cdh1 = HibenchConf[
-            'hibench.hadoop.home'] + "/../../jars/hadoop-mapreduce-client-jobclient*-tests.jar"
-        examples_test_jars_candidate_hdp0 = HibenchConf[
-            'hibench.hadoop.home'] + "/../hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient-tests.jar"
-        examples_test_jars_candidate_hdp1 = HibenchConf[
-            'hibench.hadoop.home'] + "/../hadoop-mapreduce/hadoop-mapreduce-client-jobclient-tests.jar"
 
         examples_test_jars_candidate_list = [
-            examples_test_jars_candidate_apache0,
-            examples_test_jars_candidate_cdh0,
-            examples_test_jars_candidate_cdh1,
-            examples_test_jars_candidate_hdp0,
-            examples_test_jars_candidate_hdp1]
+            examples_test_jars_candidate_apache0
+            ]
 
         HibenchConf["hibench.hadoop.examples.test.jar"] = exactly_one_file(
             examples_test_jars_candidate_list, "hibench.hadoop.examples.test.jar")

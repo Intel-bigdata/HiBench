@@ -93,13 +93,8 @@ def test_probe_hadoop_examples_jars():
         return test
 
     hadoop_examples_jars_list = [["apache0",
-                                  "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar"],
-                                 ["cdh0",
-                                  "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-examples-2.7.3.jar"],
-                                 ["cdh1",
-                                  "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-examples-2.7.3.jar"],
-                                 ["hdp0",
-                                  "/tmp/test/hadoop_home/hadoop-mapreduce-examples.jar"]]
+                                  "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.3.jar"]
+                                 ]
 
     for i in range(len(hadoop_examples_jars_list)):
         test_name = 'test_%s' % hadoop_examples_jars_list[i][0]
@@ -140,13 +135,8 @@ def test_probe_hadoop_test_examples_jars():
         return test
 
     hadoop_test_examples_jars_list = [["apache0",
-                                       "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
-                                      ["cdh0",
-                                       "/tmp/test/hadoop_home/share/hadoop/mapreduce2/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
-                                      ["cdh1",
-                                       "/tmp/test/hadoop_home/../../jars/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"],
-                                      ["hdp0",
-                                       "/tmp/test/hadoop_home/hadoop-mapreduce-client-jobclient-tests.jar"]]
+                                       "/tmp/test/hadoop_home/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.3-tests.jar"]
+                                      ]
 
     for i in range(len(hadoop_test_examples_jars_list)):
         test_name = 'test_%s' % hadoop_test_examples_jars_list[i][0]

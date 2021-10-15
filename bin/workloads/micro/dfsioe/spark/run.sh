@@ -16,36 +16,20 @@
 
 current_dir=`dirname "$0"`
 current_dir=`cd "$current_dir"; pwd`
-root_dir=${current_dir}/../../../../../
-workload_config=${root_dir}/conf/workloads/ml/bayes.conf
+root_dir=${current_dir}/../../../../..
+workload_config=${root_dir}/conf/workloads/micro/dfsioe.conf
 . "${root_dir}/bin/functions/load_bench_config.sh"
 
-enter_bench HadoopPrepareBayes ${workload_config} ${current_dir}
+enter_bench DFSIOE ${workload_config} ${current_dir}
 show_bannar start
 
-rmr_hdfs ${INPUT_HDFS} || true
-rmr_hdfs ${INPUT_HDFS}.parquet || true
+rmr_hdfs $OUTPUT_HDFS || true
 
+SIZE=`dir_size $INPUT_HDFS`
 START_TIME=`timestamp`
-
-if [ ${BAYES_USE_DENSE} != "true" ]; then
-  OPTION="-t bayes \
-          -b ${BAYES_BASE_HDFS} \
-          -n Input \
-          -m ${NUM_MAPS} \
-          -r ${NUM_REDS} \
-          -p ${PAGES} \
-          -class ${CLASSES} \
-          -o sequence"
-  run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
-fi
-run_spark_job --jars ${DATATOOLS} HiBench.BayesDataGen --input ${INPUT_HDFS} --output ${INPUT_HDFS}.parquet \
-  --useDense ${BAYES_USE_DENSE} \
-  --examples ${BAYES_DENSE_EXAMPLES} \
-  --features ${BAYES_DENSE_FEATURES} \
-  --classes ${CLASSES}
-
+run_spark_job com.intel.sparkbench.micro.ScalaDFSIOE $INPUT_HDFS $OUTPUT_HDFS $RD_NUM_OF_FILES $RD_FILE_SIZE $READ_ONLY
 END_TIME=`timestamp`
 
+gen_report ${START_TIME} ${END_TIME} ${SIZE}
 show_bannar finish
 leave_bench
