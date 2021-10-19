@@ -323,7 +323,7 @@ function execute_withlog () {
     if [ -t 1 ] ; then          # Terminal, beautify the output.
         ${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
     else                        # pipe, do nothing.
-        ${workload_func_bin}/execute_with_log.py ${WORKLOAD_RESULT_FOLDER}/bench.log $CMD
+        $CMD
     fi
 }
 
