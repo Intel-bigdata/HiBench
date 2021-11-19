@@ -11,7 +11,7 @@ object CorrelationExample {
 
   case class Params(
        input: String = null,
-       corrType: String = "pearson",
+       corrType: String = "pearson"
        )
 
   def main(args: Array[String]): Unit = {
