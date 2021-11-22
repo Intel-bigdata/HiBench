@@ -43,7 +43,7 @@ object RatingDataGenerator {
       numRatings = args(3).toInt
       implicitPrefs = args(4).toBoolean
 
-      require(numRatings <= numUsers * numProducts,
+      require(numRatings.toLong <= numUsers.toLong * numProducts.toLong,
         s"RatingDataGenerator: numRatings=$numRatings is too large, should be <= numUsers * numProducts"
       )
 
