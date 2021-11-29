@@ -1,18 +1,17 @@
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.ml.feature.LabeledPoint
-import scopt.OptionParser
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{Row, SparkSession}
 import org.apache.spark.ml.linalg.{Matrix, Vector}
 import org.apache.spark.ml.stat.Correlation
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SparkSession}
+import scopt.OptionParser
 
 object CorrelationExample {
 
   case class Params(
-       input: String = null,
-       corrType: String = "pearson",
-       )
+                     input: String = null,
+                     corrType: String = "pearson")
 
   def main(args: Array[String]): Unit = {
 
@@ -46,13 +45,11 @@ object CorrelationExample {
     import spark.implicits._
     val training = data.toDF().cache()
 
-
     val numTraining = training.count()
 
     val numFeatures = training.select("features").first().getAs[Vector](0).size
     println(s"  numTraining = $numTraining")
     println(s"  numFeatures = $numFeatures")
-
 
     println(s"Correlation ${params.corrType} between label and each feature")
     val df = training.toDF("label", "features")
@@ -61,5 +58,4 @@ object CorrelationExample {
 
     spark.stop()
   }
-
 }
