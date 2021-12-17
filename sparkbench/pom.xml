@@ -131,8 +131,8 @@
     <profile>
       <id>defaultSpark</id>
       <properties>
-        <spark.version>3.0.0</spark.version>
-        <spark.bin.version>3.0</spark.bin.version>
+        <spark.version>2.4.0</spark.version>
+        <spark.bin.version>2.4</spark.bin.version>
       </properties>
       <activation>
         <property>
@@ -187,8 +187,8 @@
     <profile>
       <id>defaultScalaVersion</id>
       <properties>
-          <scala.version>2.12.7</scala.version>
-          <scala.binary.version>2.12</scala.binary.version>
+          <scala.version>2.11.8</scala.version>
+          <scala.binary.version>2.11</scala.binary.version>
       </properties>
       <activation>
         <property>
