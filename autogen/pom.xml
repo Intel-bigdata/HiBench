@@ -9,12 +9,10 @@
     <version>8.0-SNAPSHOT</version>
   </parent>
 
-
   <artifactId>autogen</artifactId>
   <packaging>jar</packaging>
   <groupId>com.intel.hibench</groupId>
   <name>HiBench data generation tools</name>
-
 
   <dependencies>
     <dependency>
