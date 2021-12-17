@@ -17,7 +17,7 @@
     <scala.version>2.10.4</scala.version>
     <scala.binary.version>2.10</scala.binary.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>1.2.17</log4j.version>
+    <log4j.version>2.15.0</log4j.version>
     <scopt.version>3.7.0</scopt.version>
     <mahout.version>0.9</mahout.version>
     <uncommons-maths.version>1.2.2a</uncommons-maths.version>
@@ -43,10 +43,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+       <groupId>org.apache.logging.log4j</groupId>
+       <artifactId>log4j-slf4j-impl</artifactId>
+       <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${log4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
       <version>${log4j.version}</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 
