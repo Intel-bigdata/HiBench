@@ -16,7 +16,7 @@
  */
 
 // scalastyle:off println
-package com.intel.sparkbench.ml
+package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}

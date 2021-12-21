@@ -21,13 +21,13 @@ root_dir=${current_dir}/../../../../../
 workload_config=${root_dir}/conf/workloads/ml/summarizer.conf
 . "${root_dir}/bin/functions/load_bench_config.sh"
 
-enter_bench CorrelationDataPrepare ${workload_config} ${current_dir}
+enter_bench SummarizerDataPrepare ${workload_config} ${current_dir}
 show_bannar start
 
 rmr_hdfs $INPUT_HDFS || true
 START_TIME=`timestamp`
 
-run_spark_job com.intel.hibench.sparkbench.ml.SummarizerExample $INPUT_HDFS $NUM_EXAMPLES_SUMMARIZER $NUM_FEATURES_SUMMARIZER
+run_spark_job com.intel.hibench.sparkbench.ml.SummarizerDataGenerator $INPUT_HDFS $NUM_EXAMPLES_SUMMARIZER $NUM_FEATURES_SUMMARIZER
 
 END_TIME=`timestamp`
 
