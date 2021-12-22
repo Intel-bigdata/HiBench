@@ -57,5 +57,5 @@ $HADOOP_HOME/bin/hdfs namenode -format
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
 
-hadoop fs -ls /
-yarn node -list
+$HADOOP_HOME/bin/hadoop fs -ls /
+$HADOOP_HOME/bin/yarn node -list 2
