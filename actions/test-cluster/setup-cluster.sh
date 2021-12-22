@@ -14,7 +14,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 echo JAVA_HOME is $JAVA_HOME
 
 # Setup password-less & python3
-$GITHUB_WORKSPACE/dev/test-cluster/config-ssh.sh
+$GITHUB_WORKSPACE/actions/test-cluster/config-ssh.sh
 
 # setup envs
 source $SCRIPT_DIR/load-spark-envs.sh
