@@ -22,4 +22,4 @@ echo "Cluster Testing with Spark Version: $SPARK_VERSION"
 echo "========================================="
 
 # run all examples
-./bin/run_all.sh
+$GITHUB_WORKSPACE/bin/run_all.sh
