@@ -9,9 +9,9 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 # copy hibench conf
-cp ./travis/hibench.conf ./conf/
-cp ./travis/spark.conf ./conf/
-cp ./travis/hadoop.conf ./conf/
+cp ./actions/hibench.conf ./conf/
+cp ./actions/spark.conf ./conf/
+cp ./actions/hadoop.conf ./conf/
 
 # set hadoop path , spark path and dependency jar
 sed -i '1 i hibench.hadoop.home /opt/hadoop-2.7.7' ./conf/hadoop.conf
