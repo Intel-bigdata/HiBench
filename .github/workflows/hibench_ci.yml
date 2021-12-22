@@ -1,0 +1,27 @@
+name: HiBench CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Restore cached dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            # /var/cache/apt/archives/*.deb
+            ~/.m2/repository
+            ~/opt
+          key: ${{ runner.os }}_spark-2.4.0_hadoop-2.7.6
+          restore-keys: |
+            ${{ runner.os }}-
+      - name: Cluster Test
+        run: |
+          ${{github.workspace}}/actions/build_and_run_all_spark_2.4_hadoop_2.7.sh
