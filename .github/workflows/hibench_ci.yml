@@ -18,6 +18,8 @@ jobs:
           path: |
             # /var/cache/apt/archives/*.deb
             ~/.m2/repository
+            ~/opt
+          key: ${{ runner.os }}_spark-2.4.0_hadoop-2.7.6
           restore-keys: |
             ${{ runner.os }}-
       - name: Cluster Test
