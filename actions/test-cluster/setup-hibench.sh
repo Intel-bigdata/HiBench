@@ -16,9 +16,9 @@ cp $GITHUB_WORKSPACE/actions/spark.conf $GITHUB_WORKSPACE/conf/
 cp $GITHUB_WORKSPACE//actions/hadoop.conf $GITHUB_WORKSPACE/conf/
 
 # set hadoop path , spark path and dependency jar
-sed -i '1 i hibench.hadoop.home ~/opt/hadoop-2.7.7' $GITHUB_WORKSPACE/conf/hadoop.conf
+sed -i "1 i hibench.hadoop.home ~/opt/hadoop-${HADOOP_VERSION}" $GITHUB_WORKSPACE/conf/hadoop.conf
 sed -i "1 i hibench.hdfs.master hdfs://${HOST_NAME}:8020" $GITHUB_WORKSPACE/conf/hadoop.conf
-sed -i '1 i hibench.spark.home ~/opt/spark-2.4.0-bin-hadoop2.7\nhibench.spark.version spark2.4' $GITHUB_WORKSPACE/conf/spark.conf
-sed -i '1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-2.7.7-tests.jar\nhibench.hive.release		apache-hive-0.14.0-bin' $GITHUB_WORKSPACE/conf/hibench.conf
+sed -i "1 i hibench.spark.home ~/opt/${SPARK_VERSION}-bin-${SPARK_HADOOP_VERSION}\nhibench.spark.version ${SPARK_BIN_VERSION}" $GITHUB_WORKSPACE/conf/spark.conf
+sed -i "1 i hibench.hadoop.examples.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-examples-${HADOOP_VERSION}.jar\nhibench.hadoop.examples.test.jar  ${hibench.hadoop.home}/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-${HADOOP_VERSION}-tests.jar\nhibench.hive.release		apache-hive-${HIVE_VERSION}-bin" $GITHUB_WORKSPACE/conf/hibench.conf
 
 set +x

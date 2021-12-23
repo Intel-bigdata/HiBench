@@ -39,8 +39,8 @@ START_TIME=`timestamp`
 
 #run benchmark
 run_hadoop_job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh              \
-    -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS"    \
-    -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS" \
+    -Dmapreduce.map.java.opts=\"-Dtest.build.data=${INPUT_HDFS} $MAP_JAVA_OPTS\"    \
+    -Dmapreduce.reduce.java.opts=\"-Dtest.build.data=${INPUT_HDFS} $RED_JAVA_OPTS\" \
     ${OPTION} -resFile ${WORKLOAD_RESULT_FOLDER}/result_write.txt                 \
     -tputFile ${WORKLOAD_RESULT_FOLDER}/throughput_write.csv
 
