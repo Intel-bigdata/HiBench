@@ -29,29 +29,20 @@ ensure_hivebench_release
 # path check
 rmr_hdfs $OUTPUT_HDFS
 
-echo "1"
 # prepare SQL
 HIVEBENCH_SQL_FILE=${WORKLOAD_RESULT_FOLDER}/uservisits_aggre.hive
-echo "2"
 prepare_sql_aggregation ${HIVEBENCH_SQL_FILE}
-echo "3"
 
 
 #set hive env
 . ${root_dir}/bin/workloads/sql/common/set_hive_env.sh
 
-echo "4"
 
 # run bench
 MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
-echo "5"
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
-echo "6"
-echo $CMD
 execute_withlog $CMD
-echo "7"
-
 END_TIME=`timestamp`
 stop_monitor $MONITOR_PID
 
