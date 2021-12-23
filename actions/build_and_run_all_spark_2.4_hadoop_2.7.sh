@@ -12,15 +12,15 @@ trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=2.4 -Dscala=2.11 -Dhive=0.14 -Dhadoop=2.7
 
 # Setup cluster contain of hadoop and spark
-$GITHUB_WORKSPACE/actions/test-cluster/setup-cluster.sh
+source $GITHUB_WORKSPACE/actions/test-cluster/setup-cluster.sh
 
 #Setup Hibench
-$GITHUB_WORKSPACE/actions/test-cluster/setup-hibench.sh
+source $GITHUB_WORKSPACE/actions/test-cluster/setup-hibench.sh
 
 echo "========================================="
 echo "Cluster Testing with Spark Version: $SPARK_VERSION"
 echo "========================================="
 
 # run all examples
-$GITHUB_WORKSPACE/bin/run_all.sh
+source $GITHUB_WORKSPACE/bin/run_all.sh
 cat /home/runner/work/HiBench/HiBench/report/sort/prepare/conf/../bench.log
