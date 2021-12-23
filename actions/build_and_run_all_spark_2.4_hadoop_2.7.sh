@@ -23,3 +23,4 @@ echo "========================================="
 
 # run all examples
 $GITHUB_WORKSPACE/bin/run_all.sh
+cat /home/runner/work/HiBench/HiBench/report/sort/prepare/conf/../bench.log
