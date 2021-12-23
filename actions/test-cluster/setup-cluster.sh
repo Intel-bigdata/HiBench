@@ -27,20 +27,24 @@ cd ~/opt
 [ -f hadoop-$HADOOP_VERSION.tar.gz ] || wget --no-verbose https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 [ -d hadoop-$HADOOP_VERSION ] || tar -xzf hadoop-$HADOOP_VERSION.tar.gz
 
+echo $SCRIPT_DIR
 cd $SCRIPT_DIR
 
 HOST_IP=$(hostname -f)
 
 sed -i "s/localhost/$HOST_IP/g" core-site.xml
+cat core-site.xml
 sed -i "s/localhost/$HOST_IP/g" yarn-site.xml
 
 cp ./core-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./hdfs-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./yarn-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
+cp ./mapred-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./hadoop-env.sh ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./log4j.properties ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
 cp ./spark-defaults.conf ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
 
+cat ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/mapred-site.xml
 echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
 echo $HOST_IP > $SPARK_HOME/conf/slaves
 
