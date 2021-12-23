@@ -48,6 +48,7 @@ START_TIME=`timestamp`
 echo "5"
 CMD="$HIVE_HOME/bin/hive -f ${HIVEBENCH_SQL_FILE}"
 echo "6"
+echo $CMD
 execute_withlog $CMD
 echo "7"
 
