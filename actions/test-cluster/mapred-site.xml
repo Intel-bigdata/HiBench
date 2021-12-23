@@ -25,4 +25,12 @@
             <name>mapreduce.application.classpath</name>
             <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
         </property>
+        <property>
+            <name>mapreduce.map.java.opts</name>
+            <value>-Xmx3276m</value>
+        </property>
+        <property>
+            <name>mapreduce.reduce.java.opts</name>
+            <value>-Xmx3276m</value>
+        </property>
 </configuration>
