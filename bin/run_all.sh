@@ -30,7 +30,6 @@ for benchmark in `cat $root_dir/conf/benchmarks.lst`; do
 
     WORKLOAD=$root_dir/bin/workloads/${benchmark}
     echo -e "${BCyan}Exec script: ${Cyan}${WORKLOAD}/prepare/prepare.sh${Color_Off}"
-    echo ${hibench.hadoop.configure.dir}
     ${WORKLOAD}/prepare/prepare.sh
 
     result=$?
