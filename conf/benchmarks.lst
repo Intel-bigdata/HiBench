@@ -1,4 +1,5 @@
 micro.sleep
+micro.sort
 micro.terasort
 micro.wordcount
 micro.repartition
