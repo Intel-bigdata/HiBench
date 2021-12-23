@@ -281,13 +281,18 @@ function run_hadoop_job(){
 }
 
 function ensure_hivebench_release(){
+    echo "ensure_hivebench_release"
+    echo $HIBENCH_HOME
+    echo $HIVE_RELEASE
     if [ ! -e ${HIBENCH_HOME}"/hadoopbench/sql/target/"$HIVE_RELEASE".tar.gz" ]; then
         assert 0 "Error: The hive bin file hasn't be downloaded by maven, please check!"
         exit
     fi
 
     cd ${HIBENCH_HOME}"/hadoopbench/sql/target"
+    echo $HIBENCH_HOME
     if [ ! -d $HIVE_HOME ]; then
+        echo $HIVE_RELEASE
         tar zxf $HIVE_RELEASE".tar.gz"
     fi
     export_withlog HADOOP_EXECUTABLE
