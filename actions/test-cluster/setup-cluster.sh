@@ -58,6 +58,5 @@ $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
 
 sleep 10
-$HADOOP_HOME/bin/hadoop fs -mkdir /test
 $HADOOP_HOME/bin/hadoop fs -ls /
 $HADOOP_HOME/bin/yarn node -list 2
