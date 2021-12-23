@@ -17,7 +17,7 @@ echo JAVA_HOME is $JAVA_HOME
 $GITHUB_WORKSPACE/actions/test-cluster/config-ssh.sh
 
 # setup envs
-sh $SCRIPT_DIR/load-spark-envs.sh
+source $SCRIPT_DIR/load-spark-envs.sh
 
 # download spark & hadoop bins
 [ -d ~/opt ] || mkdir ~/opt
