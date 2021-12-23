@@ -29,8 +29,8 @@ MONITOR_PID=`start_monitor`
 START_TIME=`timestamp`
 
 run_hadoop_job ${DATATOOLS} org.apache.hadoop.fs.dfsioe.TestDFSIOEnh                \
-    -Dmapreduce.map.java.opts=\"-Dtest.build.data=${INPUT_HDFS} ${MAP_JAVA_OPTS}\"    \
-    -Dmapreduce.reduce.java.opts=\"-Dtest.build.data=${INPUT_HDFS} ${RED_JAVA_OPTS}\" \
+    -Dmapreduce.map.java.opts="-Dtest.build.data=${INPUT_HDFS} ${MAP_JAVA_OPTS}"    \
+    -Dmapreduce.reduce.java.opts="-Dtest.build.data=${INPUT_HDFS} ${RED_JAVA_OPTS}" \
     -Dtest.build.data=${INPUT_HDFS}                                                 \
     -write -skipAnalyze -nrFiles ${RD_NUM_OF_FILES} -fileSize ${RD_FILE_SIZE} -bufferSize 4096
 
