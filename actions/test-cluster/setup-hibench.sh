@@ -14,7 +14,6 @@ HOST_NAME=$(hostname -f)
 cp $GITHUB_WORKSPACE/actions/hibench.conf $GITHUB_WORKSPACE/conf/
 cp $GITHUB_WORKSPACE/actions/spark.conf $GITHUB_WORKSPACE/conf/
 cp $GITHUB_WORKSPACE/actions/hadoop.conf $GITHUB_WORKSPACE/conf/
-cp $GITHUB_WORKSPACE/actions/hadoop-layout.sh ~/opt/hadoop-${HADOOP_VERSION}/libexec
 # set hadoop path , spark path and dependency jar
 sed -i "1 i hibench.hadoop.home ~/opt/hadoop-${HADOOP_VERSION}" $GITHUB_WORKSPACE/conf/hadoop.conf
 sed -i "1 i hibench.hdfs.master hdfs://${HOST_NAME}:8020" $GITHUB_WORKSPACE/conf/hadoop.conf
