@@ -26,6 +26,6 @@ source $GITHUB_WORKSPACE/actions/test-cluster/setup-hibench.sh
 echo "========================================="
 echo "Cluster Testing with Spark Version: $SPARK_VERSION"
 echo "========================================="
-ls -l /home/runner/opt/hadoop-3.2.1/share/hadoop/mapreduce/hadoop-mapreduce-client-jobclient-3.2.1-tests.jar
+
 # run all examples
 source $GITHUB_WORKSPACE/bin/run_all.sh

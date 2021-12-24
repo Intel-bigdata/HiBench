@@ -32,7 +32,6 @@ cd $SCRIPT_DIR
 HOST_IP=$(hostname -f)
 
 sed -i "s/localhost/$HOST_IP/g" core-site.xml
-cat core-site.xml
 sed -i "s/localhost/$HOST_IP/g" yarn-site.xml
 
 cp ./core-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
