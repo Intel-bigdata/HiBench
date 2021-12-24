@@ -38,17 +38,18 @@ sed -i "s/localhost/$HOST_IP/g" yarn-site.xml
 cp ./core-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./hdfs-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./yarn-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
-cp ./mapred-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./hadoop-env.sh ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./log4j.properties ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
 cp ./spark-defaults.conf ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
 if [ $HADOOP_VERSION = "3.2.1" ]
 then
     cp ./hadoop-layout.sh ~/opt/hadoop-${HADOOP_VERSION}/libexec
+    cp ./mapred-site_3.2.1.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/mapred-site.xml
+else
+    cp ./mapred-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 fi
 
 
-cat ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/mapred-site.xml
 echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
 echo $HOST_IP > $SPARK_HOME/conf/slaves
 
