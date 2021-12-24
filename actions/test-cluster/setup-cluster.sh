@@ -53,6 +53,7 @@ echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
 echo $HOST_IP > $SPARK_HOME/conf/slaves
 
 ls -l $SPARK_HOME/conf
+ls -l /home/runner/opt/hadoop-3.2.1/share/hadoop/mapreduce/
 
 # create directories
 mkdir -p /tmp/run/hdfs/namenode
@@ -66,5 +67,6 @@ $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
 
 sleep 10
+jps
 $HADOOP_HOME/bin/hadoop fs -ls /
 $HADOOP_HOME/bin/yarn node -list 2
