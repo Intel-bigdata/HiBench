@@ -27,7 +27,7 @@ jobs:
 #          ${{github.workspace}}/actions/build_and_run_all_spark_2.4_hadoop_2.7_hive_0.14.sh
       - name: Cluster spark_3.0_hadoop_3.2_hive_3.0
         run: |
-          ${{github.workspace}}/actions/build_and_run_all_spark_3.0_hadoop_3.2.sh
+          source ${{github.workspace}}/actions/build_and_run_all_spark_3.0_hadoop_3.2.sh
       - name: Cluster spark_3.1_hadoop_3.2_hive_3.0
         run: |
           ${{github.workspace}}/actions/build_and_run_all_spark_3.1_hadoop_3.2.sh
