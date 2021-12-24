@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,19 @@
 
 <configuration>
         <property>
-           <name>dfs.replication</name>
-           <value>1</value>
-         </property>
-         <property>
-           <name>dfs.namenode.name.dir</name>
-           <value>/usr/local/hdfs/namenode</value>
-         </property>
-         <property>
-           <name>dfs.datanode.data.dir</name>
-           <value>/usr/local/hdfs/datanode</value>
-         </property>
+           <name>mapreduce.framework.name</name>
+           <value>yarn</value>
+        </property>
+        <property>
+            <name>mapreduce.application.classpath</name>
+            <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
+        </property>
+        <property>
+            <name>mapreduce.map.java.opts</name>
+            <value>-Xmx3276m</value>
+        </property>
+        <property>
+            <name>mapreduce.reduce.java.opts</name>
+            <value>-Xmx3276m</value>
+        </property>
 </configuration>
