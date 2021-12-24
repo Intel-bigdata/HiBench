@@ -15,7 +15,7 @@ trap 'last_command=$current_command; current_command=$BASH_COMMAND' DEBUG
 trap 'echo "\"${last_command}\" command filed with exit code $?."' EXIT
 
 # mvn build
-mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.0 -Dscala=2.12
+mvn clean package -q -Dmaven.javadoc.skip=true -Dspark=3.1 -Dscala=2.12
 
 # Setup cluster contain of hadoop and spark
 source $GITHUB_WORKSPACE/actions/test-cluster/setup-cluster.sh
