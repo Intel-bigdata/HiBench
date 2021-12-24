@@ -27,7 +27,6 @@ cd ~/opt
 [ -f hadoop-$HADOOP_VERSION.tar.gz ] || wget --no-verbose https://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz
 [ -d hadoop-$HADOOP_VERSION ] || tar -xzf hadoop-$HADOOP_VERSION.tar.gz
 
-echo $SCRIPT_DIR
 cd $SCRIPT_DIR
 
 HOST_IP=$(hostname -f)
@@ -43,6 +42,11 @@ cp ./mapred-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./hadoop-env.sh ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 cp ./log4j.properties ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
 cp ./spark-defaults.conf ~/opt/spark-$SPARK_VERSION-bin-$SPARK_HADOOP_VERSION/conf
+if [ $HADOOP_VERSION = "3.2.1" ]
+then
+    cp ./hadoop-layout.sh ~/opt/hadoop-${HADOOP_VERSION}/libexec
+fi
+
 
 cat ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/mapred-site.xml
 echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
