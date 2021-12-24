@@ -49,7 +49,7 @@ else
     cp ./mapred-site.xml ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/
 fi
 
-
+cat ~/opt/hadoop-$HADOOP_VERSION/etc/hadoop/mapred-site.xml
 echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
 echo $HOST_IP > $SPARK_HOME/conf/slaves
 
