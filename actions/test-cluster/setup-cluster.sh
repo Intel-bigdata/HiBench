@@ -54,8 +54,6 @@ echo $HOST_IP > $HADOOP_HOME/etc/hadoop/slaves
 echo $HOST_IP > $SPARK_HOME/conf/slaves
 
 ls -l $SPARK_HOME/conf
-ls -l /home/runner/opt/hadoop-3.2.1/share/hadoop/mapreduce/
-
 # create directories
 mkdir -p /tmp/run/hdfs/namenode
 mkdir -p /tmp/run/hdfs/datanode

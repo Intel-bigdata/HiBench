@@ -22,6 +22,6 @@ jobs:
           key: ${{ runner.os }}_spark_3.0_hadoop_3.2
           restore-keys: |
             ${{ runner.os }}-
-      - name: Cluster spark_3.0_hadoop_3.2_hive_3.0
-        run: |
-          ${{github.workspace}}/actions/build_and_run_all_spark_3.0_hadoop_3.2.sh
+#      - name: Cluster spark_3.0_hadoop_3.2_hive_3.0
+#        run: |
+#          ${{github.workspace}}/actions/build_and_run_all_spark_3.0_hadoop_3.2.sh
