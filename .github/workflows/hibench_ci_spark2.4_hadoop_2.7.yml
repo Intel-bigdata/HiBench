@@ -25,4 +25,3 @@ jobs:
       - name: Cluster spark_2.4_hadoop_2.7_hive_0.14
         run: |
           ${{github.workspace}}/actions/build_and_run_all_spark_2.4_hadoop_2.7_hive_0.14.sh
-
