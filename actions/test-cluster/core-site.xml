@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,10 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
         <property>
-           <name>mapreduce.framework.name</name>
-           <value>yarn</value>
+           <name>fs.default.name</name>
+           <value>hdfs://localhost:8020</value>
         </property>
-        <property>
-            <name>mapreduce.application.classpath</name>
-            <value>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*</value>
-        </property>
+
 </configuration>

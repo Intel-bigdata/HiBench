@@ -17,10 +17,16 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-
         <property>
-           <name>fs.default.name</name>
-           <value>hdfs://localhost:9000</value>
-        </property>
-
+           <name>dfs.replication</name>
+           <value>1</value>
+         </property>
+         <property>
+           <name>dfs.namenode.name.dir</name>
+           <value>/tmp/run/hdfs/namenode</value>
+         </property>
+         <property>
+           <name>dfs.datanode.data.dir</name>
+           <value>/tmp/run/hdfs/datanode</value>
+         </property>
 </configuration>
