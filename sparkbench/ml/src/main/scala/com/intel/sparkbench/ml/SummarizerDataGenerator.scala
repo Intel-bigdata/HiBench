@@ -26,20 +26,18 @@ import org.apache.spark.sql.SparkSession
 
 /**
  * :: DeveloperApi ::
- * Generate test data for Correlation. This class chooses positive labels
- * with probability `probOne` and scales features for positive examples by `eps`.
+ * Generate test data for Summarizer.
  */
 object SummarizerDataGenerator {
 
   /**
-   * Generate an RDD containing test data for Correlation.
+   * Generate an RDD containing test data for Summarizer.
    *
-   * @param sc SparkContext to use for creating the RDD.
-   * @param nexamples Number of examples that will be contained in the RDD.
-   * @param nfeatures Number of features to generate for each example.
-   * @param eps Epsilon factor by which positive examples are scaled.
-   * @param nparts Number of partitions of the generated RDD. Default value is 2.
-   * @param probOne Probability that a label is 1 (and not 0). Default value is 0.5.
+    * @param sc SparkContext used to create the RDD.
+    * @param m Number of Vectors in the RDD.
+    * @param n Number of elements in each Vector.
+    * @param numPartitions Number of partitions in the RDD (default: `sc.defaultParallelism`).
+    * @param seed Random seed (default: a random long integer).
    */
   def generateDistributedRowMatrix (
                                     sc: SparkContext,
