@@ -61,4 +61,3 @@ object LogisticRegression {
     sc.stop()
   }
 }
-// scalastyle:on println

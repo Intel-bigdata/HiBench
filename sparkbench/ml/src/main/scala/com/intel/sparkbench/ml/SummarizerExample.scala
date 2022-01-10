@@ -65,4 +65,3 @@ object SummarizerExample {
     spark.stop()
   }
 }
-// scalastyle:on println
