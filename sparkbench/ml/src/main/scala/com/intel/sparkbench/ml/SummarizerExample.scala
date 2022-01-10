@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-// scalastyle:off println
 package com.intel.hibench.sparkbench.ml
 
 import org.apache.spark.mllib.linalg.Vector
