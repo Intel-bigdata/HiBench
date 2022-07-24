@@ -181,9 +181,8 @@ def parse_conf(conf_root, workload_config_file):
 
 def override_conf_from_environment():
     # override values from os environment variable settings
-    for env_name, prop_name in (
-        HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items()
-    ):
+    HiBenchEnvPropMappingMandatory.update(HiBenchEnvPropMapping.items())
+    for env_name, prop_name in HiBenchEnvPropMappingMandatory.items():
         # The overrides from environments has 2 premises, the second one is either
         # the prop_name is not set in advance by config files or the conf line
         # itself set an env variable to a hibench conf
