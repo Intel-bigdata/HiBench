@@ -16,7 +16,6 @@
 """
 Mapping from properties to environment variable names
 """
-from __future__ import annotations
 
 HiBenchEnvPropMappingMandatory = dict(
     JAVA_BIN="java.bin",
@@ -241,7 +240,7 @@ HiBenchEnvPropMapping = dict(
     STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
 )
 
-HiBenchPropEnvMapping = {v: k for k, v in HiBenchEnvPropMapping.items()}
+HiBenchPropEnvMapping = {v: k for k, v in list(HiBenchEnvPropMapping.items())}
 HiBenchPropEnvMappingMandatory = {
-    v: k for k, v in HiBenchEnvPropMappingMandatory.items()
+    v: k for k, v in list(HiBenchEnvPropMappingMandatory.items())
 }
