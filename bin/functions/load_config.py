@@ -199,7 +199,8 @@ def override_conf_from_environment():
 
 def override_conf_by_paching_conf():
     # override values from os environment variable settings
-    # for env_name, prop_name in HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items():
+    # HiBenchEnvPropMappingMandatory.update(HiBenchEnvPropMapping.items())
+    # for env_name, prop_name in HiBenchEnvPropMappingMandatory.items():
     #     if env_name in os.environ:
     #         env_value = os.getenv(env_name)
     #         HibenchConf[prop_name] = env_value
@@ -247,9 +248,8 @@ def check_config():  # check configures
             "Mandatory configure missing: %s" % prop_name
         )
     # Ensure all ref values in configure has been expanded
-    for _, prop_name in (
-        HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items()
-    ):
+    HiBenchEnvPropMappingMandatory.update(HiBenchEnvPropMapping.items())
+    for _, prop_name in HiBenchEnvPropMappingMandatory.items():
         assert "${" not in HibenchConf.get(
             prop_name,
             "",
@@ -784,9 +784,8 @@ def export_config(workload_name, framework_name):
 
     # generate configure for hibench
     sources = defaultdict(list)
-    for env_name, prop_name in (
-        HiBenchEnvPropMappingMandatory.items() + HiBenchEnvPropMapping.items()
-    ):
+    HiBenchEnvPropMappingMandatory.update(HiBenchEnvPropMapping.items())
+    for env_name, prop_name in HiBenchEnvPropMappingMandatory.items():
         source = HibenchConfRef.get(prop_name, "None")
         sources[source].append(
             "{}={}".format(

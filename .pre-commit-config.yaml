@@ -16,28 +16,28 @@ repos:
     - id: reorder-python-imports
       args: [--py38-plus]
 
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v1.6.0
-  hooks:
-    - id: autopep8
+# - repo: https://github.com/pre-commit/mirrors-autopep8
+#   rev: v1.6.0
+#   hooks:
+#     - id: autopep8
 
-- repo: https://github.com/PyCQA/flake8
-  rev: 4.0.1
-  hooks:
-    - id: flake8
-      args: ["--ignore=E501,W601,F401,E226,E722,E265,W504,E711,F841,E741,F821,E713,W503,F811"]
+# - repo: https://github.com/PyCQA/flake8
+#   rev: 4.0.1
+#   hooks:
+#     - id: flake8
+#       args: ["--ignore=E501,W601,F401,E226,E722,E265,W504,E711,F841,E741,F821,E713,W503,F811"]
 
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v2.2.3
-  hooks:
-    - id: add-trailing-comma
-      args: [--py36-plus]
+# - repo: https://github.com/asottile/add-trailing-comma
+#   rev: v2.2.3
+#   hooks:
+#     - id: add-trailing-comma
+#       args: [--py36-plus]
 
-- repo: https://github.com/asottile/pyupgrade
-  rev: v2.37.2
-  hooks:
-    - id: pyupgrade
-      args: [--py38-plus]
+# - repo: https://github.com/asottile/pyupgrade
+#   rev: v2.37.2
+#   hooks:
+#     - id: pyupgrade
+#       args: [--py38-plus]
 
 
 # #- repo: https://github.com/pre-commit/mirrors-mypy
@@ -45,13 +45,13 @@ repos:
 # #  hooks:
 # #    - id: mypy
 
-- repo: https://github.com/psf/black
-  rev: 22.3.0
-  hooks:
-  - id: black
+# - repo: https://github.com/psf/black
+#   rev: 22.3.0
+#   hooks:
+#   - id: black
 
-- repo: https://github.com/PyCQA/isort
-  rev: 5.10.1
-  hooks:
-  - id: isort
-    args: ["--py=38", "--profile", "black", "--filter-files"] # solves conflicts between black and isort
+# - repo: https://github.com/PyCQA/isort
+#   rev: 5.10.1
+#   hooks:
+#   - id: isort
+#     args: ["--py=38", "--profile", "black", "--filter-files"] # solves conflicts between black and isort
