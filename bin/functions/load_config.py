@@ -13,8 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import annotations
-
 import fcntl
 import glob
 import os
@@ -353,10 +351,7 @@ def waterfall_config(force=False):  # replace "${xxx}" to its values
                     HibenchConf[key] = value
                     finish = False
 
-        wildcard_rules = [
-            (key, HibenchConf[key])
-            for key in HibenchConf if "*" in key
-        ]
+        wildcard_rules = [(key, HibenchConf[key]) for key in HibenchConf if "*" in key]
         # now, let's check wildcard replacement rules
         for key, value in wildcard_rules:
             # check if we found a rule like: aaa.*.ccc.*.ddd    ->   bbb.*.*
@@ -554,10 +549,7 @@ def probe_masters_slaves_by_Yarn():
     )
     cmd = "( " + yarn_executable + " node -list 2> /dev/null | grep RUNNING )"
     try:
-        worker_hostnames = [
-            line.split(":")[0]
-            for line in shell(cmd).split("\n")
-        ]
+        worker_hostnames = [line.split(":")[0] for line in shell(cmd).split("\n")]
         HibenchConf["hibench.slaves.hostnames"] = " ".join(worker_hostnames)
         HibenchConfRef["hibench.slaves.hostnames"] = (
             "Probed by parsing results from: " + cmd
