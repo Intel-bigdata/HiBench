@@ -21,11 +21,11 @@ repos:
   hooks:
     - id: autopep8
 
-# - repo: https://github.com/PyCQA/flake8
-#   rev: 4.0.1
-#   hooks:
-#     - id: flake8
-#       args: ["--ignore=E501,W601,F401,E226,E722,E265,W504,E711,F841,E741,F821,E713,W503,F811"]
+- repo: https://github.com/PyCQA/flake8
+  rev: 4.0.1
+  hooks:
+    - id: flake8
+      args: ["--ignore=E501,W601,F401,E226,E722,E265,W504,E711,F841,E741,F821,E713,W503,F811"]
 
 # - repo: https://github.com/asottile/add-trailing-comma
 #   rev: v2.2.3
