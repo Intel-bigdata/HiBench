@@ -240,7 +240,5 @@ HiBenchEnvPropMapping = dict(
     STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
 )
 
-HiBenchPropEnvMapping = {v: k for k, v in list(HiBenchEnvPropMapping.items())}
-HiBenchPropEnvMappingMandatory = {
-    v: k for k, v in list(HiBenchEnvPropMappingMandatory.items())
-}
+HiBenchPropEnvMapping = dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
+HiBenchPropEnvMappingMandatory = dict([(v,k) for k, v in HiBenchEnvPropMappingMandatory.items()])
