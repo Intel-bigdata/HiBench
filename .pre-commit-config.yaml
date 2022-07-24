@@ -51,7 +51,7 @@ repos:
 #   - id: isort
 #     args: ["--py=38", "--profile", "black", "--filter-files"] # solves conflicts between black and isort
 
-# - repo: https://github.com/psf/black
-#   rev: 22.3.0
-#   hooks:
-#   - id: black
+- repo: https://github.com/psf/black
+  rev: 22.3.0
+  hooks:
+  - id: black
