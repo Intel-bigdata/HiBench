@@ -244,6 +244,8 @@ def load_config(conf_root, workload_config_file, workload_folder, patching_confi
 def check_config():  # check configures
     # Ensure mandatory configures are available
     for _, prop_name in HiBenchEnvPropMappingMandatory.items():
+        print(HibenchConf.get(prop_name))
+        print(HiBenchEnvPropMappingMandatory.items())
         assert HibenchConf.get(prop_name, None) is not None, (
             "Mandatory configure missing: %s" % prop_name
         )
