@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import fnmatch
 import glob
 import os
@@ -377,8 +375,7 @@ class ProbeJavaOptsTestCase(unittest.TestCase):
     def test_probe_java_opts(self):
 
         mapred_site_path = (
-            load_config.HibenchConf["hibench.hadoop.configure.dir"] +
-            "/mapred-site.xml"
+            load_config.HibenchConf["hibench.hadoop.configure.dir"] + "/mapred-site.xml"
         )
 
         mapred_site_content = "<property><name>mapreduce.map.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property><property><name>mapreduce.reduce.java.opts</name><value>-Xmx1536M -DpreferIPv4Stack=true</value></property>"

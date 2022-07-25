@@ -13,8 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from __future__ import annotations
-
 import os
 import re
 import signal
@@ -860,8 +858,7 @@ def parse_bench_log(benchlog_fn):
             cur = events[i].split(",")[0]
             next = events[i + 1].split(",")[0]
             if abs(int(cur) / 1000 - int(next) / 1000) < 1:
-                events[i] = events[i] + "<br>" + \
-                    re.split(",", events[i + 1], 1)[1]
+                events[i] = events[i] + "<br>" + re.split(",", events[i + 1], 1)[1]
                 del events[i + 1]
                 continue
             i += 1
@@ -909,10 +906,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         data_by_all_hosts = [classed_by_host.get(h, {}) for h in all_hosts]
 
         # all cpu cores, total cluster
-        summed1 = [
-            x["cpu/total"]
-            for x in data_by_all_hosts if "cpu/total" in x
-        ]
+        summed1 = [x["cpu/total"] for x in data_by_all_hosts if "cpu/total" in x]
 
         if summed1:
             summed = reduce_patched(
@@ -959,10 +953,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                 )
 
         # all disk of each node, total cluster
-        summed1 = [
-            x["disk/total"]
-            for x in data_by_all_hosts if "disk/total" in x
-        ]
+        summed1 = [x["disk/total"] for x in data_by_all_hosts if "disk/total" in x]
 
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)
@@ -1005,10 +996,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                 )
 
         # memory of each node, total cluster
-        summed1 = [
-            x["memory/total"]
-            for x in data_by_all_hosts if "memory/total" in x
-        ]
+        summed1 = [x["memory/total"] for x in data_by_all_hosts if "memory/total" in x]
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)
             for x in data_by_all_hosts:
@@ -1085,10 +1073,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                 )
 
         # all network interface, total cluster
-        summed1 = [
-            x["net/total"]
-            for x in data_by_all_hosts if "net/total" in x
-        ]
+        summed1 = [x["net/total"] for x in data_by_all_hosts if "net/total" in x]
 
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)

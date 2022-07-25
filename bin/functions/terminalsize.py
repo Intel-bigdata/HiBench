@@ -2,8 +2,6 @@
 """
 from https://gist.github.com/jtriley/1108174
 """
-from __future__ import annotations
-
 import os
 import platform
 import shlex
