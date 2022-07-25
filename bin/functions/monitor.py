@@ -307,7 +307,7 @@ class BaseMonitor:
             #                print(stat_delta)
             stat_delta[header + "/total"] = reduce_patched(
                 lambda a, b: a._add(b, "total"),
-                stat_delta.values(),
+                list(stat_delta.values()),
             )
             self.rproc.aggregate(timestamp, stat_delta)
 
@@ -617,13 +617,13 @@ class NodeAggregator:
                 f.write(repr(datas) + "\n")
 
     def run(self):
-        for v in self.node_pool.values():
+        for v in list(self.node_pool.values()):
             v.start()
 
     def stop(self):
-        for v in self.node_pool.values():
+        for v in list(self.node_pool.values()):
             v.stop()
-        for v in self.node_pool.values():
+        for v in list(self.node_pool.values()):
             v.join()
 
 
@@ -649,7 +649,7 @@ def round_to_base(v, b):
 
 
 def filter_dict_with_prefix(d, prefix, sort=True):
-    keys = sorted(d.keys()) if sort else d.keys()
+    keys = sorted(d.keys()) if sort else list(d.keys())
     if prefix[0] == "!":
         return {x: d[x] for x in keys if not x.startswith(prefix[1:])}
     else:
@@ -911,8 +911,9 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         # all cpu cores, total cluster
         summed1 = [
             x["cpu/total"]
-            for x in data_by_all_hosts if x.has_key("cpu/total")
+            for x in data_by_all_hosts if "cpu/total" in x
         ]
+
         if summed1:
             summed = reduce_patched(
                 lambda a, b: a._add(b),
@@ -959,8 +960,10 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # all disk of each node, total cluster
         summed1 = [
-            x["disk/total"] for x in data_by_all_hosts if x.has_key("disk/total")
+            x["disk/total"]
+            for x in data_by_all_hosts if "disk/total" in x
         ]
+
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)
             for x in data_by_all_hosts:
@@ -1003,7 +1006,8 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
 
         # memory of each node, total cluster
         summed1 = [
-            x["memory/total"] for x in data_by_all_hosts if x.has_key("memory/total")
+            x["memory/total"]
+            for x in data_by_all_hosts if "memory/total" in x
         ]
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)
@@ -1044,7 +1048,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
                 )
 
         # proc of each node, total cluster
-        summed1 = [x["proc"] for x in data_by_all_hosts if x.has_key("proc")]
+        summed1 = [x["proc"] for x in data_by_all_hosts if "proc" in x]
         if summed1:
             summed = reduce_patched(lambda a, b: a._add(b), summed1)
             for x in data_by_all_hosts:
@@ -1083,7 +1087,7 @@ def generate_report(workload_title, log_fn, benchlog_fn, report_fn):
         # all network interface, total cluster
         summed1 = [
             x["net/total"]
-            for x in data_by_all_hosts if x.has_key("net/total")
+            for x in data_by_all_hosts if "net/total" in x
         ]
 
         if summed1:
