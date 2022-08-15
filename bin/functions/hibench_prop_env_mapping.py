@@ -176,6 +176,9 @@ HiBenchEnvPropMapping=dict(
     NUM_EXAMPLES_CORRELATION="hibench.correlation.examples",
     NUM_FEATURES_CORRELATION="hibench.correlation.features",
     CORR_TYPE="hibench.correlation.corrType",
+    # For Summarizer
+    NUM_EXAMPLES_SUMMARIZER="hibench.summarizer.examples",
+    NUM_FEATURES_SUMMARIZER="hibench.summarizer.features",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
     NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",
