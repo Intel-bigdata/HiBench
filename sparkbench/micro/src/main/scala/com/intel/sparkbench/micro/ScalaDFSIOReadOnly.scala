@@ -28,20 +28,21 @@ import scala.collection.mutable.ArrayBuffer
 object ScalaDFSIOReadOnly extends Logging {
 
   def main(args: Array[String]) {
-    if (args.length != 6) {
+    if (args.length != 7) {
       System.err.println(
-        s"Usage: $ScalaDFSIOE <INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> <URI>"
+        s"Usage: $ScalaDFSIOE <INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> <ROUND> <URI>"
       )
       System.exit(1)
     }
     logInfo("===========arguments[<INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> " +
-      "<URI>] ============")
+      "<ROUND> <URI>] ============")
     args.foreach(logInfo(_))
     val lineSize = toLong(args(4), "LINE_SIZE")
+    val round = toLong(args(5), "ROUND")
     val nbrOfFiles = toLong(args(2), "RD_NUM_OF_FILES")
     val fileSize = toLong(args(3), "RD_FILE_SIZE")
     val totalSizeM = nbrOfFiles * fileSize
-    val uri = args(5)
+    val uri = args(6)
 
     val sparkConf = new SparkConf().setAppName("ScalaDFSIOReadOnly")
     val sc = new SparkContext(sparkConf)
@@ -53,29 +54,31 @@ object ScalaDFSIOReadOnly extends Logging {
       paths += files.next().getPath().toString
     }
     try {
-      val data = sc.parallelize(paths, paths.size)
-      val readStart = System.currentTimeMillis()
       val fileSizeByte = fileSize * 1024 * 1024
-      data.foreach(path => {
-        val fos = FileSystem.get(ScalaDFSIOWriteOnly.config(uri)).open(new Path(path))
-        try {
-          var count = 0L
-          var size = 1
-          val bytes = new Array[Byte](lineSize.toInt)
-          while (size > 0 & count < fileSizeByte) {
-            size = fos.read(bytes)
-            count += size
+      for (elem <- 1 to round.toInt) {
+        val data = sc.parallelize(paths, paths.size)
+        val readStart = System.currentTimeMillis()
+        data.foreach(path => {
+          val fos = FileSystem.get(ScalaDFSIOWriteOnly.config(uri)).open(new Path(path))
+          try {
+            var count = 0L
+            var size = 1
+            val bytes = new Array[Byte](lineSize.toInt)
+            while (size > 0 & count < fileSizeByte) {
+              size = fos.read(bytes)
+              count += size
+            }
+          } finally {
+            fos.close()
           }
-        } finally {
-          fos.close()
-        }
-        MetricsUtils.setTaskRead(fileSizeByte, fileSizeByte / lineSize)
-      })
-      val readEnd = System.currentTimeMillis()
-      val dur = readEnd - readStart
-      val durSec = dur/1000
+          MetricsUtils.setTaskRead(fileSizeByte, fileSizeByte / lineSize)
+        })
+        val readEnd = System.currentTimeMillis()
+        val dur = readEnd - readStart
+        val durSec = dur/1000
 
-      logInfo(s"===read [$totalSizeM(MB), $dur(ms)] perf: ${totalSizeM.toFloat/durSec}(MB/s) ")
+        logInfo(s"#$elem===read [$totalSizeM(MB), $dur(ms)] perf: ${totalSizeM.toFloat/durSec}(MB/s) ")
+      }
     } finally {
       if (fs != null ) {
         fs.close()

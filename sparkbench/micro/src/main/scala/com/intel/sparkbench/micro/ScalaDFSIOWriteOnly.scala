@@ -19,8 +19,7 @@ package com.intel.sparkbench.micro
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark.SparkConf
-import org.apache.spark.SparkContext
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.internal.Logging
 import org.apache.spark.rdd.MetricsUtils
 
@@ -33,20 +32,22 @@ object ScalaDFSIOWriteOnly extends Logging {
   }
 
   def main(args: Array[String]) {
-    if (args.length != 6) {
+    if (args.length != 7) {
       System.err.println(
-        s"Usage: $ScalaDFSIOWriteOnly <INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> <URI>"
+        s"Usage: $ScalaDFSIOWriteOnly <INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> <ROUND>" +
+          s" <URI>"
       )
       System.exit(1)
     }
     logInfo("===========arguments[<INPUT_HDFS> <OUTPUT_HDFS> <RD_NUM_OF_FILES> <RD_FILE_SIZE> <LINE_SIZE> " +
-      "<URI> ]============")
+      "<ROUND> <URI> ]============")
     args.foreach(logInfo(_))
     val nbrOfFiles = toLong(args(2), "RD_NUM_OF_FILES")
     val fileSize = toLong(args(3), "RD_FILE_SIZE")
+    val round = toLong(args(5), "ROUND")
     val totalSizeM = nbrOfFiles * fileSize
     val lineSize = toLong(args(4), "LINE_SIZE")
-    val uri = args(5)
+    val uri = args(6)
     val fileSizeByte = fileSize * 1024 * 1024
     if ((fileSizeByte % lineSize) != 0) {
       throw new IllegalArgumentException("line size, " + lineSize + ", should divide file size, " + fileSizeByte +
@@ -56,30 +57,37 @@ object ScalaDFSIOWriteOnly extends Logging {
     val sparkConf = new SparkConf().setAppName("ScalaDFSIOWriteOnly")
     val sc = new SparkContext(sparkConf)
     val fs = FileSystem.get(config(uri))
-    fs.mkdirs(new Path(args(0)))
+    fs.mkdirs(new Path(args(1)))
     try {
-      val data = sc.parallelize(Range(0, nbrOfFiles.toInt), nbrOfFiles.toInt)
-      val readStart = System.currentTimeMillis()
-      data.foreach(i => {
-        val bytes = new Array[Byte](lineSize.toInt)
-        Range(0, lineSize.toInt).foreach(i => bytes(i) = (i % 255).toByte)
-        val fos = FileSystem.get(config(uri)).create(new Path(args(0) + "/data_" + i), true)
-        try {
-          var count = 0L
-          while (count < fileSizeByte) {
-            fos.write(bytes)
-            count += bytes.length
-          }
-        } finally {
+      val bytesGlobal = new Array[Byte](lineSize.toInt)
+      Range(0, lineSize.toInt).foreach(i => bytesGlobal(i) = (i % 255).toByte)
+      val lineBd = sc.broadcast(bytesGlobal)
+      for (elem <- 1 to round.toInt) {
+        fs.mkdirs(new Path(args(1) + "/" + elem))
+      }
+      for (elem <- 1 to round.toInt) {
+        val data = sc.parallelize(Range(0, nbrOfFiles.toInt), nbrOfFiles.toInt)
+        val readStart = System.currentTimeMillis()
+        data.foreach(i => {
+          val bytes = lineBd.value
+          val fos = FileSystem.get(config(uri)).create(new Path(args(1) + "/" + elem + "/data_" + i), true)
+          try {
+            var count = 0L
+            while (count < fileSizeByte) {
+              fos.write(bytes)
+              count += bytes.length
+            }
+          } finally {
             fos.close()
-        }
-        MetricsUtils.setTaskWrite(fileSizeByte, fileSizeByte / lineSize)
-      })
-      val readEnd = System.currentTimeMillis()
-      val dur = readEnd - readStart
-      val durSec = dur/1000
+          }
+          MetricsUtils.setTaskWrite(fileSizeByte, fileSizeByte / lineSize)
+        })
+        val readEnd = System.currentTimeMillis()
+        val dur = readEnd - readStart
+        val durSec = dur / 1000
 
-      logInfo(s"===write [$totalSizeM(MB), $dur(ms)] perf: ${totalSizeM.toFloat/durSec}(MB/s) ")
+        logInfo(s"$elem===write [$totalSizeM(MB), $dur(ms)] perf: ${totalSizeM.toFloat / durSec}(MB/s) ")
+      }
     } finally {
       sc.stop()
     }
