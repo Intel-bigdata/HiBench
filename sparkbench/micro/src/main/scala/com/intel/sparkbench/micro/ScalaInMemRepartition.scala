@@ -46,7 +46,6 @@ object ScalaInMemRepartition {
     val nbrOfRecords = toInt(args(0), ("NBR_OF_RECORD"))
     val outputDir = args(1)
     val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
-    val localData = Range(0, 200).map(i => i.toByte).toArray
 
     val sparkConf = new SparkConf().setAppName("ScalaInMemRepartition")
     val sc = new SparkContext(sparkConf)
@@ -55,12 +54,10 @@ object ScalaInMemRepartition {
     val reduceParallelism  = IOCommon.getProperty("hibench.default.shuffle.parallelism")
       .getOrElse((mapParallelism / 2).toString).toInt
 
-    val sleepDur = if (cache) 3000 else 0
-    val data = new MemoryDataRDD(sc, mapParallelism, nbrOfRecords, 200, sleepDur)
-    if (cache) {
-      data.persist(StorageLevel.MEMORY_ONLY)
-      data.foreach(_ => {})
-    }
+    // val sleepDur = if (cache) 3000 else 0
+    val data = new MemoryDataRDD(sc, mapParallelism, nbrOfRecords, 200)
+    // data.persist(StorageLevel.MEMORY_ONLY)
+    //data.foreach(_ => {})
 
     val paired: PairRDDFunctions[Int, Array[Byte]] = data.mapPartitionsWithIndex {
       val nbrOfReduces = reduceParallelism
@@ -73,6 +70,9 @@ object ScalaInMemRepartition {
         }
       }
     }
+
+    
+
 
     val shuffled = paired.partitionBy(new HashPartitioner(reduceParallelism))
     if (disableOutput) {
