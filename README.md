@@ -1,8 +1,8 @@
-# HiBench Suite [![Build Status](https://travis-ci.org/intel-hadoop/HiBench.svg?branch=master)](https://travis-ci.org/intel-hadoop/HiBench)
+# HiBench Suite
 ## The bigdata micro benchmark suite ##
 
 
-* Current version: 7.1
+* Current version: 7.1.1
 * Homepage: https://github.com/intel-hadoop/HiBench
 * Contents:
   1. Overview
@@ -152,7 +152,7 @@ There are totally 29 workloads in HiBench. The workloads are divided into 6 cate
 ### Supported Hadoop/Spark/Flink/Storm/Gearpump releases: ###
 
   - Hadoop: Apache Hadoop 3.0.x, 3.1.x, 3.2.x, 2.x, CDH5, HDP
-  - Spark: Spark 2.4.x, Spark 3.0.x
+  - Spark: Spark 2.4.x, Spark 3.0.x, Spark 3.1.x
   - Flink: 1.0.3
   - Storm: 1.0.1
   - Gearpump: 0.8.1

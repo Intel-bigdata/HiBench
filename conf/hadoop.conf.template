@@ -11,5 +11,5 @@ hibench.hadoop.configure.dir  ${hibench.hadoop.home}/etc/hadoop
 hibench.hdfs.master       hdfs://localhost:8020
 
 
-# Hadoop release provider. Supported value: apache, cdh5, hdp
+# Hadoop release provider. Supported value: apache
 hibench.hadoop.release    apache

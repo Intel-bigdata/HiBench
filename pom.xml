@@ -14,11 +14,10 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.10.4</scala.version>
+    <scala.version>2.11.8</scala.version>
     <scala.binary.version>2.10</scala.binary.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>1.2.17</log4j.version>
-    <scopt.version>3.2.0</scopt.version>
+    <scopt.version>3.7.0</scopt.version>
     <mahout.version>0.9</mahout.version>
     <uncommons-maths.version>1.2.2a</uncommons-maths.version>
     <junit.version>3.8.1</junit.version>
@@ -41,12 +40,6 @@
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${log4j.version}</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 

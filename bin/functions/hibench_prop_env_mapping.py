@@ -85,6 +85,9 @@ HiBenchEnvPropMapping=dict(
     DATATOOLS="hibench.hibench.datatool.dir",
     BAYES_BASE_HDFS="hibench.bayes.base.hdfs",
     NGRAMS="hibench.bayes.ngrams",
+    BAYES_USE_DENSE="hibench.bayes.use_dense",
+    BAYES_DENSE_EXAMPLES="hibench.bayes.dense.examples",
+    BAYES_DENSE_FEATURES="hibench.bayes.dense.features",
     # For kmeans
     INPUT_SAMPLE="hibench.kmeans.input.sample",
     INPUT_CLUSTER="hibench.kmeans.input.cluster",
@@ -169,6 +172,13 @@ HiBenchEnvPropMapping=dict(
     REG_PARAM_LINEAR="hibench.linear.regularization_param",
     ELASTICNET_PARAM_LINEAR="hibench.linear.elasticnet_param",
     TOL_LINEAR="hibench.linear.tolerance",
+    # For Correlation
+    NUM_EXAMPLES_CORRELATION="hibench.correlation.examples",
+    NUM_FEATURES_CORRELATION="hibench.correlation.features",
+    CORR_TYPE="hibench.correlation.corrType",
+    # For Summarizer
+    NUM_EXAMPLES_SUMMARIZER="hibench.summarizer.examples",
+    NUM_FEATURES_SUMMARIZER="hibench.summarizer.features",
     # For LDA
     NUM_DOCUMENTS_LDA="hibench.lda.num_of_documents",
     NUM_VOCABULARY_LDA="hibench.lda.num_of_vocabulary",

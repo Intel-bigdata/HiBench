@@ -18,7 +18,6 @@
 package com.intel.hibench.sparkbench.dal
 
 import org.apache.hadoop.io.LongWritable
-import org.apache.log4j.{Level, Logger}
 import org.apache.mahout.math.VectorWritable
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.{SparkConf, SparkContext}

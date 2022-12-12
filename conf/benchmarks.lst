@@ -24,5 +24,7 @@ ml.linear
 ml.lda
 ml.svm
 ml.gmm
+ml.correlation
+ml.summarizer
 
 graph.nweight
