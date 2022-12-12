@@ -27,7 +27,7 @@ class MemoryDataRDD(
     recordSize: Int)
   extends RDD[Array[Byte]](sc, Nil) with Logging {
 
-  val localData = Range(0, recordSize).map(i => i.toByte).toArray
+//  val localData = Range(0, recordSize).map(i => i.toByte).toArray
 
   override def compute(split: Partition, context: TaskContext): Iterator[Array[Byte]] = {
     val iter = new Iterator[Array[Byte]] {
@@ -35,6 +35,8 @@ class MemoryDataRDD(
       private val existingBytesRead = inputMetrics.bytesRead
       private var recordsRead = 0
       private var lastSumRecord = 0
+
+      val localData = Range(0, recordSize).map(i => i.toByte).toArray
 
       context.addTaskCompletionListener[Unit] { context =>
         inputMetrics.setBytesRead(existingBytesRead + (recordsRead - lastSumRecord) * recordSize * 1L)

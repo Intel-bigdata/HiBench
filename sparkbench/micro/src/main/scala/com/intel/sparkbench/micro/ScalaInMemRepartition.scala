@@ -36,9 +36,10 @@ object ScalaInMemRepartition {
     )
 
   def main(args: Array[String]) {
-    if (args.length != 4) {
+    if (args.length != 6) {
       System.err.println(
-        s"Usage: $ScalaInMemRepartition <NBR_OF_RECORD> <OUTPUT_HDFS> <CACHE_IN_MEMORY> <DISABLE_OUTPUT>"
+        s"Usage: $ScalaInMemRepartition <NBR_OF_RECORD> <OUTPUT_HDFS> <CACHE_IN_MEMORY> <DISABLE_OUTPUT> <RECORD_SIZE>" +
+          s" <ROUND>"
       )
       System.exit(1)
     }
@@ -46,6 +47,8 @@ object ScalaInMemRepartition {
     val nbrOfRecords = toInt(args(0), ("NBR_OF_RECORD"))
     val outputDir = args(1)
     val disableOutput = toBoolean(args(3), ("DISABLE_OUTPUT"))
+    val recordSize = toInt(args(4), ("RECORD_SIZE"))
+    val round = toInt(args(5), ("ROUND"))
 
     val sparkConf = new SparkConf().setAppName("ScalaInMemRepartition")
     val sc = new SparkContext(sparkConf)
@@ -55,11 +58,11 @@ object ScalaInMemRepartition {
       .getOrElse((mapParallelism / 2).toString).toInt
 
     // val sleepDur = if (cache) 3000 else 0
-    val data = new MemoryDataRDD(sc, mapParallelism, nbrOfRecords, 200)
+    val data = new MemoryDataRDD(sc, mapParallelism, nbrOfRecords, recordSize)
     // data.persist(StorageLevel.MEMORY_ONLY)
     //data.foreach(_ => {})
 
-    val paired: PairRDDFunctions[Int, Array[Byte]] = data.mapPartitionsWithIndex {
+    val paired = data.mapPartitionsWithIndex {
       val nbrOfReduces = reduceParallelism
       (index, part) => {
         var position = new Random(hashing.byteswap32(index)).nextInt(nbrOfReduces)
@@ -71,15 +74,19 @@ object ScalaInMemRepartition {
       }
     }
 
-    
+    if (cache) {
+      paired.persist(StorageLevel.MEMORY_ONLY)
+      paired.foreach(_ => {})
+    }
 
-
-    val shuffled = paired.partitionBy(new HashPartitioner(reduceParallelism))
-    if (disableOutput) {
-      shuffled.foreach(_ => {})
-    } else {
-      shuffled.map { case (_, v) => (NullWritable.get(), new Text(v)) }
-        .saveAsNewAPIHadoopFile[TextOutputFormat[NullWritable, Text]](outputDir)
+    for (_ <- 1 to round) {
+      val shuffled = paired.partitionBy(new HashPartitioner(reduceParallelism))
+      if (disableOutput) {
+        shuffled.foreach(_ => {})
+      } else {
+        shuffled.map { case (_, v) => (NullWritable.get(), new Text(v)) }
+          .saveAsNewAPIHadoopFile[TextOutputFormat[NullWritable, Text]](outputDir)
+      }
     }
 
     sc.stop()
