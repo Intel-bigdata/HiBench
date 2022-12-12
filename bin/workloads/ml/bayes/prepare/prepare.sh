@@ -24,17 +24,27 @@ enter_bench HadoopPrepareBayes ${workload_config} ${current_dir}
 show_bannar start
 
 rmr_hdfs ${INPUT_HDFS} || true
-START_TIME=`timestamp`
-OPTION="-t bayes \
-        -b ${BAYES_BASE_HDFS} \
-        -n Input \
-        -m ${NUM_MAPS} \
-        -r ${NUM_REDS} \
-        -p ${PAGES} \
-        -class ${CLASSES} \
-        -o sequence"
+rmr_hdfs ${INPUT_HDFS}.parquet || true
 
-run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
+START_TIME=`timestamp`
+
+if [ ${BAYES_USE_DENSE} != "true" ]; then
+  OPTION="-t bayes \
+          -b ${BAYES_BASE_HDFS} \
+          -n Input \
+          -m ${NUM_MAPS} \
+          -r ${NUM_REDS} \
+          -p ${PAGES} \
+          -class ${CLASSES} \
+          -o sequence"
+  run_hadoop_job ${DATATOOLS} HiBench.DataGen ${OPTION}
+fi
+run_spark_job --jars ${DATATOOLS} HiBench.BayesDataGen --input ${INPUT_HDFS} --output ${INPUT_HDFS}.parquet \
+  --useDense ${BAYES_USE_DENSE} \
+  --examples ${BAYES_DENSE_EXAMPLES} \
+  --features ${BAYES_DENSE_FEATURES} \
+  --classes ${CLASSES}
+
 END_TIME=`timestamp`
 
 show_bannar finish
