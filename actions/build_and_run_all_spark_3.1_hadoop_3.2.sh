@@ -29,3 +29,6 @@ echo "========================================="
 
 # run all examples
 source $GITHUB_WORKSPACE/bin/run_all.sh
+
+ls -l $HADOOP_HOME/logs/
+cat $HADOOP_HOME/logs/*.log
