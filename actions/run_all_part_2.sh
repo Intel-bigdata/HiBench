@@ -20,7 +20,7 @@ root_dir=`cd "${current_dir}/.."; pwd`
 
 . ${root_dir}/bin/functions/color.sh
 
-for benchmark in `cat $root_dir/conf/benchmarks_part_2.lst`; do
+for benchmark in `cat $root_dir/actions/benchmarks_part_2.lst`; do
     if [[ $benchmark == \#* ]]; then
         continue
     fi
@@ -39,7 +39,7 @@ for benchmark in `cat $root_dir/conf/benchmarks_part_2.lst`; do
         exit $result
     fi
 
-    for framework in `cat $root_dir/conf/frameworks.lst`; do
+    for framework in `cat $root_dir/actions/frameworks.lst`; do
     if [[ $framework == \#* ]]; then
         continue
     fi
