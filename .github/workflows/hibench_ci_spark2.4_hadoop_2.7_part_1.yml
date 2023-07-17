@@ -1,4 +1,4 @@
-name: HiBench CI SPARK_3.1_HADOOP_3.2
+name: HiBench CI SPARK_2.4_HADOOP_2.7
 
 on: [push, pull_request]
 
@@ -19,9 +19,9 @@ jobs:
             # /var/cache/apt/archives/*.deb
             ~/.m2/repository
             ~/opt
-          key: ${{ runner.os }}_spark_3.1_hadoop_3.2
+          key: ${{ runner.os }}_spark_2.4_hadoop_2.7
           restore-keys: |
             ${{ runner.os }}-
-      - name: Cluster spark_3.1_hadoop_3.2_hive_3.0
+      - name: Cluster spark_2.4_hadoop_2.7_hive_0.14
         run: |
-          ${{github.workspace}}/actions/build_and_run_all_spark_3.1_hadoop_3.2.sh
+          ${{github.workspace}}/actions/build_and_run_all_spark_2.4_hadoop_2.7_hive_0.14_part_1.sh

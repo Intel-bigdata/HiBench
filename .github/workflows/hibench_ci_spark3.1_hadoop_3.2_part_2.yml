@@ -1,0 +1,27 @@
+name: HiBench CI SPARK_3.1_HADOOP_3.2
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Restore cached dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            # /var/cache/apt/archives/*.deb
+            ~/.m2/repository
+            ~/opt
+          key: ${{ runner.os }}_spark_3.1_hadoop_3.2
+          restore-keys: |
+            ${{ runner.os }}-
+      - name: Cluster spark_3.1_hadoop_3.2_hive_3.0
+        run: |
+          ${{github.workspace}}/actions/build_and_run_all_spark_3.1_hadoop_3.2_part_2.sh
