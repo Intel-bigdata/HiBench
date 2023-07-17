@@ -11,20 +11,3 @@ sql.scan
 
 websearch.nutchindexing
 websearch.pagerank
-
-ml.bayes
-ml.kmeans
-ml.lr
-ml.als
-ml.pca
-ml.gbt
-ml.rf
-ml.svd
-ml.linear
-ml.lda
-ml.svm
-ml.gmm
-ml.correlation
-ml.summarizer
-
-graph.nweight
