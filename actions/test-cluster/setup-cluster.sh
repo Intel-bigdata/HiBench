@@ -59,9 +59,20 @@ mkdir -p /tmp/run/hdfs/datanode
 # hdfs format
 $HADOOP_HOME/bin/hdfs namenode -format
 
+#wget -P $HADOOP_HOME/share/hadoop/yarn/lib/ https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar
+
 # start hdfs and yarn
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
+
+
+jps
+free -g
+df -h
+yarn application -list
+ls -ls $HADOOP_HOME/logs/
+cat $HADOOP_HOME/logs/hadoop-*-resourcemanager-*.log
+cat $HADOOP_HOME/logs/hadoop-*-nodemanager-*.log
 
 sleep 10
 $HADOOP_HOME/bin/hadoop fs -ls /
