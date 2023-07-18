@@ -71,8 +71,8 @@ free -g
 df -h
 yarn application -list
 ls -ls $HADOOP_HOME/logs/
-cat $HADOOP_HOME/logs/hadoop-*-resourcemanager-*.log
-cat $HADOOP_HOME/logs/hadoop-*-nodemanager-*.log
+cat $HADOOP_HOME/logs/yarn-*-resourcemanager-*.log
+cat $HADOOP_HOME/logs/yarn-*-nodemanager-*.log
 
 sleep 10
 $HADOOP_HOME/bin/hadoop fs -ls /
