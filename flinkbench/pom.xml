@@ -16,7 +16,7 @@
   <name>flinkbench</name>
 
   <properties>
-    <flinkVersion>1.0.3</flinkVersion>
+    <flinkVersion>1.10.1</flinkVersion>
     <jackson.version>2.4.2</jackson.version>
   </properties>
 
