@@ -63,6 +63,16 @@ $HADOOP_HOME/bin/hdfs namenode -format
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
 
+if [ $HADOOP_VERSION = "3.2.1" ]; then
+    jps
+    free -g
+    df -h
+    yarn application -list
+    ls -ls $HADOOP_HOME/logs/
+    cat $HADOOP_HOME/logs/hadoop-*-resourcemanager-*.log
+    cat $HADOOP_HOME/logs/hadoop-*-nodemanager-*.log
+fi
+
 sleep 10
 $HADOOP_HOME/bin/hadoop fs -ls /
 $HADOOP_HOME/bin/yarn node -list 2
