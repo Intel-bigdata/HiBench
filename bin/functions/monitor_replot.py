@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,14 +13,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
-from monitor import generate_report
 import sys
 
-if len(sys.argv)<4:
-    print """Usage:
+from monitor import generate_report
+
+if len(sys.argv) < 4:
+    print(
+        """Usage:
     monitor_replot.py <workload_name> <log_path.log> <bench_log_path.log> <report_path.html>
-"""
+""",
+    )
     sys.exit(1)
 
 generate_report(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

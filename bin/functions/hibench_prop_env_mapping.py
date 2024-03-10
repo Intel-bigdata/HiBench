@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,11 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Mapping from properties to environment variable names
 """
-HiBenchEnvPropMappingMandatory=dict(
+
+HiBenchEnvPropMappingMandatory = dict(
     JAVA_BIN="java.bin",
     HADOOP_HOME="hibench.hadoop.home",
     HDFS_MASTER="hibench.hdfs.master",
@@ -27,26 +27,22 @@ HiBenchEnvPropMappingMandatory=dict(
     HADOOP_CONF_DIR="hibench.hadoop.configure.dir",
     HIBENCH_HOME="hibench.home",
     HIBENCH_CONF="hibench.configure.dir",
-
     REPORT_COLUMN_FORMATS="hibench.report.formats",
     SPARKBENCH_JAR="hibench.sparkbench.jar",
     NUM_MAPS="hibench.default.map.parallelism",
     NUM_REDS="hibench.default.shuffle.parallelism",
     INPUT_HDFS="hibench.workload.input",
     OUTPUT_HDFS="hibench.workload.output",
-
     REDUCER_CONFIG_NAME="hibench.hadoop.reducer.name",
     MAP_CONFIG_NAME="hibench.hadoop.mapper.name",
-
     MASTERS="hibench.masters.hostnames",
     SLAVES="hibench.slaves.hostnames",
-    )
+)
 
-HiBenchEnvPropMapping=dict(
+HiBenchEnvPropMapping = dict(
     SPARK_HOME="hibench.spark.home",
     SPARK_MASTER="hibench.spark.master",
     SPARK_EXAMPLES_JAR="hibench.spark.examples.jar",
-
     HIVE_HOME="hibench.hive.home",
     HIVE_RELEASE="hibench.hive.release",
     HIVEBENCH_TEMPLATE="hibench.hivebench.template.dir",
@@ -56,8 +52,8 @@ HiBenchEnvPropMapping=dict(
     NUTCH_BASE_HDFS="hibench.nutch.base.hdfs",
     NUTCH_INPUT="hibench.nutch.dir.name.input",
     NUTCH_DIR="hibench.nutch.nutchindexing.dir",
-    HIBENCH_REPORT="hibench.report.dir", # set in default
-    HIBENCH_REPORT_NAME="hibench.report.name", # set in default
+    HIBENCH_REPORT="hibench.report.dir",  # set in default
+    HIBENCH_REPORT_NAME="hibench.report.name",  # set in default
     YARN_NUM_EXECUTORS="hibench.yarn.executor.num",
     YARN_EXECUTOR_CORES="hibench.yarn.executor.cores",
     SPARK_YARN_EXECUTOR_MEMORY="spark.executor.memory",
@@ -73,7 +69,6 @@ HiBenchEnvPropMapping=dict(
     CACHE_IN_MEMORY="hibench.repartition.cacheinmemory",
     DISABLE_OUTPUT="hibench.repartition.disableoutput",
     FROM_HDFS="hibench.repartition.fromhdfs",
-
     # For hive related workload, data scale
     PAGES="hibench.workload.pages",
     USERVISITS="hibench.workload.uservisits",
@@ -133,7 +128,7 @@ HiBenchEnvPropMapping=dict(
     NUM_EXAMPLES_PCA="hibench.pca.examples",
     NUM_FEATURES_PCA="hibench.pca.features",
     PCA_K="hibench.pca.k",
-    MAX_RESULT_SIZE_PCA ="hibench.pca.maxresultsize",
+    MAX_RESULT_SIZE_PCA="hibench.pca.maxresultsize",
     # For Gradient Boosting Tree
     NUM_EXAMPLES_GBT="hibench.gbt.examples",
     NUM_FEATURES_GBT="hibench.gbt.features",
@@ -211,11 +206,9 @@ HiBenchEnvPropMapping=dict(
     STORAGE_LEVEL="hibench.nweight.storage_level",
     DISABLE_KRYO="hibench.nweight.disable_kryo",
     MODEL="hibench.nweight.model",
-
     # For streaming bench
     STREAMING_TESTCASE="hibench.streambench.testCase",
     COMMON_JAR="hibench.common.jar",
-
     # prepare
     STREAMING_TOPIC_NAME="hibench.streambench.kafka.topic",
     STREAMING_KAFKA_HOME="hibench.streambench.kafka.home",
@@ -229,28 +222,23 @@ HiBenchEnvPropMapping=dict(
     STREAMING_DATA2_CLUSTER_DIR="hibench.streambench.datagen.data2_cluster.dir",
     STREAMING_PARTITIONS="hibench.streambench.kafka.topicPartitions",
     DATA_GEN_JAR="hibench.streambench.datagen.jar",
-
     # metrics reader
     METRICE_READER_SAMPLE_NUM="hibench.streambench.metricsReader.sampleNum",
     METRICS_READER_THREAD_NUM="hibench.streambench.metricsReader.threadNum",
     METRICS_READER_OUTPUT_DIR="hibench.streambench.metricsReader.outputDir",
-
     # sparkstreaming
     STREAMBENCH_SPARK_JAR="hibench.streambench.sparkbench.jar",
     STREAMBENCH_STORM_JAR="hibench.streambench.stormbench.jar",
-
     # gearpump
     GEARPUMP_HOME="hibench.streambench.gearpump.home",
     STREAMBENCH_GEARPUMP_JAR="hibench.streambench.gearpump.jar",
     STREAMBENCH_GEARPUMP_EXECUTORS="hibench.streambench.gearpump.executors",
-
     # flinkstreaming
     HIBENCH_FLINK_MASTER="hibench.flink.master",
     FLINK_HOME="hibench.streambench.flink.home",
     STREAMBENCH_FLINK_JAR="hibench.streambench.flinkbench.jar",
     STREAMBENCH_FLINK_PARALLELISM="hibench.streambench.flink.parallelism",
+)
 
-    )
-
-HiBenchPropEnvMapping=dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
-HiBenchPropEnvMappingMandatory=dict([(v,k) for k, v in HiBenchEnvPropMappingMandatory.items()])
+HiBenchPropEnvMapping = dict([(v,k) for k, v in HiBenchEnvPropMapping.items()])
+HiBenchPropEnvMappingMandatory = dict([(v,k) for k, v in HiBenchEnvPropMappingMandatory.items()])
