@@ -60,10 +60,3 @@ For Spark 2.0 or higher versions, we add the benchmark support for Structured St
 
     mvn -Psparkbench -Dmodules -PstructuredStreaming clean package 
 
-### Build DAL on Spark ###
-By default the dal module will not be built and needs to be enabled explicitly by adding "-Dmodules -Pdal", for example:
-
-    mvn -Psparkbench -Dmodules -Pml -Pdal -Dspark=2.4 -Dscala=2.11 clean package
-
-Currently there is only one workload KMeans available in DAL. To run the workload, install DAL and setup the environment by following https://github.com/intel/daal
-
