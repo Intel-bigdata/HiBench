@@ -59,11 +59,3 @@ Supported modules includes: micro, ml(machine learning), sql, websearch, graph, 
 For Spark 2.0 or higher versions, we add the benchmark support for Structured Streaming. This is a new module which cannot be compiled in Spark 1.6. And it won't get compiled by default even if you specify the spark version as 2.0 or higher. You must explicitly specify it like this:
 
     mvn -Psparkbench -Dmodules -PstructuredStreaming clean package 
-
-### Build DAL on Spark ###
-By default the dal module will not be built and needs to be enabled explicitly by adding "-Dmodules -Pdal", for example:
-
-    mvn -Psparkbench -Dmodules -Pml -Pdal -Dspark=2.4 -Dscala=2.11 clean package
-
-Currently there is only one workload KMeans available in DAL. To run the workload, install DAL and setup the environment by following https://github.com/intel/daal
-
