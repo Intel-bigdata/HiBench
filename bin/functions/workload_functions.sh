@@ -209,7 +209,7 @@ function run_spark_job() {
        if [[ -n "${SPARK_YARN_EXECUTOR_MEMORY:-}" ]]; then
            YARN_OPTS="${YARN_OPTS} --executor-memory ${SPARK_YARN_EXECUTOR_MEMORY}"
        fi
-       if [[ -n "${SPAKR_YARN_DRIVER_MEMORY:-}" ]]; then
+       if [[ -n "${SPARK_YARN_DRIVER_MEMORY:-}" ]]; then
            YARN_OPTS="${YARN_OPTS} --driver-memory ${SPARK_YARN_DRIVER_MEMORY}"
        fi
     fi
