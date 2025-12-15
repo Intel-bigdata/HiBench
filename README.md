@@ -1,3 +1,8 @@
+# THIS PROJECT IS ARCHIVED  
+Intel will not provide or guarantee development of or support for this project, including but not limited to, maintenance, bug fixes, new releases or updates.  
+Patches to this project are no longer accepted by Intel.   
+This project has been identified as having known security issues.  
+  
 # HiBench Suite
 ## The bigdata micro benchmark suite ##
 
