@@ -24,11 +24,8 @@ class MemoryDataRDD(
     sc : SparkContext,
     numPartitions: Int,
     numRecords: Int,
-    recordSize: Int,
-    sleepDurationMs: Int)
+    recordSize: Int)
   extends RDD[Array[Byte]](sc, Nil) with Logging {
-
-  val localData = Range(0, recordSize).map(i => i.toByte).toArray
 
   override def compute(split: Partition, context: TaskContext): Iterator[Array[Byte]] = {
     val iter = new Iterator[Array[Byte]] {
@@ -36,7 +33,8 @@ class MemoryDataRDD(
       private val existingBytesRead = inputMetrics.bytesRead
       private var recordsRead = 0
       private var lastSumRecord = 0
-      private var sleeped = sleepDurationMs == 0
+
+      val localData = Range(0, recordSize).map(i => i.toByte).toArray
 
       context.addTaskCompletionListener[Unit] { context =>
         inputMetrics.setBytesRead(existingBytesRead + (recordsRead - lastSumRecord) * recordSize * 1L)
@@ -56,11 +54,7 @@ class MemoryDataRDD(
           lastSumRecord = recordsRead
         }
         recordsRead = recordsRead + 1
-        if (!sleeped) {
-          Thread.sleep(sleepDurationMs)
-          sleeped = true
-        }
-        localData.clone
+        localData
       }
     }
     new InterruptibleIterator(context, iter)
